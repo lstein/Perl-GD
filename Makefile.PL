@@ -25,6 +25,8 @@ my $result = GetOptions("options=s"       => \$options,
 			"lib_gd_path=s"   => \$lib_gd_path,
 			"lib_ft_path=s"   => \$lib_ft_path,
 			"lib_png_path=s"  => \$lib_png_path,
+			"lib_jpeg_path=s" => \$lib_jpeg_path,
+			"lib_xpm_path=s"  => \$lib_xpm_path,
 			"lib_zlib_path=s" => \$lib_zlib_path,
 		       );
 unless ($result) {
@@ -38,6 +40,8 @@ Configure GD module.
      -lib_gd_path   path            path to libgd
      -lib_ft_path   path            path to Freetype library
      -lib_png_path  path            path to libpng
+     -lib_jpeg_path path            path to libjpeg
+     -lib_xpm_path  path            path to libxpm
      -lib_zlib_path path            path to libpng
 
 If no options are passed on the command line.  The program will
@@ -63,6 +67,18 @@ if( defined($lib_png_path) )
     print "PNG library used from:      $lib_png_path\n";
     @INC     = ("-I$lib_png_path/include", @INC);
     @LIBPATH = ("-L$lib_png_path/lib", @LIBPATH); 
+}
+if( defined($lib_jpeg_path) )  
+{  
+    print "JPEG library used from:      $lib_jpeg_path\n";
+    @INC     = ("-I$lib_jpeg_path/include", @INC);
+    @LIBPATH = ("-L$lib_jpeg_path/lib", @LIBPATH); 
+}
+if( defined($lib_xpm_path) )  
+{  
+    print "XPM library used from:      $lib_xpm_path\n";
+    @INC     = ("-I$lib_xpm_path/include", @INC);
+    @LIBPATH = ("-L$lib_xpm_path/lib", @LIBPATH); 
 }
 if( defined($lib_zlib_path) ) 
 {
