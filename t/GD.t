@@ -39,7 +39,7 @@ compare(test5(),++$loaded);
 compare(test6(),++$loaded);
 
 if (GD::Image->stringTTF(0,FONT,12.0,0.0,20,20,"Hello world!")) {
-  compare(test7(),++$loaded);
+  multicompare(test7(),++$loaded,undef,"-1");
 #  print "ok ",++$loaded," # This test doesn't work with some freetype versions\n";
 } elsif ($@ =~/not built with .+Type font support/) {
   print "ok ",++$loaded," # Skip, no FreeType font support\n";
@@ -86,15 +86,41 @@ sub compare {
       binmode REGRESSFILE;
       print REGRESSFILE $imageData;
       close REGRESSFILE;
-    } else{
-      open (REGRESSFILE,"./test.out.$testNo.png") 
-	|| die "Can't open regression file './t/test.out.$testNo.png': $!\n";
+    } else {
+      open (REGRESSFILE,"./$file")
+        || die "Can't open regression file './t/$file': $!\n";
       binmode REGRESSFILE;
       $regressdata = <REGRESSFILE>;
       close REGRESSFILE;
       print $imageData eq $regressdata ? "ok $ok" : "not ok $ok","\n";
     }
 }
+
+sub multicompare {
+  my($imageData,$testNo,$fht,@alt) = @_;
+  local $/ = undef;
+  my $ok = $testNo;
+  my $regressdata;
+  my $file = ($^O eq 'VMS')? "test.out_".$testNo."_png" : "./test.out.$testNo.png";
+  if (defined $fht and $fht eq 'write') {
+    die "Not implemented with multicompare";
+  } else {
+    my $equal;
+    foreach my $alt ("",@alt) {
+      open (REGRESSFILE,"./$file$alt")
+	|| die "Can't open regression file './t/$file$alt': $!\n";
+      binmode REGRESSFILE;
+      $regressdata = <REGRESSFILE>;
+      close REGRESSFILE;
+      if ($imageData eq $regressdata) {
+	$equal = 1;
+	last;
+      }
+    }
+    print $equal ? "ok $ok" : "not ok $ok","\n";
+  }
+}
+
 
 sub test1 {
     my($im) = new GD::Image(300,300);
