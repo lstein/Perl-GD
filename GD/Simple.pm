@@ -9,7 +9,7 @@ GD::Simple - Simplified interface to GD library
     use GD::Simple;
 
     # create a new image
-    $im = GD::Simple->new(400,250);
+    $img = GD::Simple->new(400,250);
 
     # draw a red rectangle with blue borders
     $img->bgcolor('red');

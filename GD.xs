@@ -571,10 +571,17 @@ gd_newFromPng(packname="GD::Image", filehandle, ...)
 	PROTOTYPE: $$;$
         PREINIT:
 	int truecolor = truecolor_default;
+        SV* errormsg;
 	CODE:
+#ifdef HAVE_PNG
 	RETVAL = (GD__Image) GDIMAGECREATEFROMPNG(filehandle);
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
+#else
+        errormsg = perl_get_sv("@",0);
+        sv_setpv(errormsg,"libgd was not built with png support\n");
+        XSRETURN_EMPTY;
+#endif
 	OUTPUT:
 	RETVAL
 
@@ -587,14 +594,21 @@ gdnewFromPngData(packname="GD::Image", imageData, ...)
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
+          SV*      errormsg;
 	  int truecolor = truecolor_default;
 	CODE:
+#ifdef HAVE_PNG
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromPngCtx(ctx);
         (ctx->gd_free)(ctx);
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
+#else
+        errormsg = perl_get_sv("@",0);
+        sv_setpv(errormsg,"libgd was not built with png support\n");
+        XSRETURN_EMPTY;
+#endif
 	OUTPUT:
 	RETVAL
 
@@ -867,11 +881,14 @@ SV*
 gdpng(image, ...)
   GD::Image	image
   PROTOTYPE: $;$
+  PREINIT:
+  SV* errormsg;
   CODE:
   {
 	void*         data;
 	int           size;
 	int           level;
+#ifdef HAVE_PNG
         if (items > 1) {
 	  level = (int)SvIV(ST(1));
 	  data  = (void *) gdImagePngPtrEx(image,&size,level);
@@ -880,6 +897,11 @@ gdpng(image, ...)
 	}
 	RETVAL = newSVpv((char*) data,size);
 	gdFree(data);
+#else
+        errormsg = perl_get_sv("@",0);
+        sv_setpv(errormsg,"libgd was not built with png support\n");
+        XSRETURN_EMPTY;
+#endif
   }
   OUTPUT:
     RETVAL

@@ -152,13 +152,14 @@ unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
 ##################################################################################################################
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
-my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG);
+my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG);
 if( defined($options) )
 {
   $JPEG     = $options =~ m/JPEG/i;
   $FT       = $options =~ m/FT|FREETYPE/i;
   $XPM      = $options =~ m/XPM/i;
   $GIF      = $options =~ m/GIF/i;
+  $PNG      = $options =~ m/PNG/i;
   $ANIMGIF  = $options =~ m/ANIMGIF/i;
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
   $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
@@ -167,6 +168,7 @@ else
 {
     warn "\nPlease choose the features that match how libgd was built:\n";
     $JPEG    = lc prompt('Build JPEG support?','y') eq 'y';
+    $PNG     = lc prompt('Build PNG support?','y') eq 'y';
     $FT      = lc prompt('Build FreeType support?','y') eq 'y';
     $ANIMGIF = lc prompt('Build support for animated GIFs?','y') eq 'y';
     $XPM     = $^O !~ /^freebsd|MSWin32$/ && lc prompt('Build XPM support?','y') eq 'y';
@@ -200,6 +202,7 @@ $DEFINES    .= ' -DHAVE_JPEG'    if $JPEG;
 $DEFINES    .= ' -DHAVE_FT'      if $FT;
 $DEFINES    .= ' -DHAVE_XPM'     if $XPM;
 $DEFINES    .= ' -DHAVE_GIF'     if $GIF;
+$DEFINES    .= ' -DHAVE_PNG'     if $PNG;
 $DEFINES    .= ' -DFCGI'         if $FCGI;
 $DEFINES    .= ' -DHAVE_ANIMGIF' if $ANIMGIF;
 $DEFINES    .= ' -DHAVE_UNCLOSEDPOLY' if $UNCLOSEDPOLY;
