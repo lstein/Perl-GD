@@ -3,9 +3,9 @@
 #include "XSUB.h"
 #include "libgd/gd.h"
 #ifdef FCGI
-   #include <fcgi_stdio.h>
+#include <fcgi_stdio.h>
 #else
-   #include <stdio.h>
+#include <stdio.h>
 #endif
 
 /* Copyright 1995, 1996, Lincoln D. Stein.  See accompanying README file for

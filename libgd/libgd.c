@@ -27,6 +27,11 @@ gdImagePtr gdImageCreate(int sx, int sy)
 		im->pixels[i] = (unsigned char *) calloc(
 			sy, sizeof(unsigned char));
 	}	
+	for (i=0; i < gdMaxColors; i++) {
+	  im->red[i]=0;
+	  im->green[i]=0;
+	  im->blue[i]=0;
+	}
 	im->sx = sx;
 	im->sy = sy;
 	im->colorsTotal = 0;

@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'	=> 'GD',
-    'VERSION'	=> '1.11',
+    'VERSION'	=> '1.12',
     'MYEXTLIB'  => 'libgd/libgd$(LIB_EXT)',
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'}
