@@ -1,3 +1,5 @@
+2.02	Changed Math::Trig version requirement from 0.0 to 1.0 as Perl 5.8
+	no long recognizes this as a valid version number.
 2.01	Added Math::Trig to the prerequisites because GD::Polyline needs it.
 2.00    Folded in support for gd version 2.0 from Dan Palermo
 	Folded in support for splines (GD::Polyline) from Dan Harasty.
