@@ -9,14 +9,15 @@ README.unix
 bdf_scripts/README
 bdf_scripts/bdftogd
 bdf_scripts/cvtbdf.pl
+GD/Polyline.pm
 demos/brushes.pl
 demos/copies.pl
 demos/fills.pl
 demos/font_list.png
 demos/fonttest
-demos/fonttest~
 demos/gd_example.cgi
 demos/polys.pl
+demos/polyline.pl
 demos/shapes.pl
 demos/tile.png
 demos/transform.pl
@@ -25,6 +26,7 @@ demos/ttf.pl
 patch_gd.pl
 qd.pl
 t/GD.t
+t/Polyline.t
 t/Generic.ttf
 t/frog.jpg
 t/frog.xpm

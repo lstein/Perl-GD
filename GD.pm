@@ -374,7 +374,6 @@ sub GD::Polygon::transform($$$$$$$) {
 	my($x,$y)=$self->getPt($i);
 	$self->setPt($i, $a*$x+$c*$y+$tx, $b*$x+$d*$y+$ty);
     }
-    
 }
 
 sub GD::Polygon::scale {
@@ -394,7 +393,7 @@ GD.pm - Interface to Gd Graphics Library
 =head1 SYNOPSIS
 
     use GD;
-        
+
     # create a new image
     $im = new GD::Image(100,100);
 
@@ -1434,7 +1433,7 @@ or by importing the :cmp tag.  Example:
 A few primitive polygon creation and manipulation methods are
 provided.  They aren't part of the Gd library, but I thought they
 might be handy to have around (they're borrowed from my qd.pl
-Quickdraw library).
+Quickdraw library).  Also see L<GD::Polyline>.
 
 =over 3
 
@@ -1541,6 +1540,11 @@ rotation factors, and tx and ty are X and Y offsets.  See the Adobe
 PostScript Reference, page 154 for a full explanation, or experiment.
 
 =back
+
+=head2 GD::Polyline
+
+Please see L<GD::Polyline> for information on creating open polygons
+and splines.
 
 =head1 Font Utilities
 
