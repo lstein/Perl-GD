@@ -34,7 +34,7 @@ compare(test5(),++$loaded);
 compare(test6(),++$loaded);
 if (GD::Image->stringTTF(0,FONT,12.0,0.0,20,20,"Hello world!")) {
   compare(test7(),++$loaded);
-} elsif ($@ =~/not built with libgd was not built with TrueType font support/) {
+} elsif ($@ =~/not built with TrueType font support/) {
   print "ok ",++$loaded," # Skip\n";
 } else {
   print "not ok ",++$loaded,"\n";

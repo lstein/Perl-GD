@@ -1,3 +1,5 @@
+1.21	Slight fix in regression tests so that test 8 doesn't fail when compiled
+		without TrueType support.
 1.20	Rewritten for libgd 1.6.3
 1.19	Fixed Makefile.PL for better compilation on Windoze machines
 	
