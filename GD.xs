@@ -1687,6 +1687,27 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string)
 
 	}
 
+void
+gdalphaBlending(image,blending)
+     GD::Image       image
+        int             blending
+		PROTOTYPE: $$
+		CODE:
+{
+  gdImageAlphaBlending(image,blending);
+}
+
+void
+gdsaveAlpha(image,saveAlphaArg)
+     GD::Image       image
+        int             saveAlphaArg
+PROTOTYPE: $$
+CODE:
+{
+  gdImageSaveAlpha(image,saveAlphaArg) ;
+}
+
+
 MODULE = GD		PACKAGE = GD::Font	PREFIX=gd
 
 GD::Font
@@ -1788,22 +1809,3 @@ gdheight(font)
 	OUTPUT:
 		RETVAL
 
-void
-gdimageAlphaBlending(image,blending)
-     GD::Image       image
-        int             blending
-		PROTOTYPE: $$
-		CODE:
-{
-  gdImageAlphaBlending(image,blending);
-}
-
-void
-gdimageSaveAlpha(image,saveAlphaArg)
-     GD::Image       image
-        int             saveAlphaArg
-PROTOTYPE: $$
-CODE:
-{
-  gdImageSaveAlpha(image,saveAlphaArg) ;
-}

@@ -17,7 +17,7 @@ f.  support for transparency and interlacing
 For full information on usage, see the accompanying man and html
 documentation.
 
-===> NOTE: This version of GD REQUIRES libgd 2.0.4 or higher.  If you
+===> NOTE: This version of GD REQUIRES libgd 2.0.5 or higher.  If you
 ===> have an older version of libgd installed you must remove libgd.a,
 ===> libgd.so (if present) and gd.h.  Then install the new version of
 ===> libgd from www.boutell.com (see below).  This particularly
@@ -37,7 +37,7 @@ covered by the Perl "Artistic License", which allows for free usage
 and redistribution.  See the Artistic License in the Perl source
 package for details.
 
-THE LATEST VERSION IS 2.04
+THE LATEST VERSION IS 2.06
 
 INSTALLATION:
 
@@ -69,12 +69,17 @@ Read these instructions all the way through before you start!
 	   distributions.  If you don't have a modern
            version of X, don't try to get XPM working.
 
-NOTE: This version of GD requires libgd version 2.0.4.  It will not
-work on earlier versions of libgd, and may not work with later
-versions either.  
+NOTE: This version of GD requires libgd version 2.0.5 or higher.
 
-If it fails to compile and link, you are probably using an older
-version of libgd.  Use GD 1.41 for libgd versions 1.8.4 and lower.
+If this module fails to compile and link, you are probably using an
+older version of libgd.  Symptoms of this problem include errors about
+functions not being recognized in the gd.h header file, and undefined
+symbols from the linker.  If you are having this type of error, please
+REMOVE all versions of libgd, gd.h from your system and reinstall
+libgd 2.0.5 or higher from source code.  Do not contact the author of
+this module until you have done this.
+
+Use GD 1.41 for libgd versions 1.8.4 and lower.
 
 2.  Unpack the tar file:
 
