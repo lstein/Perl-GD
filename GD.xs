@@ -257,6 +257,24 @@ constant(char *name, int arg)
 #else
 	    goto not_there;
 #endif
+		if (strEQ(name,"gdAlphaMax"))
+#ifdef gdAlphaMax
+		return gdAlphaMax;
+#else
+		goto not_there;
+#endif
+		if (strEQ(name,"gdAlphaOpaque"))
+#ifdef gdAlphaOpaque
+		return gdAlphaOpaque;
+#else
+		goto not_there;
+#endif
+		if (strEQ(name,"gdAlphaTransparent"))
+#ifdef gdAlphaTransparent
+		return gdAlphaTransparent;
+#else
+		goto not_there;
+#endif
 
 	break;
     case 'h':
@@ -1529,6 +1547,21 @@ colorClosest(image,r,g,b)
 		RETVAL
 
 int
+colorClosestAlpha(image,r,g,b,a)
+	GD::Image	image
+	int		r
+	int		g
+	int		b
+	int		a
+		PROTOTYPE: $$$$
+	CODE:
+	{
+		RETVAL = gdImageColorClosest(image,r,g,b);
+	}
+	OUTPUT:
+		RETVAL
+
+int
 colorClosestHWB(image,r,g,b)
 	GD::Image	image
 	int		r
@@ -1557,6 +1590,21 @@ colorExact(image,r,g,b)
 		RETVAL
 
 int
+colorExactAlpha(image,r,g,b,a)
+	GD::Image	image
+	int		r
+	int		g
+	int		b
+	int		a
+	PROTOTYPE: $$$$
+	CODE:
+	{
+		RETVAL = gdImageColorExactAlpha(image,r,g,b,a);
+	}
+	OUTPUT:
+		RETVAL
+
+int
 colorResolve(image,r,g,b)
 	GD::Image	image
 	int		r
@@ -1566,6 +1614,21 @@ colorResolve(image,r,g,b)
 	CODE:
 	{
 		RETVAL = gdImageColorResolve(image,r,g,b);
+	}
+	OUTPUT:
+		RETVAL
+
+int
+colorResolveAlpha(image,r,g,b,a)
+	GD::Image	image
+	int		r
+	int		g
+	int		b
+	int		a
+	PROTOTYPE: $$$$
+	CODE:
+	{
+		RETVAL = gdImageColorResolveAlpha(image,r,g,b,a);
 	}
 	OUTPUT:
 		RETVAL

@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "2.10";
+$VERSION = "2.11";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -37,6 +37,9 @@ $VERSION = "2.10";
 	gdMediumBoldFont
 	gdLargeFont
 	gdGiantFont
+	gdAlphaMax
+	gdAlphaOpaque
+	gdAlphaTransparent
 );
 
 @EXPORT_OK = qw (
@@ -799,6 +802,13 @@ Example:
 	$white = $myImage->colorAllocate(0,0,0); #background color
 	$black = $myImage->colorAllocate(255,255,255);
 	$peachpuff = $myImage->colorAllocate(255,218,185);
+
+=item B<$index = $image-E<gt>colorAllocateAlpha(reg,green,blue,alpha)>
+
+This allocates a color with the specified red, green, and blue components,
+plus the specified alpha channel.  The alpha value may range from 0 (opaque)
+to 127 (transparent).  The C<alphaBlending> function changes the way this
+alpha channel affects the resulting image.
 
 =item B<$index = $image-E<gt>colorAllocateAlpha(reg,green,blue,alpha)>
 
