@@ -2198,11 +2198,8 @@ gdstringFTCircle(image,cx,cy,radius,textRadius,fillPortion,fontname,points,top,b
         SV*        errormsg;
         CODE:
 	{
-#ifndef HAVE_FT
-  	errormsg = perl_get_sv("@",0);
-	sv_setpv(errormsg,"libgd was not built with FreeType font support\n");
-	XSRETURN_EMPTY;
-#endif
+#ifdef HAVE_FT
+#ifdef HAVE_FTCIRCLE
 	fprintf(stderr,"cx=%d,cy=%d,radius=%f,textRadius=%f,fillPortion=%f,fontname=%s,points=%f,top=%s,bottom=%s,fgcolor=%d",
 		cx,cy,radius,textRadius,
 		fillPortion,fontname,points,top,bottom,fgcolor);
@@ -2216,6 +2213,16 @@ gdstringFTCircle(image,cx,cy,radius,textRadius,fillPortion,fontname,points,top,b
 	  } else {
             RETVAL = 1;
 	  }
+#else
+  	errormsg = perl_get_sv("@",0);
+	sv_setpv(errormsg,"libgd must be version 2.0.33 or higher to use this function\n");
+	XSRETURN_EMPTY;
+#endif
+#else
+  	errormsg = perl_get_sv("@",0);
+	sv_setpv(errormsg,"libgd was not built with FreeType support\n");
+	XSRETURN_EMPTY;
+#endif
 	}
         OUTPUT:
            RETVAL

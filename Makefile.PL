@@ -152,7 +152,7 @@ unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
 ##################################################################################################################
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
-my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG);
+my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$FTCIRCLE);
 if( defined($options) )
 {
   $JPEG     = $options =~ m/JPEG/i;
@@ -163,6 +163,7 @@ if( defined($options) )
   $ANIMGIF  = $options =~ m/ANIMGIF/i;
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
   $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
+  $FTCIRCLE  = $options =~ m/FTCIRCLE/i;
 }
 else
 {
@@ -207,6 +208,7 @@ $DEFINES    .= ' -DFCGI'         if $FCGI;
 $DEFINES    .= ' -DHAVE_ANIMGIF' if $ANIMGIF;
 $DEFINES    .= ' -DHAVE_UNCLOSEDPOLY' if $UNCLOSEDPOLY;
 $DEFINES    .= ' -DHAVE_FONTCONFIG'   if $FONTCONFIG;
+$DEFINES    .= ' -DHAVE_FTCIRCLE'  if $FTCIRCLE;
 
 WriteMakefile(
     'NAME'	=> 'GD',
@@ -251,7 +253,7 @@ sub try_to_autoconfigure {
   $$options      = $features;
 
   my ($minor)    = $version =~ /^2\.\d+\.(\d+)$/;
-  $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF" if defined($minor) && $minor >= 33;
+  $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE" if defined($minor) && $minor >= 33;
 }
 
 sub MY::postamble {
