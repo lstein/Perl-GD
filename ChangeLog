@@ -1,6 +1,11 @@
 2.17	Fixed a define that caused gif functions to be miscompiled on some
 		platforms.
 	Documentation fixes.
+	Added animated GIF patches from a contributor -- please send me your
+		name so that I can credit you properly.
+	Added dynamic font loading support.
+	Added fontconfig support.
+	Added a new "simple" API called GD::Simple.
 2.16	Fixed bug in GIF #IFDEFs pointed out by BZAJAC
 	Added #IFDEF for WIN32 provided by Randy Kobes
 2.15	Brought back GIF support (requires libgd 2.0.28 or higher).

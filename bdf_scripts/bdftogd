@@ -15,7 +15,7 @@ use strict;
 my $VERSION = '0.60';
 my $now = localtime;
 
-if (@ARGV != 2)
+if (@ARGV < 2)
 	{ die "usage: bdftogd fontname filename, eg. bdftogd FontLarge gdfontl\n"; }
 
 my $gdname = shift;
@@ -49,12 +49,13 @@ while (<>)
 	
 	$currentchar = $value if $tag eq 'ENCODING';
 	$minchar = $currentchar if not defined $minchar
-		or $currentchar < $minchar;
+		or ($currentchar < $minchar && $currentchar >= 0);
 	$maxchar = $currentchar if not defined $maxchar
-		or $currentchar > $maxchar;
+		or ($currentchar > $maxchar && $currentchar >= 0);
 	
 	if ($tag eq 'ENDCHAR')
 		{
+		  next if $currentchar < 0;
 		$gobitmap = 0;
 		my $bottom = $globaltop - $bottom[$currentchar];
 		
@@ -144,7 +145,7 @@ $info
 char ${gdname}Data[] = {
 EOF
 
-$minchar = 0 unless defined $minchar;
+$minchar = 0   unless defined $minchar;
 $maxchar = 255 unless defined $maxchar;
 for (my $i = $minchar; $i <= $maxchar; $i++)
 	{

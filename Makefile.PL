@@ -54,7 +54,7 @@ Usage: perl Makefile.PL [options]
 Configure GD module.
 
  Options:
-     -options       "JPEG,FT,XPM"   feature options, separated by commas
+     -options       "JPEG,FT,XPM,ANIMGIF"   feature options, separated by commas
      -lib_gd_path   path            path to libgd
      -lib_ft_path   path            path to Freetype library
      -lib_png_path  path            path to libpng
@@ -151,20 +151,24 @@ unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
 ##################################################################################################################
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
-my ($JPEG, $FT, $XPM, $GIF) = (undef, undef, undef, undef);
+my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG);
 if( defined($options) )
 {
-  $JPEG = $options =~ m/JPEG/i;
-  $FT   = $options =~ m/FT|FREETYPE/i;
-  $XPM  = $options =~ m/XPM/i;
-  $GIF  = $options =~ m/GIF/i;
+  $JPEG     = $options =~ m/JPEG/i;
+  $FT       = $options =~ m/FT|FREETYPE/i;
+  $XPM      = $options =~ m/XPM/i;
+  $GIF      = $options =~ m/GIF/i;
+  $ANIMGIF  = $options =~ m/ANIMGIF/i;
+  $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
+  $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
 }
 else
 {
     warn "\nPlease choose the features that match how libgd was built:\n";
-    $JPEG = lc prompt('Build JPEG support?','y') eq 'y';
-    $FT   = lc prompt('Build FreeType support?','y') eq 'y';
-    $XPM  = $^O !~ /^freebsd|MSWin32$/ && lc prompt('Build XPM support?','y') eq 'y';
+    $JPEG    = lc prompt('Build JPEG support?','y') eq 'y';
+    $FT      = lc prompt('Build FreeType support?','y') eq 'y';
+    $ANIMGIF = lc prompt('Build support for animated GIFs?','y') eq 'y';
+    $XPM     = $^O !~ /^freebsd|MSWin32$/ && lc prompt('Build XPM support?','y') eq 'y';
 }
 ##################################################################################################################
 
@@ -191,11 +195,14 @@ if (!$AUTOCONFIG) {
 
 my $CAPI = defined $ExtUtils::MakeMaker::CAPI_support;
 my $DEFINES = '';
-$DEFINES    .= ' -DHAVE_JPEG' if $JPEG;
-$DEFINES    .= ' -DHAVE_FT'   if $FT;
-$DEFINES    .= ' -DHAVE_XPM'  if $XPM;
-$DEFINES    .= ' -DHAVE_GIF'  if $GIF;
-$DEFINES    .= ' -DFCGI'      if $FCGI;
+$DEFINES    .= ' -DHAVE_JPEG'    if $JPEG;
+$DEFINES    .= ' -DHAVE_FT'      if $FT;
+$DEFINES    .= ' -DHAVE_XPM'     if $XPM;
+$DEFINES    .= ' -DHAVE_GIF'     if $GIF;
+$DEFINES    .= ' -DFCGI'         if $FCGI;
+$DEFINES    .= ' -DHAVE_ANIMGIF' if $ANIMGIF;
+$DEFINES    .= ' -DHAVE_UNCLOSEDPOLY' if $UNCLOSEDPOLY;
+$DEFINES    .= ' -DHAVE_FONTCONFIG'   if $FONTCONFIG;
 
 WriteMakefile(
     'NAME'	=> 'GD',
@@ -206,7 +213,9 @@ WriteMakefile(
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
     'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],
-    'INC'       => join(' ',$ENV{'GD_INC'},@INC), 
+    'INC'       => join(' ',$ENV{'GD_INC'},@INC),
+    'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl'},
+    'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
     'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
     'ABSTRACT'  => 'Interface to Gd Graphics Library',
      $CAPI ? ('CAPI'      => 'TRUE') : (),
@@ -236,6 +245,9 @@ sub try_to_autoconfigure {
   push @$LIBPATH,"-L$libdir";
   ($$lib_gd_path = $libdir) =~ s!/[^/]+$!!;
   $$options      = $features;
+
+  my ($minor)    = $version =~ /^2\.\d+\.(\d+)$/;
+  $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF" if defined($minor) && $minor >= 33;
 }
 
 sub MY::postamble {
