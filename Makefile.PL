@@ -42,6 +42,9 @@ $DEFINES    .= ' -DFCGI'      if $FCGI;
 WriteMakefile(
     'NAME'	=> 'GD',
     'VERSION_FROM'	=> 'GD.pm',
+    'PREREQ_PM' => {
+		    Math::Trig => 0,
+		    },
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
     'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],
