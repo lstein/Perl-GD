@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "1.41";
+$VERSION = "2.00";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -42,6 +42,7 @@ $VERSION = "1.41";
         GD_CMP_TRANSPARENT
 	GD_CMP_BACKGROUND
 	GD_CMP_INTERLACE
+	GD_CMP_TRUECOLOR
 );
 
 %EXPORT_TAGS = ('cmp'  => [qw(GD_CMP_IMAGE 
@@ -52,6 +53,7 @@ $VERSION = "1.41";
 			      GD_CMP_TRANSPARENT
 			      GD_CMP_BACKGROUND
 			      GD_CMP_INTERLACE
+			      GD_CMP_TRUECOLOR
 			     )
 			  ]
 	       );
@@ -145,28 +147,32 @@ sub GD::Image::new {
   return $pack->_new(@_);
 }
 
-sub GD::Image::newFromGif {
-    croak("Usage: newFromGif(class,filehandle)") unless @_==2;
-    my($class,$f) = @_;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromGif($fh);
+sub GD::Image::newTrueColor {
+  my $pack = shift;
+  return $pack->_new(@_, 1);
+}
+
+sub GD::Image::newPalette {
+  my $pack = shift;
+  return $pack->_new(@_, 0);
 }
 
 sub GD::Image::newFromPng {
-    croak("Usage: newFromPng(class,filehandle)") unless @_==2;
-    my($class,$f) = @_;
+    croak("Usage: newFromPng(class,filehandle,[truecolor])") unless @_>=2;
+    my($class) = shift;
+    my($f)     = shift;
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
-    $class->_newFromPng($fh);
+    $class->_newFromPng($fh,@_);
 }
 
 sub GD::Image::newFromJpeg {
-    croak("Usage: newFromJpeg(class,filehandle)") unless @_==2;
-    my($class,$f) = @_;
+    croak("Usage: newFromJpeg(class,filehandle,[truecolor])") unless @_>=2;
+    my($class) = shift;
+    my($f)     = shift;
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
-    $class->_newFromJpeg($fh);
+    $class->_newFromJpeg($fh,@_);
 }
 
 sub GD::Image::newFromXbm {
@@ -360,7 +366,6 @@ sub GD::Polygon::transform($$$$$$$) {
 	my($x,$y)=$self->getPt($i);
 	$self->setPt($i, $a*$x+$c*$y+$tx, $b*$x+$d*$y+$ty);
     }
-    
 }
 
 sub GD::Polygon::scale {
@@ -380,7 +385,7 @@ GD.pm - Interface to Gd Graphics Library
 =head1 SYNOPSIS
 
     use GD;
-        
+
     # create a new image
     $im = new GD::Image(100,100);
 
@@ -406,20 +411,15 @@ GD.pm - Interface to Gd Graphics Library
     # make sure we are writing to a binary stream
     binmode STDOUT;
 
-    # Convert the image to GIF and print it on standard output
-    print $im->gif;
-
     # Convert the image to PNG and print it on standard output
     print $im->png;
 
 =head1 DESCRIPTION
 
-B<GD.pm> is a patched version of the port of Thomas Boutell's gd 
-graphics library (see
-below). GD allows you to create color drawings using a large number of
-graphics primitives, and emit the drawings as PNG files.
-
-The patches reintroduce GIF support.
+B<GD.pm> is a Perl interface to Thomas Boutell's gd graphics library
+(version 2.01 or higher; see below). GD allows you to create color
+drawings using a large number of graphics primitives, and emit the
+drawings as PNG files.
 
 GD defines the following three classes:
 
@@ -473,9 +473,6 @@ A Simple Example:
 	# make sure we are writing to a binary stream
 	binmode STDOUT;
 
-	# Convert the image to GIF and print it on standard output
-	print $im->gif;
-
 	# Convert the image to PNG and print it on standard output
 	print $im->png;
 
@@ -487,7 +484,7 @@ Notes:
 To create a new, empty image, send a new() message to GD::Image, passing
 it the width and height of the image you want to create.  An image
 object will be returned.  Other class methods allow you to initialize
-an image from a preexisting GIF, PNG, GD, GD2 or XBM file.
+an image from a preexisting JPG, PNG, GD, GD2 or XBM file.
 
 =item 2.
 Next you will ordinarily add colors to the image's color table.
@@ -523,7 +520,7 @@ The following class methods allow you to create new GD::Image objects.
 
 =over 4
 
-=item B<$image = GD::Image-E<gt>new([$width,$height])>
+=item B<$image = GD::Image-E<gt>new([$width,$height],[$truecolor])>
 
 =item B<$image = GD::Image-E<gt>new(*FILEHANDLE)>
 
@@ -538,20 +535,48 @@ specified width and height. For example:
 	$myImage = new GD::Image(100,100) || die;
 
 This will create an image that is 100 x 100 pixels wide.  If you don't
-specify the dimensions, a default of 64 x 64 will be chosen. 
+specify the dimensions, a default of 64 x 64 will be chosen.
+
+The optional third argument, $truecolor, tells new() to create a
+truecolor GD::Image object.  Truecolor images have 24 bits of color
+data (eight bits each in the red, green and blue channels
+respectively), allowing for precise photograph-quality color usage.
+If not specified, the image will use an 8-bit palette for
+compatibility with older versions of libgd.
 
 Alternatively, you may create a GD::Image object based on an existing
 image by providing an open filehandle, a filename, or the image data
 itself.  The image formats automatically recognized and accepted are:
-PNG, JPEG, XPM and GD2.  Other formats, including GIF, WBMP, and GD
+PNG, JPEG, XPM and GD2.  Other formats, including WBMP, and GD
 version 1, cannot be recognized automatically at this time.
 
 If something goes wrong (e.g. insufficient memory), this call will
 return undef.
 
-=item B<$image = GD::Image-E<gt>newFromPng($file)>
+=item B<$image = GD::Image-E<gt>trueColor([0,1])>
 
-=item B<$image = GD::Image-E<gt>newFromPngData($data)>
+For backwards compatibility with scripts previous versions of GD,
+new images created from scratch (width, height) are palette based
+by default.  To change this default to create true color images use:
+
+	GD::Image->trueColor(1);
+
+somewhere before creating new images.  To switch back to palette
+based by default, use:
+
+	GD::Image->trueColor(0);
+
+=item B<$image = GD::Image-E<gt>newPalette([$width,$height])>
+
+=item B<$image = GD::Image-E<gt>newTrueColor([$width,$height])>
+
+The newPalette() and newTrueColor() methods can be used to explicitly
+create an palette based or true color image regardless of the
+current setting of trueColor().
+
+=item B<$image = GD::Image-E<gt>newFromPng($file, [$truecolor])>
+
+=item B<$image = GD::Image-E<gt>newFromPngData($data, [$truecolor])>
 
 The newFromPng() method will create an image from a PNG file read in
 through the provided filehandle or file path.  The filehandle must
@@ -562,6 +587,9 @@ the thing at the other end of the filehandle is not a valid PNG file,
 the call returns undef.  Notice that the call doesn't automatically
 close the filehandle for you.  But it does call C<binmode(FILEHANDLE)>
 for you, on platforms where this matters.
+The optional $truecolor (0/1) value can be used to override the global
+setting of trueColor() to specify if the return image should be
+palette-based or truecolor.
 
 You may use any of the following as the argument:
 
@@ -589,13 +617,16 @@ you can call the image query methods described below.
 The newFromPngData() method will create a new GD::Image initialized
 with the PNG format B<data> contained in C<$data>.
 
-=item B<$image = GD::Image-E<gt>newFromJpeg($file)>
+=item B<$image = GD::Image-E<gt>newFromJpeg($file, [$truecolor])>
 
-=item B<$image = GD::Image-E<gt>newFromJpegData($data)>
+=item B<$image = GD::Image-E<gt>newFromJpegData($data, [$truecolor])>
 
 These methods will create an image from a JPEG file.  They work just
 like newFromPng() and newFromPngData(), and will accept the same
 filehandle and pathname arguments.
+The optional $truecolor (0/1) value can be used to override the global
+setting of trueColor() to specify if the return image should be
+palette-based or truecolor.
 
 Bear in mind that JPEG is a 24-bit format, while GD is 8-bit.  This
 means that photographic images will become posterized.
@@ -651,13 +682,6 @@ example:
 This reads a 100x100 square portion of the image starting from
 position (10,20).
 
-=item B<$image = GD::Image-E<gt>newFromGif($file)>
-
-=item B<$image = GD::Image-E<gt>newFromGifData($data)>
-
-This works in exactly the same way as C<newFromGd()> and
-newFromGdData, but use the GIF image format.
-
 =item B<$image = GD::Image-E<gt>newFromXpm($filename)>
 
 This creates a new GD::Image object starting from a B<filename>.  This
@@ -698,11 +722,6 @@ pipe it to a display program, or write it to a file.  Example:
 
 Note the use of C<binmode()>.  This is crucial for portability to
 DOSish platforms.
-
-=item B<$gifdata = $image-E<gt>gif>
-
-This returns the image data in GIF format.  You can then print it,
-pipe it to a display program, or write it to a file. 
 
 =item B<$jpegdata = $image-E<gt>jpeg([$quality])>
 
@@ -844,7 +863,7 @@ Example:
 This marks the color at the specified index as being transparent.
 Portions of the image drawn in this color will be invisible.  This is
 useful for creating paintbrushes of odd shapes, as well as for
-making GIF & PNG backgrounds transparent for displaying on the Web.  Only
+making PNG backgrounds transparent for displaying on the Web.  Only
 one color can be transparent at any time. To disable transparency, 
 specify -1 for the index.  
 
@@ -1106,7 +1125,9 @@ attempt to find the best match, with varying results.
 
 =over 4
 
-=item B<$image-E<gt>copy($sourceImage,$dstX,$dstY,$srcX,$srcY,$width,$height)>
+=item B<$image-E<gt>copy($sourceImage,$dstX,$dstY,>
+
+B<				$srcX,$srcY,$width,$height)>
 
 This is the simplest of the several copy operations, copying the
 specified region from the source image to the destination image (the
@@ -1139,7 +1160,9 @@ Example:
 	... various drawing stuff ...
         $copy = $myImage->clone;
 
-=item B<$image-E<gt>copyMerge($sourceImage,$dstX,$dstY,$srcX,$srcY,$width,$height,$percent)>
+=item B<$image-E<gt>copyMerge($sourceImage,$dstX,$dstY,>
+
+B<				$srcX,$srcY,$width,$height,$percent)>
 
 This copies the indicated rectangle from the source image to the
 destination image, merging the colors to the extent specified by
@@ -1158,13 +1181,17 @@ Example:
 	# the rectangle starting at (10,10) in $myImage, merging 50%
 	$myImage->copyMerge($srcImage,10,10,0,0,25,25,50);
 
-=item B<$image-E<gt>copyMergeGray($sourceImage,$dstX,$dstY,$srcX,$srcY,$width,$height,$percent)>
+=item B<$image-E<gt>copyMergeGray($sourceImage,$dstX,$dstY,>
+
+B<				$srcX,$srcY,$width,$height,$percent)>
 
 This is identical to copyMerge() except that it preserves the hue of
 the source by converting all the pixels of the destination rectangle
 to grayscale before merging.
 
-=item B<$image-E<gt>copyResized($sourceImage,$dstX,$dstY,$srcX,$srcY,$destW,$destH,$srcW,$srcH)>
+=item B<$image-E<gt>copyResized($sourceImage,$dstX,$dstY,>
+
+B<				$srcX,$srcY,$destW,$destH,$srcW,$srcH)>
 
 This method is similar to copy() but allows you to choose different
 sizes for the source and destination rectangles.  The source and
@@ -1181,6 +1208,62 @@ Example:
 	# copy a 25x25 pixel region from $srcImage to
 	# a larger rectangle starting at (10,10) in $myImage
 	$myImage->copyResized($srcImage,10,10,0,0,50,50,25,25);
+
+=item B<$image-E<gt>copyResampled($sourceImage,$dstX,$dstY,>
+
+B<				$srcX,$srcY,$destW,$destH,$srcW,$srcH)>
+
+This method is similar to copyResized() but 
+provides "smooth" copying from a large image to a smaller
+one, using a weighted average of the pixels of the source area rather
+than selecting one representative pixel. This function is identical
+to copyResized() when the destination image is a palette image.
+
+=item B<$image-E<gt>trueColorToPalette([$dither], [$colors])>
+
+This method converts a truecolor image to a palette image. The code for
+this function was originally drawn from the Independent JPEG Group library
+code, which is excellent. The code has been modified to preserve as much
+alpha channel information as possible in the resulting palette, in addition
+to preserving colors as well as possible. This does not work as well as
+might be hoped. It is usually best to simply produce a truecolor
+output image instead, which guarantees the highest output quality.
+Both the dithering (0/1, default=0) and maximum number of colors used
+(<=256, default = gdMaxColors) can be specified.
+
+=back
+
+=head2 Image Transformation Commands
+
+Gd also provides some common image transformations:
+
+=over 4
+
+=item B<$image = $sourceImage-E<gt>copyRotate90()>
+
+=item B<$image = $sourceImage-E<gt>copyRotate180()>
+
+=item B<$image = $sourceImage-E<gt>copyRotate270()>
+
+=item B<$image = $sourceImage-E<gt>copyFlipHorizontal()>
+
+=item B<$image = $sourceImage-E<gt>copyFlipVertical()>
+
+=item B<$image = $sourceImage-E<gt>copyTranspose()>
+
+=item B<$image = $sourceImage-E<gt>copyReverseTranspose()>
+
+These methods can be used to rotate, flip, or transpose an image.
+The result of the method is a copy of the image.
+
+=item B<$image-E<gt>rotate180()>
+
+=item B<$image-E<gt>flipHorizontal()>
+
+=item B<$image-E<gt>flipVertical()>
+
+These methods are similar to the copy* versions, but instead
+modify the image in place.
 
 =back
 
@@ -1282,6 +1365,11 @@ This method will return a two-member list containing the width and
 height of the image.  You query but not not change the size of the
 image once it's created.
 
+=item B<$is_truecolor = $image-E<gt>isTrueColor()>
+
+This method will return a boolean representing whether the image
+is true color or not.
+
 =item B<$flag = $image1-E<gt>compare($image2)>
 
 Compare two images and return a bitmap describing the differenes
@@ -1297,6 +1385,7 @@ constants are available:
   GD_CMP_TRANSPARENT       The two images have different transparency
   GD_CMP_BACKGROUND        The two images have different background colors
   GD_CMP_INTERLACE         The two images differ in their interlace
+  GD_CMP_TRUECOLOR         The two images are not both true color
 
 The most important of these is GD_CMP_IMAGE, which will tell you
 whether the two images will look different, ignoring differences in the
@@ -1318,7 +1407,7 @@ or by importing the :cmp tag.  Example:
 A few primitive polygon creation and manipulation methods are
 provided.  They aren't part of the Gd library, but I thought they
 might be handy to have around (they're borrowed from my qd.pl
-Quickdraw library).
+Quickdraw library).  Also see L<GD::Polyline>.
 
 =over 3
 
@@ -1426,6 +1515,11 @@ PostScript Reference, page 154 for a full explanation, or experiment.
 
 =back
 
+=head2 GD::Polyline
+
+Please see L<GD::Polyline> for information on creating open polygons
+and splines.
+
 =head1 Font Utilities
 
 The libgd library (used by the Perl GD library) has built-in support
@@ -1523,6 +1617,7 @@ The latest versions of GD.pm are available at
 
 =head1 SEE ALSO
 
-Image::Magick
+L<GD::Polyline>,
+L<Image::Magick>
 
 =cut

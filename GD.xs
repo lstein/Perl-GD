@@ -91,6 +91,12 @@ constant(char *name, int arg)
 #else
 	goto not_there;
 #endif
+	if (strEQ(name, "GD_CMP_TRUECOLOR"))
+#ifdef GD_CMP_TRUECOLOR
+	  return GD_CMP_TRUECOLOR;
+#else
+	goto not_there;
+#endif
 	break;
     case 'H':
 	break;
@@ -244,7 +250,6 @@ extern	gdFontPtr	gdFontTiny;
 
 #ifdef PERL_OBJECT
 #  ifdef WIN32
-#define GDIMAGECREATEFROMGIF(x) gdImageCreateFromGif((FILE*)x)
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng((FILE*)x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm((FILE*)x)
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg((FILE*)x)
@@ -255,7 +260,6 @@ extern	gdFontPtr	gdFontTiny;
 #  endif
 #else
 #  ifdef USE_PERLIO
-#define GDIMAGECREATEFROMGIF(x) gdImageCreateFromGif(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(PerlIO_findFILE(x))
@@ -264,7 +268,6 @@ extern	gdFontPtr	gdFontTiny;
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part(PerlIO_findFILE(x),a,b,c,d)
 #  else
-#define GDIMAGECREATEFROMGIF(x) gdImageCreateFromGif(x)
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng(x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm(x)
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(x)
@@ -345,6 +348,75 @@ static gdIOCtx* newDynamicCtx (char* data, int length) {
   return (gdIOCtx*)ctx;
 }
 
+/* helper routines for image transformation */
+static GD__Image
+gd_cloneDim(GD__Image src, int x, int y) {
+  GD__Image dst;
+  if (gdImageTrueColor(src)) {
+     dst = (GD__Image) gdImageCreateTrueColor(x,y);
+  } else {
+     int i;
+     dst = (GD__Image) gdImageCreatePalette(x,y);
+     /* copy across the palette information */
+     for (i = 0; i < gdMaxColors; i++) {
+	dst->red[i]   = src->red[i];
+	dst->green[i] = src->green[i];
+	dst->blue[i]  = src->blue[i];
+	dst->alpha[i] = src->alpha[i];
+	dst->open[i]  = src->open[i];
+     }
+     dst->colorsTotal = src->colorsTotal;
+     dst->transparent = src->transparent;
+     dst->interlace   = src->interlace;
+     dst->thick       = src->thick;
+  }
+  return(dst);
+}
+
+void
+get_xformbounds(GD__Image src, int *x, int *y,
+			int *x1, int *y1, int *x2, int *y2)
+{
+   *x  = gdImageSX(src);
+   *y  = gdImageSY(src);
+   *x1 = *x - 1;
+   *y1 = *y - 1;
+   *x2 = *x / 2;
+   *y2 = *y / 2;
+}
+
+/* helper macros for image transformations */
+#define GDGetImagePixel(im,x,y) \
+	gdImageTrueColor(im) ? \
+	gdImageTrueColorPixel(im,x,y) : \
+	gdImagePalettePixel(im,x,y)
+
+#define GDSetImagePixel(im,x,y,p) \
+	gdImageTrueColor(im) ? \
+	(gdImageTrueColorPixel(im,x,y) = p) : \
+	(gdImagePalettePixel(im,x,y) = p)
+
+#define GDCopyImagePixel(dst,dx,dy,src,sx,sy) \
+	gdImageTrueColor(src) ? \
+	(gdImageTrueColorPixel(dst,dx,dy)=gdImageTrueColorPixel(src,sx,sy)) : \
+	(gdImagePalettePixel(dst,dx,dy)=gdImagePalettePixel(src,sx,sy))
+
+/* Current image true color default
+ *  0 - create palette based images by default
+ *  1 - create true color images by default
+ */
+static int truecolor_default = 0;
+
+/* Check the image format being returned */
+void
+gd_chkimagefmt(GD__Image image, int truecolor) {
+  if (!truecolor) {			/* return a palette image */
+     if (gdImageTrueColor(image)) {
+	gdImageTrueColorToPalette(image,1,gdMaxColors);
+     }
+  }
+}
+
 MODULE = GD		PACKAGE = GD
 
 double
@@ -354,52 +426,86 @@ constant(name,arg)
 
 MODULE = GD		PACKAGE = GD::Image	PREFIX=gd
 
+# Set the new image true color default
+#   0 - create palette based images by default
+#   1 - create true color images by default
+int
+gdtrueColor(packname="GD::Image", ...)
+	char *	packname
+	PROTOTYPE: $$
+        PREINIT:
+        int previous_value;
+	CODE:
+	{
+	  previous_value = truecolor_default;
+          if (items > 1)
+	    truecolor_default = (int)SvIV(ST(1));
+          RETVAL = previous_value;
+	}
+        OUTPUT:
+	  RETVAL
+
 GD::Image
-gd_new(packname="GD::Image", x=64, y=64)
+gd_new(packname="GD::Image", x=64, y=64, ...)
 	char *	packname
 	int	x
 	int	y
-        PROTOTYPE: $;$$
+        PROTOTYPE: $;$$$
+        PREINIT:
+	int truecolor = truecolor_default;
 	CODE:
 	{
 		gdImagePtr theImage;
-		theImage = gdImageCreate(x,y);
+                if (items > 3)
+		  truecolor = (int)SvIV(ST(3));
+		if (truecolor) {
+		   theImage = (GD__Image) gdImageCreateTrueColor(x,y);
+		} else {
+		   theImage = (GD__Image) gdImageCreate(x,y);
+		}
 		RETVAL = theImage;
 	}
 	OUTPUT:
 		RETVAL
 
 GD::Image
-gd_newFromPng(packname="GD::Image", filehandle)
+gd_newFromPng(packname="GD::Image", filehandle, ...)
 	char *	packname
 	InputStream	filehandle
-	PROTOTYPE: $$
+	PROTOTYPE: $$;$
+        PREINIT:
+	int truecolor = truecolor_default;
 	CODE:
 	RETVAL = (GD__Image) GDIMAGECREATEFROMPNG(filehandle);
+        if (items > 2) truecolor = (int)SvIV(ST(2));
+	gd_chkimagefmt(RETVAL, truecolor);
 	OUTPUT:
 	RETVAL
 
 GD::Image
-gdnewFromPngData(packname="GD::Image", imageData)
+gdnewFromPngData(packname="GD::Image", imageData, ...)
 	char *	packname
-	SV *  imageData
-	PROTOTYPE: $$
+	SV *	imageData
+	PROTOTYPE: $$;$
         PREINIT:
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
+	  int truecolor = truecolor_default;
 	CODE:
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromPngCtx(ctx);
         (ctx->free)(ctx);
+        if (items > 2) truecolor = (int)SvIV(ST(2));
+	gd_chkimagefmt(RETVAL, truecolor);
 	OUTPUT:
 	RETVAL
 
 GD::Image
 gdnewFromGdData(packname="GD::Image", imageData)
 	char *	packname
-	SV *  imageData
+	SV *	imageData
 	PROTOTYPE: $$
         PREINIT:
 	  gdIOCtx* ctx;
@@ -416,7 +522,7 @@ gdnewFromGdData(packname="GD::Image", imageData)
 GD::Image
 gdnewFromGd2Data(packname="GD::Image", imageData)
 	char *	packname
-	SV *  imageData
+	SV *	imageData
 	PROTOTYPE: $$
         PREINIT:
 	  gdIOCtx* ctx;
@@ -431,45 +537,24 @@ gdnewFromGd2Data(packname="GD::Image", imageData)
 	RETVAL
 
 GD::Image
-gdnewFromGifData(packname="GD::Image", imageData)
+gdnewFromJpegData(packname="GD::Image", imageData, ...)
 	char *	packname
-	SV *  imageData
-	PROTOTYPE: $$
-        PREINIT:
-	  gdIOCtx* ctx;
-          char*    data;
-          STRLEN   len;
-          SV* errormsg;
-	CODE:
-#ifdef HAVE_GIF
-	data = SvPV(imageData,len);
-        ctx = newDynamicCtx(data,len);
-	RETVAL = (GD__Image) gdImageCreateFromGifCtx(ctx);
-        ctx->free(ctx);
-#else
-    errormsg = perl_get_sv("@",0);
-    sv_setpv(errormsg,"libgd was not built with gif support\n");
-    XSRETURN_EMPTY;
-#endif
-	OUTPUT:
-	RETVAL
-
-GD::Image
-gdnewFromJpegData(packname="GD::Image", imageData)
-	char *	packname
-	SV *  imageData
-	PROTOTYPE: $$
+	SV *    imageData
+	PROTOTYPE: $$;$
         PREINIT:
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
 	  SV* errormsg;
+          int     truecolor = truecolor_default;
 	CODE:
 #ifdef HAVE_JPEG
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromJpegCtx(ctx);
         (ctx->free)(ctx);
+        if (items > 2) truecolor = (int)SvIV(ST(2));
+	gd_chkimagefmt(RETVAL, truecolor);
 #else
         errormsg = perl_get_sv("@",0);
         sv_setpv(errormsg,"libgd was not built with jpeg support\n");
@@ -479,37 +564,22 @@ gdnewFromJpegData(packname="GD::Image", imageData)
 	RETVAL
 
 GD::Image
-gdnewFromWBMPData(packname="GD::Image", imageData)
+gdnewFromWBMPData(packname="GD::Image", imageData, ...)
 	char *	packname
-	SV *  imageData
-	PROTOTYPE: $$
+	SV *    imageData
+	PROTOTYPE: $$;$
         PREINIT:
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
+         int     truecolor = truecolor_default;
 	CODE:
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromWBMPCtx(ctx);
         (ctx->free)(ctx);
-	OUTPUT:
-	RETVAL
-
-GD::Image
-gd_newFromGif(packname="GD::Image", filehandle)
-	char *	packname
-	InputStream	filehandle
-	PROTOTYPE: $$
-	PREINIT:
-		SV* errormsg;
-	CODE:
-#ifdef HAVE_GIF
-	RETVAL = (GD__Image) GDIMAGECREATEFROMGIF(filehandle);
-#else
-    errormsg = perl_get_sv("@",0);
-    sv_setpv(errormsg,"libgd was not built with gif support\n");
-    XSRETURN_EMPTY;
-#endif
+        if (items > 2) truecolor = (int)SvIV(ST(2));
+	gd_chkimagefmt(RETVAL, truecolor);
 	OUTPUT:
 	RETVAL
 
@@ -544,13 +614,14 @@ gd_newFromGd2(packname="GD::Image", filehandle)
 	RETVAL
 
 GD::Image
-gd_newFromJpeg(packname="GD::Image", filehandle)
+gd_newFromJpeg(packname="GD::Image", filehandle, ...)
 	char *	packname
 	InputStream	filehandle
-	PROTOTYPE: $$
+	PROTOTYPE: $$;$
         PREINIT:
 	  gdImagePtr img;
 	  SV* errormsg;
+          int     truecolor = truecolor_default;
 	CODE:
 #ifdef HAVE_JPEG
 	img = GDIMAGECREATEFROMJPEG(filehandle);
@@ -561,6 +632,8 @@ gd_newFromJpeg(packname="GD::Image", filehandle)
 	  XSRETURN_EMPTY;
         }
         RETVAL = img;
+        if (items > 2) truecolor = (int)SvIV(ST(2));
+	gd_chkimagefmt(RETVAL, truecolor);
 #else
         errormsg = perl_get_sv("@",0);
         sv_setpv(errormsg,"libgd was not built with jpeg support\n");
@@ -592,14 +665,14 @@ gd_newFromWBMP(packname="GD::Image", filehandle)
 GD::Image
 gdnewFromXpm(packname="GD::Image", filename)
 	char *	packname
-	char * filename
+	char *	filename
 	PROTOTYPE: $$
         PREINIT:
 	  gdImagePtr img;
 	  SV* errormsg;
 	CODE:
 #ifdef HAVE_XPM
-        img = gdImageCreateFromXpm(filename);
+        img = (GD__Image) gdImageCreateFromXpm(filename);
         if (img == NULL) {
             errormsg = perl_get_sv("@",0);
             if (errormsg != NULL)
@@ -619,11 +692,11 @@ GD::Image
 gd_newFromGd2Part(packname="GD::Image", filehandle,srcX,srcY,width,height)
 	char *	packname
 	InputStream	filehandle
-	int srcX
-	int srcY
-	int width
-	int height
-	PROTOTYPE: $$
+	int	srcX
+	int	srcY
+	int	width
+	int	height
+	PROTOTYPE: $$$$$$
 	CODE:
 	RETVAL = GDIMAGECREATEFROMGD2PART(filehandle,srcX,srcY,width,height);
 	OUTPUT:
@@ -649,29 +722,6 @@ gdpng(image)
 	data = (void *) gdImagePngPtr(image,&size);
 	RETVAL = newSVpv((char*) data,size);
 	gdFree(data);
-  }
-  OUTPUT:
-    RETVAL
-
-SV*
-gdgif(image)
-  GD::Image	image
-  PROTOTYPE: $
-  PREINIT:
-    SV* errormsg;
-  CODE:
-  {
-	void*         data;
-	int           size;
-#ifdef HAVE_GIF
-	data = (void *) gdImageGifPtr(image,&size);
-	RETVAL = newSVpv((char*) data,size);
-	free(data);
-#else
-	errormsg = perl_get_sv("@",0);
-	sv_setpv(errormsg,"libgd was not built with gif support\n");
-	XSRETURN_EMPTY;
-#endif
   }
   OUTPUT:
     RETVAL
@@ -790,6 +840,28 @@ gdgetBounds(image)
 		PUSHs(sv_2mortal(newSViv(sy)));
 	}
 
+int
+gdisTrueColor(image)
+	GD::Image	image
+	PROTOTYPE: $
+	CODE:
+	{
+		RETVAL=gdImageTrueColor(image);
+	}
+	OUTPUT:
+		RETVAL
+
+void
+gdtrueColorToPalette(image, dither=0, colors=gdMaxColors)
+	GD::Image	image
+	int		dither
+	int		colors
+        PROTOTYPE: $;$$
+	CODE:
+	{
+		gdImageTrueColorToPalette(image,dither,colors);
+	}
+
 void
 gdrgb(image,color)
 	GD::Image	image
@@ -839,10 +911,211 @@ gdsetPixel(image,x,y,color)
 	int		x
 	int		y
 	int		color
-	PROTOTYPE: $$$
+	PROTOTYPE: $$$$
 	CODE:
 	{
 		gdImageSetPixel(image,x,y,color);
+	}
+
+GD::Image
+gdcopyRotate90(src)
+	GD::Image	src
+	PROTOTYPE: $
+	CODE:
+	{
+		int x, y, x1, y1, x2, y2, i, j;
+		GD__Image dst;
+		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+		dst = (GD__Image) gd_cloneDim(src, y, x);
+
+		for (j=0;j<y;j++) {
+		   for (i=0;i<x;i++) {
+		      GDCopyImagePixel(dst,y1-j,i,src,i,j);
+		   }
+		}
+		RETVAL = dst;
+	}
+	OUTPUT:
+		RETVAL
+
+GD::Image
+gdcopyRotate180(src)
+	GD::Image	src
+	PROTOTYPE: $
+	CODE:
+	{
+		int x, y, x1, y1, x2, y2, i, j;
+		GD__Image dst;
+		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+		dst = (GD__Image) gd_cloneDim(src, x, y);
+
+		for (j=0;j<y;j++) {
+		   for (i=0;i<x;i++) {
+		      GDCopyImagePixel(dst,x1-i,y1-j,src,i,j);
+		   }
+		}
+		RETVAL = dst;
+	}
+	OUTPUT:
+		RETVAL
+
+GD::Image
+gdcopyRotate270(src)
+	GD::Image	src
+	PROTOTYPE: $
+	CODE:
+	{
+		int x, y, x1, y1, x2, y2, i, j;
+		GD__Image dst;
+		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+		dst = (GD__Image) gd_cloneDim(src, y, x);
+		
+		for (i=0;i<x;i++) {
+		   for (j=0;j<y;j++) {
+		      GDCopyImagePixel(dst,j,x1-i,src,i,j);
+		   }
+		}
+		RETVAL = dst;
+	}
+	OUTPUT:
+		RETVAL
+
+GD::Image
+gdcopyFlipHorizontal(src)
+	GD::Image	src
+	PROTOTYPE: $
+	CODE:
+	{
+		int x, y, x1, y1, x2, y2, i, j;
+		GD__Image dst;
+		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+		dst = (GD__Image) gd_cloneDim(src, x, y);
+
+		for (j=0;j<y;j++) {
+		   for (i=0;i<x;i++) {
+		      GDCopyImagePixel(dst,x1-i,j,src,i,j);
+		   }
+		}
+		RETVAL = dst;
+	}
+	OUTPUT:
+		RETVAL
+
+GD::Image
+gdcopyFlipVertical(src)
+	GD::Image	src
+	PROTOTYPE: $
+	CODE:
+	{
+		int x, y, x1, y1, x2, y2, i, j;
+		GD__Image dst;
+		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+		dst = (GD__Image) gd_cloneDim(src, x, y);
+
+		for (j=0;j<y;j++) {
+		   for (i=0;i<x;i++) {
+		      GDCopyImagePixel(dst,i,y1-j,src,i,j);
+		   }
+		}
+		RETVAL = dst;
+	}
+	OUTPUT:
+		RETVAL
+
+GD::Image
+gdcopyTranspose(src)
+	GD::Image	src
+	PROTOTYPE: $
+	CODE:
+	{
+		int x, y, x1, y1, x2, y2, i, j;
+		GD__Image dst;
+		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+		dst = (GD__Image) gd_cloneDim(src, y, x);
+
+		for (j=0;j<y;j++) {
+		   for (i=0;i<x;i++) {
+		      GDCopyImagePixel(dst,j,i,src,i,j);
+		   }
+		}
+		RETVAL = dst;
+	}
+	OUTPUT:
+		RETVAL
+
+GD::Image
+gdcopyReverseTranspose(src)
+	GD::Image	src
+	PROTOTYPE: $
+	CODE:
+	{
+		int x, y, x1, y1, x2, y2, i, j;
+		GD__Image dst;
+		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+		dst = (GD__Image) gd_cloneDim(src, y, x);
+
+		for (j=0;j<y;j++) {
+		   for (i=0;i<x;i++) {
+		      GDCopyImagePixel(dst,y1-j,x1-i,src,i,j);
+		   }
+		}
+		RETVAL = dst;
+	}
+	OUTPUT:
+		RETVAL
+
+void
+gdrotate180(src)
+	GD::Image	src
+	PROTOTYPE: $
+	CODE:
+	{
+		int x, y, x1, y1, x2, y2, i, j, tmp;
+		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+
+		for (j=0;j<y2;j++) {
+		   for (i=0;i<x;i++) {
+		      tmp = GDGetImagePixel(src,x1-i,y1-j);
+		      GDCopyImagePixel(src,x1-i,y1-j,src,i,j);
+		      GDSetImagePixel(src,i,j,tmp);
+		   }
+		}
+	}
+
+void
+gdflipHorizontal(src)
+	GD::Image	src
+	PROTOTYPE: $
+	CODE:
+	{
+		int x, y, x1, y1, x2, y2, i, j, tmp;
+		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+
+		for (j=0;j<y;j++) {
+		   for (i=0;i<x2;i++) {
+		      tmp = GDGetImagePixel(src,x1-i,j);
+		      GDCopyImagePixel(src,x1-i,j,src,i,j);
+		      GDSetImagePixel(src,i,j,tmp);
+		   }
+		}
+	}
+
+void
+gdflipVertical(src)
+	GD::Image	src
+	PROTOTYPE: $
+	CODE:
+	{
+		int x, y, x1, y1, x2, y2, i, j, tmp;
+		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+
+		for (j=0;j<y2;j++) {
+		   for (i=0;i<x;i++) {
+		      tmp = GDGetImagePixel(src,i,y1-j);
+		      GDCopyImagePixel(src,i,y1-j,src,i,j);
+		      GDSetImagePixel(src,i,j,tmp);
+		   }
+		}
 	}
 
 void
@@ -1251,6 +1524,24 @@ copyResized(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH)
 	}
 
 void
+copyResampled(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH)
+	GD::Image	destination
+	GD::Image	source
+	int		dstX
+	int		dstY
+	int		srcX
+	int		srcY
+	int		destW
+	int		destH
+	int		srcW
+	int		srcH
+        PROTOTYPE: $$$$$$$$$$
+	CODE:
+	{
+		gdImageCopyResampled(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH);
+	}
+
+void
 copyMerge(destination,source,dstX,dstY,srcX,srcY,w,h,pct)
 	GD::Image	destination
 	GD::Image	source
@@ -1369,6 +1660,11 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string)
 	  int i;
 	PPCODE:
 	{
+#ifndef HAVE_FT
+  	errormsg = perl_get_sv("@",0);
+	sv_setpv(errormsg,"libgd was not built with FreeType font support\n");
+	XSRETURN_EMPTY;
+#endif
           if (sv_isobject(image) && sv_derived_from(image, "GD::Image")) {
             IV tmp = SvIV((SV*)SvRV(image));
             img = (gdImagePtr) tmp;

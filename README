@@ -17,7 +17,7 @@ f.  support for transparency and interlacing
 For full information on usage, see the accompanying man and html
 documentation.
 
-===> NOTE: This version of GD REQUIRES libgd 1.8.3 or higher.  If you
+===> NOTE: This version of GD REQUIRES libgd 2.0.1 or higher.  If you
 ===> have an older version of libgd installed you must remove libgd.a,
 ===> libgd.so (if present) and gd.h.  Then install the new version of
 ===> libgd from www.boutell.com (see below).  This particularly
@@ -37,7 +37,7 @@ covered by the Perl "Artistic License", which allows for free usage
 and redistribution.  See the Artistic License in the Perl source
 package for details.
 
-THE LATEST VERSION IS 1.39
+THE LATEST VERSION IS 2.0
 
 INSTALLATION:
 
@@ -48,14 +48,14 @@ Read these instructions all the way through before you start!
 	a. Perl 5.004 or higher:
 		http://www.perl.com/
 
-	b. The gd graphics library, version 1.8.4 or higher:
+	b. The gd graphics library, version 2.0.1 or higher:
 		http://www.boutell.com/gd/
 
 	c. The PNG graphics library:
-		http://www.libpng.org/pub/png
+		http://www.libpng.org/pub/png/libpng.html
 
 	d. The zlib compression library:
-		http://www.cdrom.com/pub/infozip/zlib/
+		http://www.gzip.org/zlib/
 
 	(OPTIONAL)
 
@@ -69,21 +69,23 @@ Read these instructions all the way through before you start!
 	   distributions.  If you don't have a modern
            version of X, don't try to get XPM working.
 
-NOTE: libgd version 2.01 (currently beta) crashes in the gdFilledRect()
-function when using the gdTiled color.  Don't use it with GD.
+NOTE: This version of GD requires libgd version 2.0.1 or higher.  If
+it fails to compile and link, you are probably using an older version
+of libgd.  Use GD 1.41 for libgd versions 1.8.4 and lower.
 
 2. OPTIONAL -- patch the libgd distribution
 
-Some users have had trouble getting GD to link correctly.  Part of the
-problem is that Perl's Makefile.PL system prefers dynamically-linked
-shared libraries, but libgd builds a static library file by default.
-The file C<patch_gd.pl>, included with this distribution, will patch
-libgd version 1.8.4 to make it possible to compile it as a shared
-library.
+libgd has a number of compile-time options which are adjusted by
+editing its make file.  Many users prefer using the familiar GNU
+configure script in which compile-time options are set by command-line
+flags.  In order to accomodate these users, GD provides a patch file
+named C<patch_gd.pl> which will add GNU autoconfig to virgin 2.0.1
+distributions.  In addition, the patch file provides some bug fixes
+and performance enhances courtesy Daniel Palermo.
 
 This file is a perl script which runs GNU patch and then makes a few
 other adjustments.  To use it, copy it into the top level of a
-B<virgin> copy of the gd-1.8.4 directory.  Then run it like this:
+B<virgin> copy of the gd-2.0.1 directory.  Then run it thus:
 
   % perl patch_gd.pl
 
@@ -101,14 +103,14 @@ but this is not guaranteed.
 
 3.  Unpack the tar file:
 
-	zcat GD-1.XX.tar.gz | tar xvf -
+	zcat GD-2.XX.tar.gz | tar xvf -
 
     (Where "XX" is the most recent revision number.)  This will create
-    the directory GD-1.XX.
+    the directory GD-2.XX.
 
 4.  To compile GD.pm on a system that supports dynamic linking:
 
-	a.  cd GD-1.XX
+	a.  cd GD-2.XX
 	b.  perl Makefile.PL
             Please choose the features that match how libgd was built:
             Build JPEG support? [y] 
@@ -135,7 +137,7 @@ but this is not guaranteed.
 5.  To compile GD.pm statically on systems that do not support dynamic
     linking:
 
-	a.  cd GD-1.XX
+	a.  cd GD-2.XX
         b.  perl Makefile.PL LINKTYPE=static
         c.  make perl
         d.  make -f Makefile.aperl inst_perl MAP_TARGET=gdperl
@@ -156,7 +158,7 @@ but this is not guaranteed.
     files to standard output.  To view the files, pipe their
     output to "display" or "xv" in this way:
 
-	a.  cd GD-1.XX/demos
+	a.  cd GD-2.XX/demos
 	b   perl shapes.pl | display -
 
     You will need a graphics program that can read and display PNG
@@ -185,7 +187,7 @@ IF YOU DON'T HAVE PRIVILEGES TO INSTALL GD.pm in your system's main
 Perl library directory, don't despair.  You can install it into your
 home directory using the following feature of Makefile.PL:
 
-	a.  cd GD-1.XX
+	a.  cd GD-2.XX
 	b.  perl Makefile.PL LIB=/home/fred/lib
 	c.  make
 	d.  make install
@@ -219,7 +221,7 @@ using the modified Perl.  In this example, I assume that this version
 of Perl is found at '/usr/local/fcgi/bin/perl': modify as appropriate
 for your system.
 
-	a. cd GD-1.XX
+	a. cd GD-2.XX
 	b. edit Makefile.PL and uncomment the line 
                'DEFINE'	=> '-DFCGI'
         c. /usr/local/fcgi/bin/perl Makefile.PL

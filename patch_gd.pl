@@ -13,9 +13,9 @@ die "You must run this patch script from within the gd distribution directory.\n
 open PATCH,'| patch -Np1' or die "Can't run patch: $!\n";
 
 print PATCH <<'END_OF_PATCH';
-diff -Naur gd-1.8.4/AUTHORS gd-1.8.4.patched/AUTHORS
---- gd-1.8.4/AUTHORS	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/AUTHORS	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/AUTHORS gd-2.0.1.patched/AUTHORS
+--- gd-2.0.1/AUTHORS	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/AUTHORS	Tue Jul 30 05:28:31 2002
 @@ -0,0 +1,57 @@
 +
 +  Credits and license terms
@@ -74,9 +74,9 @@ diff -Naur gd-1.8.4/AUTHORS gd-1.8.4.patched/AUTHORS
 +     
 +END OF COPYRIGHT STATEMENT
 +
-diff -Naur gd-1.8.4/COPYING gd-1.8.4.patched/COPYING
---- gd-1.8.4/COPYING	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/COPYING	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/COPYING gd-2.0.1.patched/COPYING
+--- gd-2.0.1/COPYING	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/COPYING	Tue Jul 30 05:28:36 2002
 @@ -0,0 +1,38 @@
 +COPYRIGHT STATEMENT FOLLOWS THIS LINE
 +
@@ -116,9 +116,9 @@ diff -Naur gd-1.8.4/COPYING gd-1.8.4.patched/COPYING
 +     
 +END OF COPYRIGHT STATEMENT
 +
-diff -Naur gd-1.8.4/ChangeLog gd-1.8.4.patched/ChangeLog
---- gd-1.8.4/ChangeLog	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/ChangeLog	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/ChangeLog gd-2.0.1.patched/ChangeLog
+--- gd-2.0.1/ChangeLog	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/ChangeLog	Tue Jul 30 05:28:58 2002
 @@ -0,0 +1,134 @@
 +000319 Lincoln Stein (LS)
 +	- Patches to compile under GNU autoconfig
@@ -254,9 +254,9 @@ diff -Naur gd-1.8.4/ChangeLog gd-1.8.4.patched/ChangeLog
 +Extracting 100 times from (3000, 2000), size is 50x25
 +15 seconds to extract (& destroy) 100 times
 +
-diff -Naur gd-1.8.4/INSTALL gd-1.8.4.patched/INSTALL
---- gd-1.8.4/INSTALL	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/INSTALL	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/INSTALL gd-2.0.1.patched/INSTALL
+--- gd-2.0.1/INSTALL	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/INSTALL	Tue Jul 30 05:29:07 2002
 @@ -0,0 +1,185 @@
 +Basic Installation
 +==================
@@ -443,74 +443,59 @@ diff -Naur gd-1.8.4/INSTALL gd-1.8.4.patched/INSTALL
 +     script, and exit.
 +
 +`configure' also accepts some other, not widely useful, options.
-diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
---- gd-1.8.4/Makefile	Thu Feb 22 09:03:43 2001
-+++ gd-1.8.4.patched/Makefile	Mon Jul 22 00:04:38 2002
-@@ -1,156 +1,614 @@
--#Depending on your system, you will need to modify this makefile.
+diff -Naur gd-2.0.1/Makefile gd-2.0.1.patched/Makefile
+--- gd-2.0.1/Makefile	Tue Apr  3 16:44:41 2001
++++ gd-2.0.1.patched/Makefile	Tue Jul 30 11:36:03 2002
+@@ -1,175 +1,612 @@
+-#Depending on your system and the libraries and features you have
+-#and want, you WILL need to modify this Makefile!
 -
 -#If you do not have gcc, change the setting for COMPILER, but you must
 -#use an ANSI standard C compiler (NOT the old SunOS 4.1.3 cc
--#compiler; get gcc if you are still using it). 
+-#compiler; get gcc if you are still using that). 
 -COMPILER=gcc
 -
 -#If the ar command fails on your system, consult the ar manpage
 -#for your system. 
 -AR=ar
 -
--#If you don't have FreeType, libjpeg and/or Xpm installed, including the
--#header files, uncomment this (default). You really must install
--#libpng and zlib to get anywhere if you wish to create PNG images.
--CFLAGS=-O -DHAVE_LIBPNG -DHAVE_LIBJPEG
+-#Typical configuration: support for PNG images, JPEG images, and FreeType text.
+-#Remove -DHAVE_LIBFREETYPE if you can live without FreeType text.
+-#Add -DHAVE_XPM if you have X and xpm installed and you want that feature.
 -
--#If you do have FreeType, libjpeg and/or Xpm fully installed, uncomment a
--#variation of this and comment out the line above. See also LIBS below.
--#CFLAGS=-O -DHAVE_LIBXPM -DHAVE_LIBPNG -DHAVE_LIBJPEG \
--#	-DHAVE_LIBFREETYPE -DHAVE_LIBTTF 
--
--#To use the old FreeType 1.x library, add this additional #define
--#to the line above
--#-DHAVE_LIBTTF 
--
--#If you don't have FreeType Xpm fully installed, uncomment this
--#(default).
+-CFLAGS=-g -DHAVE_LIBPNG -DHAVE_LIBJPEG -DHAVE_LIBFREETYPE
 -
 -#PLEASE NOTE: YOU MAY HAVE TO JUGGLE THE ORDER OF THE LIBRARIES.
 -#Some systems are very picky about link order. They don't all agree
--#on the right order, either.
+-#on the right order, either. 
+-#
+-#Best for most users. If you don't have FreeType, remove -lfreetype.
+-#Add -lxpm if you need XPM support.
 -
--LIBS=-lgd -lpng -lz -lm
+-LIBS=-lgd -lpng -lz -ljpeg -lfreetype -lm
 -
--#If you do have FreeType, JPEG and/or Xpm fully installed, uncomment a 
--#variation of this and comment out the line above. Note that
--#Xpm requires X11. See also CFLAGS above.
--
--#LIBS=-lgd -lpng -lz -ljpeg -lfreetype -lm -lttf
--
--#Note: for Freetype 1.x, use DHAVE_LIBTTF and -lttf instead.
--
--#Typical install locations for freetype, zlib, xpm, libjpeg and libpng header 
--#files. If yours are somewhere else, change this. -I. is important to 
--#ensure that the version of gd you are installing is used, and not an 
--#older release in your directory tree somewhere.
+-#Typical install locations for freetype 2.0, zlib, xpm, libjpeg 
+-#and libpng header files. If yours are somewhere else, change this. 
+-#-I. is important to ensure that the version of gd you are installing 
+-#is used, and not an older release in your directory tree somewhere.
 -
 -INCLUDEDIRS=-I. -I/usr/include/freetype2 -I/usr/include/X11 -I/usr/X11R6/include/X11 -I/usr/local/include 
 -
 -#Typical install locations for freetype, zlib, xpm and libpng libraries.
 -#If yours are somewhere else, other than a standard location
--#such as /lib or /usr/lib, then change this. Be sure to keep
--#-L. as this allows the gd library itself to be found.
--#Put -L. first so that old versions of the gd library elsewhere
--#on your system can't cause conflicts while building a new one.
--#This line shouldn't hurt if you don't actually have some of the
--#optional libraries and directories.
--LIBDIRS=-L. -L/usr/local/lib -L/usr/lib/X11 -L/usr/X11R6/lib
+-#such as /lib or /usr/lib, then change this. This line shouldn't hurt 
+-#if you don't actually have some of the optional libraries and directories.
+-LIBDIRS=-L/usr/local/lib -L/usr/lib/X11 -L/usr/X11R6/lib
 -
--#Location where libgd.a should be installed by "make install".
--INSTALL_LIB=/usr/local/lib
+-#Location where libgd.so should be installed by "make install".
+-#THIS MUST BE ONE OF YOUR STANDARD SHARED LIBRARY LOCATIONS, unless
+-#you add a new directory to your LD_LIBRARY_PATH environment setting.
+-#Otherwise applications will NOT find libgd.so and will produce an 
+-#error.  
+-INSTALL_LIB=/usr/lib
 -
 -#Location where .h files should be installed by "make install".
--INSTALL_INCLUDE=/usr/local/include
+-INSTALL_INCLUDE=/usr/include
 -
 -#Location where useful non-test programs should be installed by "make install".
 -INSTALL_BIN=/usr/local/bin
@@ -521,7 +506,10 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 -#
 -#
 -
--VERSION=1.8.4
+-# Update these with each release!
+-
+-MAJOR_VERSION=2
+-VERSION=2.0.0
 -
 -CC=$(COMPILER) $(INCLUDEDIRS)
 -LINK=$(CC) $(LIBDIRS) $(LIBS)
@@ -529,12 +517,26 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 -PROGRAMS=$(BIN_PROGRAMS) $(TEST_PROGRAMS)
 -
 -BIN_PROGRAMS=pngtogd pngtogd2 gdtopng gd2topng gd2copypal gdparttopng webpng
--TEST_PROGRAMS=gdtest gddemo gd2time gdtestft gdtestttf
+-TEST_PROGRAMS=gdtest gddemo gd2time gdtestft testac
 -
--all: libgd.a $(PROGRAMS)
+-default: instructions
 -
--install: libgd.a $(BIN_PROGRAMS)
--	sh ./install-item 644 libgd.a $(INSTALL_LIB)/libgd.a
+-instructions:
+-	@echo First, edit this Makefile. Read the comments at
+-	@echo the beginning thoroughly.
+-	@echo
+-	@echo Second, type \'make install\' as root.
+-	@echo
+-	@echo This installs the GD ${VERSION} shared library,
+-	@echo which is required in order to use the included
+-	@echo utility programs, such as webpng, pngtogd, etc.
+-	@echo 
+-	@echo OPTIONAL third step: type \'make test\' to build 
+-	@echo the optional test programs. Type \'make install\' FIRST.
+-
+-test: $(TEST_PROGRAMS)
+-
+-install: libgd.so.${VERSION} $(BIN_PROGRAMS)
 -	sh ./install-item 755 pngtogd $(INSTALL_BIN)/pngtogd
 -	sh ./install-item 755 pngtogd2 $(INSTALL_BIN)/pngtogd2
 -	sh ./install-item 755 gdtopng $(INSTALL_BIN)/gdtopng
@@ -552,56 +554,73 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 -	sh ./install-item 644 gdfonts.h $(INSTALL_INCLUDE)/gdfonts.h
 -	sh ./install-item 644 gdfontt.h $(INSTALL_INCLUDE)/gdfontt.h
 -
--gddemo: gddemo.o libgd.a
+-gddemo: gddemo.o
 -	$(CC) gddemo.o -o gddemo	$(LIBDIRS) $(LIBS)
 -
--pngtogd: pngtogd.o libgd.a
+-testac: testac.o
+-	$(CC) testac.o -o testac	$(LIBDIRS) $(LIBS)
+-
+-pngtogd: pngtogd.o
 -	$(CC) pngtogd.o -o pngtogd	$(LIBDIRS) $(LIBS) 
 -
--webpng: webpng.o libgd.a
+-webpng: webpng.o
 -	$(CC) webpng.o -o webpng	$(LIBDIRS) $(LIBS)
 -
--pngtogd2: pngtogd2.o libgd.a
+-pngtogd2: pngtogd2.o
 -	$(CC) pngtogd2.o -o pngtogd2	$(LIBDIRS) $(LIBS)
 -
--gdtopng: gdtopng.o libgd.a
+-gdtopng: gdtopng.o
 -	$(CC) gdtopng.o -o gdtopng	$(LIBDIRS) $(LIBS)
 -
--gd2topng: gd2topng.o libgd.a
+-gd2topng: gd2topng.o
 -	$(CC) gd2topng.o -o gd2topng	$(LIBDIRS) $(LIBS)
 -
--gd2copypal: gd2copypal.o libgd.a
+-gd2copypal: gd2copypal.o
 -	$(CC) gd2copypal.o -o gd2copypal	$(LIBDIRS) $(LIBS)
 -
--gdparttopng: gdparttopng.o libgd.a
+-gdparttopng: gdparttopng.o
 -	$(CC) gdparttopng.o -o gdparttopng	$(LIBDIRS) $(LIBS)
 -
--gdtest: gdtest.o libgd.a
+-gdtest: gdtest.o
 -	$(CC) gdtest.o -o gdtest	$(LIBDIRS) $(LIBS)
 -
--gd2time: gd2time.o libgd.a
+-gd2time: gd2time.o
 -	$(CC) gd2time.o -o gd2time	$(LIBDIRS) $(LIBS)
 -
--gdtestft: gdtestft.o libgd.a
+-gdtestft: gdtestft.o
 -	$(CC) --verbose gdtestft.o -o gdtestft $(LIBDIRS) $(LIBS)
--gdtestttf: gdtestttf.o libgd.a
--	$(CC) --verbose gdtestttf.o -o gdtestttf $(LIBDIRS) $(LIBS)
 -
--libgd.a: gd.o gd_gd.o gd_gd2.o gd_io.o gd_io_dp.o gd_io_file.o gd_ss.o \
--	gd_io_ss.o gd_png.o gd_jpeg.o gdxpm.o gdfontt.o gdfonts.o gdfontmb.o gdfontl.o \
--	gdfontg.o gdtables.o gdft.o gdttf.o gdcache.o gdkanji.o wbmp.o \
--	gd_wbmp.o gdhelpers.o gd.h gdfontt.h gdfonts.h gdfontmb.h gdfontl.h \
--	gdfontg.h gdhelpers.h
--	rm -f libgd.a
--	$(AR) rc libgd.a gd.o gd_gd.o gd_gd2.o gd_io.o gd_io_dp.o \
+-LIBOBJS=gd.o gd_gd.o gd_gd2.o gd_io.o gd_io_dp.o \
 -		gd_io_file.o gd_ss.o gd_io_ss.o gd_png.o gd_jpeg.o gdxpm.o \
 -		gdfontt.o gdfonts.o gdfontmb.o gdfontl.o gdfontg.o \
--		gdtables.o gdft.o gdttf.o gdcache.o gdkanji.o wbmp.o \
--		gd_wbmp.o gdhelpers.o
+-		gdtables.o gdft.o gdcache.o gdkanji.o wbmp.o \
+-		gd_wbmp.o gdhelpers.o gd_topal.o 
+-
+-#Shared library. This should work fine on any ELF platform (Linux, etc.) with
+-#GNU ld or something similarly intelligent. To avoid the chicken-and-egg
+-#problem, this target also installs the library so that applications can
+-#actually find it.
+-
+-libgd.so.${VERSION}: ${LIBOBJS}
+-	-rm -f libgd.so.${VERSION} 2>/dev/null
+-	ld -shared -o libgd.so.${VERSION} ${LIBOBJS}
+-	sh ./install-item 644 libgd.so.${VERSION} \
+-		$(INSTALL_LIB)/libgd.so.${VERSION}
+-	-rm $(INSTALL_LIB)/libgd.so.${MAJOR_VERSION} 2>/dev/null
+-	ln -s $(INSTALL_LIB)/libgd.so.${VERSION} \
+-		$(INSTALL_LIB)/libgd.so.${MAJOR_VERSION}	
+-	-rm $(INSTALL_LIB)/libgd.so 2>/dev/null
+-	ln -s $(INSTALL_LIB)/libgd.so.${VERSION} \
+-		$(INSTALL_LIB)/libgd.so	
+-
+-#Static library, if you really need one for some reason.
+-libgd.a: ${LIBOBJS}
+-	rm -f libgd.a
+-	$(AR) rc libgd.a ${LIBOBJS}
 -	-ranlib libgd.a
 -
 -clean:
--	rm -f *.o *.a ${PROGRAMS} test/gdtest.jpg test/gdtest.wbmp
+-	rm -f *.o *.a *.so ${PROGRAMS} test/gdtest.jpg test/gdtest.wbmp
 +# Makefile.in generated automatically by automake 1.4-p4 from Makefile.am
  
 +# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
@@ -680,40 +699,36 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +
 +AUTOMAKE_OPTIONS = 1.3
 +
-+# library interface 4.0, gd release 1.8.4
-+libgd_la_LDFLAGS = -version-info 4:1
-+
-+noinst_HEADERS = gdcache.h 
++# library interface 2.0, gd release 2.0.1
++libgd_la_LDFLAGS = -version-info 2:0
 +
 +lib_LTLIBRARIES = libgd.la
 +
-+include_HEADERS = gd.h gd_io.h gdfontt.h gdfonts.h gdhelpers.h 	gdfontmb.h gdfontl.h gdfontg.h wbmp.h jisx0208.h
++include_HEADERS = gd.h	 gdcache.h  gdfontl.h	gdfonts.h 		gd_io.h  gdfontg.h  gdfontmb.h	gdfontt.h
 +
 +
-+libgd_la_SOURCES = gd.c gd_io.c gd_io_file.c gd_io_dp.c gd_io_ss.c gdhelpers.c 	gd_png.c gd_ss.c gd_gd.c gd_gd2.c gdfontt.c gdfonts.c gdfontmb.c 	gdfontl.c gdfontg.c gdttf.c gdft.c gdcache.c gdxpm.c gdtables.c gdkanji.c 	gd_jpeg.c gd_wbmp.c wbmp.c
++libgd_la_SOURCES = gd.c		  gd_io.c	gd_topal.c  gdfonts.c 	gd_io_dp.c	gd_wbmp.c   gdfontt.c	   	gd_io_file.c	gdcache.c   gdft.c 	gd_io_ss.c	gdhelpers.c    gdxpm.c 	gd_jpeg.c	gdfontg.c   gdkanji.c 	gd_gd.c		  gd_png.c	gdfontl.c   	gd_gd2.c	  gd_ss.c	gdfontmb.c  gdtables.c 	wbmp.c
 +
 +
-+bin_PROGRAMS = pngtogd pngtogd2 gdtopng gdtojpeg gd2topng gd2copypal gdparttopng webpng
-+pngtogd_LDADD = libgd.la
++bin_PROGRAMS = pngtogd webpng pngtogd2 gdtopng gd2topng gd2copypal 	gdparttopng gd2time 
 +
-+noinst_PROGRAMS = gdtest gddemo gd2time gdtestttf
 +
-+gdtest_SOURCES = gdtest.c gd.h
-+gdtest_LDADD = libgd.la
-+
-+gdtestttf_SOURCES = gdtestttf.c gd.h
-+gdtestttf_LDADD = libgd.la
++noinst_PROGRAMS = gddemo testac gdtest gdtestft
 +
 +gddemo_SOURCES = gddemo.c gd.h gdfonts.h gdfontg.h
 +gddemo_LDADD = libgd.la
 +
++testac_SOURCES = testac.c gd.h
++testac_LDADD = libgd.la
++
 +pngtogd_SOURCES = pngtogd.c gd.h
++pngtogd_LDADD = libgd.la
++
++webpng_SOURCES = webpng.c gd.h
++webpng_LDADD = libgd.la
 +
 +pngtogd2_SOURCES = pngtogd2.c gd.h
 +pngtogd2_LDADD = libgd.la
-+
-+gdtojpeg_SOURCES = gdtojpeg.c gd.h
-+gdtojpeg_LDADD = libgd.la
 +
 +gdtopng_SOURCES = gdtopng.c gd.h
 +gdtopng_LDADD = libgd.la
@@ -727,11 +742,14 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +gdparttopng_SOURCES = gdparttopng.c gd.h
 +gdparttopng_LDADD = libgd.la
 +
++gdtest_SOURCES = gdtest.c gd.h
++gdtest_LDADD = libgd.la
++
 +gd2time_SOURCES = gd2time.c gd.h
 +gd2time_LDADD = libgd.la
 +
-+webpng_SOURCES = webpng.c gd.h
-+webpng_LDADD = libgd.la
++gdtestft_SOURCES = gdtestft.c gd.h
++gdtestft_LDADD = libgd.la
 +
 +EXTRA_DIST = demoin.png index.html test/*
 +
@@ -747,30 +765,29 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +LDFLAGS =  -L${exec_prefix}/lib -L/usr/X11R6/lib
 +LIBS = -lfreetype -ljpeg -lpng -lz -lm  -lX11 -lXpm
 +libgd_la_LIBADD = 
-+libgd_la_OBJECTS =  gd.lo gd_io.lo gd_io_file.lo gd_io_dp.lo gd_io_ss.lo \
-+gdhelpers.lo gd_png.lo gd_ss.lo gd_gd.lo gd_gd2.lo gdfontt.lo \
-+gdfonts.lo gdfontmb.lo gdfontl.lo gdfontg.lo gdttf.lo gdft.lo \
-+gdcache.lo gdxpm.lo gdtables.lo gdkanji.lo gd_jpeg.lo gd_wbmp.lo \
-+wbmp.lo
-+bin_PROGRAMS =  pngtogd$(EXEEXT) pngtogd2$(EXEEXT) gdtopng$(EXEEXT) \
-+gdtojpeg$(EXEEXT) gd2topng$(EXEEXT) gd2copypal$(EXEEXT) \
-+gdparttopng$(EXEEXT) webpng$(EXEEXT)
-+noinst_PROGRAMS =  gdtest$(EXEEXT) gddemo$(EXEEXT) gd2time$(EXEEXT) \
-+gdtestttf$(EXEEXT)
++libgd_la_OBJECTS =  gd.lo gd_io.lo gd_topal.lo gdfonts.lo gd_io_dp.lo \
++gd_wbmp.lo gdfontt.lo gd_io_file.lo gdcache.lo gdft.lo gd_io_ss.lo \
++gdhelpers.lo gdxpm.lo gd_jpeg.lo gdfontg.lo gdkanji.lo gd_gd.lo \
++gd_png.lo gdfontl.lo gd_gd2.lo gd_ss.lo gdfontmb.lo gdtables.lo wbmp.lo
++bin_PROGRAMS =  pngtogd$(EXEEXT) webpng$(EXEEXT) pngtogd2$(EXEEXT) \
++gdtopng$(EXEEXT) gd2topng$(EXEEXT) gd2copypal$(EXEEXT) \
++gdparttopng$(EXEEXT) gd2time$(EXEEXT)
++noinst_PROGRAMS =  gddemo$(EXEEXT) testac$(EXEEXT) gdtest$(EXEEXT) \
++gdtestft$(EXEEXT)
 +PROGRAMS =  $(bin_PROGRAMS) $(noinst_PROGRAMS)
 +
 +pngtogd_OBJECTS =  pngtogd.$(OBJEXT)
 +pngtogd_DEPENDENCIES =  libgd.la
 +pngtogd_LDFLAGS = 
++webpng_OBJECTS =  webpng.$(OBJEXT)
++webpng_DEPENDENCIES =  libgd.la
++webpng_LDFLAGS = 
 +pngtogd2_OBJECTS =  pngtogd2.$(OBJEXT)
 +pngtogd2_DEPENDENCIES =  libgd.la
 +pngtogd2_LDFLAGS = 
 +gdtopng_OBJECTS =  gdtopng.$(OBJEXT)
 +gdtopng_DEPENDENCIES =  libgd.la
 +gdtopng_LDFLAGS = 
-+gdtojpeg_OBJECTS =  gdtojpeg.$(OBJEXT)
-+gdtojpeg_DEPENDENCIES =  libgd.la
-+gdtojpeg_LDFLAGS = 
 +gd2topng_OBJECTS =  gd2topng.$(OBJEXT)
 +gd2topng_DEPENDENCIES =  libgd.la
 +gd2topng_LDFLAGS = 
@@ -780,27 +797,27 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +gdparttopng_OBJECTS =  gdparttopng.$(OBJEXT)
 +gdparttopng_DEPENDENCIES =  libgd.la
 +gdparttopng_LDFLAGS = 
-+webpng_OBJECTS =  webpng.$(OBJEXT)
-+webpng_DEPENDENCIES =  libgd.la
-+webpng_LDFLAGS = 
-+gdtest_OBJECTS =  gdtest.$(OBJEXT)
-+gdtest_DEPENDENCIES =  libgd.la
-+gdtest_LDFLAGS = 
-+gddemo_OBJECTS =  gddemo.$(OBJEXT)
-+gddemo_DEPENDENCIES =  libgd.la
-+gddemo_LDFLAGS = 
 +gd2time_OBJECTS =  gd2time.$(OBJEXT)
 +gd2time_DEPENDENCIES =  libgd.la
 +gd2time_LDFLAGS = 
-+gdtestttf_OBJECTS =  gdtestttf.$(OBJEXT)
-+gdtestttf_DEPENDENCIES =  libgd.la
-+gdtestttf_LDFLAGS = 
++gddemo_OBJECTS =  gddemo.$(OBJEXT)
++gddemo_DEPENDENCIES =  libgd.la
++gddemo_LDFLAGS = 
++testac_OBJECTS =  testac.$(OBJEXT)
++testac_DEPENDENCIES =  libgd.la
++testac_LDFLAGS = 
++gdtest_OBJECTS =  gdtest.$(OBJEXT)
++gdtest_DEPENDENCIES =  libgd.la
++gdtest_LDFLAGS = 
++gdtestft_OBJECTS =  gdtestft.$(OBJEXT)
++gdtestft_DEPENDENCIES =  libgd.la
++gdtestft_LDFLAGS = 
 +CFLAGS = -g -O2
 +COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 +LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 +CCLD = $(CC)
 +LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
-+HEADERS =  $(include_HEADERS) $(noinst_HEADERS)
++HEADERS =  $(include_HEADERS)
 +
 +DIST_COMMON =  README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
 +Makefile.in NEWS acinclude.m4 aclocal.m4 config.guess config.sub \
@@ -814,15 +831,15 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +DEP_FILES =  .deps/gd.P .deps/gd2copypal.P .deps/gd2time.P \
 +.deps/gd2topng.P .deps/gd_gd.P .deps/gd_gd2.P .deps/gd_io.P \
 +.deps/gd_io_dp.P .deps/gd_io_file.P .deps/gd_io_ss.P .deps/gd_jpeg.P \
-+.deps/gd_png.P .deps/gd_ss.P .deps/gd_wbmp.P .deps/gdcache.P \
-+.deps/gddemo.P .deps/gdfontg.P .deps/gdfontl.P .deps/gdfontmb.P \
-+.deps/gdfonts.P .deps/gdfontt.P .deps/gdft.P .deps/gdhelpers.P \
-+.deps/gdkanji.P .deps/gdparttopng.P .deps/gdtables.P .deps/gdtest.P \
-+.deps/gdtestttf.P .deps/gdtojpeg.P .deps/gdtopng.P .deps/gdttf.P \
-+.deps/gdxpm.P .deps/pngtogd.P .deps/pngtogd2.P .deps/wbmp.P \
++.deps/gd_png.P .deps/gd_ss.P .deps/gd_topal.P .deps/gd_wbmp.P \
++.deps/gdcache.P .deps/gddemo.P .deps/gdfontg.P .deps/gdfontl.P \
++.deps/gdfontmb.P .deps/gdfonts.P .deps/gdfontt.P .deps/gdft.P \
++.deps/gdhelpers.P .deps/gdkanji.P .deps/gdparttopng.P .deps/gdtables.P \
++.deps/gdtest.P .deps/gdtestft.P .deps/gdtopng.P .deps/gdxpm.P \
++.deps/pngtogd.P .deps/pngtogd2.P .deps/testac.P .deps/wbmp.P \
 +.deps/webpng.P
-+SOURCES = $(libgd_la_SOURCES) $(pngtogd_SOURCES) $(pngtogd2_SOURCES) $(gdtopng_SOURCES) $(gdtojpeg_SOURCES) $(gd2topng_SOURCES) $(gd2copypal_SOURCES) $(gdparttopng_SOURCES) $(webpng_SOURCES) $(gdtest_SOURCES) $(gddemo_SOURCES) $(gd2time_SOURCES) $(gdtestttf_SOURCES)
-+OBJECTS = $(libgd_la_OBJECTS) $(pngtogd_OBJECTS) $(pngtogd2_OBJECTS) $(gdtopng_OBJECTS) $(gdtojpeg_OBJECTS) $(gd2topng_OBJECTS) $(gd2copypal_OBJECTS) $(gdparttopng_OBJECTS) $(webpng_OBJECTS) $(gdtest_OBJECTS) $(gddemo_OBJECTS) $(gd2time_OBJECTS) $(gdtestttf_OBJECTS)
++SOURCES = $(libgd_la_SOURCES) $(pngtogd_SOURCES) $(webpng_SOURCES) $(pngtogd2_SOURCES) $(gdtopng_SOURCES) $(gd2topng_SOURCES) $(gd2copypal_SOURCES) $(gdparttopng_SOURCES) $(gd2time_SOURCES) $(gddemo_SOURCES) $(testac_SOURCES) $(gdtest_SOURCES) $(gdtestft_SOURCES)
++OBJECTS = $(libgd_la_OBJECTS) $(pngtogd_OBJECTS) $(webpng_OBJECTS) $(pngtogd2_OBJECTS) $(gdtopng_OBJECTS) $(gd2topng_OBJECTS) $(gd2copypal_OBJECTS) $(gdparttopng_OBJECTS) $(gd2time_OBJECTS) $(gddemo_OBJECTS) $(testac_OBJECTS) $(gdtest_OBJECTS) $(gdtestft_OBJECTS)
 +
 +all: all-redirect
 +.SUFFIXES:
@@ -946,6 +963,10 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +	@rm -f pngtogd$(EXEEXT)
 +	$(LINK) $(pngtogd_LDFLAGS) $(pngtogd_OBJECTS) $(pngtogd_LDADD) $(LIBS)
 +
++webpng$(EXEEXT): $(webpng_OBJECTS) $(webpng_DEPENDENCIES)
++	@rm -f webpng$(EXEEXT)
++	$(LINK) $(webpng_LDFLAGS) $(webpng_OBJECTS) $(webpng_LDADD) $(LIBS)
++
 +pngtogd2$(EXEEXT): $(pngtogd2_OBJECTS) $(pngtogd2_DEPENDENCIES)
 +	@rm -f pngtogd2$(EXEEXT)
 +	$(LINK) $(pngtogd2_LDFLAGS) $(pngtogd2_OBJECTS) $(pngtogd2_LDADD) $(LIBS)
@@ -953,10 +974,6 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +gdtopng$(EXEEXT): $(gdtopng_OBJECTS) $(gdtopng_DEPENDENCIES)
 +	@rm -f gdtopng$(EXEEXT)
 +	$(LINK) $(gdtopng_LDFLAGS) $(gdtopng_OBJECTS) $(gdtopng_LDADD) $(LIBS)
-+
-+gdtojpeg$(EXEEXT): $(gdtojpeg_OBJECTS) $(gdtojpeg_DEPENDENCIES)
-+	@rm -f gdtojpeg$(EXEEXT)
-+	$(LINK) $(gdtojpeg_LDFLAGS) $(gdtojpeg_OBJECTS) $(gdtojpeg_LDADD) $(LIBS)
 +
 +gd2topng$(EXEEXT): $(gd2topng_OBJECTS) $(gd2topng_DEPENDENCIES)
 +	@rm -f gd2topng$(EXEEXT)
@@ -970,25 +987,25 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +	@rm -f gdparttopng$(EXEEXT)
 +	$(LINK) $(gdparttopng_LDFLAGS) $(gdparttopng_OBJECTS) $(gdparttopng_LDADD) $(LIBS)
 +
-+webpng$(EXEEXT): $(webpng_OBJECTS) $(webpng_DEPENDENCIES)
-+	@rm -f webpng$(EXEEXT)
-+	$(LINK) $(webpng_LDFLAGS) $(webpng_OBJECTS) $(webpng_LDADD) $(LIBS)
-+
-+gdtest$(EXEEXT): $(gdtest_OBJECTS) $(gdtest_DEPENDENCIES)
-+	@rm -f gdtest$(EXEEXT)
-+	$(LINK) $(gdtest_LDFLAGS) $(gdtest_OBJECTS) $(gdtest_LDADD) $(LIBS)
++gd2time$(EXEEXT): $(gd2time_OBJECTS) $(gd2time_DEPENDENCIES)
++	@rm -f gd2time$(EXEEXT)
++	$(LINK) $(gd2time_LDFLAGS) $(gd2time_OBJECTS) $(gd2time_LDADD) $(LIBS)
 +
 +gddemo$(EXEEXT): $(gddemo_OBJECTS) $(gddemo_DEPENDENCIES)
 +	@rm -f gddemo$(EXEEXT)
 +	$(LINK) $(gddemo_LDFLAGS) $(gddemo_OBJECTS) $(gddemo_LDADD) $(LIBS)
 +
-+gd2time$(EXEEXT): $(gd2time_OBJECTS) $(gd2time_DEPENDENCIES)
-+	@rm -f gd2time$(EXEEXT)
-+	$(LINK) $(gd2time_LDFLAGS) $(gd2time_OBJECTS) $(gd2time_LDADD) $(LIBS)
++testac$(EXEEXT): $(testac_OBJECTS) $(testac_DEPENDENCIES)
++	@rm -f testac$(EXEEXT)
++	$(LINK) $(testac_LDFLAGS) $(testac_OBJECTS) $(testac_LDADD) $(LIBS)
 +
-+gdtestttf$(EXEEXT): $(gdtestttf_OBJECTS) $(gdtestttf_DEPENDENCIES)
-+	@rm -f gdtestttf$(EXEEXT)
-+	$(LINK) $(gdtestttf_LDFLAGS) $(gdtestttf_OBJECTS) $(gdtestttf_LDADD) $(LIBS)
++gdtest$(EXEEXT): $(gdtest_OBJECTS) $(gdtest_DEPENDENCIES)
++	@rm -f gdtest$(EXEEXT)
++	$(LINK) $(gdtest_LDFLAGS) $(gdtest_OBJECTS) $(gdtest_LDADD) $(LIBS)
++
++gdtestft$(EXEEXT): $(gdtestft_OBJECTS) $(gdtestft_DEPENDENCIES)
++	@rm -f gdtestft$(EXEEXT)
++	$(LINK) $(gdtestft_LDFLAGS) $(gdtestft_OBJECTS) $(gdtestft_LDADD) $(LIBS)
 +
 +install-includeHEADERS: $(include_HEADERS)
 +	@$(NORMAL_INSTALL)
@@ -1216,52 +1233,50 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +# Tell versions [3.59,3.63) of GNU make to not export all variables.
 +# Otherwise a system limit (for SysV at least) may be exceeded.
 +.NOEXPORT:
-diff -Naur gd-1.8.4/Makefile.am gd-1.8.4.patched/Makefile.am
---- gd-1.8.4/Makefile.am	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/Makefile.am	Mon Jul 22 00:04:09 2002
-@@ -0,0 +1,64 @@
+diff -Naur gd-2.0.1/Makefile.am gd-2.0.1.patched/Makefile.am
+--- gd-2.0.1/Makefile.am	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/Makefile.am	Tue Jul 30 05:55:00 2002
+@@ -0,0 +1,65 @@
 +## Process this file with automake to produce Makefile.in
 +
 +AUTOMAKE_OPTIONS = 1.3
 +
-+# library interface 4.0, gd release 1.8.4
-+libgd_la_LDFLAGS = -version-info 4:1
-+
-+noinst_HEADERS = gdcache.h 
++# library interface 2.0, gd release 2.0.1
++libgd_la_LDFLAGS = -version-info 2:0
 +
 +lib_LTLIBRARIES = libgd.la
 +
-+include_HEADERS = gd.h gd_io.h gdfontt.h gdfonts.h gdhelpers.h \
-+	gdfontmb.h gdfontl.h gdfontg.h wbmp.h jisx0208.h
++include_HEADERS = gd.h	 gdcache.h  gdfontl.h	gdfonts.h \
++		gd_io.h  gdfontg.h  gdfontmb.h	gdfontt.h
 +
-+libgd_la_SOURCES = gd.c gd_io.c gd_io_file.c gd_io_dp.c gd_io_ss.c gdhelpers.c \
-+	gd_png.c gd_ss.c gd_gd.c gd_gd2.c gdfontt.c gdfonts.c gdfontmb.c \
-+	gdfontl.c gdfontg.c gdttf.c gdft.c gdcache.c gdxpm.c gdtables.c gdkanji.c \
-+	gd_jpeg.c gd_wbmp.c wbmp.c
++libgd_la_SOURCES = gd.c		  gd_io.c	gd_topal.c  gdfonts.c \
++	gd_io_dp.c	gd_wbmp.c   gdfontt.c	   \
++	gd_io_file.c	gdcache.c   gdft.c \
++	gd_io_ss.c	gdhelpers.c    gdxpm.c \
++	gd_jpeg.c	gdfontg.c   gdkanji.c \
++	gd_gd.c		  gd_png.c	gdfontl.c   \
++	gd_gd2.c	  gd_ss.c	gdfontmb.c  gdtables.c \
++	wbmp.c
 +
-+bin_PROGRAMS = pngtogd pngtogd2 gdtopng gdtojpeg gd2topng gd2copypal gdparttopng webpng
++bin_PROGRAMS = pngtogd webpng pngtogd2 gdtopng gd2topng gd2copypal \
++	gdparttopng gd2time 
 +
-+pngtogd_LDADD = libgd.la
-+
-+noinst_PROGRAMS = gdtest gddemo gd2time gdtestttf
-+
-+gdtest_SOURCES = gdtest.c gd.h
-+gdtest_LDADD = libgd.la
-+
-+gdtestttf_SOURCES = gdtestttf.c gd.h
-+gdtestttf_LDADD = libgd.la
++noinst_PROGRAMS = gddemo testac gdtest gdtestft
 +
 +gddemo_SOURCES = gddemo.c gd.h gdfonts.h gdfontg.h
 +gddemo_LDADD = libgd.la
 +
++testac_SOURCES = testac.c gd.h
++testac_LDADD = libgd.la
++
 +pngtogd_SOURCES = pngtogd.c gd.h
 +pngtogd_LDADD = libgd.la
 +
++webpng_SOURCES = webpng.c gd.h
++webpng_LDADD = libgd.la
++
 +pngtogd2_SOURCES = pngtogd2.c gd.h
 +pngtogd2_LDADD = libgd.la
-+
-+gdtojpeg_SOURCES = gdtojpeg.c gd.h
-+gdtojpeg_LDADD = libgd.la
 +
 +gdtopng_SOURCES = gdtopng.c gd.h
 +gdtopng_LDADD = libgd.la
@@ -1275,19 +1290,22 @@ diff -Naur gd-1.8.4/Makefile.am gd-1.8.4.patched/Makefile.am
 +gdparttopng_SOURCES = gdparttopng.c gd.h
 +gdparttopng_LDADD = libgd.la
 +
++gdtest_SOURCES = gdtest.c gd.h
++gdtest_LDADD = libgd.la
++
 +gd2time_SOURCES = gd2time.c gd.h
 +gd2time_LDADD = libgd.la
 +
-+webpng_SOURCES = webpng.c gd.h
-+webpng_LDADD = libgd.la
++gdtestft_SOURCES = gdtestft.c gd.h
++gdtestft_LDADD = libgd.la
 +
 +EXTRA_DIST = demoin.png index.html test/*
 +
 +CLEANFILES = demoout.png
-diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
---- gd-1.8.4/Makefile.in	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/Makefile.in	Mon Jul 22 00:04:13 2002
-@@ -0,0 +1,614 @@
+diff -Naur gd-2.0.1/Makefile.in gd-2.0.1.patched/Makefile.in
+--- gd-2.0.1/Makefile.in	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/Makefile.in	Tue Jul 30 05:55:02 2002
+@@ -0,0 +1,612 @@
 +# Makefile.in generated automatically by automake 1.4-p4 from Makefile.am
 +
 +# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
@@ -1366,40 +1384,36 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +
 +AUTOMAKE_OPTIONS = 1.3
 +
-+# library interface 4.0, gd release 1.8.4
-+libgd_la_LDFLAGS = -version-info 4:1
-+
-+noinst_HEADERS = gdcache.h 
++# library interface 2.0, gd release 2.0.1
++libgd_la_LDFLAGS = -version-info 2:0
 +
 +lib_LTLIBRARIES = libgd.la
 +
-+include_HEADERS = gd.h gd_io.h gdfontt.h gdfonts.h gdhelpers.h 	gdfontmb.h gdfontl.h gdfontg.h wbmp.h jisx0208.h
++include_HEADERS = gd.h	 gdcache.h  gdfontl.h	gdfonts.h 		gd_io.h  gdfontg.h  gdfontmb.h	gdfontt.h
 +
 +
-+libgd_la_SOURCES = gd.c gd_io.c gd_io_file.c gd_io_dp.c gd_io_ss.c gdhelpers.c 	gd_png.c gd_ss.c gd_gd.c gd_gd2.c gdfontt.c gdfonts.c gdfontmb.c 	gdfontl.c gdfontg.c gdttf.c gdft.c gdcache.c gdxpm.c gdtables.c gdkanji.c 	gd_jpeg.c gd_wbmp.c wbmp.c
++libgd_la_SOURCES = gd.c		  gd_io.c	gd_topal.c  gdfonts.c 	gd_io_dp.c	gd_wbmp.c   gdfontt.c	   	gd_io_file.c	gdcache.c   gdft.c 	gd_io_ss.c	gdhelpers.c    gdxpm.c 	gd_jpeg.c	gdfontg.c   gdkanji.c 	gd_gd.c		  gd_png.c	gdfontl.c   	gd_gd2.c	  gd_ss.c	gdfontmb.c  gdtables.c 	wbmp.c
 +
 +
-+bin_PROGRAMS = pngtogd pngtogd2 gdtopng gdtojpeg gd2topng gd2copypal gdparttopng webpng
-+pngtogd_LDADD = libgd.la
++bin_PROGRAMS = pngtogd webpng pngtogd2 gdtopng gd2topng gd2copypal 	gdparttopng gd2time 
 +
-+noinst_PROGRAMS = gdtest gddemo gd2time gdtestttf
 +
-+gdtest_SOURCES = gdtest.c gd.h
-+gdtest_LDADD = libgd.la
-+
-+gdtestttf_SOURCES = gdtestttf.c gd.h
-+gdtestttf_LDADD = libgd.la
++noinst_PROGRAMS = gddemo testac gdtest gdtestft
 +
 +gddemo_SOURCES = gddemo.c gd.h gdfonts.h gdfontg.h
 +gddemo_LDADD = libgd.la
 +
++testac_SOURCES = testac.c gd.h
++testac_LDADD = libgd.la
++
 +pngtogd_SOURCES = pngtogd.c gd.h
++pngtogd_LDADD = libgd.la
++
++webpng_SOURCES = webpng.c gd.h
++webpng_LDADD = libgd.la
 +
 +pngtogd2_SOURCES = pngtogd2.c gd.h
 +pngtogd2_LDADD = libgd.la
-+
-+gdtojpeg_SOURCES = gdtojpeg.c gd.h
-+gdtojpeg_LDADD = libgd.la
 +
 +gdtopng_SOURCES = gdtopng.c gd.h
 +gdtopng_LDADD = libgd.la
@@ -1413,11 +1427,14 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +gdparttopng_SOURCES = gdparttopng.c gd.h
 +gdparttopng_LDADD = libgd.la
 +
++gdtest_SOURCES = gdtest.c gd.h
++gdtest_LDADD = libgd.la
++
 +gd2time_SOURCES = gd2time.c gd.h
 +gd2time_LDADD = libgd.la
 +
-+webpng_SOURCES = webpng.c gd.h
-+webpng_LDADD = libgd.la
++gdtestft_SOURCES = gdtestft.c gd.h
++gdtestft_LDADD = libgd.la
 +
 +EXTRA_DIST = demoin.png index.html test/*
 +
@@ -1433,30 +1450,29 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +LDFLAGS = @LDFLAGS@
 +LIBS = @LIBS@
 +libgd_la_LIBADD = 
-+libgd_la_OBJECTS =  gd.lo gd_io.lo gd_io_file.lo gd_io_dp.lo gd_io_ss.lo \
-+gdhelpers.lo gd_png.lo gd_ss.lo gd_gd.lo gd_gd2.lo gdfontt.lo \
-+gdfonts.lo gdfontmb.lo gdfontl.lo gdfontg.lo gdttf.lo gdft.lo \
-+gdcache.lo gdxpm.lo gdtables.lo gdkanji.lo gd_jpeg.lo gd_wbmp.lo \
-+wbmp.lo
-+bin_PROGRAMS =  pngtogd$(EXEEXT) pngtogd2$(EXEEXT) gdtopng$(EXEEXT) \
-+gdtojpeg$(EXEEXT) gd2topng$(EXEEXT) gd2copypal$(EXEEXT) \
-+gdparttopng$(EXEEXT) webpng$(EXEEXT)
-+noinst_PROGRAMS =  gdtest$(EXEEXT) gddemo$(EXEEXT) gd2time$(EXEEXT) \
-+gdtestttf$(EXEEXT)
++libgd_la_OBJECTS =  gd.lo gd_io.lo gd_topal.lo gdfonts.lo gd_io_dp.lo \
++gd_wbmp.lo gdfontt.lo gd_io_file.lo gdcache.lo gdft.lo gd_io_ss.lo \
++gdhelpers.lo gdxpm.lo gd_jpeg.lo gdfontg.lo gdkanji.lo gd_gd.lo \
++gd_png.lo gdfontl.lo gd_gd2.lo gd_ss.lo gdfontmb.lo gdtables.lo wbmp.lo
++bin_PROGRAMS =  pngtogd$(EXEEXT) webpng$(EXEEXT) pngtogd2$(EXEEXT) \
++gdtopng$(EXEEXT) gd2topng$(EXEEXT) gd2copypal$(EXEEXT) \
++gdparttopng$(EXEEXT) gd2time$(EXEEXT)
++noinst_PROGRAMS =  gddemo$(EXEEXT) testac$(EXEEXT) gdtest$(EXEEXT) \
++gdtestft$(EXEEXT)
 +PROGRAMS =  $(bin_PROGRAMS) $(noinst_PROGRAMS)
 +
 +pngtogd_OBJECTS =  pngtogd.$(OBJEXT)
 +pngtogd_DEPENDENCIES =  libgd.la
 +pngtogd_LDFLAGS = 
++webpng_OBJECTS =  webpng.$(OBJEXT)
++webpng_DEPENDENCIES =  libgd.la
++webpng_LDFLAGS = 
 +pngtogd2_OBJECTS =  pngtogd2.$(OBJEXT)
 +pngtogd2_DEPENDENCIES =  libgd.la
 +pngtogd2_LDFLAGS = 
 +gdtopng_OBJECTS =  gdtopng.$(OBJEXT)
 +gdtopng_DEPENDENCIES =  libgd.la
 +gdtopng_LDFLAGS = 
-+gdtojpeg_OBJECTS =  gdtojpeg.$(OBJEXT)
-+gdtojpeg_DEPENDENCIES =  libgd.la
-+gdtojpeg_LDFLAGS = 
 +gd2topng_OBJECTS =  gd2topng.$(OBJEXT)
 +gd2topng_DEPENDENCIES =  libgd.la
 +gd2topng_LDFLAGS = 
@@ -1466,27 +1482,27 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +gdparttopng_OBJECTS =  gdparttopng.$(OBJEXT)
 +gdparttopng_DEPENDENCIES =  libgd.la
 +gdparttopng_LDFLAGS = 
-+webpng_OBJECTS =  webpng.$(OBJEXT)
-+webpng_DEPENDENCIES =  libgd.la
-+webpng_LDFLAGS = 
-+gdtest_OBJECTS =  gdtest.$(OBJEXT)
-+gdtest_DEPENDENCIES =  libgd.la
-+gdtest_LDFLAGS = 
-+gddemo_OBJECTS =  gddemo.$(OBJEXT)
-+gddemo_DEPENDENCIES =  libgd.la
-+gddemo_LDFLAGS = 
 +gd2time_OBJECTS =  gd2time.$(OBJEXT)
 +gd2time_DEPENDENCIES =  libgd.la
 +gd2time_LDFLAGS = 
-+gdtestttf_OBJECTS =  gdtestttf.$(OBJEXT)
-+gdtestttf_DEPENDENCIES =  libgd.la
-+gdtestttf_LDFLAGS = 
++gddemo_OBJECTS =  gddemo.$(OBJEXT)
++gddemo_DEPENDENCIES =  libgd.la
++gddemo_LDFLAGS = 
++testac_OBJECTS =  testac.$(OBJEXT)
++testac_DEPENDENCIES =  libgd.la
++testac_LDFLAGS = 
++gdtest_OBJECTS =  gdtest.$(OBJEXT)
++gdtest_DEPENDENCIES =  libgd.la
++gdtest_LDFLAGS = 
++gdtestft_OBJECTS =  gdtestft.$(OBJEXT)
++gdtestft_DEPENDENCIES =  libgd.la
++gdtestft_LDFLAGS = 
 +CFLAGS = @CFLAGS@
 +COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 +LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 +CCLD = $(CC)
 +LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
-+HEADERS =  $(include_HEADERS) $(noinst_HEADERS)
++HEADERS =  $(include_HEADERS)
 +
 +DIST_COMMON =  README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
 +Makefile.in NEWS acinclude.m4 aclocal.m4 config.guess config.sub \
@@ -1500,15 +1516,15 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +DEP_FILES =  .deps/gd.P .deps/gd2copypal.P .deps/gd2time.P \
 +.deps/gd2topng.P .deps/gd_gd.P .deps/gd_gd2.P .deps/gd_io.P \
 +.deps/gd_io_dp.P .deps/gd_io_file.P .deps/gd_io_ss.P .deps/gd_jpeg.P \
-+.deps/gd_png.P .deps/gd_ss.P .deps/gd_wbmp.P .deps/gdcache.P \
-+.deps/gddemo.P .deps/gdfontg.P .deps/gdfontl.P .deps/gdfontmb.P \
-+.deps/gdfonts.P .deps/gdfontt.P .deps/gdft.P .deps/gdhelpers.P \
-+.deps/gdkanji.P .deps/gdparttopng.P .deps/gdtables.P .deps/gdtest.P \
-+.deps/gdtestttf.P .deps/gdtojpeg.P .deps/gdtopng.P .deps/gdttf.P \
-+.deps/gdxpm.P .deps/pngtogd.P .deps/pngtogd2.P .deps/wbmp.P \
++.deps/gd_png.P .deps/gd_ss.P .deps/gd_topal.P .deps/gd_wbmp.P \
++.deps/gdcache.P .deps/gddemo.P .deps/gdfontg.P .deps/gdfontl.P \
++.deps/gdfontmb.P .deps/gdfonts.P .deps/gdfontt.P .deps/gdft.P \
++.deps/gdhelpers.P .deps/gdkanji.P .deps/gdparttopng.P .deps/gdtables.P \
++.deps/gdtest.P .deps/gdtestft.P .deps/gdtopng.P .deps/gdxpm.P \
++.deps/pngtogd.P .deps/pngtogd2.P .deps/testac.P .deps/wbmp.P \
 +.deps/webpng.P
-+SOURCES = $(libgd_la_SOURCES) $(pngtogd_SOURCES) $(pngtogd2_SOURCES) $(gdtopng_SOURCES) $(gdtojpeg_SOURCES) $(gd2topng_SOURCES) $(gd2copypal_SOURCES) $(gdparttopng_SOURCES) $(webpng_SOURCES) $(gdtest_SOURCES) $(gddemo_SOURCES) $(gd2time_SOURCES) $(gdtestttf_SOURCES)
-+OBJECTS = $(libgd_la_OBJECTS) $(pngtogd_OBJECTS) $(pngtogd2_OBJECTS) $(gdtopng_OBJECTS) $(gdtojpeg_OBJECTS) $(gd2topng_OBJECTS) $(gd2copypal_OBJECTS) $(gdparttopng_OBJECTS) $(webpng_OBJECTS) $(gdtest_OBJECTS) $(gddemo_OBJECTS) $(gd2time_OBJECTS) $(gdtestttf_OBJECTS)
++SOURCES = $(libgd_la_SOURCES) $(pngtogd_SOURCES) $(webpng_SOURCES) $(pngtogd2_SOURCES) $(gdtopng_SOURCES) $(gd2topng_SOURCES) $(gd2copypal_SOURCES) $(gdparttopng_SOURCES) $(gd2time_SOURCES) $(gddemo_SOURCES) $(testac_SOURCES) $(gdtest_SOURCES) $(gdtestft_SOURCES)
++OBJECTS = $(libgd_la_OBJECTS) $(pngtogd_OBJECTS) $(webpng_OBJECTS) $(pngtogd2_OBJECTS) $(gdtopng_OBJECTS) $(gd2topng_OBJECTS) $(gd2copypal_OBJECTS) $(gdparttopng_OBJECTS) $(gd2time_OBJECTS) $(gddemo_OBJECTS) $(testac_OBJECTS) $(gdtest_OBJECTS) $(gdtestft_OBJECTS)
 +
 +all: all-redirect
 +.SUFFIXES:
@@ -1632,6 +1648,10 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +	@rm -f pngtogd$(EXEEXT)
 +	$(LINK) $(pngtogd_LDFLAGS) $(pngtogd_OBJECTS) $(pngtogd_LDADD) $(LIBS)
 +
++webpng$(EXEEXT): $(webpng_OBJECTS) $(webpng_DEPENDENCIES)
++	@rm -f webpng$(EXEEXT)
++	$(LINK) $(webpng_LDFLAGS) $(webpng_OBJECTS) $(webpng_LDADD) $(LIBS)
++
 +pngtogd2$(EXEEXT): $(pngtogd2_OBJECTS) $(pngtogd2_DEPENDENCIES)
 +	@rm -f pngtogd2$(EXEEXT)
 +	$(LINK) $(pngtogd2_LDFLAGS) $(pngtogd2_OBJECTS) $(pngtogd2_LDADD) $(LIBS)
@@ -1639,10 +1659,6 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +gdtopng$(EXEEXT): $(gdtopng_OBJECTS) $(gdtopng_DEPENDENCIES)
 +	@rm -f gdtopng$(EXEEXT)
 +	$(LINK) $(gdtopng_LDFLAGS) $(gdtopng_OBJECTS) $(gdtopng_LDADD) $(LIBS)
-+
-+gdtojpeg$(EXEEXT): $(gdtojpeg_OBJECTS) $(gdtojpeg_DEPENDENCIES)
-+	@rm -f gdtojpeg$(EXEEXT)
-+	$(LINK) $(gdtojpeg_LDFLAGS) $(gdtojpeg_OBJECTS) $(gdtojpeg_LDADD) $(LIBS)
 +
 +gd2topng$(EXEEXT): $(gd2topng_OBJECTS) $(gd2topng_DEPENDENCIES)
 +	@rm -f gd2topng$(EXEEXT)
@@ -1656,25 +1672,25 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +	@rm -f gdparttopng$(EXEEXT)
 +	$(LINK) $(gdparttopng_LDFLAGS) $(gdparttopng_OBJECTS) $(gdparttopng_LDADD) $(LIBS)
 +
-+webpng$(EXEEXT): $(webpng_OBJECTS) $(webpng_DEPENDENCIES)
-+	@rm -f webpng$(EXEEXT)
-+	$(LINK) $(webpng_LDFLAGS) $(webpng_OBJECTS) $(webpng_LDADD) $(LIBS)
-+
-+gdtest$(EXEEXT): $(gdtest_OBJECTS) $(gdtest_DEPENDENCIES)
-+	@rm -f gdtest$(EXEEXT)
-+	$(LINK) $(gdtest_LDFLAGS) $(gdtest_OBJECTS) $(gdtest_LDADD) $(LIBS)
++gd2time$(EXEEXT): $(gd2time_OBJECTS) $(gd2time_DEPENDENCIES)
++	@rm -f gd2time$(EXEEXT)
++	$(LINK) $(gd2time_LDFLAGS) $(gd2time_OBJECTS) $(gd2time_LDADD) $(LIBS)
 +
 +gddemo$(EXEEXT): $(gddemo_OBJECTS) $(gddemo_DEPENDENCIES)
 +	@rm -f gddemo$(EXEEXT)
 +	$(LINK) $(gddemo_LDFLAGS) $(gddemo_OBJECTS) $(gddemo_LDADD) $(LIBS)
 +
-+gd2time$(EXEEXT): $(gd2time_OBJECTS) $(gd2time_DEPENDENCIES)
-+	@rm -f gd2time$(EXEEXT)
-+	$(LINK) $(gd2time_LDFLAGS) $(gd2time_OBJECTS) $(gd2time_LDADD) $(LIBS)
++testac$(EXEEXT): $(testac_OBJECTS) $(testac_DEPENDENCIES)
++	@rm -f testac$(EXEEXT)
++	$(LINK) $(testac_LDFLAGS) $(testac_OBJECTS) $(testac_LDADD) $(LIBS)
 +
-+gdtestttf$(EXEEXT): $(gdtestttf_OBJECTS) $(gdtestttf_DEPENDENCIES)
-+	@rm -f gdtestttf$(EXEEXT)
-+	$(LINK) $(gdtestttf_LDFLAGS) $(gdtestttf_OBJECTS) $(gdtestttf_LDADD) $(LIBS)
++gdtest$(EXEEXT): $(gdtest_OBJECTS) $(gdtest_DEPENDENCIES)
++	@rm -f gdtest$(EXEEXT)
++	$(LINK) $(gdtest_LDFLAGS) $(gdtest_OBJECTS) $(gdtest_LDADD) $(LIBS)
++
++gdtestft$(EXEEXT): $(gdtestft_OBJECTS) $(gdtestft_DEPENDENCIES)
++	@rm -f gdtestft$(EXEEXT)
++	$(LINK) $(gdtestft_LDFLAGS) $(gdtestft_OBJECTS) $(gdtestft_LDADD) $(LIBS)
 +
 +install-includeHEADERS: $(include_HEADERS)
 +	@$(NORMAL_INSTALL)
@@ -1902,133 +1918,9 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +# Tell versions [3.59,3.63) of GNU make to not export all variables.
 +# Otherwise a system limit (for SysV at least) may be exceeded.
 +.NOEXPORT:
-diff -Naur gd-1.8.4/Makefile.nt gd-1.8.4.patched/Makefile.nt
---- gd-1.8.4/Makefile.nt	Tue Feb  6 11:44:02 2001
-+++ gd-1.8.4.patched/Makefile.nt	Wed Dec 31 16:00:00 1969
-@@ -1,120 +0,0 @@
--#NMAKE makefile for Windows 95/98/NT developers.
--#Produces a static library (libgd.lib). Thanks to Joe Gregorio.
--#This is out of date.
--
--COMPILER=cl
--
--#If the ar command fails on your system, consult the ar manpage
--#for your system. 
--AR=LIB
--
--#If the install command is not in your path, provide
--#an explicit path for it here, or install manually.
--INSTALL=install
--
--#If you don't have FreeType and/or Xpm installed, including the
--#header files, uncomment this (default).
--CFLAGS=-Ox -GX 
--
--#If you do have FreeType and/or Xpm fully installed, uncomment a
--#variation of this and comment out the line above. See also LIBS below.
--#CFLAGS=-O -DHAVE_LIBXPM -DHAVE_LIBJPEG -DHAVE_LIBPNG -DHAVE_LIBTTF
--
--# -DHAVE_LIBFREETYPE can be used instead of -DHAVE_TTF to use the
--# newer FreeType2 libraries
--
--#Libraries required for applications 
--LIBS=gd.lib libpng.lib zlib.lib 
--#LIBS=gd.lib libpng.lib zlib.lib libjpeg.lib libttf.lib
--
--#Libraries required for gd.lib itself
--GDLIBS=libpng.lib zlib.lib
--#GDLIBS=libpng.lib zlib.lib libjpeg.lib libttf.lib
--
--#Typical install locations for freetype, zlib, jpeg, xpm and 
--#libpng header files. If yours are somewhere else, change this. 
--INCLUDEDIRS=-I d:\zlib -I d:\libpng -I d:\libjpeg -I d:\libttf
--
--#Typical install locations for freetype, zlib, xpm, libjpeg and 
--#libpng libraries.
--#
--#If yours are somewhere else, other than a standard location
--#such as /lib or /usr/lib, then change this. Be sure to keep
--#-L. as this allows the gd library itself to be found.
--#Put -L. first so that old versions of the gd library elsewhere
--#on your system can't cause conflicts while building a new one.
--LIB=d:\devstudio\vc\lib;d:\zlib;d:\libpng;d:\libjpeg;d:\libttf
--
--#Location where gd.lib should be installed by "make install".
--INSTALL_LIB=/usr/local/lib
--
--#Location where .h files should be installed by "make install".
--INSTALL_INCLUDE=/usr/local/include
--
--#Location where useful non-test programs should be installed by "make install".
--INSTALL_BIN=/usr/local/bin
--
--#
--#
--# Changes should not be required below here.
--#
--#
--
--VERSION=1.8.1
--
--CC=$(COMPILER) $(INCLUDEDIRS)
--LINK=$(CC) $(LIBS)
--
--PROGRAMS=$(BIN_PROGRAMS) $(TEST_PROGRAMS)
--
--BIN_PROGRAMS=pngtogd.exe pngtogd2.exe gdtopng.exe gd2topng.exe gd2copypal.exe gdparttopng.exe webpng.exe
--TEST_PROGRAMS=gdtest.exe gddemo.exe gd2time.exe gdtestttf.exe gdtestft.exe
--
--all: gd.lib $(PROGRAMS)
--
--gddemo.exe: gddemo.c gd.lib
--	$(CC) gddemo.c $(LIBDIRS) $(LIBS)
--
--pngtogd.exe: pngtogd.c gd.lib
--	$(CC) pngtogd.c $(LIBDIRS) $(LIBS) 
--
--webpng.exe: webpng.c gd.lib
--	$(CC) webpng.c 	$(LIBDIRS) $(LIBS)
--
--pngtogd2.exe: pngtogd2.c gd.lib
--	$(CC) pngtogd2.c	$(LIBDIRS) $(LIBS)
--
--gdtopng.exe: gdtopng.c gd.lib
--	$(CC) gdtopng.c 	$(LIBDIRS) $(LIBS)
--
--gd2topng.exe: gd2topng.c gd.lib
--	$(CC) gd2topng.c	$(LIBDIRS) $(LIBS)
--
--gd2copypal.exe: gd2copypal.c gd.lib
--	$(CC) gd2copypal.c	$(LIBDIRS) $(LIBS)
--
--gdparttopng.exe: gdparttopng.c gd.lib
--	$(CC) gdparttopng.c	$(LIBDIRS) $(LIBS)
--
--gdtest.exe: gdtest.c gd.lib
--	$(CC) gdtest.c 	$(LIBDIRS) $(LIBS)
--
--gd2time.exe: gd2time.c gd.lib
--	$(CC) gd2time.c	$(LIBDIRS) $(LIBS)
--
--gdtestttf.exe: gdtestttf.c gd.lib
--	$(CC) gdtestttf.c 	$(LIBDIRS) $(LIBS)
--
--gdtestft.exe: gdtestft.c gd.lib
--	$(CC) gdtestft.c 	$(LIBDIRS) $(LIBS)
--
--OBJS=gd.obj gd_gd.obj gd_gd2.obj gd_io.obj gd_io_dp.obj gd_io_file.obj gd_ss.obj \
--	gd_io_ss.obj gd_png.obj gdxpm.obj gdfontt.obj gdfonts.obj gdfontmb.obj gdfontl.obj \
--	gdfontg.obj gdtables.obj gdttf.obj gdft.c gdcache.obj gdkanji.obj gd_jpeg.obj
--
--gd.lib:  $(OBJS) gd.h gdfontt.h gdfonts.h gdfontmb.h gdfontl.h gdfontg.h	
--	$(AR) $(OBJS) $(GDLIBS) 
--
--clean:
--	del *.obj *.lib $(PROGRAMS)
--
-diff -Naur gd-1.8.4/NEWS gd-1.8.4.patched/NEWS
---- gd-1.8.4/NEWS	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/NEWS	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/NEWS gd-2.0.1.patched/NEWS
+--- gd-2.0.1/NEWS	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/NEWS	Tue Jul 30 05:29:17 2002
 @@ -0,0 +1,132 @@
 +990729 Thomas Boutell (TBB)
 +	- It would probably be a good idea to free the 
@@ -2162,11 +2054,11 @@ diff -Naur gd-1.8.4/NEWS gd-1.8.4.patched/NEWS
 +Extracting 100 times from (3000, 2000), size is 50x25
 +15 seconds to extract (& destroy) 100 times
 +
-diff -Naur gd-1.8.4/README gd-1.8.4.patched/README
---- gd-1.8.4/README	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/README	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/README gd-2.0.1.patched/README
+--- gd-2.0.1/README	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/README	Tue Jul 30 22:21:05 2002
 @@ -0,0 +1,25 @@
-+GD 1.8.4_patch
++GD 2.0.1_patch
 +
 +This is a patched version of Tom Boutell's GD library version 1.8.4.
 +It uses the GNU Autoconfig system to make it easier to compile libgd
@@ -2191,14 +2083,14 @@ diff -Naur gd-1.8.4/README gd-1.8.4.patched/README
 +other questions relating to libgd should be directed to Tom Boutell
 +(boutell@boutell.com).
 +
-diff -Naur gd-1.8.4/acinclude.m4 gd-1.8.4.patched/acinclude.m4
---- gd-1.8.4/acinclude.m4	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/acinclude.m4	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/acinclude.m4 gd-2.0.1.patched/acinclude.m4
+--- gd-2.0.1/acinclude.m4	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/acinclude.m4	Tue Jul 30 05:29:34 2002
 @@ -0,0 +1 @@
 +#placeholder for a real acinclude.m4 (someday)
-diff -Naur gd-1.8.4/aclocal.m4 gd-1.8.4.patched/aclocal.m4
---- gd-1.8.4/aclocal.m4	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/aclocal.m4	Sun Jul 21 23:57:49 2002
+diff -Naur gd-2.0.1/aclocal.m4 gd-2.0.1.patched/aclocal.m4
+--- gd-2.0.1/aclocal.m4	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/aclocal.m4	Tue Jul 30 05:29:34 2002
 @@ -0,0 +1,3448 @@
 +dnl aclocal.m4 generated automatically by aclocal 1.4-p4
 +
@@ -5648,260 +5540,9 @@ diff -Naur gd-1.8.4/aclocal.m4 gd-1.8.4.patched/aclocal.m4
 +# This is just to silence aclocal about the macro not being used
 +ifelse([AC_DISABLE_FAST_INSTALL])
 +
-diff -Naur gd-1.8.4/bdftogd gd-1.8.4.patched/bdftogd
---- gd-1.8.4/bdftogd	Tue Feb  6 11:44:01 2001
-+++ gd-1.8.4.patched/bdftogd	Wed Dec 31 16:00:00 1969
-@@ -1,205 +0,0 @@
--#!/usr/bin/perl -w
--
--#
--# Simple convertor from bdf to gd font format.
--#
--# Author: Jan Pazdziora, adelton@fi.muni.cz, http://www.fi.muni.cz/~adelton/
--# at Faculty of Informatics, Masaryk University in Brno, Czech Republic.
--#
--# Example of use:
--# fstobdf -s fontserverhost:7100 -fn 8x16 | ./bdftogd FontLarge gdfontl
--#
--
--use strict;
--
--my $VERSION = '0.60';
--my $now = localtime;
--
--if (@ARGV != 2)
--	{ die "usage: bdftogd fontname filename, eg. bdftogd FontLarge gdfontl\n"; }
--
--my $gdname = shift;
--$gdname = 'gd' . $gdname unless $gdname =~ /^gd/i;
--
--my $filename = shift;
--$filename = 'gd' . $filename unless $filename =~ /^gd/i;
--
--if (-f "$filename.c") { die "File $filename.c already exists, won't overwrite\n"; }
--if (-f "$filename.h") { die "File $filename.h already exists, won't overwrite\n"; }
--
--my ($width, $height);
--my (@data, @left, @bottom);
--my ($globalleft, $globaltop);
--
--my ($minchar, $maxchar);
--
--my ($copyright, $fontdef);
--
--my $currentchar;
--my $gobitmap = 0;
--
--
--while (<>)
--	{
--	chomp;
--	s/\r$//;
--	my ($tag, $value) = split / /, $_, 2;
--	die "Font is not fixed width\n"
--			if $tag eq 'SPACING' and not $value =~ /[CM]/i;
--	
--	$currentchar = $value if $tag eq 'ENCODING';
--	$minchar = $currentchar if not defined $minchar
--		or $currentchar < $minchar;
--	$maxchar = $currentchar if not defined $maxchar
--		or $currentchar > $maxchar;
--	
--	if ($tag eq 'ENDCHAR')
--		{
--		$gobitmap = 0;
--		my $bottom = $globaltop - $bottom[$currentchar];
--		
--
--		if ($bottom > 0)
--			{ $data[$currentchar] = substr $data[$currentchar], 0, length($data[$currentchar]) - $bottom * $width; }
--		else
--			{ $data[$currentchar] .= '0' x (-$bottom * $width); }
--		}
--
--	if ($tag eq 'FONTBOUNDINGBOX')
--		{
--		my ($tag, $wid, $hei, $left, $top) = split / /;
--		if (defined $top)
--			{
--			$globalleft = $left;
--			$globaltop = $top;
--			$height = $hei;
--			$width = $wid;
--			}
--		}
--	if ($tag eq 'FONT' and not defined $fontdef)
--		{ $fontdef = $value; }
--	if ($tag eq 'COPYRIGHT' and not defined $copyright)
--		{ $copyright = $value; }
--	
--	if ($tag eq 'BBX')
--		{
--		my ($tag, $wid, $hei, $left, $bottom) = split / /;
--		if (defined $bottom)
--			{
--			$left[$currentchar] = $left;
--			$bottom[$currentchar] = $bottom;
--			}
--		}
--
--	if ($gobitmap)
--		{
--		my $value = pack 'H*', $_;
--		my $bits = unpack 'B*', $value;
--		$bits = ('0' x $left[$currentchar]) . $bits;
--		$bits .= '0' x ($width - length $bits);
--		$bits = substr $bits, 0, $width;
--		$data[$currentchar] .= $bits;
--		}
--	
--	if ($tag eq 'BITMAP')
--		{
--		$gobitmap = 1;
--		$data[$currentchar] = '';
--		}
--	}
--
--my $info = <<"EOF";
--/*
--	This is a header file for gd font, generated using
--	bdftogd version $VERSION by Jan Pazdziora, adelton\@fi.muni.cz
--	from bdf font
--	$fontdef
--	at $now.
--EOF
--
--if (defined $copyright)
--	{
--	$info .= <<"EOF";
--	The original bdf was holding following copyright:
--	$copyright
-- */
--EOF
--	}
--else
--	{
--	$info .= <<"EOF";
--	No copyright info was found in the original bdf.
-- */
--EOF
--	}
--
--open FILEC, "> $filename.c" or die "Error writing $filename.c: $!\n";
--open FILEH, "> $filename.h" or die "Error writing $filename.h: $!\n";
--print FILEC <<"EOF";
--
--$info
--
--#include "$filename.h"
--
--char ${gdname}Data[] = {
--EOF
--
--$minchar = 0 unless defined $minchar;
--$maxchar = 255 unless defined $maxchar;
--for (my $i = $minchar; $i <= $maxchar; $i++)
--	{
--	$data[$i] = '' unless defined $data[$i];
--	$data[$i] = '0' x ($width * $height - length $data[$i]) . $data[$i];
--	
--	print FILEC "/* Char $i */\n";
--	for my $line (0 .. $height - 1)
--		{ print FILEC join ',', split(//, substr($data[$i], $line * $width, $width)), "\n"; }
--
--	print FILEC "\n";
--
--	next;
--	
--	for my $line (0 .. $height - 1)
--		{ print substr($data[$i], $line * $width, $width), "\n"; }
--	}
--
--my $capdef = "\U_${filename}_H_";
--
--print FILEC <<"EOF";
--
--};
--
--gdFont ${gdname}Rep = {
--	@{[ $maxchar - $minchar + 1]},
--	$minchar,
--	$width,
--	$height,
--	${gdname}Data
--};
--
--gdFontPtr ${gdname} = &${gdname}Rep;
--
--/* This file has not been truncated. */
--
--EOF
--
--
--close FILEC;
--
--print FILEH <<"EOF";
--
--#ifndef $capdef
--#define $capdef 1
--
--$info
--
--#include "gd.h"
--
--extern gdFontPtr $gdname;
--
--#endif
--
--EOF
--
--1;
--
-diff -Naur gd-1.8.4/config.cache gd-1.8.4.patched/config.cache
---- gd-1.8.4/config.cache	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/config.cache	Sun Jul 21 23:27:23 2002
-@@ -0,0 +1,38 @@
-+# This file is a shell script that caches the results of configure
-+# tests run on this system so they can be shared between configure
-+# scripts and configure runs.  It is not useful on other systems.
-+# If it contains results you don't want to keep, you may remove or edit it.
-+#
-+# By default, configure uses ./config.cache as the cache file,
-+# creating it if it does not exist already.  You can give configure
-+# the --cache-file=FILE option to use a different cache file; that is
-+# what configure does when it calls configure scripts in
-+# subdirectories, so they share the cache.
-+# Giving --cache-file=/dev/null disables caching, for debugging configure.
-+# config.status only pays attention to the cache file if you give it the
-+# --recheck option to rerun configure.
-+#
-+ac_cv_c_const=${ac_cv_c_const=yes}
-+ac_cv_exeext=${ac_cv_exeext=no}
-+ac_cv_have_x=${ac_cv_have_x=$'have_x=yes \t\tac_x_includes=/usr/X11R6/include ac_x_libraries=/usr/X11R6/lib'}
-+ac_cv_header_malloc_h=${ac_cv_header_malloc_h=yes}
-+ac_cv_header_png_h=${ac_cv_header_png_h=yes}
-+ac_cv_header_stdc=${ac_cv_header_stdc=yes}
-+ac_cv_header_unistd_h=${ac_cv_header_unistd_h=yes}
-+ac_cv_header_zlib_h=${ac_cv_header_zlib_h=yes}
-+ac_cv_lib_m_main=${ac_cv_lib_m_main=yes}
-+ac_cv_lib_png_png_check_sig=${ac_cv_lib_png_png_check_sig=yes}
-+ac_cv_lib_z_deflate=${ac_cv_lib_z_deflate=yes}
-+ac_cv_path_LD=${ac_cv_path_LD=/usr/i386-slackware-linux/bin/ld}
-+ac_cv_path_NM=${ac_cv_path_NM=$'/usr/bin/nm -B'}
-+ac_cv_path_install=${ac_cv_path_install=$'/usr/bin/ginstall -c'}
-+ac_cv_prog_CC=${ac_cv_prog_CC=gcc}
-+ac_cv_prog_CPP=${ac_cv_prog_CPP=$'gcc -E'}
-+ac_cv_prog_LN_S=${ac_cv_prog_LN_S=$'ln -s'}
-+ac_cv_prog_RANLIB=${ac_cv_prog_RANLIB=ranlib}
-+ac_cv_prog_cc_cross=${ac_cv_prog_cc_cross=no}
-+ac_cv_prog_cc_g=${ac_cv_prog_cc_g=yes}
-+ac_cv_prog_cc_works=${ac_cv_prog_cc_works=yes}
-+ac_cv_prog_gcc=${ac_cv_prog_gcc=yes}
-+ac_cv_prog_gnu_ld=${ac_cv_prog_gnu_ld=yes}
-+ac_cv_prog_make_make_set=${ac_cv_prog_make_make_set=yes}
-diff -Naur gd-1.8.4/config.guess gd-1.8.4.patched/config.guess
---- gd-1.8.4/config.guess	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/config.guess	Mon Jul 22 00:01:36 2002
+diff -Naur gd-2.0.1/config.guess gd-2.0.1.patched/config.guess
+--- gd-2.0.1/config.guess	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/config.guess	Tue Jul 30 05:38:57 2002
 @@ -0,0 +1,1371 @@
 +#! /bin/sh
 +# Attempt to guess a canonical system name.
@@ -7274,900 +6915,9 @@ diff -Naur gd-1.8.4/config.guess gd-1.8.4.patched/config.guess
 +# time-stamp-format: "%:y-%02m-%02d"
 +# time-stamp-end: "'"
 +# End:
-diff -Naur gd-1.8.4/config.log gd-1.8.4.patched/config.log
---- gd-1.8.4/config.log	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/config.log	Mon Jul 22 00:04:38 2002
-@@ -0,0 +1,429 @@
-+This file contains any messages produced by compilers while
-+running configure, to aid debugging if configure makes a mistake.
-+
-+It was created by configure, which was
-+generated by GNU Autoconf 2.50.  Invocation command line was
-+
-+  $ ./configure --enable-jpeg --enable-freetype --enable-xpm
-+
-+## ---------- ##
-+## Platform.  ##
-+## ---------- ##
-+
-+hostname = pesto
-+uname -m = i686
-+uname -r = 2.4.9
-+uname -s = Linux
-+uname -v = #16 Sat Feb 9 09:57:25 EST 2002
-+
-+/usr/bin/uname -p = unknown
-+/bin/uname -X     = unknown
-+
-+/bin/arch              = i686
-+/usr/bin/arch -k       = unknown
-+/usr/convex/getsysinfo = unknown
-+hostinfo               = unknown
-+/bin/machine           = unknown
-+/usr/bin/oslevel       = unknown
-+/bin/universe          = unknown
-+
-+PATH = /home/lstein/bin:/usr/local/bin:/usr/X11/bin:/usr/bin:/bin:/usr/local/games:/usr/local/mysql/bin:/opt/kde/bin:/usr/local/ant/bin:/opt/gnome/bin:/usr/local/java/bin:.
-+
-+## ------------ ##
-+## Core tests.  ##
-+## ------------ ##
-+
-+configure:1070: PATH=".;."; conftest.sh
-+./configure: conftest.sh: command not found
-+configure:1073: $? = 127
-+configure:1119: checking for a BSD compatible install
-+configure:1168: result: /usr/bin/ginstall -c
-+configure:1179: checking whether build environment is sane
-+configure:1222: result: yes
-+configure:1243: checking whether make sets ${MAKE}
-+configure:1263: result: yes
-+configure:1291: checking for working aclocal
-+configure:1298: result: found
-+configure:1306: checking for working autoconf
-+configure:1313: result: found
-+configure:1321: checking for working automake
-+configure:1328: result: found
-+configure:1336: checking for working autoheader
-+configure:1343: result: found
-+configure:1351: checking for working makeinfo
-+configure:1358: result: found
-+configure:1409: checking for gcc
-+configure:1424: found /usr/bin/gcc
-+configure:1432: result: gcc
-+configure:1676: checking for C compiler default output
-+configure:1679: gcc    conftest.c  >&5
-+configure:1682: $? = 0
-+configure:1705: result: a.out
-+configure:1710: checking whether the C compiler works
-+configure:1716: ./a.out
-+configure:1719: $? = 0
-+configure:1734: result: yes
-+configure:1741: checking whether we are cross compiling
-+configure:1743: result: no
-+configure:1746: checking for executable suffix
-+configure:1748: gcc -o conftest    conftest.c  >&5
-+configure:1751: $? = 0
-+configure:1773: result: 
-+configure:1779: checking for object suffix
-+configure:1797: gcc -c   conftest.c >&5
-+configure:1800: $? = 0
-+configure:1819: result: o
-+configure:1823: checking whether we are using the GNU C compiler
-+configure:1844: gcc -c   conftest.c >&5
-+configure:1847: $? = 0
-+configure:1850: test -s conftest.o
-+configure:1853: $? = 0
-+configure:1865: result: yes
-+configure:1871: checking whether gcc accepts -g
-+configure:1889: gcc -c -g  conftest.c >&5
-+configure:1892: $? = 0
-+configure:1895: test -s conftest.o
-+configure:1898: $? = 0
-+configure:1908: result: yes
-+configure:1935: gcc -c -g -O2  conftest.c >&5
-+conftest.c:2: parse error before `me'
-+configure:1938: $? = 1
-+configure: failed program was:
-+#ifndef __cplusplus
-+  choke me
-+#endif
-+configure:2033: checking for strerror in -lcposix
-+configure:2060: gcc -o conftest -g -O2   conftest.c -lcposix   >&5
-+/usr/i386-slackware-linux/bin/ld: cannot find -lcposix
-+collect2: ld returned 1 exit status
-+configure:2063: $? = 1
-+configure: failed program was:
-+#line 2041 "configure"
-+#include "confdefs.h"
-+
-+/* Override any gcc2 internal prototype to avoid an error.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+/* We use char because int might match the return type of a gcc2
-+   builtin and then its argument prototype would still apply.  */
-+char strerror ();
-+int
-+main ()
-+{
-+strerror ();
-+  ;
-+  return 0;
-+}
-+configure:2080: result: no
-+configure:2158: checking build system type
-+configure:2176: result: i686-pc-linux-gnu
-+configure:2183: checking host system type
-+configure:2197: result: i686-pc-linux-gnu
-+configure:2214: checking for ld used by GCC
-+configure:2277: result: /usr/i386-slackware-linux/bin/ld
-+configure:2286: checking if the linker (/usr/i386-slackware-linux/bin/ld) is GNU ld
-+GNU ld version 2.11.90.0.19 (with BFD 2.11.90.0.19)
-+configure:2298: result: yes
-+configure:2302: checking for /usr/i386-slackware-linux/bin/ld option to reload object files
-+configure:2309: result: -r
-+configure:2314: checking for BSD-compatible nm
-+configure:2350: result: /usr/bin/nm -B
-+configure:2353: checking whether ln -s works
-+configure:2357: result: yes
-+configure:2364: checking how to recognise dependant libraries
-+configure:2532: result: pass_all
-+configure:2538: checking command to parse /usr/bin/nm -B output
-+configure:2615: gcc -c -g -O2  conftest.c >&5
-+configure:2618: $? = 0
-+configure:2622: /usr/bin/nm -B conftest.o \| sed -n -e 's/^.*[ 	]\([ABCDGISTW][ABCDGISTW]*\)[ 	][ 	]*\(\)\([_A-Za-z][_A-Za-z0-9]*\)$/\1 \2\3 \3/p' \> conftest.nm
-+configure:2625: $? = 0
-+configure:2677: gcc -o conftest -g -O2   conftest.c conftstm.o >&5
-+configure:2680: $? = 0
-+configure:2721: result: ok
-+configure:2730: checking how to run the C preprocessor
-+configure:2757: gcc -E  conftest.c
-+configure:2763: $? = 0
-+configure:2790: gcc -E  conftest.c
-+configure:2787: ac_nonexistent.h: No such file or directory
-+configure:2796: $? = 1
-+configure: failed program was:
-+#line 2786 "configure"
-+#include "confdefs.h"
-+#include <ac_nonexistent.h>
-+configure:2833: result: gcc -E
-+configure:2848: gcc -E  conftest.c
-+configure:2854: $? = 0
-+configure:2881: gcc -E  conftest.c
-+configure:2878: ac_nonexistent.h: No such file or directory
-+configure:2887: $? = 1
-+configure: failed program was:
-+#line 2877 "configure"
-+#include "confdefs.h"
-+#include <ac_nonexistent.h>
-+configure:2929: checking for dlfcn.h
-+configure:2939: gcc -E  conftest.c
-+configure:2945: $? = 0
-+configure:2964: result: yes
-+configure:3151: checking for ranlib
-+configure:3166: found /usr/bin/ranlib
-+configure:3175: result: ranlib
-+configure:3225: checking for strip
-+configure:3240: found /usr/bin/strip
-+configure:3249: result: strip
-+configure:3444: checking for objdir
-+configure:3455: result: .libs
-+configure:3470: checking for gcc option to produce PIC
-+configure:3620: result: -fPIC
-+configure:3624: checking if gcc PIC flag -fPIC works
-+configure:3644: gcc -c -g -O2 -fPIC -DPIC  conftest.c >&5
-+configure:3647: $? = 0
-+configure:3650: test -s conftest.o
-+configure:3653: $? = 0
-+configure:3689: result: yes
-+configure:3705: checking if gcc static flag -static works
-+configure:3726: gcc -o conftest -g -O2   -static conftest.c  >&5
-+configure:3729: $? = 0
-+configure:3732: test -s conftest
-+configure:3735: $? = 0
-+configure:3749: result: yes
-+configure:3760: checking if gcc supports -c -o file.o
-+configure:3780: gcc -c -g -O2 -o out/conftest2.o  conftest.c >&5
-+configure:3804: result: yes
-+configure:3809: checking if gcc supports -c -o file.lo
-+configure:3831: gcc -c -g -O2 -c -o conftest.lo  conftest.c >&5
-+configure:3834: $? = 0
-+configure:3837: test -s conftest.o
-+configure:3840: $? = 1
-+configure: failed program was:
-+#line 3819 "configure"
-+#include "confdefs.h"
-+
-+int
-+main ()
-+{
-+int some_variable = 0;
-+  ;
-+  return 0;
-+}
-+configure:3860: result: 
-+configure:3891: checking if gcc supports -fno-rtti -fno-exceptions
-+configure:3910: gcc -c -g -O2 -fno-rtti -fno-exceptions -c conftest.c  conftest.c >&5
-+configure:3913: $? = 0
-+configure:3916: test -s conftest.o
-+configure:3919: $? = 0
-+configure:3935: result: yes
-+configure:3946: checking whether the linker (/usr/i386-slackware-linux/bin/ld) supports shared libraries
-+configure:4558: result: yes
-+configure:4563: checking how to hardcode library paths into programs
-+configure:4587: result: immediate
-+configure:4592: checking whether stripping libraries is possible
-+configure:4597: result: yes
-+configure:4608: checking dynamic linker characteristics
-+configure:4990: result: GNU/Linux ld.so
-+configure:4995: checking if libtool supports shared libraries
-+configure:4997: result: yes
-+configure:5561: checking whether -lc should be explicitly linked in
-+configure:5569: gcc -c -g -O2  conftest.c >&5
-+configure:5572: $? = 0
-+configure:5586: gcc -shared conftest.o  -v -Wl,-soname -Wl,conftest -o conftest 2\>\&1 \| grep  -lc  \>/dev/null 2\>\&1
-+configure:5589: $? = 0
-+configure:5602: result: no
-+configure:6175: checking for a BSD compatible install
-+configure:6224: result: /usr/bin/ginstall -c
-+configure:6235: checking for X
-+configure:6444: result: libraries /usr/X11R6/lib, headers /usr/X11R6/include
-+configure:6451: checking for main in -lm
-+configure:6471: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -lm   >&5
-+configure:6474: $? = 0
-+configure:6477: test -s conftest
-+configure:6480: $? = 0
-+configure:6491: result: yes
-+configure:6502: checking for deflate in -lz
-+configure:6529: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -lz  -lm  >&5
-+configure:6532: $? = 0
-+configure:6535: test -s conftest
-+configure:6538: $? = 0
-+configure:6549: result: yes
-+configure:6564: checking for png_check_sig in -lpng
-+configure:6591: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -lpng  -lz -lm  >&5
-+configure:6594: $? = 0
-+configure:6597: test -s conftest
-+configure:6600: $? = 0
-+configure:6611: result: yes
-+configure:6633: checking for jpeglib.h
-+configure:6643: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:6649: $? = 0
-+configure:6668: result: yes
-+configure:6681: checking for jpeg_start_compress in -ljpeg
-+configure:6708: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -ljpeg  -lpng -lz -lm  >&5
-+configure:6711: $? = 0
-+configure:6714: test -s conftest
-+configure:6717: $? = 0
-+configure:6728: result: yes
-+configure:6751: checking for freetype/freetype.h
-+configure:6761: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:6767: $? = 0
-+configure:6786: result: yes
-+configure:6799: checking for FT_Init_FreeType in -lfreetype
-+configure:6826: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -lfreetype  -ljpeg -lpng -lz -lm  >&5
-+configure:6829: $? = 0
-+configure:6832: test -s conftest
-+configure:6835: $? = 0
-+configure:6846: result: yes
-+configure:6869: checking for X11/xpm.h
-+configure:6879: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:6885: $? = 0
-+configure:6904: result: yes
-+configure:6917: checking for XpmCreateImageFromData in -lXpm
-+configure:6944: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -lXpm -lX11 -lfreetype -ljpeg -lpng -lz -lm  >&5
-+configure:6947: $? = 0
-+configure:6950: test -s conftest
-+configure:6953: $? = 0
-+configure:6964: result: yes
-+configure:6980: checking for ANSI C header files
-+configure:6994: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:7000: $? = 0
-+configure:7087: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -lfreetype -ljpeg -lpng -lz -lm  -lX11 -lXpm >&5
-+configure:7090: $? = 0
-+configure:7092: ./conftest
-+configure:7095: $? = 0
-+configure:7108: result: yes
-+configure:7121: checking for malloc.h
-+configure:7131: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:7137: $? = 0
-+configure:7156: result: yes
-+configure:7121: checking for unistd.h
-+configure:7131: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:7137: $? = 0
-+configure:7156: result: yes
-+configure:7169: checking for zlib.h
-+configure:7179: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:7185: $? = 0
-+configure:7204: result: yes
-+configure:7221: checking for png.h
-+configure:7231: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:7237: $? = 0
-+configure:7256: result: yes
-+configure:7270: checking for gcc option to accept ANSI C
-+configure:7327: gcc  -c -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c >&5
-+configure:7330: $? = 0
-+configure:7333: test -s conftest.o
-+configure:7336: $? = 0
-+configure:7353: result: none needed
-+configure:7361: checking for an ANSI C-conforming const
-+configure:7425: gcc -c -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c >&5
-+configure:7428: $? = 0
-+configure:7431: test -s conftest.o
-+configure:7434: $? = 0
-+configure:7444: result: yes
-+configure:7564: creating ./config.status
-+
-+## ----------------------- ##
-+## Running config.status.  ##
-+## ----------------------- ##
-+
-+This file was extended by config.status 2.50, executed with
-+  > ./config.status 
-+on pesto
-+
-+config.status:8000: creating Makefile
-+
-+## ----------------- ##
-+## Cache variables.  ##
-+## ----------------- ##
-+
-+ac_cv_build=i686-pc-linux-gnu
-+ac_cv_build_alias=i686-pc-linux-gnu
-+ac_cv_c_compiler_gnu=yes
-+ac_cv_c_const=yes
-+ac_cv_env_CC_set=
-+ac_cv_env_CC_value=
-+ac_cv_env_CFLAGS_set=
-+ac_cv_env_CFLAGS_value=
-+ac_cv_env_CPPFLAGS_set=
-+ac_cv_env_CPPFLAGS_value=
-+ac_cv_env_CPP_set=
-+ac_cv_env_CPP_value=
-+ac_cv_env_LDFLAGS_set=
-+ac_cv_env_LDFLAGS_value=
-+ac_cv_env_build_alias_set=
-+ac_cv_env_build_alias_value=
-+ac_cv_env_host_alias_set=
-+ac_cv_env_host_alias_value=
-+ac_cv_env_target_alias_set=
-+ac_cv_env_target_alias_value=
-+ac_cv_have_x=$'have_x=yes \t\tac_x_includes=/usr/X11R6/include ac_x_libraries=/usr/X11R6/lib'
-+ac_cv_header_X11_xpm_h=yes
-+ac_cv_header_dlfcn_h=yes
-+ac_cv_header_freetype_freetype_h=yes
-+ac_cv_header_jpeglib_h=yes
-+ac_cv_header_malloc_h=yes
-+ac_cv_header_png_h=yes
-+ac_cv_header_stdc=yes
-+ac_cv_header_unistd_h=yes
-+ac_cv_header_zlib_h=yes
-+ac_cv_host=i686-pc-linux-gnu
-+ac_cv_host_alias=i686-pc-linux-gnu
-+ac_cv_lib_Xpm_XpmCreateImageFromData=yes
-+ac_cv_lib_cposix_strerror=no
-+ac_cv_lib_freetype_FT_Init_FreeType=yes
-+ac_cv_lib_jpeg_jpeg_start_compress=yes
-+ac_cv_lib_m_main=yes
-+ac_cv_lib_png_png_check_sig=yes
-+ac_cv_lib_z_deflate=yes
-+ac_cv_objext=o
-+ac_cv_path_install=$'/usr/bin/ginstall -c'
-+ac_cv_prog_CPP=$'gcc -E'
-+ac_cv_prog_ac_ct_CC=gcc
-+ac_cv_prog_ac_ct_RANLIB=ranlib
-+ac_cv_prog_ac_ct_STRIP=strip
-+ac_cv_prog_cc_g=yes
-+ac_cv_prog_cc_stdc=
-+ac_cv_prog_make_make_set=yes
-+lt_cv_archive_cmds_need_lc=no
-+lt_cv_compiler_c_o=yes
-+lt_cv_compiler_o_lo=no
-+lt_cv_deplibs_check_method=pass_all
-+lt_cv_file_magic_cmd=$'$MAGIC_CMD'
-+lt_cv_file_magic_test_file=$'/lib/libc.so.6 /lib/libc-2.2.3.so'
-+lt_cv_global_symbol_to_cdecl=$'sed -n -e \'s/^. .* \\(.*\\)$/extern char \\1;/p\''
-+lt_cv_ld_reload_flag=-r
-+lt_cv_path_LD=/usr/i386-slackware-linux/bin/ld
-+lt_cv_path_NM=$'/usr/bin/nm -B'
-+lt_cv_prog_cc_can_build_shared=yes
-+lt_cv_prog_cc_no_builtin=
-+lt_cv_prog_cc_pic=$' -fPIC'
-+lt_cv_prog_cc_pic_works=yes
-+lt_cv_prog_cc_shlib=
-+lt_cv_prog_cc_static=-static
-+lt_cv_prog_cc_static_works=yes
-+lt_cv_prog_cc_wl=-Wl,
-+lt_cv_prog_gnu_ld=yes
-+lt_cv_sys_global_symbol_pipe=$'sed -n -e \'s/^.*[ \t]\\([ABCDGISTW][ABCDGISTW]*\\)[ \t][ \t]*\\(\\)\\([_A-Za-z][_A-Za-z0-9]*\\)$/\\1 \\2\\3 \\3/p\''
-+lt_cv_sys_path_separator=:
-+
-+## ------------ ##
-+## confdefs.h.  ##
-+## ------------ ##
-+
-+#define PACKAGE "gd"
-+#define VERSION "1.8.4"
-+#define HAVE_DLFCN_H 1
-+#define HAVE_LIBM 1
-+#define HAVE_LIBZ 1
-+#define HAVE_LIBPNG 1
-+#define HAVE_JPEGLIB_H 1
-+#define HAVE_LIBJPEG 1
-+#define HAVE_FREETYPE_FREETYPE_H 1
-+#define HAVE_LIBFREETYPE 1
-+#define HAVE_X11_XPM_H 1
-+#define HAVE_LIBXPM 1
-+#define STDC_HEADERS 1
-+#define HAVE_MALLOC_H 1
-+#define HAVE_UNISTD_H 1
-+#define HAVE_ZLIB_H 1
-+#define HAVE_PNG_H 1
-+
-+
-+configure: exit 0
-diff -Naur gd-1.8.4/config.status gd-1.8.4.patched/config.status
---- gd-1.8.4/config.status	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/config.status	Mon Jul 22 00:04:38 2002
-@@ -0,0 +1,454 @@
-+#! /bin/sh
-+# Generated automatically by configure.
-+# Run this file to recreate the current configuration.
-+# Compiler output produced by configure, useful for debugging
-+# configure, is in config.log if it exists.
-+
-+debug=false
-+SHELL=${CONFIG_SHELL-/bin/sh}
-+ac_cs_invocation="$0 $@"
-+
-+# Be Bourne compatible
-+if test -n "${ZSH_VERSION+set}" && (emulate sh) >/dev/null 2>&1; then
-+  emulate sh
-+  NULLCMD=:
-+elif test -n "${BASH_VERSION+set}" && (set -o posix) >/dev/null 2>&1; then
-+  set -o posix
-+fi
-+
-+# Name of the executable.
-+as_me=`echo "$0" |sed 's,.*[\\/],,'`
-+
-+if expr a : '\(a\)' >/dev/null 2>&1; then
-+  as_expr=expr
-+else
-+  as_expr=false
-+fi
-+
-+rm -f conf$$ conf$$.exe conf$$.file
-+echo >conf$$.file
-+if ln -s conf$$.file conf$$ 2>/dev/null; then
-+  # We could just check for DJGPP; but this test a) works b) is more generic
-+  # and c) will remain valid once DJGPP supports symlinks (DJGPP 2.04).
-+  if test -f conf$$.exe; then
-+    # Don't use ln at all; we don't have any links
-+    as_ln_s='cp -p'
-+  else
-+    as_ln_s='ln -s'
-+  fi
-+elif ln conf$$.file conf$$ 2>/dev/null; then
-+  as_ln_s=ln
-+else
-+  as_ln_s='cp -p'
-+fi
-+rm -f conf$$ conf$$.exe conf$$.file
-+
-+as_executable_p="test -f"
-+
-+# Support unset when possible.
-+if (FOO=FOO; unset FOO) >/dev/null 2>&1; then
-+  as_unset=unset
-+else
-+  as_unset=false
-+fi
-+
-+# NLS nuisances.
-+$as_unset LANG || test "${LANG+set}" != set || { LANG=C; export LANG; }
-+$as_unset LC_ALL || test "${LC_ALL+set}" != set || { LC_ALL=C; export LC_ALL; }
-+$as_unset LC_TIME || test "${LC_TIME+set}" != set || { LC_TIME=C; export LC_TIME; }
-+$as_unset LC_CTYPE || test "${LC_CTYPE+set}" != set || { LC_CTYPE=C; export LC_CTYPE; }
-+$as_unset LANGUAGE || test "${LANGUAGE+set}" != set || { LANGUAGE=C; export LANGUAGE; }
-+$as_unset LC_COLLATE || test "${LC_COLLATE+set}" != set || { LC_COLLATE=C; export LC_COLLATE; }
-+$as_unset LC_NUMERIC || test "${LC_NUMERIC+set}" != set || { LC_NUMERIC=C; export LC_NUMERIC; }
-+$as_unset LC_MESSAGES || test "${LC_MESSAGES+set}" != set || { LC_MESSAGES=C; export LC_MESSAGES; }
-+
-+# IFS
-+# We need space, tab and new line, in precisely that order.
-+as_nl='
-+'
-+IFS=" 	$as_nl"
-+
-+# CDPATH.
-+$as_unset CDPATH || test "${CDPATH+set}" != set || { CDPATH=:; export CDPATH; }
-+
-+exec 6>&1
-+
-+config_files=" Makefile"
-+
-+ac_cs_usage="\
-+\`$as_me' instantiates files from templates according to the
-+current configuration.
-+
-+Usage: $0 [OPTIONS] [FILE]...
-+
-+  -h, --help       print this help, then exit
-+  -V, --version    print version number, then exit
-+  -d, --debug      don't remove temporary files
-+      --recheck    update $as_me by reconfiguring in the same conditions
-+  --file=FILE[:TEMPLATE]
-+                   instantiate the configuration file FILE
-+
-+Configuration files:
-+$config_files
-+
-+Report bugs to <bug-autoconf@gnu.org>."
-+ac_cs_version="\
-+config.status
-+configured by ./configure, generated by GNU Autoconf 2.50,
-+  with options \"--enable-jpeg --enable-freetype --enable-xpm\"
-+
-+Copyright 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001
-+Free Software Foundation, Inc.
-+This config.status script is free software; the Free Software Foundation
-+gives unlimited permission to copy, distribute and modify it."
-+srcdir=.
-+INSTALL="/usr/bin/ginstall -c"
-+# If no file are specified by the user, then we need to provide default
-+# value.  By we need to know if files were specified by the user.
-+ac_need_defaults=:
-+while test $# != 0
-+do
-+  case $1 in
-+  --*=*)
-+    ac_option=`expr "x$1" : 'x\([^=]*\)='`
-+    ac_optarg=`expr "x$1" : 'x[^=]*=\(.*\)'`
-+    shift
-+    set dummy "$ac_option" "$ac_optarg" ${1+"$@"}
-+    shift
-+    ;;
-+  -*);;
-+  *) # This is not an option, so the user has probably given explicit
-+     # arguments.
-+     ac_need_defaults=false;;
-+  esac
-+
-+  case $1 in
-+  # Handling of the options.
-+  -recheck | --recheck | --rechec | --reche | --rech | --rec | --re | --r)
-+    echo "running /bin/sh ./configure " --enable-jpeg --enable-freetype --enable-xpm " --no-create --no-recursion"
-+    exec /bin/sh ./configure --enable-jpeg --enable-freetype --enable-xpm --no-create --no-recursion ;;
-+  --version | --vers* | -V )
-+    echo "$ac_cs_version"; exit 0 ;;
-+  --he | --h)
-+    # Conflict between --help and --header
-+    { { echo "$as_me:7732: error: ambiguous option: $1
-+Try \`$0 --help' for more information." >&5
-+echo "$as_me: error: ambiguous option: $1
-+Try \`$0 --help' for more information." >&2;}
-+   { (exit 1); exit 1; }; };;
-+  --help | --hel | -h )
-+    echo "$ac_cs_usage"; exit 0 ;;
-+  --debug | --d* | -d )
-+    debug=: ;;
-+  --file | --fil | --fi | --f )
-+    shift
-+    CONFIG_FILES="$CONFIG_FILES $1"
-+    ac_need_defaults=false;;
-+  --header | --heade | --head | --hea )
-+    shift
-+    CONFIG_HEADERS="$CONFIG_HEADERS $1"
-+    ac_need_defaults=false;;
-+
-+  # Handling of arguments.
-+  'Makefile' ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-+
-+  # This is an error.
-+  -*) { { echo "$as_me:7754: error: unrecognized option: $1
-+Try \`$0 --help' for more information." >&5
-+echo "$as_me: error: unrecognized option: $1
-+Try \`$0 --help' for more information." >&2;}
-+   { (exit 1); exit 1; }; } ;;
-+  *) { { echo "$as_me:7759: error: invalid argument: $1" >&5
-+echo "$as_me: error: invalid argument: $1" >&2;}
-+   { (exit 1); exit 1; }; };;
-+  esac
-+  shift
-+done
-+
-+exec 5>>config.log
-+cat >&5 << _ACEOF
-+
-+## ----------------------- ##
-+## Running config.status.  ##
-+## ----------------------- ##
-+
-+This file was extended by $as_me 2.50, executed with
-+  > $ac_cs_invocation
-+on `(hostname || uname -n) 2>/dev/null | sed 1q`
-+
-+_ACEOF
-+# If the user did not use the arguments to specify the items to instantiate,
-+# then the envvar interface is used.  Set only those that are not.
-+# We use the long form for the default assignment because of an extremely
-+# bizarre bug on SunOS 4.1.3.
-+if $ac_need_defaults; then
-+  test "${CONFIG_FILES+set}" = set || CONFIG_FILES=$config_files
-+fi
-+
-+# Create a temporary directory, and hook for its removal unless debugging.
-+$debug ||
-+{
-+  trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' 0
-+  trap '{ (exit $?); exit $?; }' 1 2 13 15
-+}
-+
-+# Create a (secure) tmp directory for tmp files.
-+: ${TMPDIR=/tmp}
-+{
-+  tmp=`(umask 077 && mktemp -d -q "$TMPDIR/csXXXXXX") 2>/dev/null` &&
-+  test -n "$tmp" && test -d "$tmp"
-+}  ||
-+{
-+  tmp=$TMPDIR/cs$$-$RANDOM
-+  (umask 077 && mkdir $tmp)
-+} ||
-+{
-+   echo "$me: cannot create a temporary directory in $TMPDIR" >&2
-+   { (exit 1); exit 1; }
-+}
-+
-+
-+#
-+# CONFIG_FILES section.
-+#
-+
-+# No need to generate the scripts if there are no CONFIG_FILES.
-+# This happens for instance when ./config.status config.h
-+if test -n "$CONFIG_FILES"; then
-+  # Protect against being on the right side of a sed subst in config.status.
-+  sed 's/,@/@@/; s/@,/@@/; s/,;t t$/@;t t/; /@;t t$/s/[\\&,]/\\&/g;
-+   s/@@/,@/; s/@@/@,/; s/@;t t$/,;t t/' >$tmp/subs.sed <<\CEOF
-+s,@SHELL@,/bin/sh,;t t
-+s,@exec_prefix@,${prefix},;t t
-+s,@prefix@,/usr/local,;t t
-+s,@program_transform_name@,s,x,x,,;t t
-+s,@bindir@,${exec_prefix}/bin,;t t
-+s,@sbindir@,${exec_prefix}/sbin,;t t
-+s,@libexecdir@,${exec_prefix}/libexec,;t t
-+s,@datadir@,${prefix}/share,;t t
-+s,@sysconfdir@,${prefix}/etc,;t t
-+s,@sharedstatedir@,${prefix}/com,;t t
-+s,@localstatedir@,${prefix}/var,;t t
-+s,@libdir@,${exec_prefix}/lib,;t t
-+s,@includedir@,${prefix}/include,;t t
-+s,@oldincludedir@,/usr/include,;t t
-+s,@infodir@,${prefix}/info,;t t
-+s,@mandir@,${prefix}/man,;t t
-+s,@PACKAGE_NAME@,,;t t
-+s,@PACKAGE_TARNAME@,,;t t
-+s,@PACKAGE_VERSION@,,;t t
-+s,@PACKAGE_STRING@,,;t t
-+s,@PACKAGE_BUGREPORT@,,;t t
-+s,@ECHO_C@,,;t t
-+s,@ECHO_N@,-n,;t t
-+s,@ECHO_T@,,;t t
-+s,@PATH_SEPARATOR@,:,;t t
-+s,@DEFS@,-DPACKAGE=\"gd\" -DVERSION=\"1.8.4\" -DHAVE_DLFCN_H=1 -DHAVE_LIBM=1 -DHAVE_LIBZ=1 -DHAVE_LIBPNG=1 -DHAVE_JPEGLIB_H=1 -DHAVE_LIBJPEG=1 -DHAVE_FREETYPE_FREETYPE_H=1 -DHAVE_LIBFREETYPE=1 -DHAVE_X11_XPM_H=1 -DHAVE_LIBXPM=1 -DSTDC_HEADERS=1 -DHAVE_MALLOC_H=1 -DHAVE_UNISTD_H=1 -DHAVE_ZLIB_H=1 -DHAVE_PNG_H=1 ,;t t
-+s,@LIBS@,-lfreetype -ljpeg -lpng -lz -lm  -lX11 -lXpm,;t t
-+s,@INSTALL_PROGRAM@,${INSTALL},;t t
-+s,@INSTALL_SCRIPT@,${INSTALL},;t t
-+s,@INSTALL_DATA@,${INSTALL} -m 644,;t t
-+s,@PACKAGE@,gd,;t t
-+s,@VERSION@,1.8.4,;t t
-+s,@ACLOCAL@,aclocal,;t t
-+s,@AUTOCONF@,autoconf,;t t
-+s,@AUTOMAKE@,automake,;t t
-+s,@AUTOHEADER@,autoheader,;t t
-+s,@MAKEINFO@,makeinfo,;t t
-+s,@SET_MAKE@,,;t t
-+s,@CC@,gcc,;t t
-+s,@CFLAGS@,-g -O2,;t t
-+s,@LDFLAGS@, -L${exec_prefix}/lib -L/usr/X11R6/lib,;t t
-+s,@CPPFLAGS@, -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include,;t t
-+s,@ac_ct_CC@,gcc,;t t
-+s,@EXEEXT@,,;t t
-+s,@OBJEXT@,o,;t t
-+s,@build@,i686-pc-linux-gnu,;t t
-+s,@build_cpu@,i686,;t t
-+s,@build_vendor@,pc,;t t
-+s,@build_os@,linux-gnu,;t t
-+s,@host@,i686-pc-linux-gnu,;t t
-+s,@host_cpu@,i686,;t t
-+s,@host_vendor@,pc,;t t
-+s,@host_os@,linux-gnu,;t t
-+s,@LN_S@,ln -s,;t t
-+s,@ECHO@,echo,;t t
-+s,@RANLIB@,ranlib,;t t
-+s,@ac_ct_RANLIB@,ranlib,;t t
-+s,@STRIP@,strip,;t t
-+s,@ac_ct_STRIP@,strip,;t t
-+s,@CPP@,gcc -E,;t t
-+s,@LIBTOOL@,$(SHELL) $(top_builddir)/libtool,;t t
-+CEOF
-+
-+  # Split the substitutions into bite-sized pieces for seds with
-+  # small command number limits, like on Digital OSF/1 and HP-UX.
-+  ac_max_sed_lines=48
-+  ac_sed_frag=1 # Number of current file.
-+  ac_beg=1 # First line for current file.
-+  ac_end=$ac_max_sed_lines # Line after last line for current file.
-+  ac_more_lines=:
-+  ac_sed_cmds=
-+  while $ac_more_lines; do
-+    if test $ac_beg -gt 1; then
-+      sed "1,${ac_beg}d; ${ac_end}q" $tmp/subs.sed >$tmp/subs.frag
-+    else
-+      sed "${ac_end}q" $tmp/subs.sed >$tmp/subs.frag
-+    fi
-+    if test ! -s $tmp/subs.frag; then
-+      ac_more_lines=false
-+    else
-+      # The purpose of the label and of the branching condition is to
-+      # speed up the sed processing (if there are no `@' at all, there
-+      # is no need to browse any of the substitutions).
-+      # These are the two extra sed commands mentioned above.
-+      (echo ':t
-+  /@[a-zA-Z_][a-zA-Z_0-9]*@/!b' && cat $tmp/subs.frag) >$tmp/subs-$ac_sed_frag.sed
-+      if test -z "$ac_sed_cmds"; then
-+  	ac_sed_cmds="sed -f $tmp/subs-$ac_sed_frag.sed"
-+      else
-+  	ac_sed_cmds="$ac_sed_cmds | sed -f $tmp/subs-$ac_sed_frag.sed"
-+      fi
-+      ac_sed_frag=`expr $ac_sed_frag + 1`
-+      ac_beg=$ac_end
-+      ac_end=`expr $ac_end + $ac_max_sed_lines`
-+    fi
-+  done
-+  if test -z "$ac_sed_cmds"; then
-+    ac_sed_cmds=cat
-+  fi
-+fi # test -n "$CONFIG_FILES"
-+
-+for ac_file in : $CONFIG_FILES; do test "x$ac_file" = x: && continue
-+  # Support "outfile[:infile[:infile...]]", defaulting infile="outfile.in".
-+  case $ac_file in
-+  - | *:- | *:-:* ) # input from stdin
-+        cat >$tmp/stdin
-+        ac_file_in=`echo "$ac_file" | sed 's,[^:]*:,,'`
-+        ac_file=`echo "$ac_file" | sed 's,:.*,,'` ;;
-+  *:* ) ac_file_in=`echo "$ac_file" | sed 's,[^:]*:,,'`
-+        ac_file=`echo "$ac_file" | sed 's,:.*,,'` ;;
-+  * )   ac_file_in=$ac_file.in ;;
-+  esac
-+
-+  # Compute @srcdir@, @top_srcdir@, and @INSTALL@ for subdirectories.
-+  ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
-+         X"$ac_file" : 'X\(//\)[^/]' \| \
-+         X"$ac_file" : 'X\(//\)$' \| \
-+         X"$ac_file" : 'X\(/\)' \| \
-+         .     : '\(.\)' 2>/dev/null ||
-+echo X"$ac_file" |
-+    sed '/^X\(.*[^/]\)\/\/*[^/][^/]*\/*$/{ s//\1/; q; }
-+  	  /^X\(\/\/\)[^/].*/{ s//\1/; q; }
-+  	  /^X\(\/\/\)$/{ s//\1/; q; }
-+  	  /^X\(\/\).*/{ s//\1/; q; }
-+  	  s/.*/./; q'`
-+  if test "$ac_dir" != "$ac_file" && test "$ac_dir" != .; then
-+    { case "$ac_dir" in
-+  [\\/]* | ?:[\\/]* ) as_incr_dir=;;
-+  *)                      as_incr_dir=.;;
-+esac
-+as_dummy="$ac_dir"
-+for as_mkdir_dir in `IFS='/\\'; set X $as_dummy; shift; echo "$@"`; do
-+  case $as_mkdir_dir in
-+    # Skip DOS drivespec
-+    ?:) as_incr_dir=$as_mkdir_dir ;;
-+    *)
-+      as_incr_dir=$as_incr_dir/$as_mkdir_dir
-+      test -d "$as_incr_dir" || mkdir "$as_incr_dir"
-+    ;;
-+  esac
-+done; }
-+
-+    ac_dir_suffix="/`echo $ac_dir|sed 's,^\./,,'`"
-+    # A "../" for each directory in $ac_dir_suffix.
-+    ac_dots=`echo "$ac_dir_suffix" | sed 's,/[^/]*,../,g'`
-+  else
-+    ac_dir_suffix= ac_dots=
-+  fi
-+
-+  case $srcdir in
-+  .)  ac_srcdir=.
-+      if test -z "$ac_dots"; then
-+         ac_top_srcdir=.
-+      else
-+         ac_top_srcdir=`echo $ac_dots | sed 's,/$,,'`
-+      fi ;;
-+  [\\/]* | ?:[\\/]* )
-+      ac_srcdir=$srcdir$ac_dir_suffix;
-+      ac_top_srcdir=$srcdir ;;
-+  *) # Relative path.
-+    ac_srcdir=$ac_dots$srcdir$ac_dir_suffix
-+    ac_top_srcdir=$ac_dots$srcdir ;;
-+  esac
-+
-+  case $INSTALL in
-+  [\\/$]* | ?:[\\/]* ) ac_INSTALL=$INSTALL ;;
-+  *) ac_INSTALL=$ac_dots$INSTALL ;;
-+  esac
-+
-+  if test x"$ac_file" != x-; then
-+    { echo "$as_me:8000: creating $ac_file" >&5
-+echo "$as_me: creating $ac_file" >&6;}
-+    rm -f "$ac_file"
-+  fi
-+  # Let's still pretend it is `configure' which instantiates (i.e., don't
-+  # use $as_me), people would be surprised to read:
-+  #    /* config.h.  Generated automatically by config.status.  */
-+  configure_input="Generated automatically from `echo $ac_file_in |
-+                                                 sed 's,.*/,,'` by configure."
-+
-+  # First look for the input files in the build tree, otherwise in the
-+  # src tree.
-+  ac_file_inputs=`IFS=:
-+    for f in $ac_file_in; do
-+      case $f in
-+      -) echo $tmp/stdin ;;
-+      [\\/$]*)
-+         # Absolute (can't be DOS-style, as IFS=:)
-+         test -f "$f" || { { echo "$as_me:8018: error: cannot find input file: $f" >&5
-+echo "$as_me: error: cannot find input file: $f" >&2;}
-+   { (exit 1); exit 1; }; }
-+         echo $f;;
-+      *) # Relative
-+         if test -f "$f"; then
-+           # Build tree
-+           echo $f
-+         elif test -f "$srcdir/$f"; then
-+           # Source tree
-+           echo $srcdir/$f
-+         else
-+           # /dev/null tree
-+           { { echo "$as_me:8031: error: cannot find input file: $f" >&5
-+echo "$as_me: error: cannot find input file: $f" >&2;}
-+   { (exit 1); exit 1; }; }
-+         fi;;
-+      esac
-+    done` || { (exit 1); exit 1; }
-+  sed "/^[ 	]*VPATH[ 	]*=/{
-+s/:*\$(srcdir):*/:/;
-+s/:*\${srcdir}:*/:/;
-+s/:*@srcdir@:*/:/;
-+s/^\([^=]*=[ 	]*\):*/\1/;
-+s/:*$//;
-+s/^[^=]*=[ 	]*$//;
-+}
-+
-+:t
-+/@[a-zA-Z_][a-zA-Z_0-9]*@/!b
-+s,@configure_input@,$configure_input,;t t
-+s,@srcdir@,$ac_srcdir,;t t
-+s,@top_srcdir@,$ac_top_srcdir,;t t
-+s,@INSTALL@,$ac_INSTALL,;t t
-+" $ac_file_inputs | (eval "$ac_sed_cmds") >$tmp/out
-+  rm -f $tmp/stdin
-+  if test x"$ac_file" != x-; then
-+    mv $tmp/out $ac_file
-+  else
-+    cat $tmp/out
-+    rm -f $tmp/out
-+  fi
-+
-+done
-+
-+{ (exit 0); exit 0; }
-diff -Naur gd-1.8.4/config.sub gd-1.8.4.patched/config.sub
---- gd-1.8.4/config.sub	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/config.sub	Mon Jul 22 00:01:48 2002
+diff -Naur gd-2.0.1/config.sub gd-2.0.1.patched/config.sub
+--- gd-2.0.1/config.sub	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/config.sub	Tue Jul 30 05:38:59 2002
 @@ -0,0 +1,1362 @@
 +#! /bin/sh
 +# Configuration validation subroutine script.
@@ -9531,9 +8281,9 @@ diff -Naur gd-1.8.4/config.sub gd-1.8.4.patched/config.sub
 +# time-stamp-format: "%:y-%02m-%02d"
 +# time-stamp-end: "'"
 +# End:
-diff -Naur gd-1.8.4/configure gd-1.8.4.patched/configure
---- gd-1.8.4/configure	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/configure	Mon Jul 22 00:04:18 2002
+diff -Naur gd-2.0.1/configure gd-2.0.1.patched/configure
+--- gd-2.0.1/configure	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/configure	Tue Jul 30 05:46:01 2002
 @@ -0,0 +1,8085 @@
 +#! /bin/sh
 +# Guess values for system-dependent variables and create Makefiles.
@@ -17620,9 +16370,9 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patched/configure
 +  $ac_cs_success || { (exit 1); exit 1; }
 +fi
 +
-diff -Naur gd-1.8.4/configure.ac gd-1.8.4.patched/configure.ac
---- gd-1.8.4/configure.ac	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/configure.ac	Sun Jul 21 23:51:43 2002
+diff -Naur gd-2.0.1/configure.ac gd-2.0.1.patched/configure.ac
+--- gd-2.0.1/configure.ac	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/configure.ac	Tue Jul 30 05:28:14 2002
 @@ -0,0 +1,62 @@
 +dnl Process this file with autoconf to produce a configure script.
 +AC_INIT(gd.c)
@@ -17686,9 +16436,188 @@ diff -Naur gd-1.8.4/configure.ac gd-1.8.4.patched/configure.ac
 +AC_C_CONST
 +
 +AC_OUTPUT(Makefile)
-diff -Naur gd-1.8.4/gd.h gd-1.8.4.patched/gd.h
---- gd-1.8.4/gd.h	Tue Feb  6 11:44:01 2001
-+++ gd-1.8.4.patched/gd.h	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/gd.c gd-2.0.1.patched/gd.c
+--- gd-2.0.1/gd.c	Tue Apr  3 16:44:41 2001
++++ gd-2.0.1.patched/gd.c	Tue Jul 30 05:24:30 2002
+@@ -309,7 +309,7 @@
+   v = 1 - b;
+   if (h == HWB_UNDEFINED)
+     RETURN_RGB (v, v, v);
+-  i = floor (h);
++  i = (int) h;
+   f = h - i;
+   if (i & 1)
+     f = 1 - f;			/* if i is odd */
+@@ -748,6 +748,7 @@
+     }
+   else
+     {
++      p = gdImageGetPixel (im->tile, srcx, srcy);
+       /* Allow for transparency */
+       if (p != gdImageGetTransparent (im->tile))
+ 	{
+@@ -1125,13 +1126,6 @@
+   *onP = on;
+ }
+ 
+-int
+-gdImageBoundsSafe (gdImagePtr im, int x, int y)
+-{
+-  return (!(((y < 0) || (y >= im->sy)) ||
+-	    ((x < 0) || (x >= im->sx))));
+-}
+-
+ void
+ gdImageChar (gdImagePtr im, gdFontPtr f, int x, int y,
+ 	     int c, int color)
+@@ -1852,7 +1846,7 @@
+     {
+       int got;
+       accum += (double) dstW / (double) srcW;
+-      got = (int) floor (accum);
++      got = (int) accum;
+       stx[i] = got;
+       accum -= got;
+     }
+@@ -1861,7 +1855,7 @@
+     {
+       int got;
+       accum += (double) dstH / (double) srcH;
+-      got = (int) floor (accum);
++      got = (int) accum;
+       sty[i] = got;
+       accum -= got;
+     }
+@@ -1927,11 +1921,11 @@
+ 			  else
+ 			    {
+ 			      /* Find or create the best match */
+-			      mapTo = gdImageColorResolveAlpha (dst,
+-						      gdTrueColorGetRed (c),
+-						    gdTrueColorGetGreen (c),
+-						     gdTrueColorGetBlue (c),
+-						   gdTrueColorGetAlpha (c));
++			      nc = gdImageColorResolveAlpha (dst,
++						      gdImageRed (src, c),
++						    gdImageGreen (src, c),
++						     gdImageBlue (src, c),
++						    gdImageAlpha (src, c));
+ 			    }
+ 			  colorMap[c] = nc;
+ 			}
+@@ -1977,7 +1971,6 @@
+     {
+       for (x = dstX; (x < dstX + dstW); x++)
+ 	{
+-	  int pd = gdImageGetPixel (dst, x, y);
+ 	  float sy1, sy2, sx1, sx2;
+ 	  float sx, sy;
+ 	  float spixels = 0;
+@@ -1990,18 +1983,18 @@
+ 	  do
+ 	    {
+ 	      float yportion;
+-	      if (floor (sy) == floor (sy1))
++	      if ((int) sy == (int) sy1)
+ 		{
+-		  yportion = 1.0 - (sy - floor (sy));
++		  yportion = 1.0 - (sy - (int) sy);
+ 		  if (yportion > sy2 - sy1)
+ 		    {
+ 		      yportion = sy2 - sy1;
+ 		    }
+-		  sy = floor (sy);
++		  sy = (int) sy;
+ 		}
+-	      else if (sy == floor (sy2))
++	      else if (sy == (int) sy2)
+ 		{
+-		  yportion = sy2 - floor (sy2);
++		  yportion = sy2 - (int) sy2;
+ 		}
+ 	      else
+ 		{
+@@ -2017,33 +2010,44 @@
+ 		  float xportion;
+ 		  float pcontribution;
+ 		  int p;
+-		  if (floor (sx) == floor (sx1))
++		  if ((int) sx == (int) sx1)
+ 		    {
+-		      xportion = 1.0 - (sx - floor (sx));
++		      xportion = 1.0 - (sx - (int) sx);
+ 		      if (xportion > sx2 - sx1)
+ 			{
+ 			  xportion = sx2 - sx1;
+ 			}
+-		      sx = floor (sx);
++		      sx = (int) sx;
+ 		    }
+-		  else if (sx == floor (sx2))
++		  else if (sx == (int) sx2)
+ 		    {
+-		      xportion = sx2 - floor (sx2);
++		      xportion = sx2 - (int) sx2;
+ 		    }
+ 		  else
+ 		    {
+ 		      xportion = 1.0;
+ 		    }
+ 		  pcontribution = xportion * yportion;
+-		  p = gdImageGetTrueColorPixel (
+-						 src,
+-						 (int) sx,
+-						 (int) sy);
+-		  red += gdTrueColorGetRed (p) * pcontribution;
+-		  green += gdTrueColorGetGreen (p) * pcontribution;
+-		  blue += gdTrueColorGetBlue (p) * pcontribution;
+-		  alpha += gdTrueColorGetAlpha (p) * pcontribution;
+-		  spixels += xportion * yportion;
++		  if (gdImageBoundsSafe (src, (int) sx, (int) sy))
++		    {
++		      if (gdImageTrueColor(src))
++		        {
++			  p = gdImageTrueColorPixel(src, (int) sx, (int) sy);
++			  red   += gdTrueColorGetRed(p)   * pcontribution;
++			  green += gdTrueColorGetGreen(p) * pcontribution;
++			  blue  += gdTrueColorGetBlue(p)  * pcontribution;
++			  alpha += gdTrueColorGetAlpha(p) * pcontribution;
++		        }
++		      else
++			{
++			  p = gdImagePalettePixel(src, (int) sx, (int) sy);
++			  red   += src->red[p]   * pcontribution;
++			  green += src->green[p] * pcontribution;
++			  blue  += src->blue[p]  * pcontribution;
++			  alpha += src->alpha[p] * pcontribution;
++			}
++		      spixels += xportion * yportion;
++		    }
+ 		  sx += 1.0;
+ 		}
+ 	      while (sx < sx2);
+@@ -2074,12 +2078,15 @@
+ 	    {
+ 	      alpha = gdAlphaMax;
+ 	    }
+-	  gdImageSetPixel (dst,
+-			   x, y,
+-			   gdTrueColorAlpha ((int) red,
++	  if (gdImageBoundsSafe (dst, x, y))
++	    {
++	      gdImageTrueColorPixel (dst,
++			   x, y) =
++			   (gdTrueColorAlpha ((int) red,
+ 					     (int) green,
+ 					     (int) blue,
+ 					     (int) alpha));
++	    }
+ 	}
+     }
+ }
+diff -Naur gd-2.0.1/gd.h gd-2.0.1.patched/gd.h
+--- gd-2.0.1/gd.h	Tue Apr  3 16:44:41 2001
++++ gd-2.0.1.patched/gd.h	Tue Jul 30 11:34:45 2002
 @@ -24,6 +24,18 @@
  #include <stdio.h>
  #include "gd_io.h"
@@ -17697,238 +16626,127 @@ diff -Naur gd-1.8.4/gd.h gd-1.8.4.patched/gd.h
 +#define HAVE_JPEG
 +#endif 
 +
-+#if defined(HAVE_LIBTTF) && defined(HAVE_FREETYPE_H)
-+#define HAVE_TTF
++#if defined(HAVE_LIBFREETYPE) && defined(HAVE_FREETYPE_FREETYPE_H)
++#define HAVE_FREETYPE
 +#endif 
 +
 +#if defined(HAVE_LIBXPM) && defined(HAVE_X11_XPM_H)
 +#define HAVE_XPM
 +#endif 
 +
- /* This can't be changed in the current palette-only version of gd. */
+ /* The maximum number of palette entries in palette-based images.
+ 	In the wonderful new world of gd 2.0, you can of course have
+ 	many more colors when using truecolor mode. */
+@@ -235,7 +247,6 @@
+ void gdImageRectangle(gdImagePtr im, int x1, int y1, int x2, int y2, int color);
+ /* Solid bar. Upper left corner first, lower right corner second. */
+ void gdImageFilledRectangle(gdImagePtr im, int x1, int y1, int x2, int y2, int color);
+-int gdImageBoundsSafe(gdImagePtr im, int x, int y);
+ void gdImageChar(gdImagePtr im, gdFontPtr f, int x, int y, int c, int color);
+ void gdImageCharUp(gdImagePtr im, gdFontPtr f, int x, int y, int c, int color);
+ void gdImageString(gdImagePtr im, gdFontPtr f, int x, int y, unsigned char *s, int color);
+@@ -283,17 +294,17 @@
+ /* A simpler way to obtain an opaque truecolor value for drawing on a
+ 	truecolor image. Not for use with palette images! */
  
- #define gdMaxColors 256
-@@ -122,6 +134,7 @@
- gdImagePtr gdImageCreateFromGd2PartCtx(gdIOCtxPtr in, int srcx, int srcy, int w, int h);
+-#define gdTrueColor(r, g, b) (((r) << 16) + \
+-	((g) << 8) + \
++#define gdTrueColor(r, g, b) (((r) << 16) | \
++	((g) << 8) | \
+ 	(b))
  
- gdImagePtr gdImageCreateFromXbm(FILE *fd);
-+gdImagePtr gdImageCreateFromXpm(char* filename);
+ /* Returns a truecolor value with an alpha channel component.
+ 	gdAlphaMax (127, **NOT 255**) is transparent, 0 is completely
+ 	opaque. */
  
- void gdImageDestroy(gdImagePtr im);
- void gdImageSetPixel(gdImagePtr im, int x, int y, int color);
-diff -Naur gd-1.8.4/gd_jpeg.c gd-1.8.4.patched/gd_jpeg.c
---- gd-1.8.4/gd_jpeg.c	Tue Feb 13 12:05:32 2001
-+++ gd-1.8.4.patched/gd_jpeg.c	Sun Jul 21 23:25:42 2002
-@@ -760,6 +760,30 @@
-   dest->pub.term_destination = term_destination;
-   dest->outfile = outfile;
+-#define gdTrueColorAlpha(r, g, b, a) (((a) << 24) + \
+-	((r) << 16) + \
+-	((g) << 8) + \
++#define gdTrueColorAlpha(r, g, b, a) (((a) << 24) | \
++	((r) << 16) | \
++	((g) << 8) | \
+ 	(b))
+ 
+ void gdImageColorDeallocate(gdImagePtr im, int color);
+@@ -456,6 +467,10 @@
+ 	of image is also your responsibility. */
+ #define gdImagePalettePixel(im, x, y) (im)->pixels[(y)][(x)]
+ #define gdImageTrueColorPixel(im, x, y) (im)->tpixels[(y)][(x)]
++#define gdImageBoundsSafe(im, x, y) \
++		(((y) >= 0) && ((y) < (im)->sy) && \
++		 ((x) >= 0) && ((x) < (im)->sx))
++
+ 
+ /* I/O Support routines. */
+ 
+diff -Naur gd-2.0.1/gdcache.c gd-2.0.1.patched/gdcache.c
+--- gd-2.0.1/gdcache.c	Tue Apr  3 16:44:42 2001
++++ gd-2.0.1.patched/gdcache.c	Tue Jul 30 11:35:06 2002
+@@ -4,7 +4,7 @@
+ #ifdef HAVE_LIBTTF
+ #define NEED_CACHE 1
+ #else
+-#ifdef HAVE_LIBFREETYPE
++#ifdef HAVE_FREETYPE
+ #define NEED_CACHE 1
+ #endif
+ #endif
+diff -Naur gd-2.0.1/gdft.c gd-2.0.1.patched/gdft.c
+--- gd-2.0.1/gdft.c	Tue Apr  3 16:44:42 2001
++++ gd-2.0.1.patched/gdft.c	Tue Jul 30 11:35:20 2002
+@@ -29,7 +29,7 @@
+ 		   angle, x, y, string);
  }
--
-+#else  /* HAVE_JPEG */
-+void gdImageJpeg(gdImagePtr im, FILE *outFile, int quality)
-+{
-+  fprintf(stderr,"libgd was not built with jpeg support\n");
-+}
-+void* gdImageJpegPtr(gdImagePtr im, int *size, int quality)
-+{
-+  fprintf(stderr,"libgd was not built with jpeg support\n");
-+  return NULL;
-+}
-+void gdImageJpegCtx(gdImagePtr im, gdIOCtx *outfile, int quality)
-+{
-+  fprintf(stderr,"libgd was not built with jpeg support\n");
-+}
-+gdImagePtr gdImageCreateFromJpeg(FILE *inFile)
-+{
-+  fprintf(stderr,"libgd was not built with jpeg support\n");
-+  return NULL;
-+}
-+gdImagePtr
-+gdImageCreateFromJpegCtx(gdIOCtx *infile)
-+{
-+  fprintf(stderr,"libgd was not built with jpeg support\n");
-+  return NULL;
-+}
- #endif /* HAVE_JPEG */
  
-diff -Naur gd-1.8.4/gdtestft.c gd-1.8.4.patched/gdtestft.c
---- gd-1.8.4/gdtestft.c	Tue Feb  6 11:44:02 2001
-+++ gd-1.8.4.patched/gdtestft.c	Wed Dec 31 16:00:00 1969
-@@ -1,94 +0,0 @@
--#include "gd.h"
--#include <string.h>
--
--#define PI 3.141592
--#define DEG2RAD(x) ((x)*PI/180.)
--
--#define MAX(x,y) ((x) > (y) ? (x) : (y))
--#define MIN(x,y) ((x) < (y) ? (x) : (y))
--
--#define MAX4(x,y,z,w) \
--	((MAX((x),(y))) > (MAX((z),(w))) ? (MAX((x),(y))) : (MAX((z),(w))))
--#define MIN4(x,y,z,w) \
--	((MIN((x),(y))) < (MIN((z),(w))) ? (MIN((x),(y))) : (MIN((z),(w))))
--
--#define MAXX(x) MAX4(x[0],x[2],x[4],x[6])
--#define MINX(x) MIN4(x[0],x[2],x[4],x[6])
--#define MAXY(x) MAX4(x[1],x[3],x[5],x[7])
--#define MINY(x) MIN4(x[1],x[3],x[5],x[7])
--
--int main(int argc, char *argv[])
--{
 -#ifndef HAVE_LIBFREETYPE
--	fprintf(stderr, "gd was not compiled with HAVE_LIBFREETYPE defined.\n");
--	fprintf(stderr, "Install the FreeType library, including the\n");
--	fprintf(stderr, "header files. Then edit the gd Makefile, type\n");
--	fprintf(stderr, "make clean, and type make again.\n");
--	return 1;
--#else
--	gdImagePtr im;
--	int black;
--	int white;
--	int brect[8];
--	int x, y;
--	char *err;
--	FILE *out;
--#ifdef JISX0208
--	char *s = "Hello. ‚±‚ñ‚É‚¿‚Í Qyjpqg,"; /* String to draw. */
--#else
--	char *s = "Hello. Qyjpqg,"; /* String to draw. */
--#endif
--
--	double sz = 40.;
--
--#if 0
--	double angle = 0.;
--#else
--	double angle = DEG2RAD(-90);
--#endif
--
--#ifdef JISX0208
--	char *f = "/usr/openwin/lib/locale/ja/X11/fonts/TT/HG-MinchoL.ttf"; /* UNICODE */
--	/* char *f = "/usr/local/lib/fonts/truetype/DynaFont/dfpop1.ttf"; */ /* SJIS */
--#else
--	char *f = "times"; /* TrueType font */
--#endif
--	
--	/* obtain brect so that we can size the image */
--	err = gdImageStringFT((gdImagePtr)NULL,&brect[0],0,f,sz,angle,0,0,s);
--	if (err) {fprintf(stderr,err); return 1;}
--
--	/* create an image just big enough for the string */
--	x = MAXX(brect) - MINX(brect) + 6;
--	y = MAXY(brect) - MINY(brect) + 6;
--#if 0
--	im = gdImageCreate(500,500);
--#else
--	im = gdImageCreate(x,y);
--#endif
--
--	/* Background color (first allocated) */
--	white = gdImageColorResolve(im, 255, 255, 255);
--	black = gdImageColorResolve(im, 0, 0, 0);
--
--	/* render the string, offset origin to center string*/
--	x = 0 - MINX(brect) + 3;
--	y = 0 - MINY(brect) + 3;
--
--	err = gdImageStringFT(im,NULL,black,f,sz,angle,x,y,s);
--	if (err) {fprintf(stderr,err); return 1;}
--	/* TBB: Write img to test/fttest.png */
--	out = fopen("test/fttest.png", "wb");
--	if (!out) {
--		fprintf(stderr, "Can't create test/fttest.png\n");
--		exit(1);
--	}
--	gdImagePng(im, out);
--	fclose(out);
--	fprintf(stderr, "Test image written to test/fttest.png\n");
--	/* Destroy it */
--	gdImageDestroy(im);
--
--	return 0;
--#endif /* HAVE_FREETYPE */
--}	
-diff -Naur gd-1.8.4/gdtojpeg.c gd-1.8.4.patched/gdtojpeg.c
---- gd-1.8.4/gdtojpeg.c	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/gdtojpeg.c	Sun Jul 21 23:25:42 2002
-@@ -0,0 +1,40 @@
-+#include <stdio.h>
-+#include "gd.h"
-+
-+/* A short program which converts a .gd file into a .jpeg file, for
-+	your convenience in creating images on the fly from a
-+	basis image that must be loaded quickly. The .gd format
-+	is not intended to be a general-purpose format. */
-+
-+int main(int argc, char **argv)
-+{
-+	gdImagePtr im;
-+	FILE *in, *out;
-+	if (argc != 3) {
-+		fprintf(stderr, "Usage: gdtopng filename.gd filename.jpeg\n");
-+		exit(1);
-+	}
-+	in = fopen(argv[1], "rb");
-+	if (!in) {
-+		fprintf(stderr, "Input file does not exist!\n");
-+		exit(1);
-+	}
-+	im = gdImageCreateFromGd(in);
-+	fclose(in);
-+	if (!im) {
-+		fprintf(stderr, "Input is not in PNG format!\n");
-+		exit(1);
-+	}
-+	out = fopen(argv[2], "wb");
-+	if (!out) {
-+		fprintf(stderr, "Output file cannot be written to!\n");
-+		gdImageDestroy(im);
-+		exit(1);	
-+	}
-+	gdImageJpeg(im, out, 50);
-+	fclose(out);
-+	gdImageDestroy(im);
-+
-+	return 0;
-+}
-+
-diff -Naur gd-1.8.4/gdttf.c gd-1.8.4.patched/gdttf.c
---- gd-1.8.4/gdttf.c	Tue Feb  6 11:44:02 2001
-+++ gd-1.8.4.patched/gdttf.c	Sun Jul 21 23:25:42 2002
-@@ -11,7 +11,7 @@
- #include <string.h>
- #include <math.h>
- #include "gd.h"
--#ifndef HAVE_LIBTTF
-+#ifndef HAVE_TTF
- char * gdImageStringTTF(gdImage *im, int *brect, int fg, char *fontname,
-                 double ptsize, double angle, int x, int y, char *string)
++#ifndef HAVE_FREETYPE
+ char *
+ gdImageStringFT (gdImage * im, int *brect, int fg, char *fontlist,
+ 		 double ptsize, double angle, int x, int y, char *string)
+@@ -933,4 +933,4 @@
+     : (v1 > 0 ? ((v1 + 63) >> 6) : v1 >> 6);
+ }
+ 
+-#endif /* HAVE_LIBFREETYPE */
++#endif /* HAVE_FREETYPE */
+diff -Naur gd-2.0.1/gdtestft.c gd-2.0.1.patched/gdtestft.c
+--- gd-2.0.1/gdtestft.c	Tue Apr  3 16:44:42 2001
++++ gd-2.0.1.patched/gdtestft.c	Tue Jul 30 11:35:38 2002
+@@ -21,8 +21,8 @@
+ int
+ main (int argc, char *argv[])
  {
-diff -Naur gd-1.8.4/gdxpm.c gd-1.8.4.patched/gdxpm.c
---- gd-1.8.4/gdxpm.c	Tue Feb  6 11:44:02 2001
-+++ gd-1.8.4.patched/gdxpm.c	Sun Jul 21 23:25:42 2002
-@@ -18,7 +18,7 @@
+-#ifndef HAVE_LIBFREETYPE
+-  fprintf (stderr, "gd was not compiled with HAVE_LIBFREETYPE defined.\n");
++#ifndef HAVE_FREETYPE
++  fprintf (stderr, "gd was not compiled with HAVE_FREETYPE defined.\n");
+   fprintf (stderr, "Install the FreeType library, including the\n");
+   fprintf (stderr, "header files. Then edit the gd Makefile, type\n");
+   fprintf (stderr, "make clean, and type make again.\n");
+diff -Naur gd-2.0.1/gdxpm.c gd-2.0.1.patched/gdxpm.c
+--- gd-2.0.1/gdxpm.c	Tue Apr  3 16:44:42 2001
++++ gd-2.0.1.patched/gdxpm.c	Tue Jul 30 05:58:34 2002
+@@ -20,7 +20,7 @@
  
  #else
  
 -#include "xpm.h"
-+#include <X11/xpm.h>
++#include "X11/xpm.h"
  
- gdImagePtr gdImageCreateFromXpm(char *filename)
- 	{
-diff -Naur gd-1.8.4/install-item gd-1.8.4.patched/install-item
---- gd-1.8.4/install-item	Tue Feb  6 11:44:02 2001
-+++ gd-1.8.4.patched/install-item	Wed Dec 31 16:00:00 1969
+ gdImagePtr
+ gdImageCreateFromXpm (char *filename)
+diff -Naur gd-2.0.1/install-item gd-2.0.1.patched/install-item
+--- gd-2.0.1/install-item	Tue Apr  3 16:44:42 2001
++++ gd-2.0.1.patched/install-item	Wed Dec 31 19:00:00 1969
 @@ -1,5 +0,0 @@
 -#!/bin/sh
 -
 -cp $2 $3
 -chmod $1 $3
 -
-diff -Naur gd-1.8.4/install-sh gd-1.8.4.patched/install-sh
---- gd-1.8.4/install-sh	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/install-sh	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/install-sh gd-2.0.1.patched/install-sh
+--- gd-2.0.1/install-sh	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/install-sh	Tue Jul 30 05:29:46 2002
 @@ -0,0 +1,250 @@
 +#!/bin/sh
 +#
@@ -18180,9 +16998,9 @@ diff -Naur gd-1.8.4/install-sh gd-1.8.4.patched/install-sh
 +
 +
 +exit 0
-diff -Naur gd-1.8.4/libtool gd-1.8.4.patched/libtool
---- gd-1.8.4/libtool	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/libtool	Mon Jul 22 00:04:36 2002
+diff -Naur gd-2.0.1/libtool gd-2.0.1.patched/libtool
+--- gd-2.0.1/libtool	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/libtool	Tue Jul 30 11:36:01 2002
 @@ -0,0 +1,5229 @@
 +#! /bin/sh
 +
@@ -23413,9 +22231,9 @@ diff -Naur gd-1.8.4/libtool gd-1.8.4.patched/libtool
 +# mode:shell-script
 +# sh-indentation:2
 +# End:
-diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patched/ltmain.sh
---- gd-1.8.4/ltmain.sh	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/ltmain.sh	Mon Jul 22 00:02:04 2002
+diff -Naur gd-2.0.1/ltmain.sh gd-2.0.1.patched/ltmain.sh
+--- gd-2.0.1/ltmain.sh	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/ltmain.sh	Tue Jul 30 05:38:52 2002
 @@ -0,0 +1,4946 @@
 +# ltmain.sh - Provide generalized library-building support services.
 +# NOTE: Changing this file will not affect anything until you rerun configure.
@@ -28363,56 +27181,9 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patched/ltmain.sh
 +# mode:shell-script
 +# sh-indentation:2
 +# End:
-diff -Naur gd-1.8.4/mathmake.c gd-1.8.4.patched/mathmake.c
---- gd-1.8.4/mathmake.c	Tue Feb  6 11:44:02 2001
-+++ gd-1.8.4.patched/mathmake.c	Wed Dec 31 16:00:00 1969
-@@ -1,43 +0,0 @@
--#include <stdio.h>
--#include <math.h>
--
--#define scale 1024
--
--int basis[91];
--int cost[360];
--
--main(void) {
--	int i;
--	printf("#define costScale %d\n", scale);
--	printf("int cost[] = {\n  ");
--	for (i=0; (i <= 90); i++) {
--		basis[i] = cos((double)i * .0174532925) * scale;
--	}
--	for (i=0; (i < 90); i++) {
--		printf("%d,\n  ", cost[i] = basis[i]);
--	}
--	for (i=90; (i < 180); i++) {
--		printf("%d,\n  ", cost[i] = -basis[180-i]);
--	}
--	for (i=180; (i < 270); i++) {
--		printf("%d,\n  ", cost[i] = -basis[i-180]);
--	}
--	for (i=270; (i < 359); i++) {
--		printf("%d,\n  ", cost[i] = basis[360-i]);
--	}
--	printf("%d\n", cost[359] = basis[1]);
--	printf("};\n");
--	printf("#define sintScale %d\n", scale);
--	printf("int sint[] = {\n  ");
--	for (i=0; (i<360); i++) {
--		int val;
--		val = cost[(i + 270) % 360];
--		if (i != 359) {
--			printf("%d,\n  ", val);
--		} else {
--			printf("%d\n", val);
--		}
--	}
--	printf("};\n");
--}
--		
-diff -Naur gd-1.8.4/missing gd-1.8.4.patched/missing
---- gd-1.8.4/missing	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/missing	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/missing gd-2.0.1.patched/missing
+--- gd-2.0.1/missing	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/missing	Tue Jul 30 05:29:52 2002
 @@ -0,0 +1,188 @@
 +#! /bin/sh
 +# Common stub for a few missing GNU programs while installing.
@@ -28602,9 +27373,9 @@ diff -Naur gd-1.8.4/missing gd-1.8.4.patched/missing
 +esac
 +
 +exit 0
-diff -Naur gd-1.8.4/mkinstalldirs gd-1.8.4.patched/mkinstalldirs
---- gd-1.8.4/mkinstalldirs	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/mkinstalldirs	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/mkinstalldirs gd-2.0.1.patched/mkinstalldirs
+--- gd-2.0.1/mkinstalldirs	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/mkinstalldirs	Tue Jul 30 05:38:47 2002
 @@ -0,0 +1,40 @@
 +#! /bin/sh
 +# mkinstalldirs --- make directory hierarchy
@@ -28612,7 +27383,7 @@ diff -Naur gd-1.8.4/mkinstalldirs gd-1.8.4.patched/mkinstalldirs
 +# Created: 1993-05-16
 +# Public domain
 +
-+# $Id: patch_gd.pl,v 1.4 2002/07/22 07:27:59 lstein Exp $
++# $Id: patch_gd.pl,v 1.6 2002/08/06 20:42:52 lstein Exp $
 +
 +errstatus=0
 +
@@ -28646,2949 +27417,6 @@ diff -Naur gd-1.8.4/mkinstalldirs gd-1.8.4.patched/mkinstalldirs
 +exit $errstatus
 +
 +# mkinstalldirs ends here
-diff -Naur gd-1.8.4/readme.txt gd-1.8.4.patched/readme.txt
---- gd-1.8.4/readme.txt	Tue Feb  6 11:44:03 2001
-+++ gd-1.8.4.patched/readme.txt	Wed Dec 31 16:00:00 1969
-@@ -1,2939 +0,0 @@
--
--                                   gd 1.8.4
--                                       
--A graphics library for fast image creation
--
--Follow this link to the latest version of this document.
--
--     _HEY! READ THIS!_ gd 1.8.4 creates PNG, JPEG and WBMP images, not
--     GIF images. This is a good thing. PNG is a more compact format, and
--     full compression is available. JPEG works well with photographic
--     images, and is still more compatible with the major Web browsers
--     than even PNG is. WBMP is intended for wireless devices (not
--     regular web browsers). Existing code will need modification to call
--     gdImagePng or gdImageJpeg instead of gdImageGif. _Please do not ask
--     us to send you the old GIF version of GD._ Unisys holds a patent on
--     the LZW compression algorithm, which is used in fully compressed
--     GIF images. The best solution is to move to legally unencumbered,
--     well-compressed, modern image formats such as PNG and JPEG as soon
--     as possible.
--     
--     gd 1.8.4 _requires_ that the following libraries also be installed:
--     
--     libpng (see the libpng home page)
--     
--     zlib (see the info-zip home page) zlib
--     
--     jpeg-6b or later, if desired (see the Independent JPEG Group home
--     page)
--     
--     If you want to use the TrueType font support, you must also install
--     the _FreeType 2.x library_, including the header files. See the
--     Freetype Home Page, or SourceForge. No, I cannot explain why that
--     site is down on a particular day, and no, I can't send you a copy.
--     
--     If you want to use the Xpm color bitmap loading support, you must
--     also have the X Window System and the Xpm library installed (Xpm is
--     often included in modern X distributions).
--     
--     Please read the documentation and install the required libraries.
--     Do not send email asking why png.h is not found. See the
--     requirements section for more information. Thank you!
--     
--  Table of Contents
--  
--     * Credits and license terms
--     * What's new in version "XYZ" of GD?
--     * What is gd?
--     * What if I want to use another programming language?
--     * What else do I need to use gd?
--     * How do I get gd?
--     * How do I build gd?
--     * gd basics: using gd in your program
--     * webpng: a useful example
--     * Function and type reference by category
--     * About the additional .gd image file format
--     * Please tell us you're using gd!
--     * If you have problems
--     * Alphabetical quick index
--       
--   Up to the Boutell.Com, Inc. Home Page
--   
--  Credits and license terms
--  
--   In order to resolve any possible confusion regarding the authorship of
--   gd, the following copyright statement covers all of the authors who
--   have required such a statement. _If you are aware of any oversights in
--   this copyright notice, please contact Thomas Boutell who will be
--   pleased to correct them._
--
--COPYRIGHT STATEMENT FOLLOWS THIS LINE
--
--     Portions copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000 by Cold
--     Spring Harbor Laboratory. Funded under Grant P41-RR02188 by the
--     National Institutes of Health.
--     
--     Portions copyright 1996, 1997, 1998, 1999, 2000 by Boutell.Com,
--     Inc.
--     
--     Portions relating to GD2 format copyright 1999, 2000 Philip Warner.
--     
--     Portions relating to PNG copyright 1999, 2000 Greg Roelofs.
--     
--     Portions relating to libttf copyright 1999, 2000 John Ellson
--     (ellson@lucent.com).
--     
--     Portions relating to JPEG copyright 2000, Doug Becker and copyright
--     (C) 1994-1998, Thomas G. Lane. This software is based in part on
--     the work of the Independent JPEG Group.
--     
--     Portions relating to WBMP copyright 2000 Maurice Szmurlo and Johan
--     Van den Brande.
--     
--     _Permission has been granted to copy, distribute and modify gd in
--     any context without fee, including a commercial application,
--     provided that this notice is present in user-accessible supporting
--     documentation._
--     
--     This does not affect your ownership of the derived work itself, and
--     the intent is to assure proper credit for the authors of gd, not to
--     interfere with your productive use of gd. If you have questions,
--     ask. "Derived works" includes all programs that utilize the
--     library. Credit must be given in user-accessible documentation.
--     
--     _This software is provided "AS IS."_ The copyright holders disclaim
--     all warranties, either express or implied, including but not
--     limited to implied warranties of merchantability and fitness for a
--     particular purpose, with respect to this code and accompanying
--     documentation.
--     
--     Although their code does not appear in gd 1.8.4, the authors wish
--     to thank David Koblas, David Rowley, and Hutchison Avenue Software
--     Corporation for their prior contributions.
--     
--END OF COPYRIGHT STATEMENT
--
--  What is gd?
--  
--   gd is a graphics library. It allows your code to quickly draw images
--   complete with lines, arcs, text, multiple colors, cut and paste from
--   other images, and flood fills, and write out the result as a PNG or
--   JPEG file. This is particularly useful in World Wide Web applications,
--   where PNG and JPEG are two of the formats accepted for inline images
--   by most browsers.
--   
--   gd is not a paint program. If you are looking for a paint program, you
--   are looking in the wrong place. If you are not a programmer, you are
--   looking in the wrong place.
--   
--   gd does not provide for every possible desirable graphics operation.
--   It is not necessary or desirable for gd to become a kitchen-sink
--   graphics package, but version 1.7.3 incorporates most of the commonly
--   requested features for an 8-bit 2D package. Support for truecolor
--   images, including truecolor JPEG and PNG, is planned for version 2.0.
--   
--  What if I want to use another programming language?
--  
--    Perl
--    
--   gd can also be used from Perl, courtesy of Lincoln Stein's GD.pm
--   library, which uses gd as the basis for a set of Perl 5.x classes.
--   Highly recommended.
--   
--    Tcl
--    
--   gd can be used from Tcl with John Ellson's Gdtclft dynamically loaded
--   extension package. (Gdtclft2.0 or later is needed for gd-1.6 and up
--   with PNG output.)
--   
--    Pascal
--    
--   Pascal enthusiasts should look into Michael Bradbury's gdfp package.
--   
--    Haskell
--    
--   A new gd interface is now available for Haskell programmers.
--   
--    REXX
--    
--   A gd interface for the REXX language is available.
--   
--    Any Language
--    
--   There are, at the moment, at least three simple interpreters that
--   perform gd operations. You can output the desired commands to a simple
--   text file from whatever scripting language you prefer to use, then
--   invoke the interpreter.
--   
--     * tgd, by Bradley K. Sherman
--     * fly, by Martin Gleeson
--       
--  What's new in version 1.8.4?
--  
--     * Add support for FreeType2 (John Ellson ellson@lucent.com)
--     * Add support for finding in fonts in a builtin DEFAULT_FONTPATH, or
--       in a path from the GDFONTPATH environment variable.
--     * remove some unused symbols to reduce compiler warnings
--     * bugfix in size comparisons in gdImageCompare
--     * REXX now mentioned
--     * All memory allocation functions are now wrapped within the
--       library; gdFree is exported and recommended for freeing memory
--       returned by the gdImage(Something)Ptr family of functions.
--       
--  What's new in version 1.8.3?
--  
--     * WBMP output memory leak fixed
--     * #include <gd.h> corrected to #include "gd.h" in gd_wbmp.c
--     * Documented the fact that the source and output images shouldn't
--       match in the WBMP test except for black and white source images
--       
--  What's new in version 1.8.2?
--  
--     * WBMP support debugged and improved by Johann Van den Brande
--     * WBMP tests added to gdtest.c by Thomas Boutell
--     * Use of platform-dependent 'install' command removed by Thomas
--       Boutell
--     * Comments added to Makefile warning users to juggle the order of
--       the libraries if the linker complains; is there any portable way
--       to do this automatically, short of using autoconf?
--     * Documentation of gdImageCreateFromXpm corrected
--     * Updated links to fast-moving, always dodging libpng and zlib web
--       sites
--       
--  What's new in version 1.8.1?
--  
--     * Optional components no longer built by default (following the
--       documentation)
--     * JPEG code no longer requires inappropriate header files
--     * Win32 patches from Joe Gregorio
--     * 16-bit font support for bdftogd, from Honza Pazdziora
--       
--  What's new in version 1.8?
--  
--     * Support for JPEG output, courtesy of Doug Becker
--     * A link to Michael Bradbery's Pascal wrapper
--     * Support for WBMP output, courtesy of Maurice Szmurlo
--     * gdImageColorClosestHWB function based on hue, whiteness,
--       blackness, superior to the regular gdImageColorClosest function,
--       courtesy of Philip Warner
--     * License clarification: yes, you can modify gd
--       
--    Additional JPEG Information
--    
--   Support for reading and writing JPEG-format images is courtesy of Doug
--   Becker and the Independent JPEG Group / Thomas G. Lane. You can get
--   the latest version of the IJG JPEG software from
--   ftp://ftp.uu.net/graphics/jpeg/ (e.g., the jpegsrc.v6b.tar.gz file).
--   You _must_ use version 6b or later of the IJG JPEG software. You might
--   also consult the JPEG FAQ at http://www.faqs.org/faqs/jpeg-faq/.
--   
--  What's new in version 1.7.3?
--  
--   Another attempt at Makefile fixes to permit linking with all libraries
--   required on platforms with order- dependent linkers. Perhaps it will
--   work this time.
--   
--  What's new in version 1.7.2?
--  
--   An uninitialized-pointer bug in gdtestttf.c was corrected. This bug
--   caused crashes at the end of each call to gdImageStringTTF on some
--   platforms. Thanks to Wolfgang Haefelinger.
--   
--   Documentation fixes. Thanks to Dohn Arms.
--   
--   Makefile fixes to permit linking with all libraries required on
--   platforms with order- dependent linkers.
--   
--  What's new in version 1.7.1?
--  
--   A minor buglet in the Makefile was corrected, as well as an inaccurate
--   error message in gdtestttf.c. Thanks to Masahito Yamaga.
--   
--  What's new in version 1.7?
--  
--   Version 1.7 contains the following changes:
--     * Japanese language support for the TrueType functions. Thanks to
--       Masahito Yamaga.
--     * autoconf and configure have been removed, in favor of a carefully
--       designed Makefile which produces and properly installs the library
--       and the binaries. System-dependent variables are at the top of the
--       Makefile for easy modification. I'm sorry, folks, but autoconf
--       generated _many, many confused email messages_ from people who
--       didn't have things where autoconf expected to find them. I am not
--       an autoconf/automake wizard, and gd is a simple, very compact
--       library which does not need to be a shared library. I _did_ make
--       many improvements over the old gd 1.3 Makefile, which were
--       directly inspired by the autoconf version found in the 1.6 series
--       (thanks to John Ellson).
--     * Completely ANSI C compliant, according to the -pedantic-errors
--       flag of gcc. Several pieces of not-quite-ANSI-C code were causing
--       problems for those with non-gcc compilers.
--     * gdttf.c patched to allow the use of Windows symbol fonts, when
--       present (thanks to Joseph Peppin).
--     * extern "C" wrappers added to gd.h and the font header files for
--       the convenience of C++ programmers. bdftogd was also modified to
--       automatically insert these wrappers into future font header files.
--       Thanks to John Lindal.
--     * Compiles correctly on platforms that don't define SEEK_SET. Thanks
--       to Robert Bonomi.
--     * Loads Xpm images via the gdImageCreateFromXpm function, if the Xpm
--       library is available. Thanks to Caolan McNamara.
--       
--  What's new in version 1.6.3?
--  
--   Version 1.6.3 corrects a memory leak in gd_png.c. This leak caused a
--   significant amount of memory to be allocated and not freed when
--   writing a PNG image.
--   
--  What's new in version 1.6.2?
--  
--   Version 1.6.2 from John Ellson adds two new functions:
--     * gdImageStringTTF - scalable, rotatable, anti-aliased, TrueType
--       strings using the FreeType library, but only if libttf is found by
--       configure. _We do not provide TrueType fonts. Obtaining them is
--       entirely up to you._
--     * gdImageColorResolve - an efficient alternative for the common code
--       fragment:
--
--
--      if ((color=gdImageColorExact(im,R,G,B)) < 0)
--          if ((color=gdImageColorAllocate(im,R,G,B)) < 0)
--              color=gdImageColorClosest(im,R,G,B);
--
--   Also in this release the build process has been converted to GNU
--   autoconf/automake/libtool conventions so that both (or either) static
--   and shared libraries can be built.
--   
--  What's new in version 1.6.1?
--  
--   Version 1.6.1 incorporates superior PNG reading and writing code from
--   Greg Roelofs, with minor modifications by Tom Boutell. Specifically, I
--   altered his code to read non-palette images (converting them to
--   palette images badly, by dithering them), and to tolerate palette
--   images with types of transparency that gd doesn't actually support (it
--   just ignores the advanced transparency features). Any bugs in this
--   area are therefore my fault, not Greg's.
--   
--   Unlike gd 1.6, users should have no trouble linking with gd 1.6.1 if
--   they follow the instructions and install all of the pieces. However,
--   _If you get undefined symbol errors, be sure to check for older
--   versions of libpng in your library directories!_
--   
--  What's new in version 1.6?
--  
--   Version 1.6 features the following changes:
--   
--   _Support for 8-bit palette PNG images has been added. Support for GIF
--   has been removed._ This step was taken to completely avoid the legal
--   controversy regarding the LZW compression algorithm used in GIF.
--   Unisys holds a patent which is relevant to LZW compression. PNG is a
--   superior image format in any case. Now that PNG is supported by both
--   Microsoft Internet Explorer and Netscape (in their recent releases),
--   we highly recommend that GD users upgrade in order to get
--   well-compressed images in a format which is legally unemcumbered.
--   
--  What's new in version 1.5?
--  
--   Version 1.5 featured the following changes:
--   
--   _New GD2 format_
--          An improvement over the GD format, the GD2 format uses the zlib
--          compression library to compress the image in chunks. This
--          results in file sizes comparable to GIFs, with the ability to
--          access parts of large images without having to read the entire
--          image into memory.
--          
--          This format also supports version numbers and rudimentary
--          validity checks, so it should be more 'supportable' than the
--          previous GD format.
--          
--   _Re-arranged source files_
--          gd.c has been broken into constituant parts: io, gif, gd, gd2
--          and graphics functions are now in separate files.
--          
--   _Extended I/O capabilities._
--          The source/sink feature has been extended to support GD2 file
--          formats (which require seek/tell functions), and to allow more
--          general non-file I/O.
--          
--   _Better support for Lincoln Stein's Perl Module_
--          The new gdImage*Ptr function returns the chosen format stored
--          in a block of memory. This can be directly used by the GD perl
--          module.
--          
--   _Added functions_
--          gdImageCreateFromGd2Part - allows retrieval of part of an image
--          (good for huge images, like maps),
--          gdImagePaletteCopy - Copies a palette from one image to
--          another, doing it's best to match the colors in the target
--          image to the colors in the source palette.
--          gdImageGd2, gdImageCreateFromGd2 - Support for new format
--          gdImageCopyMerge - Merges two images (useful to highlight part
--          of an image)
--          gdImageCopyMergeGray - Similar to gdImageCopyMerge, but tries
--          to preserve source image hue.
--          gdImagePngPtr, gdImageJpegPtr, gdImageWBMPPtr, gdImageGdPtr,
--          gdImageGd2Ptr - return memory blocks for each type of image.
--          gdImageCreateFromPngCtx, gdImageCreateFromGdCtx,
--          gdImageCreateFromGd2Ctx, gdImageCreateFromGd2PartCtx - Support
--          for new I/O context.
--          
--   _NOTE:_ In fairness to Thomas Boutell, any bug/problems with any of
--   the above features should probably be reported to Philip Warner.
--   
--  What's new in version 1.4?
--  
--   Version 1.4 features the following changes:
--   
--   Fixed polygon fill routine (again)
--          Thanks to Kirsten Schulz, version 1.4 is able to fill numerous
--          types of polygons that caused problems with previous releases,
--          including version 1.3.
--          
--   Support for alternate data sources
--          Programmers who wish to load a GIF from something other than a
--          stdio FILE * stream can use the new gdImageCreateFromPngSource
--          function.
--          
--   Support for alternate data destinations
--          Programmers who wish to write a GIF to something other than a
--          stdio FILE * stream can use the new gdImagePngToSink function.
--          
--   More tolerant when reading GIFs
--          Version 1.4 does not crash when reading certain animated GIFs,
--          although it still only reads the first frame. Version 1.4 also
--          has overflow testing code to prevent crashes when reading
--          damaged GIFs.
--          
--  What's new in version 1.3?
--  
--   Version 1.3 features the following changes:
--   
--   Non-LZW-based GIF compression code
--          Version 1.3 contained GIF compression code that uses simple Run
--          Length Encoding instead of LZW compression, while still
--          retaining compatibility with normal LZW-based GIF decoders
--          (your browser will still like your GIFs). _LZW compression is
--          patented by Unisys. We are currently reevaluating the approach
--          taken by gd 1.3. The current release of gd does not support
--          this approach. We recommend that you use the current release,
--          and generate PNG images._ Thanks to Hutchison Avenue Software
--          Corporation for contributing the RLE GIF code.
--          
--   8-bit fonts, and 8-bit font support
--          This improves support for European languages. Thanks are due to
--          Honza Pazdziora and also to Jan Pazdziora . Also see the
--          provided bdftogd Perl script if you wish to convert fixed-width
--          X11 fonts to gd fonts.
--          
--   16-bit font support (no fonts provided)
--          Although no such fonts are provided in the distribution, fonts
--          containing more than 256 characters should work if the
--          gdImageString16 and gdImageStringUp16 routines are used.
--          
--   Improvements to the "webpng" example/utility
--          The "webpng" utility is now a slightly more useful application.
--          Thanks to Brian Dowling for this code.
--          
--   Corrections to the color resolution field of GIF output
--          Thanks to Bruno Aureli.
--          
--   Fixed polygon fills
--          A one-line patch for the infamous polygon fill bug, courtesy of
--          Jim Mason. I believe this fix is sufficient. However, if you
--          find a situation where polygon fills still fail to behave
--          properly, please send code that demonstrates the problem, _and_
--          a fix if you have one. Verifying the fix is important.
--          
--   Row-major, not column-major
--          Internally, gd now represents the array of pixels as an array
--          of rows of pixels, rather than an array of columns of pixels.
--          This improves the performance of compression and decompression
--          routines slightly, because horizontally adjacent pixels are now
--          next to each other in memory. _This should not affect properly
--          written gd applications, but applications that directly
--          manipulate the pixels array will require changes._
--          
--  What else do I need to use gd?
--  
--   To use gd, you will need an ANSI C compiler. _All popular Windows 95
--   and NT C compilers are ANSI C compliant._ Any full-ANSI-standard C
--   compiler should be adequate. _The cc compiler released with SunOS
--   4.1.3 is not an ANSI C compiler. Most Unix users who do not already
--   have gcc should get it. gcc is free, ANSI compliant and a de facto
--   industry standard. Ask your ISP why it is missing._
--   
--   As of version 1.6, you also need the zlib compression library, and the
--   libpng library. As of version 1.6.2, you can draw text using
--   antialiased TrueType fonts if you also have the libttf library
--   installed, but this is not mandatory. zlib is available for a variety
--   of platforms from the zlib web site. libpng is available for a variety
--   of platforms from the PNG web site.
--   
--   You will also want a PNG viewer, if you do not already have one for
--   your system, since you will need a good way to check the results of
--   your work. Netscape 4.04 and higher, and Microsoft Internet Explorer
--   4.0 or higher, both support PNG. For some purposes you might be
--   happier with a package like Lview Pro for Windows or xv for X. There
--   are PNG viewers available for every graphics-capable modern operating
--   system, so consult newsgroups relevant to your particular system.
--   
--  How do I get gd?
--  
--    By HTTP
--    
--     * Gzipped Tar File (Unix)
--     * .ZIP File (Windows)
--       
--    By FTP
--    
--     * Gzipped Tar File (Unix)
--     * .ZIP File (Windows)
--       
--  How do I build gd?
--  
--   In order to build gd, you must first unpack the archive you have
--   downloaded. If you are not familiar with tar and gunzip (Unix) or ZIP
--   (Windows), please consult with an experienced user of your system.
--   Sorry, we cannot answer questions about basic Internet skills.
--   
--   Unpacking the archive will produce a directory called "gd-1.8.4".
--   
--    For Unix
--    
--   cd to the 1.8.4 directory. Edit the Makefile with your preferred text
--   editor and make any necessary changes to the settings at the top,
--   especially if you want Xpm or TrueType support. Next, type "make". If
--   you are the system administrator, and you wish to make the gd library
--   available to other programs, you may also wish to type "make install".
--   
--   If you get errors, edit the Makefile again, paying special attention
--   to the INCLUDEDIRS and LIBDIRS settings.
--   
--   IF YOU GET LINKER ERRORS, TRY JUGGLING THE ORDER OF THE -l DIRECTIVES
--   IN THE MAKEFILE. Some platforms may prefer that the libraries be
--   listed in the opposite order.
--   
--    For Windows, Mac, Et Cetera
--    
--   Create a project using your favorite programming environment. Copy all
--   of the gd files to the project directory. Add gd.c to your project.
--   Add other source files as appropriate. Learning the basic skills of
--   creating projects with your chosen C environment is up to you.
--   
--   You have now built both the gd library and a demonstration program
--   which shows off the capabilities of gd. To see it in action, type
--   "gddemo".
--   
--   gddemo should execute without incident, creating the file demoout.png.
--   (Note there is also a file named demoin.png, which is provided in the
--   package as part of the demonstration.)
--   
--   Display demoout.png in your PNG viewer. The image should be 128x128
--   pixels and should contain an image of the space shuttle with quite a
--   lot of graphical elements drawn on top of it.
--   
--   (If you are missing the demoin.png file, the other items should appear
--   anyway.)
--   
--   Look at demoin.png to see the original space shuttle image which was
--   scaled and copied into the output image.
--   
--  gd basics: using gd in your program
--  
--   gd lets you create PNG or JPEG images on the fly. To use gd in your
--   program, include the file gd.h, and link with the libgd.a library
--   produced by "make libgd.a", under Unix. Under other operating systems
--   you will add gd.c to your own project.
--   
--   If you want to use the provided fonts, include gdfontt.h, gdfonts.h,
--   gdfontmb.h, gdfontl.h and/or gdfontg.h. For more impressive results,
--   install FreeType 2.x and use the new gdImageStringFT function. If you
--   are not using the provided Makefile and/or a library-based approach,
--   be sure to include the source modules as well in your project. (They
--   may be too large for 16-bit memory models, that is, 16-bit DOS and
--   Windows.)
--   
--   Here is a short example program. _(For a more advanced example, see
--   gddemo.c, included in the distribution. gddemo.c is NOT the same
--   program; it demonstrates additional features!)_
--   
--/* Bring in gd library functions */
--#include "gd.h"
--
--/* Bring in standard I/O so we can output the PNG to a file */
--#include <stdio.h>
--
--int main() {
--        /* Declare the image */
--        gdImagePtr im;
--        /* Declare output files */
--        FILE *pngout, *jpegout;
--        /* Declare color indexes */
--        int black;
--        int white;
--
--        /* Allocate the image: 64 pixels across by 64 pixels tall */
--        im = gdImageCreate(64, 64);
--
--        /* Allocate the color black (red, green and blue all minimum).
--                Since this is the first color in a new image, it will
--                be the background color. */
--        black = gdImageColorAllocate(im, 0, 0, 0);
--
--        /* Allocate the color white (red, green and blue all maximum). */
--        white = gdImageColorAllocate(im, 255, 255, 255);
--        
--        /* Draw a line from the upper left to the lower right,
--                using white color index. */
--        gdImageLine(im, 0, 0, 63, 63, white);
--
--        /* Open a file for writing. "wb" means "write binary", important
--                under MSDOS, harmless under Unix. */
--        pngout = fopen("test.png", "wb");
--
--        /* Do the same for a JPEG-format file. */
--        jpegout = fopen("test.jpg", "wb");
--
--        /* Output the image to the disk file in PNG format. */
--        gdImagePng(im, pngout);
--
--        /* Output the same image in JPEG format, using the default
--                JPEG quality setting. */
--        gdImageJpeg(im, jpegout, -1);
--
--        /* Close the files. */
--        fclose(pngout);
--        fclose(jpegout);
--
--        /* Destroy the image in memory. */
--        gdImageDestroy(im);
--}
--
--   When executed, this program creates an image, allocates two colors
--   (the first color allocated becomes the background color), draws a
--   diagonal line (note that 0, 0 is the upper left corner), writes the
--   image to PNG and JPEG files, and destroys the image.
--   
--   The above example program should give you an idea of how the package
--   works. gd provides many additional functions, which are listed in the
--   following reference chapters, complete with code snippets
--   demonstrating each. There is also an alphabetical index.
--   
--  Webpng: a more powerful gd example
--  
--   Webpng is a simple utility program to manipulate PNGs from the command
--   line. It is written for Unix and similar command-line systems, but
--   should be easily adapted for other environments. Webpng allows you to
--   set transparency and interlacing and output interesting information
--   about the PNG in question.
--   
--   webpng.c is provided in the distribution. Unix users can simply type
--   "make webpng" to compile the program. Type "webpng" with no arguments
--   to see the available options.
--   
--Function and type reference
--
--     * Types
--     * Image creation, destruction, loading and saving
--     * Drawing, styling, brushing, tiling and filling functions
--     * Query functions (not color-related)
--     * Font and text-handling functions
--     * Color handling functions
--     * Copying and resizing functions
--     * Miscellaneous Functions
--     * Constants
--       
--  Types
--  
--   gdImage_(TYPE)_
--          The data structure in which gd stores images. gdImageCreate
--          returns a pointer to this type, and the other functions expect
--          to receive a pointer to this type as their first argument. You
--          may read the members sx (size on X axis), sy (size on Y axis),
--          colorsTotal (total colors), red (red component of colors; an
--          array of 256 integers between 0 and 255), green (green
--          component of colors, as above), blue (blue component of colors,
--          as above), and transparent (index of transparent color, -1 if
--          none); please do so using the macros provided. Do NOT set the
--          members directly from your code; use the functions provided.
--          
--
--typedef struct {
--        unsigned char ** pixels;
--        int sx;
--        int sy;
--        int colorsTotal;
--        int red[gdMaxColors];
--        int green[gdMaxColors];
--        int blue[gdMaxColors];
--        int open[gdMaxColors];
--        int transparent;
--} gdImage;
--
--   gdImagePtr _(TYPE)_
--          A pointer to an image structure. gdImageCreate returns this
--          type, and the other functions expect it as the first argument.
--          
--   gdFont _(TYPE)_
--          A font structure. Used to declare the characteristics of a
--          font. Plese see the files gdfontl.c and gdfontl.h for an
--          example of the proper declaration of this structure. You can
--          provide your own font data by providing such a structure and
--          the associated pixel array. You can determine the width and
--          height of a single character in a font by examining the w and h
--          members of the structure. If you will not be creating your own
--          fonts, you will not need to concern yourself with the rest of
--          the components of this structure.
--          
--
--typedef struct {
--        /* # of characters in font */
--        int nchars;
--        /* First character is numbered... (usually 32 = space) */
--        int offset;
--        /* Character width and height */
--        int w;
--        int h;
--        /* Font data; array of characters, one row after another.
--                Easily included in code, also easily loaded from
--                data files. */
--        char *data;
--} gdFont;
--
--   gdFontPtr _(TYPE)_
--          A pointer to a font structure. Text-output functions expect
--          these as their second argument, following the gdImagePtr
--          argument. Two such pointers are declared in the provided
--          include files gdfonts.h and gdfontl.h.
--          
--   gdPoint _(TYPE)_
--          Represents a point in the coordinate space of the image; used
--          by gdImagePolygon and gdImageFilledPolygon.
--          
--
--typedef struct {
--        int x, y;
--} gdPoint, *gdPointPtr;
--
--   gdPointPtr _(TYPE)_
--          A pointer to a gdPoint structure; passed as an argument to
--          gdImagePolygon and gdImageFilledPolygon.
--          
--   gdSource _(TYPE)_
--
--typedef struct {
--        int (*source) (void *context, char *buffer, int len);
--        void *context;
--} gdSource, *gdSourcePtr;
--
--   Represents a source from which a PNG can be read. Programmers who do
--   not wish to read PNGs from a file can provide their own alternate
--   input mechanism, using the gdImageCreateFromPngSource function. See
--   the documentation of that function for an example of the proper use of
--   this type.
--   
--   gdSink _(TYPE)_
--
--typedef struct {
--        int (*sink) (void *context, char *buffer, int len);
--        void *context;
--} gdSink, *gdSinkPtr;
--
--   Represents a "sink" (destination) to which a PNG can be written.
--   Programmers who do not wish to write PNGs to a file can provide their
--   own alternate output mechanism, using the gdImagePngToSink function.
--   See the documentation of that function for an example of the proper
--   use of this type.
--   
--  Image creation, destruction, loading and saving
--  
--   gdImageCreate(sx, sy) _(FUNCTION)_
--          gdImageCreate is called to create images. Invoke gdImageCreate
--          with the x and y dimensions of the desired image. gdImageCreate
--          returns a gdImagePtr to the new image, or NULL if unable to
--          allocate the image. The image must eventually be destroyed
--          using gdImageDestroy().
--          
--
--... inside a function ...
--gdImagePtr im;
--im = gdImageCreate(64, 64);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageCreateFromJpeg(FILE *in) _(FUNCTION)_
--          gdImageCreateFromJpegCtx(FILE *in) _(FUNCTION)_
--          
--          
--          gdImageCreateFromJpeg is called to load images from JPEG format
--          files. Invoke gdImageCreateFromJpeg with an already opened
--          pointer to a file containing the desired image.
--          gdImageCreateFromJpeg returns a gdImagePtr to the new image, or
--          NULL if unable to load the image (most often because the file
--          is corrupt or does not contain a JPEG image).
--          gdImageCreateFromPng does _not_ close the file. You can inspect
--          the sx and sy members of the image to determine its size. The
--          image must eventually be destroyed using gdImageDestroy().
--          
--
--gdImagePtr im;
--... inside a function ...
--FILE *in;
--in = fopen("myjpeg.jpg", "rb");
--im = gdImageCreateFromJpeg(in);
--fclose(in);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageCreateFromPng(FILE *in) _(FUNCTION)_
--          gdImageCreateFromPngCtx(gdIOCtx *in) _(FUNCTION)_
--          
--          
--          gdImageCreateFromPng is called to load images from PNG format
--          files. Invoke gdImageCreateFromPng with an already opened
--          pointer to a file containing the desired image.
--          gdImageCreateFromPng returns a gdImagePtr to the new image, or
--          NULL if unable to load the image (most often because the file
--          is corrupt or does not contain a PNG image).
--          gdImageCreateFromPng does _not_ close the file. You can inspect
--          the sx and sy members of the image to determine its size. The
--          image must eventually be destroyed using gdImageDestroy().
--          
--
--gdImagePtr im;
--... inside a function ...
--FILE *in;
--in = fopen("mypng.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageCreateFromPngSource(gdSourcePtr in) _(FUNCTION)_
--          gdImageCreateFromPngSource is called to load a PNG from a data
--          source other than a file. Usage is very similar to the
--          gdImageCreateFromPng function, except that the programmer
--          provides a custom data source.
--          
--          The programmer must write an input function which accepts a
--          context pointer, a buffer, and a number of bytes to be read as
--          arguments. This function must read the number of bytes
--          requested, unless the end of the file has been reached, in
--          which case the function should return zero, or an error has
--          occurred, in which case the function should return -1. The
--          programmer then creates a gdSource structure and sets the
--          source pointer to the input function and the context pointer to
--          any value which is useful to the programmer.
--          
--          The example below implements gdImageCreateFromPng by creating a
--          custom data source and invoking gdImageCreateFromPngSource.
--          
--
--static int freadWrapper(void *context, char *buf, int len);
--
--gdImagePtr gdImageCreateFromPng(FILE *in)
--{
--        gdSource s;
--        s.source = freadWrapper;
--        s.context = in;
--        return gdImageCreateFromPngSource(&s);
--}
--
--static int freadWrapper(void *context, char *buf, int len)
--{
--        int got = fread(buf, 1, len, (FILE *) context);
--        return got;
--}
--
--   gdImageCreateFromGd(FILE *in) _(FUNCTION)_
--          gdImageCreateFromGdCtx(gdIOCtx *in) _(FUNCTION)_
--          
--          
--          gdImageCreateFromGd is called to load images from gd format
--          files. Invoke gdImageCreateFromGd with an already opened
--          pointer to a file containing the desired image in the gd file
--          format, which is specific to gd and intended for very fast
--          loading. (It is _not_ intended for compression; for
--          compression, use PNG or JPEG.) gdImageCreateFromGd returns a
--          gdImagePtr to the new image, or NULL if unable to load the
--          image (most often because the file is corrupt or does not
--          contain a gd format image). gdImageCreateFromGd does _not_
--          close the file. You can inspect the sx and sy members of the
--          image to determine its size. The image must eventually be
--          destroyed using gdImageDestroy().
--          
--
--... inside a function ...
--gdImagePtr im;
--FILE *in;
--in = fopen("mygd.gd", "rb");
--im = gdImageCreateFromGd(in);
--fclose(in);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageCreateFromGd2(FILE *in) _(FUNCTION)_
--          gdImageCreateFromGd2Ctx(gdIOCtx *in) _(FUNCTION)_
--          
--          
--          gdImageCreateFromGd2 is called to load images from gd2 format
--          files. Invoke gdImageCreateFromGd2 with an already opened
--          pointer to a file containing the desired image in the gd2 file
--          format, which is specific to gd2 and intended for fast loading
--          of parts of large images. (It is a compressed format, but
--          generally not as good a LZW compression). gdImageCreateFromGd
--          returns a gdImagePtr to the new image, or NULL if unable to
--          load the image (most often because the file is corrupt or does
--          not contain a gd format image). gdImageCreateFromGd2 does _not_
--          close the file. You can inspect the sx and sy members of the
--          image to determine its size. The image must eventually be
--          destroyed using gdImageDestroy().
--          
--
--... inside a function ...
--gdImagePtr im;
--FILE *in;
--in = fopen("mygd.gd2", "rb");
--im = gdImageCreateFromGd2(in);
--fclose(in);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageCreateFromGd2Part(FILE *in, int srcX, int srcY, int w, int h)
--          _(FUNCTION)_
--          gdImageCreateFromGd2PartCtx(gdIOCtx *in) _(FUNCTION)_
--          
--          
--          gdImageCreateFromGd2Part is called to load parts of images from
--          gd2 format files. Invoked in the same way as
--          gdImageCreateFromGd2, but with extra parameters indicating the
--          source (x, y) and width/height of the desired image.
--          gdImageCreateFromGd2Part returns a gdImagePtr to the new image,
--          or NULL if unable to load the image. The image must eventually
--          be destroyed using gdImageDestroy().
--          
--   gdImageCreateFromXbm(FILE *in) _(FUNCTION)_
--          gdImageCreateFromXbm is called to load images from X bitmap
--          format files. Invoke gdImageCreateFromXbm with an already
--          opened pointer to a file containing the desired image.
--          gdImageCreateFromXbm returns a gdImagePtr to the new image, or
--          NULL if unable to load the image (most often because the file
--          is corrupt or does not contain an X bitmap format image).
--          gdImageCreateFromXbm does _not_ close the file. You can inspect
--          the sx and sy members of the image to determine its size. The
--          image must eventually be destroyed using gdImageDestroy().
--          
--
--... inside a function ...
--gdImagePtr im;
--FILE *in;
--in = fopen("myxbm.xbm", "rb");
--im = gdImageCreateFromXbm(in);
--fclose(in);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageCreateFromXpm(char *filename) _(FUNCTION)_
--          gdImageCreateFromXbm is called to load images from XPM X Window
--          System color bitmap format files. This function is available
--          only if HAVE_XPM is selected in the Makefile and the Xpm
--          library is linked with the application. Unlike most gd file
--          functions, the Xpm functions require filenames, not file
--          pointers. gdImageCreateFromXpm returns a gdImagePtr to the new
--          image, or NULL if unable to load the image (most often because
--          the file is corrupt or does not contain an XPM bitmap format
--          image). You can inspect the sx and sy members of the image to
--          determine its size. The image must eventually be destroyed
--          using gdImageDestroy().
--          
--
--... inside a function ...
--gdImagePtr im;
--FILE *in;
--in = fopen("myxpm.xpm", "rb");
--im = gdImageCreateFromXpm(in);
--fclose(in);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageDestroy(gdImagePtr im) _(FUNCTION)_
--          gdImageDestroy is used to free the memory associated with an
--          image. It is important to invoke gdImageDestroy before exiting
--          your program or assigning a new image to a gdImagePtr variable.
--          
--
--... inside a function ...
--gdImagePtr im;
--im = gdImageCreate(10, 10);
--/* ... Use the image ... */
--/* Now destroy it */
--gdImageDestroy(im);
--
--   void gdImageJpeg(gdImagePtr im, FILE *out, int quality) _(FUNCTION)_
--          void gdImageJpegCtx(gdImagePtr im, gdIOCtx *out, int quality)
--          
--   _(FUNCTION)_
--   
--   gdImageJpeg outputs the specified image to the specified file in JPEG
--   format. The file must be open for writing. Under MSDOS and all
--   versions of Windows, it is important to use "wb" as opposed to simply
--   "w" as the mode when opening the file, and under Unix there is no
--   penalty for doing so. gdImageJpeg does _not_ close the file; your code
--   must do so.
--   
--   If quality is negative, the default IJG JPEG quality value (which
--   should yield a good general quality / size tradeoff for most
--   situations) is used. Otherwise, for practical purposes, quality should
--   be a value in the range 0-95, higher quality values usually implying
--   both higher quality and larger image sizes.
--   
--   If you have set image interlacing using gdImageInterlace, this
--   function will interpret that to mean you wish to output a progressive
--   JPEG. Some programs (e.g., Web browsers) can display progressive JPEGs
--   incrementally; this can be useful when browsing over a relatively slow
--   communications link, for example. Progressive JPEGs can also be
--   slightly smaller than sequential (non-progressive) JPEGs.
--
--... inside a function ...
--gdImagePtr im;
--int black, white;
--FILE *out;
--/* Create the image */
--im = gdImageCreate(100, 100);
--/* Allocate background */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate drawing color */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Draw rectangle */
--gdImageRectangle(im, 0, 0, 99, 99, black);
--/* Open output file in binary mode */
--out = fopen("rect.jpg", "wb");
--/* Write JPEG using default quality */
--gdImageJpeg(im, out, -1);
--/* Close file */
--fclose(out);
--/* Destroy image */
--gdImageDestroy(im);
--
--   void* gdImageJpegPtr(gdImagePtr im, int *size) _(FUNCTION)_
--   Identical to gdImageJpeg except that it returns a pointer to a memory
--   area with the JPEG data. This memory must be freed by the caller when
--   it is no longer needed. _The caller must invoke gdFree(), not free(),
--   unless the caller is absolutely certain that the same implementations
--   of malloc, free, etc. are used both at library build time and at
--   application build time._ The 'size' parameter receives the total size
--   of the block of memory.
--   
--   void gdImagePng(gdImagePtr im, FILE *out) _(FUNCTION)_
--   gdImagePng outputs the specified image to the specified file in PNG
--   format. The file must be open for writing. Under MSDOS and all
--   versions of Windows, it is important to use "wb" as opposed to simply
--   "w" as the mode when opening the file, and under Unix there is no
--   penalty for doing so. gdImagePng does _not_ close the file; your code
--   must do so.
--
--... inside a function ...
--gdImagePtr im;
--int black, white;
--FILE *out;
--/* Create the image */
--im = gdImageCreate(100, 100);
--/* Allocate background */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate drawing color */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Draw rectangle */
--gdImageRectangle(im, 0, 0, 99, 99, black);
--/* Open output file in binary mode */
--out = fopen("rect.png", "wb");
--/* Write PNG */
--gdImagePng(im, out);
--/* Close file */
--fclose(out);
--/* Destroy image */
--gdImageDestroy(im);
--
--   void* gdImagePngPtr(gdImagePtr im, int *size) _(FUNCTION)_
--   Identical to gdImagePng except that it returns a pointer to a memory
--   area with the PNG data. This memory must be freed by the caller when
--   it is no longer needed. _The caller must invoke gdFree(), not free(),
--   unless the caller is absolutely certain that the same implementations
--   of malloc, free, etc. are used both at library build time and at
--   application build time._ The 'size' parameter receives the total size
--   of the block of memory.
--   
--   gdImagePngToSink(gdImagePtr im, gdSinkPtr out) _(FUNCTION)_
--   gdImagePngToSink is called to write a PNG to a data "sink"
--   (destination) other than a file. Usage is very similar to the
--   gdImagePng function, except that the programmer provides a custom data
--   sink.
--   
--   The programmer must write an output function which accepts a context
--   pointer, a buffer, and a number of bytes to be written as arguments.
--   This function must write the number of bytes requested and return that
--   number, unless an error has occurred, in which case the function
--   should return -1. The programmer then creates a gdSink structure and
--   sets the sink pointer to the output function and the context pointer
--   to any value which is useful to the programmer.
--   
--   The example below implements gdImagePng by creating a custom data
--   source and invoking gdImagePngFromSink.
--
--static int stdioSink(void *context, char *buffer, int len)
--{
--        return fwrite(buffer, 1, len, (FILE *) context);
--}
--
--void gdImagePng(gdImagePtr im, FILE *out)
--{
--        gdSink mySink;
--        mySink.context = (void *) out;
--        mySink.sink = stdioSink;
--        gdImagePngToSink(im, &mySink);
--}
--
--   void gdImageWBMP(gdImagePtr im, int fg, FILE *out)
--   gdImageWBMPCtx(gdIOCtx *out) _(FUNCTION)__(FUNCTION)_
--   gdImageWBMP outputs the specified image to the specified file in WBMP
--   format. The file must be open for writing. Under MSDOS and all
--   versions of Windows, it is important to use "wb" as opposed to simply
--   "w" as the mode when opening the file, and under Unix there is no
--   penalty for doing so. gdImageWBMP does _not_ close the file; your code
--   must do so.
--   
--   _WBMP file support is black and white only. The color index specified
--   by the fg argument is the "foreground," and only pixels of this color
--   will be set in the WBMP file._ All other pixels will be considered
--   "background."
--
--... inside a function ...
--gdImagePtr im;
--int black, white;
--FILE *out;
--/* Create the image */
--im = gdImageCreate(100, 100);
--/* Allocate background */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate drawing color */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Draw rectangle */
--gdImageRectangle(im, 0, 0, 99, 99, black);
--/* Open output file in binary mode */
--out = fopen("rect.wbmp", "wb");
--/* Write WBMP, with black as foreground */
--gdImageWBMP(im, black, out);
--/* Close file */
--fclose(out);
--/* Destroy image */
--gdImageDestroy(im);
--
--   void* gdImageWBMPPtr(gdImagePtr im, int *size) _(FUNCTION)_
--   Identical to gdImageWBMP except that it returns a pointer to a memory
--   area with the WBMP data. This memory must be freed by the caller when
--   it is no longer needed. _The caller must invoke gdFree(), not free(),
--   unless the caller is absolutely certain that the same implementations
--   of malloc, free, etc. are used both at library build time and at
--   application build time._ The 'size' parameter receives the total size
--   of the block of memory.
--   
--   void gdImageGd(gdImagePtr im, FILE *out) _(FUNCTION)_
--   gdImageGd outputs the specified image to the specified file in the gd
--   image format. The file must be open for writing. Under MSDOS and all
--   versions of Windows, it is important to use "wb" as opposed to simply
--   "w" as the mode when opening the file, and under Unix there is no
--   penalty for doing so. gdImagePng does _not_ close the file; your code
--   must do so.
--   
--   The gd image format is intended for fast reads and writes of images
--   your program will need frequently to build other images. It is _not_ a
--   compressed format, and is not intended for general use.
--
--... inside a function ...
--gdImagePtr im;
--int black, white;
--FILE *out;
--/* Create the image */
--im = gdImageCreate(100, 100);
--/* Allocate background */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate drawing color */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Draw rectangle */
--gdImageRectangle(im, 0, 0, 99, 99, black);
--/* Open output file in binary mode */
--out = fopen("rect.gd", "wb");
--/* Write gd format file */
--gdImageGd(im, out);
--/* Close file */
--fclose(out);
--/* Destroy image */
--gdImageDestroy(im);
--
--   void* gdImageGdPtr(gdImagePtr im, int *size) _(FUNCTION)_
--   Identical to gdImageGd except that it returns a pointer to a memory
--   area with the GD data. This memory must be freed by the caller when it
--   is no longer needed. _The caller must invoke gdFree(), not free(),
--   unless the caller is absolutely certain that the same implementations
--   of malloc, free, etc. are used both at library build time and at
--   application build time._ The 'size' parameter receives the total size
--   of the block of memory.
--   
--   void gdImageGd2(gdImagePtr im, FILE *out, int chunkSize, int fmt)
--   _(FUNCTION)_
--   gdImageGd2 outputs the specified image to the specified file in the
--   gd2 image format. The file must be open for writing. Under MSDOS and
--   all versions of Windows, it is important to use "wb" as opposed to
--   simply "w" as the mode when opening the file, and under Unix there is
--   no penalty for doing so. gdImageGd2 does _not_ close the file; your
--   code must do so.
--   
--   The gd2 image format is intended for fast reads and writes of parts of
--   images. It is a compressed format, and well suited to retrieving smll
--   sections of much larger images. The third and fourth parameters are
--   the 'chunk size' and format resposectively.
--   
--   The file is stored as a series of compressed subimages, and the _Chunk
--   Size_ determines the sub-image size - a value of zero causes the GD
--   library to use the default.
--   
--   It is also possible to store GD2 files in an uncompressed format, in
--   which case the fourth parameter should be GD2_FMT_RAW.
--
--... inside a function ...
--gdImagePtr im;
--int black, white;
--FILE *out;
--/* Create the image */
--im = gdImageCreate(100, 100);
--/* Allocate background */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate drawing color */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Draw rectangle */
--gdImageRectangle(im, 0, 0, 99, 99, black);
--/* Open output file in binary mode */
--out = fopen("rect.gd", "wb");
--/* Write gd2 format file */
--gdImageGd2(im, out, 0, GD2_FMT_COMPRESSED);
--/* Close file */
--fclose(out);
--/* Destroy image */
--gdImageDestroy(im);
--
--   void* gdImageGd2Ptr(gdImagePtr im, int chunkSize, int fmt, int *size)
--   _(FUNCTION)_
--   Identical to gdImageGd2 except that it returns a pointer to a memory
--   area with the GD2 data. This memory must be freed by the caller when
--   it is no longer needed. _The caller must invoke gdFree(), not free(),
--   unless the caller is absolutely certain that the same implementations
--   of malloc, free, etc. are used both at library build time and at
--   application build time._ The 'size' parameter receives the total size
--   of the block of memory.
--   
--  Drawing Functions
--  
--   void gdImageSetPixel(gdImagePtr im, int x, int y, int color)
--          _(FUNCTION)_
--          gdImageSetPixel sets a pixel to a particular color index.
--          Always use this function or one of the other drawing functions
--          to access pixels; do not access the pixels of the gdImage
--          structure directly.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Set a pixel near the center. */
--gdImageSetPixel(im, 50, 50, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageLine(gdImagePtr im, int x1, int y1, int x2, int y2, int
--          color) _(FUNCTION)_
--          gdImageLine is used to draw a line between two endpoints (x1,y1
--          and x2, y2). The line is drawn using the color index specified.
--          Note that the color index can be an actual color returned by
--          gdImageColorAllocate or one of gdStyled, gdBrushed or
--          gdStyledBrushed.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a line from the upper left corner to the lower right corner. */
--gdImageLine(im, 0, 0, 99, 99, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageDashedLine(gdImagePtr im, int x1, int y1, int x2, int y2,
--          int color) _(FUNCTION)_
--          gdImageDashedLine is provided _solely for backwards
--          compatibility _with gd 1.0. New programs should draw dashed
--          lines using the normal gdImageLine function and the new
--          gdImageSetStyle function.
--          
--          gdImageDashedLine is used to draw a dashed line between two
--          endpoints (x1,y1 and x2, y2). The line is drawn using the color
--          index specified. The portions of the line that are not drawn
--          are left transparent so the background is visible.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a dashed line from the upper left corner to the lower right corner. */
--gdImageDashedLine(im, 0, 0, 99, 99);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImagePolygon(gdImagePtr im, gdPointPtr points, int pointsTotal,
--          int color) _(FUNCTION)_
--          gdImagePolygon is used to draw a polygon with the verticies (at
--          least 3) specified, using the color index specified. See also
--          gdImageFilledPolygon.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--/* Points of polygon */
--gdPoint points[3];
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a triangle. */
--points[0].x = 50;
--points[0].y = 0;
--points[1].x = 99;
--points[1].y = 99;
--points[2].x = 0;
--points[2].y = 99;
--gdImagePolygon(im, points, 3, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageRectangle(gdImagePtr im, int x1, int y1, int x2, int y2,
--          int color) _(FUNCTION)_
--          gdImageRectangle is used to draw a rectangle with the two
--          corners (upper left first, then lower right) specified, using
--          the color index specified.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a rectangle occupying the central area. */
--gdImageRectangle(im, 25, 25, 74, 74, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageFilledPolygon(gdImagePtr im, gdPointPtr points, int
--          pointsTotal, int color) _(FUNCTION)_
--          gdImageFilledPolygon is used to fill a polygon with the
--          verticies (at least 3) specified, using the color index
--          specified. See also gdImagePolygon.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--int red;
--/* Points of polygon */
--gdPoint points[3];
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate the color red. */
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* Draw a triangle. */
--points[0].x = 50;
--points[0].y = 0;
--points[1].x = 99;
--points[1].y = 99;
--points[2].x = 0;
--points[2].y = 99;
--/* Paint it in white */
--gdImageFilledPolygon(im, points, 3, white);
--/* Outline it in red; must be done second */
--gdImagePolygon(im, points, 3, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageFilledRectangle(gdImagePtr im, int x1, int y1, int x2, int
--          y2, int color) _(FUNCTION)_
--          gdImageFilledRectangle is used to draw a solid rectangle with
--          the two corners (upper left first, then lower right) specified,
--          using the color index specified.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = int gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a filled rectangle occupying the central area. */
--gdImageFilledRectangle(im, 25, 25, 74, 74, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageArc(gdImagePtr im, int cx, int cy, int w, int h, int s,
--          int e, int color) _(FUNCTION)_
--          gdImageArc is used to draw a partial ellipse centered at the
--          given point, with the specified width and height in pixels. The
--          arc begins at the position in degrees specified by s and ends
--          at the position specified by e. The arc is drawn in the color
--          specified by the last argument. A circle can be drawn by
--          beginning from 0 degrees and ending at 360 degrees, with width
--          and height being equal. e must be greater than s. Values
--          greater than 360 are interpreted modulo 360.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 50);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Inscribe an ellipse in the image. */
--gdImageArc(im, 50, 25, 98, 48, 0, 360, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageFillToBorder(gdImagePtr im, int x, int y, int border, int
--          color) _(FUNCTION)_
--          gdImageFillToBorder floods a portion of the image with the
--          specified color, beginning at the specified point and stopping
--          at the specified border color. For a way of flooding an area
--          defined by the color of the starting point, see gdImageFill.
--          
--          The border color _cannot_ be a special color such as gdTiled;
--          it must be a proper solid color. The fill color can be,
--          however.
--          
--          Note that gdImageFillToBorder is recursive. It is not the most
--          naive implementation possible, and the implementation is
--          expected to improve, but there will always be degenerate cases
--          in which the stack can become very deep. This can be a problem
--          in MSDOS and MS Windows 3.1 environments. (Of course, in a Unix
--          or Windows 95/98/NT environment with a proper stack, this is
--          not a problem at all.)
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--int red;
--im = gdImageCreate(100, 50);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate the color red. */
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* Inscribe an ellipse in the image. */
--gdImageArc(im, 50, 25, 98, 48, 0, 360, white);
--/* Flood-fill the ellipse. Fill color is red, border color is
--        white (ellipse). */
--gdImageFillToBorder(im, 50, 50, white, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageFill(gdImagePtr im, int x, int y, int color) _(FUNCTION)_
--          gdImageFill floods a portion of the image with the specified
--          color, beginning at the specified point and flooding the
--          surrounding region of the same color as the starting point. For
--          a way of flooding a region defined by a specific border color
--          rather than by its interior color, see gdImageFillToBorder.
--          
--          The fill color can be gdTiled, resulting in a tile fill using
--          another image as the tile. However, the tile image cannot be
--          transparent. If the image you wish to fill with has a
--          transparent color index, call gdImageTransparent on the tile
--          image and set the transparent color index to -1 to turn off its
--          transparency.
--          
--          Note that gdImageFill is recursive. It is not the most naive
--          implementation possible, and the implementation is expected to
--          improve, but there will always be degenerate cases in which the
--          stack can become very deep. This can be a problem in MSDOS and
--          MS Windows environments. (Of course, in a Unix or Windows
--          95/98/NT environment with a proper stack, this is not a problem
--          at all.)
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--int red;
--im = gdImageCreate(100, 50);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate the color red. */
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* Inscribe an ellipse in the image. */
--gdImageArc(im, 50, 25, 98, 48, 0, 360, white);
--/* Flood-fill the ellipse. Fill color is red, and will replace the
--        black interior of the ellipse. */
--gdImageFill(im, 50, 50, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageSetBrush(gdImagePtr im, gdImagePtr brush) _(FUNCTION)_
--          A "brush" is an image used to draw wide, shaped strokes in
--          another image. Just as a paintbrush is not a single point, a
--          brush image need not be a single pixel. _Any_ gd image can be
--          used as a brush, and by setting the transparent color index of
--          the brush image with gdImageColorTransparent, a brush of any
--          shape can be created. All line-drawing functions, such as
--          gdImageLine and gdImagePolygon, will use the current brush if
--          the special "color" gdBrushed or gdStyledBrushed is used when
--          calling them.
--          
--          gdImageSetBrush is used to specify the brush to be used in a
--          particular image. You can set any image to be the brush. If the
--          brush image does not have the same color map as the first
--          image, any colors missing from the first image will be
--          allocated. If not enough colors can be allocated, the closest
--          colors already available will be used. This allows arbitrary
--          PNGs to be used as brush images. It also means, however, that
--          you should not set a brush unless you will actually use it; if
--          you set a rapid succession of different brush images, you can
--          quickly fill your color map, and the results will not be
--          optimal.
--          
--          You need not take any special action when you are finished with
--          a brush. As for any other image, if you will not be using the
--          brush image for any further purpose, you should call
--          gdImageDestroy. You must not use the color gdBrushed if the
--          current brush has been destroyed; you can of course set a new
--          brush to replace it.
--          
--
--... inside a function ...
--gdImagePtr im, brush;
--FILE *in;
--int black;
--im = gdImageCreate(100, 100);
--/* Open the brush PNG. For best results, portions of the
--        brush that should be transparent (ie, not part of the
--        brush shape) should have the transparent color index. */
--in = fopen("star.png", "rb");
--brush = gdImageCreateFromPng(in);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--gdImageSetBrush(im, brush);
--/* Draw a line from the upper left corner to the lower right corner
--        using the brush. */
--gdImageLine(im, 0, 0, 99, 99, gdBrushed);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--/* Destroy the brush image */
--gdImageDestroy(brush);
--
--   void gdImageSetTile(gdImagePtr im, gdImagePtr tile) _(FUNCTION)_
--          A "tile" is an image used to fill an area with a repeated
--          pattern. _Any_ gd image can be used as a tile, and by setting
--          the transparent color index of the tile image with
--          gdImageColorTransparent, a tile that allows certain parts of
--          the underlying area to shine through can be created. All
--          region-filling functions, such as gdImageFill and
--          gdImageFilledPolygon, will use the current tile if the special
--          "color" gdTiled is used when calling them.
--          
--          gdImageSetTile is used to specify the tile to be used in a
--          particular image. You can set any image to be the tile. If the
--          tile image does not have the same color map as the first image,
--          any colors missing from the first image will be allocated. If
--          not enough colors can be allocated, the closest colors already
--          available will be used. This allows arbitrary PNGs to be used
--          as tile images. It also means, however, that you should not set
--          a tile unless you will actually use it; if you set a rapid
--          succession of different tile images, you can quickly fill your
--          color map, and the results will not be optimal.
--          
--          You need not take any special action when you are finished with
--          a tile. As for any other image, if you will not be using the
--          tile image for any further purpose, you should call
--          gdImageDestroy. You must not use the color gdTiled if the
--          current tile has been destroyed; you can of course set a new
--          tile to replace it.
--          
--
--... inside a function ...
--gdImagePtr im, tile;
--FILE *in;
--int black;
--im = gdImageCreate(100, 100);
--/* Open the tile PNG. For best results, portions of the
--        tile that should be transparent (ie, allowing the
--        background to shine through) should have the transparent
--        color index. */
--in = fopen("star.png", "rb");
--tile = gdImageCreateFromPng(in);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--gdImageSetTile(im, tile);
--/* Fill an area using the tile. */
--gdImageFilledRectangle(im, 25, 25, 75, 75, gdTiled);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--/* Destroy the tile image */
--gdImageDestroy(tile);
--
--   void gdImageSetStyle(gdImagePtr im, int *style, int styleLength)
--          _(FUNCTION)_
--          It is often desirable to draw dashed lines, dotted lines, and
--          other variations on a broken line. gdImageSetStyle can be used
--          to set any desired series of colors, including a special color
--          that leaves the background intact, to be repeated during the
--          drawing of a line.
--          
--          To use gdImageSetStyle, create an array of integers and assign
--          them the desired series of color values to be repeated. You can
--          assign the special color value gdTransparent to indicate that
--          the existing color should be left unchanged for that particular
--          pixel (allowing a dashed line to be attractively drawn over an
--          existing image).
--          
--          Then, to draw a line using the style, use the normal
--          gdImageLine function with the special color value gdStyled.
--          
--          As of version 1.1.1, the style array is copied when you set the
--          style, so you need not be concerned with keeping the array
--          around indefinitely. This should not break existing code that
--          assumes styles are not copied.
--          
--          You can also combine styles and brushes to draw the brush image
--          at intervals instead of in a continuous stroke. When creating a
--          style for use with a brush, the style values are interpreted
--          differently: zero (0) indicates pixels at which the brush
--          should not be drawn, while one (1) indicates pixels at which
--          the brush should be drawn. To draw a styled, brushed line, you
--          must use the special color value gdStyledBrushed. For an
--          example of this feature in use, see gddemo.c (provided in the
--          distribution).
--          
--
--gdImagePtr im;
--int styleDotted[2], styleDashed[6];
--FILE *in;
--int black;
--int red;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* Set up dotted style. Leave every other pixel alone. */
--styleDotted[0] = red;
--styleDotted[1] = gdTransparent;
--/* Set up dashed style. Three on, three off. */
--styleDashed[0] = red;
--styleDashed[1] = red;
--styleDashed[2] = red;
--styleDashed[3] = gdTransparent;
--styleDashed[4] = gdTransparent;
--styleDashed[5] = gdTransparent;
--/* Set dotted style. Note that we have to specify how many pixels are
--        in the style! */
--gdImageSetStyle(im, styleDotted, 2);
--/* Draw a line from the upper left corner to the lower right corner. */
--gdImageLine(im, 0, 0, 99, 99, gdStyled);
--/* Now the dashed line. */
--gdImageSetStyle(im, styleDashed, 6);
--gdImageLine(im, 0, 99, 0, 99, gdStyled);
--
--/* ... Do something with the image, such as saving it to a file ... */
--
--/* Destroy it */
--gdImageDestroy(im);
--
--  Query Functions
--  
--        int gdImageBlue(gdImagePtr im, int color) _(MACRO)_
--                gdImageBlue is a macro which returns the blue component
--                of the specified color index. Use this macro rather than
--                accessing the structure members directly.
--                
--        int gdImageGetPixel(gdImagePtr im, int x, int y) _(FUNCTION)_
--                gdImageGetPixel() retrieves the color index of a
--                particular pixel. Always use this function to query
--                pixels; do not access the pixels of the gdImage structure
--                directly.
--                
--
--... inside a function ...
--FILE *in;
--gdImagePtr im;
--int c;
--in = fopen("mypng.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--c = gdImageGetPixel(im, gdImageSX(im) / 2, gdImageSY(im) / 2);
--printf("The value of the center pixel is %d; RGB values are %d,%d,%d\n",
--        c, im->red[c], im->green[c], im->blue[c]);
--gdImageDestroy(im);
--
--        int gdImageBoundsSafe(gdImagePtr im, int x, int y) _(FUNCTION)_
--                gdImageBoundsSafe returns true (1) if the specified point
--                is within the bounds of the image, false (0) if not. This
--                function is intended primarily for use by those who wish
--                to add functions to gd. All of the gd drawing functions
--                already clip safely to the edges of the image.
--                
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--if (gdImageBoundsSafe(im, 50, 50)) {
--        printf("50, 50 is within the image bounds\n");
--} else {
--        printf("50, 50 is outside the image bounds\n");
--}
--gdImageDestroy(im);
--
--        int gdImageGreen(gdImagePtr im, int color) _(MACRO)_
--                gdImageGreen is a macro which returns the green component
--                of the specified color index. Use this macro rather than
--                accessing the structure members directly.
--                
--        int gdImageRed(gdImagePtr im, int color) _(MACRO)_
--                gdImageRed is a macro which returns the red component of
--                the specified color index. Use this macro rather than
--                accessing the structure members directly.
--                
--        int gdImageSX(gdImagePtr im) _(MACRO)_
--                gdImageSX is a macro which returns the width of the image
--                in pixels. Use this macro rather than accessing the
--                structure members directly.
--                
--        int gdImageSY(gdImagePtr im) _(MACRO)_
--                gdImageSY is a macro which returns the height of the
--                image in pixels. Use this macro rather than accessing the
--                structure members directly.
--                
--  Fonts and text-handling functions
--  
--        void gdImageChar(gdImagePtr im, gdFontPtr font, int x, int y, int
--                c, int color) _(FUNCTION)_
--                gdImageChar is used to draw single characters on the
--                image. (To draw multiple characters, use gdImageString or
--                gdImageString16. See also gdImageStringFT for a high
--                quality solution.) The second argument is a pointer to a
--                font definition structure; five fonts are provided with
--                gd, gdFontTiny, gdFontSmall, gdFontMediumBold,
--                gdFontLarge, and gdFontGiant. You must include the files
--                "gdfontt.h", "gdfonts.h", "gdfontmb.h", "gdfontl.h" and
--                "gdfontg.h" respectively and (if you are not using a
--                library-based approach) link with the corresponding .c
--                files to use the provided fonts. The character specified
--                by the fifth argument is drawn from left to right in the
--                specified color. (See gdImageCharUp for a way of drawing
--                vertical text.) Pixels not set by a particular character
--                retain their previous color.
--                
--
--#include "gd.h"
--#include "gdfontl.h"
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a character. */
--gdImageChar(im, gdFontLarge, 0, 0, 'Q', white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        void gdImageCharUp(gdImagePtr im, gdFontPtr font, int x, int y,
--                int c, int color) _(FUNCTION)_
--                gdImageCharUp is used to draw single characters on the
--                image, rotated 90 degrees. (To draw multiple characters,
--                use gdImageStringUp or gdImageStringUp16.) The second
--                argument is a pointer to a font definition structure;
--                five fonts are provided with gd, gdFontTiny, gdFontSmall,
--                gdFontMediumBold, gdFontLarge, and gdFontGiant. You must
--                include the files "gdfontt.h", "gdfonts.h", "gdfontmb.h",
--                "gdfontl.h" and "gdfontg.h" respectively and (if you are
--                not using a library-based approach) link with the
--                corresponding .c files to use the provided fonts. The
--                character specified by the fifth argument is drawn from
--                bottom to top, rotated at a 90-degree angle, in the
--                specified color. (See gdImageChar for a way of drawing
--                horizontal text.) Pixels not set by a particular
--                character retain their previous color.
--                
--
--#include "gd.h"
--#include "gdfontl.h"
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a character upwards so it rests against the top of the image. */
--gdImageCharUp(im, gdFontLarge,
--        0, gdFontLarge->h, 'Q', white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        void gdImageString(gdImagePtr im, gdFontPtr font, int x, int y,
--                unsigned char *s, int color) _(FUNCTION)_
--                gdImageString is used to draw multiple characters on the
--                image. (To draw single characters, use gdImageChar.) The
--                second argument is a pointer to a font definition
--                structure; five fonts are provided with gd, gdFontTiny,
--                gdFontSmall, gdFontMediumBold, gdFontLarge, and
--                gdFontGiant. You must include the files "gdfontt.h",
--                "gdfonts.h", "gdfontmb.h", "gdfontl.h" and "gdfontg.h"
--                respectively and (if you are not using a library-based
--                approach) link with the corresponding .c files to use the
--                provided fonts. The null-terminated C string specified by
--                the fifth argument is drawn from left to right in the
--                specified color. (See gdImageStringUp for a way of
--                drawing vertical text. See also gdImageStringFT for a
--                high quality solution.) Pixels not set by a particular
--                character retain their previous color.
--                
--
--#include "gd.h"
--#include "gdfontl.h"
--#include <string.h>
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--/* String to draw. */
--char *s = "Hello.";
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a centered string. */
--gdImageString(im, gdFontLarge,
--        im->w / 2 - (strlen(s) * gdFontLarge->w / 2),
--        im->h / 2 - gdFontLarge->h / 2,
--        s, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        void gdImageString16(gdImagePtr im, gdFontPtr font, int x, int y,
--                unsigned short *s, int color) _(FUNCTION)_
--                gdImageString is used to draw multiple 16-bit characters
--                on the image. (To draw single characters, use
--                gdImageChar.) The second argument is a pointer to a font
--                definition structure; five fonts are provided with gd,
--                gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge,
--                and gdFontGiant. You must include the files "gdfontt.h",
--                "gdfonts.h", "gdfontmb.h", "gdfontl.h" and "gdfontg.h"
--                respectively and (if you are not using a library-based
--                approach) link with the corresponding .c files to use the
--                provided fonts. The null-terminated string of characters
--                represented as 16-bit unsigned short integers specified
--                by the fifth argument is drawn from left to right in the
--                specified color. (See gdImageStringUp16 for a way of
--                drawing vertical text.) Pixels not set by a particular
--                character retain their previous color.
--                
--                This function was added in gd1.3 to provide a means of
--                rendering fonts with more than 256 characters for those
--                who have them. A more frequently used routine is
--                gdImageString.
--                
--        void gdImageStringUp(gdImagePtr im, gdFontPtr font, int x, int y,
--                unsigned char *s, int color) _(FUNCTION)_
--                gdImageStringUp is used to draw multiple characters on
--                the image, rotated 90 degrees. (To draw single
--                characters, use gdImageCharUp.) The second argument is a
--                pointer to a font definition structure; five fonts are
--                provided with gd, gdFontTiny, gdFontSmall,
--                gdFontMediumBold, gdFontLarge, and gdFontGiant. You must
--                include the files "gdfontt.h", "gdfonts.h", "gdfontmb.h",
--                "gdfontl.h" and "gdfontg.h" respectively and (if you are
--                not using a library-based approach) link with the
--                corresponding .c files to use the provided fonts.The
--                null-terminated C string specified by the fifth argument
--                is drawn from bottom to top (rotated 90 degrees) in the
--                specified color. (See gdImageString for a way of drawing
--                horizontal text.) Pixels not set by a particular
--                character retain their previous color.
--                
--
--#include "gd.h"
--#include "gdfontl.h"
--#include <string.h>
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--/* String to draw. */
--char *s = "Hello.";
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a centered string going upwards. Axes are reversed,
--        and Y axis is decreasing as the string is drawn. */
--gdImageStringUp(im, gdFontLarge,
--        im->w / 2 - gdFontLarge->h / 2,
--        im->h / 2 + (strlen(s) * gdFontLarge->w / 2),
--        s, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        void gdImageStringUp16(gdImagePtr im, gdFontPtr font, int x, int
--                y, unsigned short *s, int color) _(FUNCTION)_
--                gdImageString is used to draw multiple 16-bit characters
--                vertically on the image. (To draw single characters, use
--                gdImageChar.) The second argument is a pointer to a font
--                definition structure; five fonts are provided with gd,
--                gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge,
--                and gdFontGiant. You must include the files "gdfontt.h",
--                "gdfonts.h", "gdfontmb.h", "gdfontl.h" and "gdfontg.h"
--                respectively and (if you are not using a library-based
--                approach) link with the corresponding .c files to use the
--                provided fonts. The null-terminated string of characters
--                represented as 16-bit unsigned short integers specified
--                by the fifth argument is drawn from bottom to top in the
--                specified color. (See gdImageStringUp16 for a way of
--                drawing horizontal text.) Pixels not set by a particular
--                character retain their previous color.
--                
--                This function was added in gd1.3 to provide a means of
--                rendering fonts with more than 256 characters for those
--                who have them. A more frequently used routine is
--                gdImageStringUp.
--                
--        char *gdImageStringFT(gdImagePtr im, int *brect, int fg, char
--                *fontname, double ptsize, double angle, int x, int y,
--                char *string) _(FUNCTION)_
--                _RECOMMENDED. New in 1.8.4._ gdImageStringFT draws text
--                using the FreeType 2.x library.
--                
--                gdImageStringFT draws a string of anti-aliased characters
--                on the image using the FreeType library to render
--                user-supplied TrueType fonts. _We do not provide TrueType
--                fonts (.ttf and .ttc files). Obtaining them is entirely
--                up to you._ The string is anti-aliased, meaning that
--                there should be fewer "jaggies" visible. The fontname is
--                the full pathname to a TrueType font file, or a font face
--                name if the GDFONTPATH environment variable or FreeType's
--                DEFAULT_FONTPATH variable have been set intelligently.
--                The string may be arbitrarily scaled (ptsize) and rotated
--                (angle in radians).
--                
--                The user-supplied int brect[8] array is filled on return
--                from gdImageStringFT with the 8 elements representing the
--                4 corner coordinates of the bounding rectangle.
--                0 lower left corner, X position
--                lower left corner, Y position
--                lower right corner, X position
--                3 lower right corner, Y position
--                4 upper right corner, X position
--                5 upper right corner, Y position
--                6 upper left corner, X position
--                7 upper left corner, Y position
--                
--                The points are relative to the text regardless of the
--                angle, so "upper left" means in the top left-hand corner
--                seeing the text horizontally.
--                
--                Use a NULL gdImagePtr to get the bounding rectangle
--                without rendering. This is a relatively cheap operation
--                if followed by a rendering of the same string, because of
--                the caching of the partial rendering during bounding
--                rectangle calculation.
--                
--                The string is rendered in the color indicated by the gf
--                color index. _Use the negative of the desired color index
--                to disable anti-aliasing._
--                
--                The string may contain UTF-8 sequences like: "&#192;"
--                
--                gdImageStringFT will return a null char* on success, or
--                an error string on failure.
--                
--
--#include "gd.h"
--#include <string.h>
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--int brect[8];
--int x, y;
--char *err;
--
--char *s = "Hello."; /* String to draw. */
--double sz = 40.;
--char *f = "/usr/local/share/ttf/Times.ttf";  /* User supplied font */
--
--/* obtain brect so that we can size the image */
--err = gdImageStringFT(NULL,&brect[0],0,f,sz,0.,0,0,s);
--if (err) {fprintf(stderr,err); return 1;}
--
--/* create an image big enough for the string plus a little whitespace */
--x = brect[2]-brect[6] + 6;
--y = brect[3]-brect[7] + 6;
--im = gdImageCreate(x,y);
--
--/* Background color (first allocated) */
--white = gdImageColorResolve(im, 255, 255, 255);
--black = gdImageColorResolve(im, 0, 0, 0);
--
--/* render the string, offset origin to center string*/
--/* note that we use top-left coordinate for adjustment
-- * since gd origin is in top-left with y increasing downwards. */
--x = 3 - brect[6];
--y = 3 - brect[7];
--err = gdImageStringFT(im,&brect[0],black,f,sz,0.0,x,y,s);
--if (err) {fprintf(stderr,err); return 1;}
--
--/* Write img to stdout */
--gdImagePng(im, stdout);
--
--/* Destroy it */
--gdImageDestroy(im);
--
--        char *gdImageStringTTF(gdImagePtr im, int *brect, int fg, char
--                *fontname, double ptsize, double angle, int x, int y,
--                char *string) _(FUNCTION)_
--                _DEPRECATED._ gdImageStringTTF draws text using the
--                FreeType 1.x library. For better results, use
--                gdImageStringFT and FreeType 2.x.
--                
--                gdImageStringTTF draws a string of anti-aliased
--                characters on the image using the FreeType library to
--                render user-supplied TrueType fonts. _We do not provide
--                TrueType fonts (.ttf and .ttc files). Obtaining them is
--                entirely up to you._ The string is anti-aliased, meaning
--                that there should be fewer "jaggies" visible. The
--                fontname is the full pathname to a TrueType font file, or
--                a font face name if the GDFONTPATH environment variable
--                or FreeType's DEFAULT_FONTPATH variable have been set
--                intelligently. The string may be arbitrarily scaled
--                (ptsize) and rotated (angle in radians).
--                
--                The user-supplied int brect[8] array is filled on return
--                from gdImageStringTTF with the 8 elements representing
--                the 4 corner coordinates of the bounding rectangle.
--                0 lower left corner, X position
--                lower left corner, Y position
--                lower right corner, X position
--                3 lower right corner, Y position
--                4 upper right corner, X position
--                5 upper right corner, Y position
--                6 upper left corner, X position
--                7 upper left corner, Y position
--                
--                The points are relative to the text regardless of the
--                angle, so "upper left" means in the top left-hand corner
--                seeing the text horizontally.
--                
--                Use a NULL gdImagePtr to get the bounding rectangle
--                without rendering. This is a relatively cheap operation
--                if followed by a rendering of the same string, because of
--                the caching of the partial rendering during bounding
--                rectangle calculation.
--                
--                The string is rendered in the color indicated by the gf
--                color index. _Use the negative of the desired color index
--                to disable anti-aliasing._
--                
--                The string may contain UTF-8 sequences like: "&#192;"
--                
--                gdImageStringTTF will return a null char* on success, or
--                an error string on failure.
--                
--
--#include "gd.h"
--#include <string.h>
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--int brect[8];
--int x, y;
--char *err;
--
--char *s = "Hello."; /* String to draw. */
--double sz = 40.;
--char *f = "/usr/local/share/ttf/Times.ttf";  /* User supplied font */
--
--/* obtain brect so that we can size the image */
--err = gdImageStringTTF(NULL,&brect[0],0,f,sz,0.,0,0,s);
--if (err) {fprintf(stderr,err); return 1;}
--
--/* create an image big enough for the string plus a little whitespace */
--x = brect[2]-brect[6] + 6;
--y = brect[3]-brect[7] + 6;
--im = gdImageCreate(x,y);
--
--/* Background color (first allocated) */
--white = gdImageColorResolve(im, 255, 255, 255);
--black = gdImageColorResolve(im, 0, 0, 0);
--
--/* render the string, offset origin to center string*/
--/* note that we use top-left coordinate for adjustment
-- * since gd origin is in top-left with y increasing downwards. */
--x = 3 - brect[6];
--y = 3 - brect[7];
--err = gdImageStringTTF(im,&brect[0],black,f,sz,0.0,x,y,s);
--if (err) {fprintf(stderr,err); return 1;}
--
--/* Write img to stdout */
--gdImagePng(im, stdout);
--
--/* Destroy it */
--gdImageDestroy(im);
--
--  Color-handling functions
--  
--        int gdImageColorAllocate(gdImagePtr im, int r, int g, int b)
--                _(FUNCTION)_
--                gdImageColorAllocate finds the first available color
--                index in the image specified, sets its RGB values to
--                those requested (255 is the maximum for each), and
--                returns the index of the new color table entry. When
--                creating a new image, the first time you invoke this
--                function, you are setting the background color for that
--                image.
--                
--                In the event that all gdMaxColors colors (256) have
--                already been allocated, gdImageColorAllocate will return
--                -1 to indicate failure. (This is not uncommon when
--                working with existing PNG files that already use 256
--                colors.) Note that gdImageColorAllocate does not check
--                for existing colors that match your request; see
--                gdImageColorExact, gdImageColorClosest and
--                gdImageColorClosestHWB for ways to locate existing colors
--                that approximate the color desired in situations where a
--                new color is not available. Also see gdImageColorResolve,
--                new in gd-1.6.2.
--                
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int red;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color red. */
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* Draw a dashed line from the upper left corner to the lower right corner. */
--gdImageDashedLine(im, 0, 0, 99, 99, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        int gdImageColorClosest(gdImagePtr im, int r, int g, int b)
--                _(FUNCTION)_
--                gdImageColorClosest searches the colors which have been
--                defined thus far in the image specified and returns the
--                index of the color with RGB values closest to those of
--                the request. (Closeness is determined by Euclidian
--                distance, which is used to determine the distance in
--                three-dimensional color space between colors.)
--                
--                If no colors have yet been allocated in the image,
--                gdImageColorClosest returns -1.
--                
--                This function is most useful as a backup method for
--                choosing a drawing color when an image already contains
--                gdMaxColors (256) colors and no more can be allocated.
--                (This is not uncommon when working with existing PNG
--                files that already use many colors.) See
--                gdImageColorExact for a method of locating exact matches
--                only.
--                
--
--... inside a function ...
--gdImagePtr im;
--FILE *in;
--int red;
--/* Let's suppose that photo.png is a scanned photograph with
--        many colors. */
--in = fopen("photo.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* Try to allocate red directly */
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* If we fail to allocate red... */
--if (red == (-1)) {
--        /* Find the _closest_ color instead. */
--        red = gdImageColorClosest(im, 255, 0, 0);
--}
--/* Draw a dashed line from the upper left corner to the lower right corner */
--gdImageDashedLine(im, 0, 0, 99, 99, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        int gdImageColorClosestHWB(gdImagePtr im, int r, int g, int b)
--                _(FUNCTION)_
--                gdImageColorClosestHWB searches the colors which have
--                been defined thus far in the image specified and returns
--                the index of the color with hue, whiteness and blackness
--                closest to the requested color. This scheme is typically
--                superior to the Euclidian distance scheme used by
--                gdImageColorClosest.
--                
--                If no colors have yet been allocated in the image,
--                gdImageColorClosestHWB returns -1.
--                
--                This function is most useful as a backup method for
--                choosing a drawing color when an image already contains
--                gdMaxColors (256) colors and no more can be allocated.
--                (This is not uncommon when working with existing PNG
--                files that already use many colors.) See
--                gdImageColorExact for a method of locating exact matches
--                only.
--                
--
--... inside a function ...
--gdImagePtr im;
--FILE *in;
--int red;
--/* Let's suppose that photo.png is a scanned photograph with
--        many colors. */
--in = fopen("photo.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* Try to allocate red directly */
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* If we fail to allocate red... */
--if (red == (-1)) {
--        /* Find the _closest_ color instead. */
--        red = gdImageColorClosestHWB(im, 255, 0, 0);
--}
--/* Draw a dashed line from the upper left corner to the lower right corner */
--gdImageDashedLine(im, 0, 0, 99, 99, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        int gdImageColorExact(gdImagePtr im, int r, int g, int b)
--                _(FUNCTION)_
--                gdImageColorExact searches the colors which have been
--                defined thus far in the image specified and returns the
--                index of the first color with RGB values which exactly
--                match those of the request. If no allocated color matches
--                the request precisely, gdImageColorExact returns -1. See
--                gdImageColorClosest for a way to find the color closest
--                to the color requested.
--                
--
--... inside a function ...
--gdImagePtr im;
--int red;
--in = fopen("photo.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* The image may already contain red; if it does, we'll save a slot
--        in the color table by using that color. */
--/* Try to allocate red directly */
--red = gdImageColorExact(im, 255, 0, 0);
--/* If red isn't already present... */
--if (red == (-1)) {
--        /* Second best: try to allocate it directly. */
--        red = gdImageColorAllocate(im, 255, 0, 0);
--        /* Out of colors, so find the _closest_ color instead. */
--        red = gdImageColorClosest(im, 255, 0, 0);
--}
--/* Draw a dashed line from the upper left corner to the lower right corner */
--gdImageDashedLine(im, 0, 0, 99, 99, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        int gdImageColorResolve(gdImagePtr im, int r, int g, int b)
--                _(FUNCTION)_
--                gdImageColorResolve searches the colors which have been
--                defined thus far in the image specified and returns the
--                index of the first color with RGB values which exactly
--                match those of the request. If no allocated color matches
--                the request precisely, then gdImageColorResolve tries to
--                allocate the exact color. If there is no space left in
--                the color table then gdImageColorResolve returns the
--                closest color (as in gdImageColorClosest). This function
--                always returns an index of a color.
--                
--
--... inside a function ...
--gdImagePtr im;
--int red;
--in = fopen("photo.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* The image may already contain red; if it does, we'll save a slot
--        in the color table by using that color. */
--/* Get index of red, or color closest to red */
--red = gdImageColorResolve(im, 255, 0, 0);
--/* Draw a dashed line from the upper left corner to the lower right corner */
--gdImageDashedLine(im, 0, 0, 99, 99, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        int gdImageColorsTotal(gdImagePtr im) _(MACRO)_
--                gdImageColorsTotal is a macro which returns the number of
--                colors currently allocated in the image. Use this macro
--                to obtain this information; do not access the structure
--                directly.
--                
--        int gdImageColorRed(gdImagePtr im, int c) _(MACRO)_
--                gdImageColorRed is a macro which returns the red portion
--                of the specified color in the image. Use this macro to
--                obtain this information; do not access the structure
--                directly.
--                
--        int gdImageColorGreen(gdImagePtr im, int c) _(MACRO)_
--                gdImageColorGreen is a macro which returns the green
--                portion of the specified color in the image. Use this
--                macro to obtain this information; do not access the
--                structure directly.
--                
--        int gdImageColorBlue(gdImagePtr im, int c) _(MACRO)_
--                gdImageColorBlue is a macro which returns the green
--                portion of the specified color in the image. Use this
--                macro to obtain this information; do not access the
--                structure directly.
--                
--        int gdImageGetInterlaced(gdImagePtr im) _(MACRO)_
--                gdImageGetInterlaced is a macro which returns true (1) if
--                the image is interlaced, false (0) if not. Use this macro
--                to obtain this information; do not access the structure
--                directly. See gdImageInterlace for a means of interlacing
--                images.
--                
--        int gdImageGetTransparent(gdImagePtr im) _(MACRO)_
--                gdImageGetTransparent is a macro which returns the
--                current transparent color index in the image. If there is
--                no transparent color, gdImageGetTransparent returns -1.
--                Use this macro to obtain this information; do not access
--                the structure directly.
--                
--        void gdImageColorDeallocate(gdImagePtr im, int color) _(FUNCTION)_
--                
--                gdImageColorDeallocate marks the specified color as being
--                available for reuse. It does not attempt to determine
--                whether the color index is still in use in the image.
--                After a call to this function, the next call to
--                gdImageColorAllocate for the same image will set new RGB
--                values for that color index, changing the color of any
--                pixels which have that index as a result. If multiple
--                calls to gdImageColorDeallocate are made consecutively,
--                the lowest-numbered index among them will be reused by
--                the next gdImageColorAllocate call.
--                
--
--... inside a function ...
--gdImagePtr im;
--int red, blue;
--in = fopen("photo.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* Look for red in the color table. */
--red = gdImageColorExact(im, 255, 0, 0);
--/* If red is present... */
--if (red != (-1)) {
--        /* Deallocate it. */
--        gdImageColorDeallocate(im, red);
--        /* Allocate blue, reusing slot in table.
--                Existing red pixels will change color. */
--        blue = gdImageColorAllocate(im, 0, 0, 255);
--}
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        void gdImageColorTransparent(gdImagePtr im, int color)
--                _(FUNCTION)_
--                gdImageColorTransparent sets the transparent color index
--                for the specified image to the specified index. To
--                indicate that there should be _no_ transparent color,
--                invoke gdImageColorTransparent with a color index of -1.
--                Note that JPEG images do not support transparency, so
--                this setting has no effect when writing JPEG images.
--                
--                The color index used should be an index allocated by
--                gdImageColorAllocate, whether explicitly invoked by your
--                code or implicitly invoked by loading an image. In order
--                to ensure that your image has a reasonable appearance
--                when viewed by users who do not have transparent
--                background capabilities (or when you are writing a
--                JPEG-format file, which does not support transparency),
--                be sure to give reasonable RGB values to the color you
--                allocate for use as a transparent color, _even though it
--                will be transparent on systems that support PNG
--                transparency_.
--                
--
--... inside a function ...
--gdImagePtr im;
--int black;
--FILE *in, *out;
--in = fopen("photo.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* Look for black in the color table and make it transparent. */
--black = gdImageColorExact(im, 0, 0, 0);
--/* If black is present... */
--if (black != (-1)) {
--        /* Make it transparent */
--        gdImageColorTransparent(im, black);
--}
--/* Save the newly-transparent image back to the file */
--out = fopen("photo.png", "wb");
--gdImagePng(im, out);
--fclose(out);
--/* Destroy it */
--gdImageDestroy(im);
--
--  Copying and resizing functions
--  
--        void gdImageCopy(gdImagePtr dst, gdImagePtr src, int dstX, int
--                dstY, int srcX, int srcY, int w, int h) _(FUNCTION)_
--                gdImageCopy is used to copy a rectangular portion of one
--                image to another image. (For a way of stretching or
--                shrinking the image in the process, see
--                gdImageCopyResized.)
--                
--                The dst argument is the destination image to which the
--                region will be copied. The src argument is the source
--                image from which the region is copied. The dstX and dstY
--                arguments specify the point in the destination image to
--                which the region will be copied. The srcX and srcY
--                arguments specify the upper left corner of the region in
--                the source image. The w and h arguments specify the width
--                and height of the region.
--                
--                When you copy a region from one location in an image to
--                another location in the same image, gdImageCopy will
--                perform as expected unless the regions overlap, in which
--                case the result is unpredictable.
--                
--                _Important note on copying between images:_ since
--                different images do not necessarily have the same color
--                tables, pixels are not simply set to the same color index
--                values to copy them. gdImageCopy will attempt to find an
--                identical RGB value in the destination image for each
--                pixel in the copied portion of the source image by
--                invoking gdImageColorExact. If such a value is not found,
--                gdImageCopy will attempt to allocate colors as needed
--                using gdImageColorAllocate. If both of these methods
--                fail, gdImageCopy will invoke gdImageColorClosest to find
--                the color in the destination image which most closely
--                approximates the color of the pixel being copied.
--                
--
--... Inside a function ...
--gdImagePtr im_in;
--gdImagePtr im_out;
--int x, y;
--FILE *in;
--FILE *out;
--/* Load a small png to tile the larger one with */
--in = fopen("small.png", "rb");
--im_in = gdImageCreateFromPng(in);
--fclose(in);
--/* Make the output image four times as large on both axes */
--im_out = gdImageCreate(im_in->sx * 4, im_in->sy * 4);
--/* Now tile the larger image using the smaller one */
--for (y = 0; (y < 4); y++) {
--        for (x = 0; (x < 4); x++) {
--                gdImageCopy(im_out, im_in,
--                        x * im_in->sx, y * im_in->sy,
--                        0, 0,
--                        im_in->sx, im_in->sy);
--        }
--}
--out = fopen("tiled.png", "wb");
--gdImagePng(im_out, out);
--fclose(out);
--gdImageDestroy(im_in);
--gdImageDestroy(im_out);
--
--        void gdImageCopyResized(gdImagePtr dst, gdImagePtr src, int dstX,
--                int dstY, int srcX, int srcY, int destW, int destH, int
--                srcW, int srcH) _(FUNCTION)_
--                gdImageCopyResized is used to copy a rectangular portion
--                of one image to another image. The X and Y dimensions of
--                the original region and the destination region can vary,
--                resulting in stretching or shrinking of the region as
--                appropriate. (For a simpler version of this function
--                which does not deal with resizing, see gdImageCopy.)
--                
--                The dst argument is the destination image to which the
--                region will be copied. The src argument is the source
--                image from which the region is copied. The dstX and dstY
--                arguments specify the point in the destination image to
--                which the region will be copied. The srcX and srcY
--                arguments specify the upper left corner of the region in
--                the source image. The dstW and dstH arguments specify the
--                width and height of the destination region. The srcW and
--                srcH arguments specify the width and height of the source
--                region and can differ from the destination size, allowing
--                a region to be scaled during the copying process.
--                
--                When you copy a region from one location in an image to
--                another location in the same image, gdImageCopy will
--                perform as expected unless the regions overlap, in which
--                case the result is unpredictable. If this presents a
--                problem, create a scratch image in which to keep
--                intermediate results.
--                
--                _Important note on copying between images:_ since images
--                do not necessarily have the same color tables, pixels are
--                not simply set to the same color index values to copy
--                them. gdImageCopy will attempt to find an identical RGB
--                value in the destination image for each pixel in the
--                copied portion of the source image by invoking
--                gdImageColorExact. If such a value is not found,
--                gdImageCopy will attempt to allocate colors as needed
--                using gdImageColorAllocate. If both of these methods
--                fail, gdImageCopy will invoke gdImageColorClosest to find
--                the color in the destination image which most closely
--                approximates the color of the pixel being copied.
--                
--
--... Inside a function ...
--gdImagePtr im_in;
--gdImagePtr im_out;
--int x, y;
--FILE *in;
--FILE *out;
--/* Load a small png to expand in the larger one */
--in = fopen("small.png", "rb");
--im_in = gdImageCreateFromPng(in);
--fclose(in);
--/* Make the output image four times as large on both axes */
--im_out = gdImageCreate(im_in->sx * 4, im_in->sy * 4);
--/* Now copy the smaller image, but four times larger */
--gdImageCopyResized(im_out, im_in, 0, 0, 0, 0,
--        im_out->sx, im_out->sy,
--        im_in->sx, im_in->sy);
--out = fopen("large.png", "wb");
--gdImagePng(im_out, out);
--fclose(out);
--gdImageDestroy(im_in);
--gdImageDestroy(im_out);
--
--        void gdImageCopyMerge(gdImagePtr dst, gdImagePtr src, int dstX,
--                int dstY, int srcX, int srcY, int w, int h, int pct)
--                _(FUNCTION)_
--                gdImageCopyMerge is almost identical to gdImageCopy,
--                except that it 'merges' the two images by an amount
--                specified in the last parameter. If the last parameter is
--                100, then it will function identically to gdImageCopy -
--                the source image replaces the pixels in the destination.
--                
--                If, however, the _pct_ parameter is less than 100, then
--                the two images are merged. With pct = 0, no action is
--                taken.
--                
--                This feature is most useful to 'highlight' sections of an
--                image by merging a solid color with pct = 50:
--                
--
--... Inside a function ...
--gdImageCopyMerge(im_out, im_in, 100, 200, 0, 0, 30, 50, 50);
--
--        void gdImageCopyMergeGray(gdImagePtr dst, gdImagePtr src, int
--                dstX, int dstY, int srcX, int srcY, int w, int h, int
--                pct) _(FUNCTION)_
--                gdImageCopyMergeGray is almost identical to
--                gdImageCopyMerge, except that when merging images it
--                preserves the hue of the source by converting the
--                destination pixels to grey scale before the copy
--                operation.
--                
--
--... Inside a function ...
--gdImageCopyMergeGray(im_out, im_in, 100, 200, 0, 0, 30, 50, 50);
--
--        void gdImagePaletteCopy(gdImagePtr dst, gdImagePtr src)
--                _(FUNCTION)_
--                Copies a palette from one image to another, attempting to
--                match the colors in the target image to the colors in the
--                source palette.
--                
--  Miscellaneous Functions
--  
--              int gdImageCompare(gdImagePtr im1, gdImagePtr im2)
--                      _(FUNCTION)_
--                      gdImageCompare returns a bitmap indicating if the
--                      two images are different. The members of the bitmap
--                      are defined in gd.h, but the most important is
--                      GD_CMP_IMAGE, which indicated that the images will
--                      actually appear different when displayed. Other,
--                      less important, differences relate to pallette
--                      entries. Any difference in the transparent colour
--                      is assumed to make images display differently, even
--                      if the transparent colour is not used.
--                      
--
--... Inside a function ...
--cmpMask = gdImageCompare(im1, im2);
--
--              gdImageInterlace(gdImagePtr im, int interlace) _(FUNCTION)_
--                      
--                      gdImageInterlace is used to determine whether an
--                      image should be stored in a linear fashion, in
--                      which lines will appear on the display from first
--                      to last, or in an interlaced fashion, in which the
--                      image will "fade in" over several passes. By
--                      default, images are not interlaced. (When writing
--                      JPEG images, interlacing implies generating
--                      progressive JPEG files, which are represented as a
--                      series of scans of increasing quality.
--                      Noninterlaced gd images result in regular
--                      [sequential] JPEG data streams.)
--                      
--                      A nonzero value for the interlace argument turns on
--                      interlace; a zero value turns it off. Note that
--                      interlace has no effect on other functions, and has
--                      no meaning unless you save the image in PNG or JPEG
--                      format; the gd and xbm formats do not support
--                      interlace.
--                      
--                      When a PNG is loaded with gdImageCreateFromPng or a
--                      JPEG is loaded with gdImageCreateFromJpeg,
--                      interlace will be set according to the setting in
--                      the PNG or JPEG file.
--                      
--                      Note that many PNG and JPEG viewers and web
--                      browsers do _not_ support interlace or the
--                      incremental display of progressive JPEGs. However,
--                      the interlaced PNG or progressive JPEG should still
--                      display; it will simply appear all at once, just as
--                      other images do.
--                      
--
--gdImagePtr im;
--FILE *out;
--/* ... Create or load the image... */
--
--/* Now turn on interlace */
--gdImageInterlace(im, 1);
--/* And open an output file */
--out = fopen("test.png", "wb");
--/* And save the image  -- could also use gdImageJpeg */
--gdImagePng(im, out);
--fclose(out);
--gdImageDestroy(im);
--
--              gdFree(void *ptr) _(FUNCTION)_
--                      gdFree provides a reliable way to free memory
--                      allocated by functions such as gdImagePngPtr which
--                      return blocks of memory. Use of this function
--                      guarantees that the version of free() that is
--                      ultimately called will be intended for use with the
--                      version of malloc() that originally allocated the
--                      block.
--                      
--  Constants
--  
--                    gdBrushed _(CONSTANT)_
--                            Used in place of a color when invoking a
--                            line-drawing function such as gdImageLine or
--                            gdImageRectangle. When gdBrushed is used as
--                            the color, the brush image set with
--                            gdImageSetBrush is drawn in place of each
--                            pixel of the line (the brush is usually
--                            larger than one pixel, creating the effect of
--                            a wide paintbrush). See also gdStyledBrushed
--                            for a way to draw broken lines with a series
--                            of distinct copies of an image.
--                            
--                    gdMaxColors_(CONSTANT)_
--                            The constant 256. This is the maximum number
--                            of colors in a PNG file according to the PNG
--                            standard, and is also the maximum number of
--                            colors in a gd image.
--                            
--                    gdStyled _(CONSTANT)_
--                            Used in place of a color when invoking a
--                            line-drawing function such as gdImageLine or
--                            gdImageRectangle. When gdStyled is used as
--                            the color, the colors of the pixels are drawn
--                            successively from the style that has been set
--                            with gdImageSetStyle. If the color of a pixel
--                            is equal to gdTransparent, that pixel is not
--                            altered. (This mechanism is completely
--                            unrelated to the "transparent color" of the
--                            image itself; see gdImageColorTransparent
--                            gdImageColorTransparent for that mechanism.)
--                            See also gdStyledBrushed.
--                            
--                    gdStyledBrushed _(CONSTANT)_
--                            Used in place of a color when invoking a
--                            line-drawing function such as gdImageLine or
--                            gdImageRectangle. When gdStyledBrushed is
--                            used as the color, the brush image set with
--                            gdImageSetBrush is drawn at each pixel of the
--                            line, providing that the style set with
--                            gdImageSetStyle contains a nonzero value (OR
--                            gdTransparent, which does not equal zero but
--                            is supported for consistency) for the current
--                            pixel. (Pixels are drawn successively from
--                            the style as the line is drawn, returning to
--                            the beginning when the available pixels in
--                            the style are exhausted.) Note that this
--                            differs from the behavior of gdStyled, in
--                            which the values in the style are used as
--                            actual pixel colors, except for
--                            gdTransparent.
--                            
--                    gdDashSize _(CONSTANT)_
--                            The length of a dash in a dashed line.
--                            Defined to be 4 for backwards compatibility
--                            with programs that use gdImageDashedLine. New
--                            programs should use gdImageSetStyle and call
--                            the standard gdImageLine function with the
--                            special "color" gdStyled or gdStyledBrushed.
--                            
--                    gdTiled _(CONSTANT)_
--                            Used in place of a normal color in
--                            gdImageFilledRectangle, gdImageFilledPolygon,
--                            gdImageFill, and gdImageFillToBorder. gdTiled
--                            selects a pixel from the tile image set with
--                            gdImageSetTile in such a way as to ensure
--                            that the filled area will be tiled with
--                            copies of the tile image. See the discussions
--                            of gdImageFill and gdImageFillToBorder for
--                            special restrictions regarding those
--                            functions.
--                            
--                    gdTransparent _(CONSTANT)_
--                            Used in place of a normal color in a style to
--                            be set with gdImageSetStyle. gdTransparent is
--                            _not_ the transparent color index of the
--                            image; for that functionality please see
--                            gdImageColorTransparent.
--                            
--  About the additional .gd image file format
--  
--                            In addition to reading and writing the PNG
--                            and JPEG formats and reading the X Bitmap
--                            format, gd has the capability to read and
--                            write its own ".gd" format. This format is
--                            _not_ intended for general purpose use and
--                            should never be used to distribute images. It
--                            is not a compressed format. Its purpose is
--                            solely to allow very fast loading of images
--                            your program needs often in order to build
--                            other images for output. If you are
--                            experiencing performance problems when
--                            loading large, fixed PNG images your program
--                            needs to produce its output images, you may
--                            wish to examine the functions
--                            gdImageCreateFromGd and gdImageGd, which read
--                            and write .gd format images.
--                            
--                            The program "pngtogd.c" is provided as a
--                            simple way of converting .png files to .gd
--                            format. I emphasize again that you will not
--                            need to use this format unless you have a
--                            need for high-speed loading of a few
--                            frequently-used images in your program.
--                            
--  About the .gd2 image file format
--  
--                            In addition to reading and writing the PNG
--                            format and reading the X Bitmap format, gd
--                            has the capability to read and write its own
--                            ".gd2" format. This format is _not_ intended
--                            for general purpose use and should never be
--                            used to distribute images. It is a compressed
--                            format allowing pseudo-random access to large
--                            image files. Its purpose is solely to allow
--                            very fast loading of _parts_ of images If you
--                            are experiencing performance problems when
--                            loading large, fixed PNG or JPEG images your
--                            program needs to produce its output images,
--                            you may wish to examine the functions
--                            gdImageCreateFromGd2,
--                            gdImageCreateFromGd2Part and gdImageGd2,
--                            which read and write .gd2 format images.
--                            
--                            The program "pngtogd2.c" is provided as a
--                            simple way of converting .png files to .gd2
--                            format.
--                            
--  About the gdIOCtx structure
--  
--                            Version 1.5 of GD added a new style of I/O
--                            based on an IOCtx structure (the most
--                            up-to-date version can be found in gd_io.h):
--                            
--
--typedef struct gdIOCtx {
--        int     (*getC)(struct gdIOCtx*);
--        int     (*getBuf)(struct gdIOCtx*, void*, int);
--
--        void     (*putC)(struct gdIOCtx*, int);
--        int     (*putBuf)(struct gdIOCtx*, const void*, int);
--
--        int     (*seek)(struct gdIOCtx*, const int);
--        long    (*tell)(struct gdIOCtx*);
--
--        void    (*free)(struct gdIOCtx*);
--
--} gdIOCtx;
--
--                    Most functions that accepted files in previous
--                            versions now also have a counterpart that
--                            accepts an I/O context. These functions have
--                            a 'Ctx' suffix.
--                            
--                            The Ctx routines use the function pointers in
--                            the I/O context pointed to by gdIOCtx to
--                            perform all I/O. Examples of how to implement
--                            an I/O context can be found in io_file.c
--                            (which provides a wrapper for file routines),
--                            and io_dp.c (which implements in-memory
--                            storage).
--                            
--                            It is not necessary to implement all
--                            functions in an I/O context if you know that
--                            it will only be used in limited
--                            cirsumstances. At the time of writing
--                            (Version 1.6.1, July 1999), the known
--                            requirements are:
--                            
--                            All   Must have 'free',
--                            Anything that reads from the context Must
--                            have 'getC' and 'getBuf',
--                            Anything that writes to the context Must have
--                            'putC' and 'putBuf'.
--                            If gdCreateFromGd2Part is called Must also
--                            have 'seek' and 'tell'.
--                            If gdImageGd2 is called Must also have 'seek'
--                            and 'tell'.
--                            
--  Please tell us you're using gd!
--  
--                            When you contact us and let us know you are
--                            using gd, you help us justify the time spent
--                            in maintaining and improving it. So please
--                            let us know. If the results are publicly
--                            visible on the web, a URL is a wonderful
--                            thing to receive, but if it's not a publicly
--                            visible project, a simple note is just as
--                            welcome.
--                            
--  If you have problems
--  
--                            If you have any difficulties with gd, feel
--                            free to contact the author, Thomas Boutell.
--                            Problems relating to the gd2 format should be
--                            addressed to Philip Warner.
--                            
--                            _Be sure to read this manual carefully first.
--                            _
--  Alphabetical quick index
--  
--                            gdBrushed | gdDashSize | gdFont | gdFontPtr |
--                            gdFree | gdImage | gdImageArc | gdImageBlue |
--                            gdImageBoundsSafe | gdImageChar |
--                            gdImageCharUp | gdImageColorAllocate |
--                            gdImageColorClosest | gdImageColorDeallocate
--                            | gdImageColorExact | gdImageColorResolve |
--                            gdImageColorTransparent | gdImageCopy |
--                            gdImageCopyResized | gdImageCreate |
--                            gdImageCreateFromGd | gdImageCreateFromGd2 |
--                            gdImageCreateFromGd2Part |
--                            gdImageCreateFromJpeg | gdImageCreateFromPng
--                            | gdImageCreateFromPngSource |
--                            gdImageCreateFromXbm | gdImageCreateFromXpm |
--                            gdImageDashedLine | gdImageDestroy |
--                            gdImageFill | gdImageFillToBorder |
--                            gdImageFilledRectangle | gdImageGd |
--                            gdImageGd2 | gdImageGetInterlaced |
--                            gdImageGetPixel | gdImageGetTransparent |
--                            gdImageGreen | gdImageInterlace | gdImageJpeg
--                            | gdImageLine | gdImageFilledPolygon |
--                            gdImagePaletteCopy | gdImagePng |
--                            gdImagePngToSink | gdImagePolygon |
--                            gdImagePtr | gdImageWBMP | gdImageRectangle |
--                            gdImageRed | gdImageSetBrush |
--                            gdImageSetPixel | gdImageSetStyle |
--                            gdImageSetTile | gdImageString |
--                            gdImageString16 | gdImageStringFT |
--                            gdImageStringTTF | gdImageStringUp |
--                            gdImageStringUp16 | gdImageWBMP | gdMaxColors
--                            | gdPoint | gdStyled | gdStyledBrushed |
--                            gdTiled | gdTransparent
--                            
--                            _Boutell.Com, Inc._
 END_OF_PATCH
 
 close PATCH or die "patch failed with status $?\n";
