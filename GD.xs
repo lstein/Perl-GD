@@ -839,7 +839,7 @@ gdnewFromGifData(packname="GD::Image", imageData, ...)
 	  SV* errormsg;
           int     truecolor = truecolor_default;
 	CODE:
-#ifdef HAVE_JPEG
+#ifdef HAVE_GIF
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromGifCtx(ctx);
