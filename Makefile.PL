@@ -1,9 +1,15 @@
 use ExtUtils::MakeMaker qw(prompt WriteMakefile);
 
+require 5.6.0;
+
+unless (@ARGV) {
 warn "\nNOTICE: This module requires libgd 2.0.12 or higher.\n";
 warn "        it will NOT work with earlier versions.\n";
 warn "        See www.cpan.org for versions of GD that are compatible\n";
 warn "        with earlier versions of libgd.\n";
+warn "\n";
+warn "Type perl Makefile.PL -h for command-line option summary\n";
+}
 
 
 # =====> PATHS: CHECK AND ADJUST <=====
