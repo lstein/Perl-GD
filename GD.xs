@@ -1787,3 +1787,23 @@ gdheight(font)
 	}
 	OUTPUT:
 		RETVAL
+
+void
+gdimageAlphaBlending(image,blending)
+     GD::Image       image
+        int             blending
+		PROTOTYPE: $$
+		CODE:
+{
+  gdImageAlphaBlending(image,blending);
+}
+
+void
+gdimageSaveAlpha(image,saveAlphaArg)
+     GD::Image       image
+        int             saveAlphaArg
+PROTOTYPE: $$
+CODE:
+{
+  gdImageSaveAlpha(image,saveAlphaArg) ;
+}
