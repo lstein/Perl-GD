@@ -1,0 +1,41 @@
+#!/usr/bin/perl -w
+
+use lib './blib/arch','./blib/lib';
+
+use strict;
+use GD;
+use subs qw( charmap );
+
+my $teststring = pack 'C*', 32, 1 .. 255;
+my $im = new GD::Image(640, 500);
+my ($white, $black) = 
+	(
+	$im->colorAllocate(255, 255, 255),
+	$im->colorAllocate(0, 0, 0),
+	);
+
+$im->transparent($white);
+$im->interlaced(1);
+
+charmap($im, gdGiantFont, "GiantFont 9x15", 20, 16);
+charmap($im, gdLargeFont, "LargeFont 8x16", 120, 16);
+charmap($im, gdMediumBoldFont, "gdMediumBoldFont 7x13b", 220, 13);
+charmap($im, gdSmallFont, "gdSmallFont 6x13", 320, 13);
+charmap($im, gdTinyFont, "gdTinyFont 5x8", 420, 8);
+
+print $im->gif;
+
+sub charmap
+	{
+	my $im = shift;
+	my ($font, $title, $topoffset, $lineskip) = @_;
+
+	$im->string($font, 16, $topoffset, $title.':', $black);	
+	my $line;
+	for $line (0 .. 4)
+		{
+		$im->string($font, 16, $topoffset + (1 + $line) * $lineskip,
+			substr($teststring, $line * 64, 64), $black);	
+		}
+	}
+

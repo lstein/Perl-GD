@@ -1,0 +1,18 @@
+1.31	Added support for GD 1.8.4, and libfreetype.  Must upgrade to
+	1.8.4 and libfreetype for GD to compile correctly.
+1.29	Fixed a corrupted .xpm file in the regression suite
+		(caused test 9 to fail)
+1.28    Added support for gd 1.8.3
+1.27	Fixed strict refs problem on 5.00503 and earlier
+1.26	Brought up to date with libgd 1.8.1
+1.24-1.25 More tweaks to Makefile.PL.
+1.23    Added a bunch more libraries and includes... might or might not port
+	to other platforms now
+1.22	Fix to Makefile.PL to accomodate linking static libraries.
+	Added newFromGd2Part() method.
+	Supports libgd 1.7.1.
+1.21	Slight fix in regression tests so that test 8 doesn't fail when compiled
+		without TrueType support.
+1.20	Rewritten for libgd 1.6.3
+1.19	Fixed Makefile.PL for better compilation on Windoze machines
+	

@@ -1,0 +1,4 @@
+TYPEMAP
+GD::Image	T_PTROBJ
+GD::Font	T_PTROBJ
+GD::Polygon	T_PTROBJ
