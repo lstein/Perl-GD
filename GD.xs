@@ -17,7 +17,6 @@
 #endif
 /* Copyright 1995 - 1998, Lincoln D. Stein.  See accompanying README file for
 	usage restrictions */
-#define gdFree free
 
 static int
 not_here(char *s)
@@ -1385,8 +1384,9 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string)
 	    XSRETURN_EMPTY;
 	  } else {
 	    EXTEND(sp,8);
-	    for (i=0;i<8;i++)
+	    for (i=0;i<8;i++) {
 	      PUSHs(sv_2mortal(newSViv(brect[i])));
+	    }
 	  }
 
 	}

@@ -39,7 +39,7 @@ compare(test5(),++$loaded);
 compare(test6(),++$loaded);
 
 if (GD::Image->stringTTF(0,FONT,12.0,0.0,20,20,"Hello world!")) {
-  compare(test7(),++$loaded);
+  multicompare(test7(),++$loaded,undef);
 #  print "ok ",++$loaded," # This test doesn't work with some freetype versions\n";
 } elsif ($@ =~/not built with .+Type font support/) {
   print "ok ",++$loaded," # Skip, no FreeType font support\n";
@@ -86,14 +86,43 @@ sub compare {
       binmode REGRESSFILE;
       print REGRESSFILE $imageData;
       close REGRESSFILE;
-    } else{
-      open (REGRESSFILE,"./test.out.$testNo.png") 
-	|| die "Can't open regression file './t/test.out.$testNo.png': $!\n";
+    } else {
+      open (REGRESSFILE,"./$file")
+        || die "Can't open regression file './t/$file': $!\n";
       binmode REGRESSFILE;
       $regressdata = <REGRESSFILE>;
       close REGRESSFILE;
       print $imageData eq $regressdata ? "ok $ok" : "not ok $ok","\n";
     }
+}
+
+sub multicompare {
+  my($imageData,$testNo,$fht,@alt) = @_;
+  local $/ = undef;
+  my $ok = $testNo;
+  my $regressdata;
+  my $file = ($^O eq 'VMS')? "test.out_".$testNo."_png" : "test.out.$testNo.png";
+  if (defined $fht and $fht eq 'write') {
+    die "Not implemented with multicompare";
+  } else {
+    my $equal;
+    opendir(DIR,'.');
+  ENTRY:
+    while (my $entry =readdir(DIR)) {
+      next unless $entry =~ /^$file-\d+/;
+      open (REGRESSFILE,$entry)
+	|| die "Can't open regression file './t/$entry': $!\n";
+      binmode REGRESSFILE;
+      $regressdata = <REGRESSFILE>;
+      close REGRESSFILE;
+      if ($imageData eq $regressdata) {
+	$equal = 1;
+	last ENTRY;
+      }
+    }
+    closedir DIR;
+    print $equal ? "ok $ok" : "not ok $ok","\n";
+  }
 }
 
 sub test1 {
@@ -255,9 +284,9 @@ sub test7 {
     );
 
   # Some TTFs
-  $im->stringTTF($black,FONT,12.0,0.0,20,20,"Hello world!") || return;
-  $im->stringTTF($red,FONT,14.0,0.0,20,80,"Hello world!") || return;
-  $im->stringTTF($blue,FONT,30.0,-0.5,60,100,"Goodbye cruel world!") || die $@;
+  $im->stringFT($black,FONT,12.0,0.0,20,20,"Hello world!") || return;
+  $im->stringFT($red,FONT,14.0,0.0,20,80,"Hello world!") || return;
+  $im->stringFT($blue,FONT,30.0,-0.5,60,100,"Goodbye cruel world!") || die $@;
   $im->png;
 }
 

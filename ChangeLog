@@ -1,3 +1,5 @@
+1.42	Fixed the patch_gd.pl file
+	Version 2.0 is coming.
 1.39	Fixed FreeType test, at least on some platforms.
 	Added patches from Stephen Clouse to allow to build on 5.8.0rc1.
 1.35	Patches to support Philip Warner's GIF-reinstating library
