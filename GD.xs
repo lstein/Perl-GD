@@ -71,6 +71,12 @@ constant(char *name, int arg)
 #else
 	goto not_there;
 #endif
+	if (strEQ(name, "GD_CMP_SIZE_Y"))
+#ifdef GD_CMP_SIZE_Y
+	  return GD_CMP_SIZE_Y;
+#else
+	goto not_there;
+#endif
 	if (strEQ(name, "GD_CMP_TRANSPARENT"))
 #ifdef GD_CMP_TRANSPARENT
 	  return GD_CMP_TRANSPARENT;

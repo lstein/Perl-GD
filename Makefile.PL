@@ -10,7 +10,7 @@ my @extrainc    = ('-I/usr/local/include', '-I/usr/local/include/gd');
 my @extralibs;
 push @extralibs, '-lgd','-lpng','-lttf','-lz';
 push @extralibs, "-lm" unless $^O eq 'MSWin32';
-push @extrasearch,@extralibs,'-lX11';
+push @extralibs,'-lX11' unless $^O eq 'MSWin32';
 
 # FreeBSD 3.3 with libgd built from ports croaks if -lXpm is specified 
 if ($^O ne 'freebsd') { 
@@ -22,7 +22,7 @@ WriteMakefile(
     'VERSION_FROM'	=> 'GD.pm',
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
-    'LIBS'      => [join ' ',@extralibs],
+    'LIBS'      => [join ' ',@extrasearch,@extralibs],
     'INC'       => join (' ',@extrainc), 
     'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
     'ABSTRACT' => 'Interface to Gd Graphics Library',

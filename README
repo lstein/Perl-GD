@@ -34,7 +34,10 @@ Code from the gd graphics library is covered separately, under a 1994
 copyright by Quest Protein Database Center, Cold Spring Harbor Labs,
 and by Thomas Boutell.
 
-THE LATEST VERSION IS 1.24
+THE LATEST VERSION IS 1.25
+
+WHAT'S NEW IN 1.25
+	- more makefile tweaks...
 
 WHAT'S NEW IN 1.24
 	- added more help in compiling and installing to docs
