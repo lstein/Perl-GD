@@ -564,6 +564,7 @@ gd_new(packname="GD::Image", x=64, y=64, ...)
 	OUTPUT:
 		RETVAL
 
+#ifdef HAVE_PNG
 GD::Image
 gd_newFromPng(packname="GD::Image", filehandle, ...)
 	char *	packname
@@ -573,15 +574,9 @@ gd_newFromPng(packname="GD::Image", filehandle, ...)
 	int truecolor = truecolor_default;
         SV* errormsg;
 	CODE:
-#ifdef HAVE_PNG
 	RETVAL = (GD__Image) GDIMAGECREATEFROMPNG(filehandle);
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
-#else
-        errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with png support\n");
-        XSRETURN_EMPTY;
-#endif
 	OUTPUT:
 	RETVAL
 
@@ -597,20 +592,16 @@ gdnewFromPngData(packname="GD::Image", imageData, ...)
           SV*      errormsg;
 	  int truecolor = truecolor_default;
 	CODE:
-#ifdef HAVE_PNG
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromPngCtx(ctx);
         (ctx->gd_free)(ctx);
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
-#else
-        errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with png support\n");
-        XSRETURN_EMPTY;
-#endif
 	OUTPUT:
 	RETVAL
+
+#endif
 
 GD::Image
 gdnewFromGdData(packname="GD::Image", imageData)
@@ -643,6 +634,7 @@ gdnewFromGd2Data(packname="GD::Image", imageData)
 	OUTPUT:
 	RETVAL
 
+#ifdef HAVE_JPEG
 GD::Image
 gdnewFromJpegData(packname="GD::Image", imageData, ...)
 	char *	packname
@@ -655,20 +647,16 @@ gdnewFromJpegData(packname="GD::Image", imageData, ...)
 	  SV* errormsg;
           int     truecolor = truecolor_default;
 	CODE:
-#ifdef HAVE_JPEG
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromJpegCtx(ctx);
         (ctx->gd_free)(ctx);
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
-#else
-        errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with jpeg support\n");
-        XSRETURN_EMPTY;
-#endif
 	OUTPUT:
 	RETVAL
+
+#endif
 
 GD::Image
 gdnewFromWBMPData(packname="GD::Image", imageData, ...)
@@ -809,6 +797,7 @@ gd_newFromGd2Part(packname="GD::Image", filehandle,srcX,srcY,width,height)
 	OUTPUT:
 	RETVAL
 
+#ifdef HAVE_GIF
 GD::Image
 gd_newFromGif(packname="GD::Image", filehandle, ...)
 	char *	packname
@@ -819,7 +808,6 @@ gd_newFromGif(packname="GD::Image", filehandle, ...)
 	  SV* errormsg;
           int     truecolor = truecolor_default;
 	CODE:
-#ifdef HAVE_GIF
 	img = GDIMAGECREATEFROMGIF(filehandle);
         if (img == NULL) {
           errormsg = perl_get_sv("@",0);
@@ -830,11 +818,6 @@ gd_newFromGif(packname="GD::Image", filehandle, ...)
         RETVAL = img;
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
-#else
-        errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with gif support\n");
-        XSRETURN_EMPTY;
-#endif
 	OUTPUT:
         RETVAL
 
@@ -850,20 +833,16 @@ gdnewFromGifData(packname="GD::Image", imageData, ...)
 	  SV* errormsg;
           int     truecolor = truecolor_default;
 	CODE:
-#ifdef HAVE_GIF
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromGifCtx(ctx);
         (ctx->gd_free)(ctx);
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
-#else
-        errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with GIF support\n");
-        XSRETURN_EMPTY;
-#endif
 	OUTPUT:
 	RETVAL
+
+#endif
 
 void
 gdDESTROY(image)
@@ -874,6 +853,7 @@ gdDESTROY(image)
 		gdImageDestroy(image);
 	}
 
+#ifdef HAVE_PNG
 SV*
 gdpng(image, ...)
   GD::Image	image
@@ -885,7 +865,6 @@ gdpng(image, ...)
 	void*         data;
 	int           size;
 	int           level;
-#ifdef HAVE_PNG
         if (items > 1) {
 	  level = (int)SvIV(ST(1));
 	  data  = (void *) gdImagePngPtrEx(image,&size,level);
@@ -894,15 +873,13 @@ gdpng(image, ...)
 	}
 	RETVAL = newSVpv((char*) data,size);
 	gdFree(data);
-#else
-        errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with png support\n");
-        XSRETURN_EMPTY;
-#endif
   }
   OUTPUT:
     RETVAL
 
+#endif
+
+#ifdef HAVE_JPEG
 SV*
 gdjpeg(image,quality=-1)
   GD::Image	image
@@ -914,7 +891,6 @@ gdjpeg(image,quality=-1)
   {
 	void*         data;
 	int           size;
-#ifdef HAVE_JPEG
 	data = (void *) gdImageJpegPtr(image,&size,quality);
         if (data == NULL) {
           errormsg = perl_get_sv("@",0);
@@ -924,14 +900,11 @@ gdjpeg(image,quality=-1)
         }
 	RETVAL = newSVpv((char*) data,size);
 	gdFree(data);
-#else
-        errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with jpeg support\n");
-        XSRETURN_EMPTY;
-#endif
   }
   OUTPUT:
     RETVAL
+
+#endif
 
 SV*
 gdgifanimbegin(image,globalcm=-1,loops=-1)
@@ -1024,6 +997,7 @@ gdwbmp(image,fg)
   OUTPUT:
     RETVAL
 
+#ifdef HAVE_GIF
 SV*
 gdgif(image)
   GD::Image	image
@@ -1034,7 +1008,6 @@ gdgif(image)
   {
 	void*         data;
 	int           size;
-#ifdef HAVE_GIF
 	data = (void *) gdImageGifPtr(image,&size);
         if (data == NULL) {
           errormsg = perl_get_sv("@",0);
@@ -1044,14 +1017,11 @@ gdgif(image)
         }
 	RETVAL = newSVpv((char*) data,size);
 	gdFree(data);
-#else
-        errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with gif support\n");
-        XSRETURN_EMPTY;
-#endif
   }
   OUTPUT:
     RETVAL
+
+#endif
 
 SV*
 gdgd(image)

@@ -1,6 +1,7 @@
 use ExtUtils::MakeMaker qw(prompt WriteMakefile);
 
 require 5.6.0;
+my $VERSION = 2.21;
 
 unless (@ARGV) {
 warn <<END;
@@ -216,18 +217,27 @@ $DEFINES    .= ' -DVERSION_33'   if $VERSION_33;
 $DEFINES    .= ' -DHAVE_UNCLOSEDPOLY' if $UNCLOSEDPOLY;
 $DEFINES    .= ' -DHAVE_FONTCONFIG'   if $FONTCONFIG;
 $DEFINES    .= ' -DHAVE_FTCIRCLE'  if $FTCIRCLE;
+open F,">.config.cache";
+print F $DEFINES,"\n";
+print F $VERSION,"\n";
+close F;
+
+unlink './GD.pm';
 
 WriteMakefile(
     'NAME'	=> 'GD',
-    'VERSION_FROM'	=> 'GD.pm',
+    'VERSION'	=> $VERSION,
     'PREREQ_PM' => {
 		    'Math::Trig' => 0,
 		    },
+    'PM'        => { 'GD.pm' => '$(INST_LIBDIR)/GD.pm'},
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
     'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],
     'INC'       => join(' ',$ENV{'GD_INC'},@INC),
-    'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl'},
+    'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
+		    'GD.pm.PLS' => 'GD.pm',
+		   },
     'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
     'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
     'ABSTRACT'  => 'Interface to Gd Graphics Library',
@@ -267,6 +277,7 @@ sub MY::postamble {
     my $postamble = <<'END';
 html: GD.pm
 	pod2html --outfile=GD.html GD.pm
+
 END
     $postamble;
 }

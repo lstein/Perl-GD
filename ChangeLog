@@ -1,3 +1,5 @@
+2.21    Regression tests are now functional for versions of libgd compiled
+	exclusively with PNG, JPEG or GIF support.
 2.20	GD::Image->newFromGdData() and newFromGd2Data() got broken
 		somewhere along the line.  They are now fixed (and
 		have a regression test).
