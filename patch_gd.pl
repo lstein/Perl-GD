@@ -13,9 +13,9 @@ die "You must run this patch script from within the gd distribution directory.\n
 open PATCH,'| patch -Np1' or die "Can't run patch: $!\n";
 
 print PATCH <<'END_OF_PATCH';
-diff -Naur gd-1.8.4/AUTHORS gd-1.8.4.patched/AUTHORS
---- gd-1.8.4/AUTHORS	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/AUTHORS	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/AUTHORS gd-2.0.1.patched/AUTHORS
+--- gd-2.0.1/AUTHORS	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/AUTHORS	Tue Jul 30 05:28:31 2002
 @@ -0,0 +1,57 @@
 +
 +  Credits and license terms
@@ -74,9 +74,9 @@ diff -Naur gd-1.8.4/AUTHORS gd-1.8.4.patched/AUTHORS
 +     
 +END OF COPYRIGHT STATEMENT
 +
-diff -Naur gd-1.8.4/COPYING gd-1.8.4.patched/COPYING
---- gd-1.8.4/COPYING	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/COPYING	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/COPYING gd-2.0.1.patched/COPYING
+--- gd-2.0.1/COPYING	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/COPYING	Tue Jul 30 05:28:36 2002
 @@ -0,0 +1,38 @@
 +COPYRIGHT STATEMENT FOLLOWS THIS LINE
 +
@@ -116,9 +116,9 @@ diff -Naur gd-1.8.4/COPYING gd-1.8.4.patched/COPYING
 +     
 +END OF COPYRIGHT STATEMENT
 +
-diff -Naur gd-1.8.4/ChangeLog gd-1.8.4.patched/ChangeLog
---- gd-1.8.4/ChangeLog	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/ChangeLog	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/ChangeLog gd-2.0.1.patched/ChangeLog
+--- gd-2.0.1/ChangeLog	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/ChangeLog	Tue Jul 30 05:28:58 2002
 @@ -0,0 +1,134 @@
 +000319 Lincoln Stein (LS)
 +	- Patches to compile under GNU autoconfig
@@ -254,9 +254,9 @@ diff -Naur gd-1.8.4/ChangeLog gd-1.8.4.patched/ChangeLog
 +Extracting 100 times from (3000, 2000), size is 50x25
 +15 seconds to extract (& destroy) 100 times
 +
-diff -Naur gd-1.8.4/INSTALL gd-1.8.4.patched/INSTALL
---- gd-1.8.4/INSTALL	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/INSTALL	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/INSTALL gd-2.0.1.patched/INSTALL
+--- gd-2.0.1/INSTALL	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/INSTALL	Tue Jul 30 05:29:07 2002
 @@ -0,0 +1,185 @@
 +Basic Installation
 +==================
@@ -443,74 +443,59 @@ diff -Naur gd-1.8.4/INSTALL gd-1.8.4.patched/INSTALL
 +     script, and exit.
 +
 +`configure' also accepts some other, not widely useful, options.
-diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
---- gd-1.8.4/Makefile	Thu Feb 22 09:03:43 2001
-+++ gd-1.8.4.patched/Makefile	Mon Jul 22 00:04:38 2002
-@@ -1,156 +1,614 @@
--#Depending on your system, you will need to modify this makefile.
+diff -Naur gd-2.0.1/Makefile gd-2.0.1.patched/Makefile
+--- gd-2.0.1/Makefile	Tue Apr  3 16:44:41 2001
++++ gd-2.0.1.patched/Makefile	Tue Jul 30 11:36:03 2002
+@@ -1,175 +1,612 @@
+-#Depending on your system and the libraries and features you have
+-#and want, you WILL need to modify this Makefile!
 -
 -#If you do not have gcc, change the setting for COMPILER, but you must
 -#use an ANSI standard C compiler (NOT the old SunOS 4.1.3 cc
--#compiler; get gcc if you are still using it). 
+-#compiler; get gcc if you are still using that). 
 -COMPILER=gcc
 -
 -#If the ar command fails on your system, consult the ar manpage
 -#for your system. 
 -AR=ar
 -
--#If you don't have FreeType, libjpeg and/or Xpm installed, including the
--#header files, uncomment this (default). You really must install
--#libpng and zlib to get anywhere if you wish to create PNG images.
--CFLAGS=-O -DHAVE_LIBPNG -DHAVE_LIBJPEG
+-#Typical configuration: support for PNG images, JPEG images, and FreeType text.
+-#Remove -DHAVE_LIBFREETYPE if you can live without FreeType text.
+-#Add -DHAVE_XPM if you have X and xpm installed and you want that feature.
 -
--#If you do have FreeType, libjpeg and/or Xpm fully installed, uncomment a
--#variation of this and comment out the line above. See also LIBS below.
--#CFLAGS=-O -DHAVE_LIBXPM -DHAVE_LIBPNG -DHAVE_LIBJPEG \
--#	-DHAVE_LIBFREETYPE -DHAVE_LIBTTF 
--
--#To use the old FreeType 1.x library, add this additional #define
--#to the line above
--#-DHAVE_LIBTTF 
--
--#If you don't have FreeType Xpm fully installed, uncomment this
--#(default).
+-CFLAGS=-g -DHAVE_LIBPNG -DHAVE_LIBJPEG -DHAVE_LIBFREETYPE
 -
 -#PLEASE NOTE: YOU MAY HAVE TO JUGGLE THE ORDER OF THE LIBRARIES.
 -#Some systems are very picky about link order. They don't all agree
--#on the right order, either.
+-#on the right order, either. 
+-#
+-#Best for most users. If you don't have FreeType, remove -lfreetype.
+-#Add -lxpm if you need XPM support.
 -
--LIBS=-lgd -lpng -lz -lm
+-LIBS=-lgd -lpng -lz -ljpeg -lfreetype -lm
 -
--#If you do have FreeType, JPEG and/or Xpm fully installed, uncomment a 
--#variation of this and comment out the line above. Note that
--#Xpm requires X11. See also CFLAGS above.
--
--#LIBS=-lgd -lpng -lz -ljpeg -lfreetype -lm -lttf
--
--#Note: for Freetype 1.x, use DHAVE_LIBTTF and -lttf instead.
--
--#Typical install locations for freetype, zlib, xpm, libjpeg and libpng header 
--#files. If yours are somewhere else, change this. -I. is important to 
--#ensure that the version of gd you are installing is used, and not an 
--#older release in your directory tree somewhere.
+-#Typical install locations for freetype 2.0, zlib, xpm, libjpeg 
+-#and libpng header files. If yours are somewhere else, change this. 
+-#-I. is important to ensure that the version of gd you are installing 
+-#is used, and not an older release in your directory tree somewhere.
 -
 -INCLUDEDIRS=-I. -I/usr/include/freetype2 -I/usr/include/X11 -I/usr/X11R6/include/X11 -I/usr/local/include 
 -
 -#Typical install locations for freetype, zlib, xpm and libpng libraries.
 -#If yours are somewhere else, other than a standard location
--#such as /lib or /usr/lib, then change this. Be sure to keep
--#-L. as this allows the gd library itself to be found.
--#Put -L. first so that old versions of the gd library elsewhere
--#on your system can't cause conflicts while building a new one.
--#This line shouldn't hurt if you don't actually have some of the
--#optional libraries and directories.
--LIBDIRS=-L. -L/usr/local/lib -L/usr/lib/X11 -L/usr/X11R6/lib
+-#such as /lib or /usr/lib, then change this. This line shouldn't hurt 
+-#if you don't actually have some of the optional libraries and directories.
+-LIBDIRS=-L/usr/local/lib -L/usr/lib/X11 -L/usr/X11R6/lib
 -
--#Location where libgd.a should be installed by "make install".
--INSTALL_LIB=/usr/local/lib
+-#Location where libgd.so should be installed by "make install".
+-#THIS MUST BE ONE OF YOUR STANDARD SHARED LIBRARY LOCATIONS, unless
+-#you add a new directory to your LD_LIBRARY_PATH environment setting.
+-#Otherwise applications will NOT find libgd.so and will produce an 
+-#error.  
+-INSTALL_LIB=/usr/lib
 -
 -#Location where .h files should be installed by "make install".
--INSTALL_INCLUDE=/usr/local/include
+-INSTALL_INCLUDE=/usr/include
 -
 -#Location where useful non-test programs should be installed by "make install".
 -INSTALL_BIN=/usr/local/bin
@@ -521,7 +506,10 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 -#
 -#
 -
--VERSION=1.8.4
+-# Update these with each release!
+-
+-MAJOR_VERSION=2
+-VERSION=2.0.0
 -
 -CC=$(COMPILER) $(INCLUDEDIRS)
 -LINK=$(CC) $(LIBDIRS) $(LIBS)
@@ -529,12 +517,26 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 -PROGRAMS=$(BIN_PROGRAMS) $(TEST_PROGRAMS)
 -
 -BIN_PROGRAMS=pngtogd pngtogd2 gdtopng gd2topng gd2copypal gdparttopng webpng
--TEST_PROGRAMS=gdtest gddemo gd2time gdtestft gdtestttf
+-TEST_PROGRAMS=gdtest gddemo gd2time gdtestft testac
 -
--all: libgd.a $(PROGRAMS)
+-default: instructions
 -
--install: libgd.a $(BIN_PROGRAMS)
--	sh ./install-item 644 libgd.a $(INSTALL_LIB)/libgd.a
+-instructions:
+-	@echo First, edit this Makefile. Read the comments at
+-	@echo the beginning thoroughly.
+-	@echo
+-	@echo Second, type \'make install\' as root.
+-	@echo
+-	@echo This installs the GD ${VERSION} shared library,
+-	@echo which is required in order to use the included
+-	@echo utility programs, such as webpng, pngtogd, etc.
+-	@echo 
+-	@echo OPTIONAL third step: type \'make test\' to build 
+-	@echo the optional test programs. Type \'make install\' FIRST.
+-
+-test: $(TEST_PROGRAMS)
+-
+-install: libgd.so.${VERSION} $(BIN_PROGRAMS)
 -	sh ./install-item 755 pngtogd $(INSTALL_BIN)/pngtogd
 -	sh ./install-item 755 pngtogd2 $(INSTALL_BIN)/pngtogd2
 -	sh ./install-item 755 gdtopng $(INSTALL_BIN)/gdtopng
@@ -552,56 +554,73 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 -	sh ./install-item 644 gdfonts.h $(INSTALL_INCLUDE)/gdfonts.h
 -	sh ./install-item 644 gdfontt.h $(INSTALL_INCLUDE)/gdfontt.h
 -
--gddemo: gddemo.o libgd.a
+-gddemo: gddemo.o
 -	$(CC) gddemo.o -o gddemo	$(LIBDIRS) $(LIBS)
 -
--pngtogd: pngtogd.o libgd.a
+-testac: testac.o
+-	$(CC) testac.o -o testac	$(LIBDIRS) $(LIBS)
+-
+-pngtogd: pngtogd.o
 -	$(CC) pngtogd.o -o pngtogd	$(LIBDIRS) $(LIBS) 
 -
--webpng: webpng.o libgd.a
+-webpng: webpng.o
 -	$(CC) webpng.o -o webpng	$(LIBDIRS) $(LIBS)
 -
--pngtogd2: pngtogd2.o libgd.a
+-pngtogd2: pngtogd2.o
 -	$(CC) pngtogd2.o -o pngtogd2	$(LIBDIRS) $(LIBS)
 -
--gdtopng: gdtopng.o libgd.a
+-gdtopng: gdtopng.o
 -	$(CC) gdtopng.o -o gdtopng	$(LIBDIRS) $(LIBS)
 -
--gd2topng: gd2topng.o libgd.a
+-gd2topng: gd2topng.o
 -	$(CC) gd2topng.o -o gd2topng	$(LIBDIRS) $(LIBS)
 -
--gd2copypal: gd2copypal.o libgd.a
+-gd2copypal: gd2copypal.o
 -	$(CC) gd2copypal.o -o gd2copypal	$(LIBDIRS) $(LIBS)
 -
--gdparttopng: gdparttopng.o libgd.a
+-gdparttopng: gdparttopng.o
 -	$(CC) gdparttopng.o -o gdparttopng	$(LIBDIRS) $(LIBS)
 -
--gdtest: gdtest.o libgd.a
+-gdtest: gdtest.o
 -	$(CC) gdtest.o -o gdtest	$(LIBDIRS) $(LIBS)
 -
--gd2time: gd2time.o libgd.a
+-gd2time: gd2time.o
 -	$(CC) gd2time.o -o gd2time	$(LIBDIRS) $(LIBS)
 -
--gdtestft: gdtestft.o libgd.a
+-gdtestft: gdtestft.o
 -	$(CC) --verbose gdtestft.o -o gdtestft $(LIBDIRS) $(LIBS)
--gdtestttf: gdtestttf.o libgd.a
--	$(CC) --verbose gdtestttf.o -o gdtestttf $(LIBDIRS) $(LIBS)
 -
--libgd.a: gd.o gd_gd.o gd_gd2.o gd_io.o gd_io_dp.o gd_io_file.o gd_ss.o \
--	gd_io_ss.o gd_png.o gd_jpeg.o gdxpm.o gdfontt.o gdfonts.o gdfontmb.o gdfontl.o \
--	gdfontg.o gdtables.o gdft.o gdttf.o gdcache.o gdkanji.o wbmp.o \
--	gd_wbmp.o gdhelpers.o gd.h gdfontt.h gdfonts.h gdfontmb.h gdfontl.h \
--	gdfontg.h gdhelpers.h
--	rm -f libgd.a
--	$(AR) rc libgd.a gd.o gd_gd.o gd_gd2.o gd_io.o gd_io_dp.o \
+-LIBOBJS=gd.o gd_gd.o gd_gd2.o gd_io.o gd_io_dp.o \
 -		gd_io_file.o gd_ss.o gd_io_ss.o gd_png.o gd_jpeg.o gdxpm.o \
 -		gdfontt.o gdfonts.o gdfontmb.o gdfontl.o gdfontg.o \
--		gdtables.o gdft.o gdttf.o gdcache.o gdkanji.o wbmp.o \
--		gd_wbmp.o gdhelpers.o
+-		gdtables.o gdft.o gdcache.o gdkanji.o wbmp.o \
+-		gd_wbmp.o gdhelpers.o gd_topal.o 
+-
+-#Shared library. This should work fine on any ELF platform (Linux, etc.) with
+-#GNU ld or something similarly intelligent. To avoid the chicken-and-egg
+-#problem, this target also installs the library so that applications can
+-#actually find it.
+-
+-libgd.so.${VERSION}: ${LIBOBJS}
+-	-rm -f libgd.so.${VERSION} 2>/dev/null
+-	ld -shared -o libgd.so.${VERSION} ${LIBOBJS}
+-	sh ./install-item 644 libgd.so.${VERSION} \
+-		$(INSTALL_LIB)/libgd.so.${VERSION}
+-	-rm $(INSTALL_LIB)/libgd.so.${MAJOR_VERSION} 2>/dev/null
+-	ln -s $(INSTALL_LIB)/libgd.so.${VERSION} \
+-		$(INSTALL_LIB)/libgd.so.${MAJOR_VERSION}	
+-	-rm $(INSTALL_LIB)/libgd.so 2>/dev/null
+-	ln -s $(INSTALL_LIB)/libgd.so.${VERSION} \
+-		$(INSTALL_LIB)/libgd.so	
+-
+-#Static library, if you really need one for some reason.
+-libgd.a: ${LIBOBJS}
+-	rm -f libgd.a
+-	$(AR) rc libgd.a ${LIBOBJS}
 -	-ranlib libgd.a
 -
 -clean:
--	rm -f *.o *.a ${PROGRAMS} test/gdtest.jpg test/gdtest.wbmp
+-	rm -f *.o *.a *.so ${PROGRAMS} test/gdtest.jpg test/gdtest.wbmp
 +# Makefile.in generated automatically by automake 1.4-p4 from Makefile.am
  
 +# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
@@ -680,40 +699,36 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +
 +AUTOMAKE_OPTIONS = 1.3
 +
-+# library interface 4.0, gd release 1.8.4
-+libgd_la_LDFLAGS = -version-info 4:1
-+
-+noinst_HEADERS = gdcache.h 
++# library interface 2.0, gd release 2.0.1
++libgd_la_LDFLAGS = -version-info 2:0
 +
 +lib_LTLIBRARIES = libgd.la
 +
-+include_HEADERS = gd.h gd_io.h gdfontt.h gdfonts.h gdhelpers.h 	gdfontmb.h gdfontl.h gdfontg.h wbmp.h jisx0208.h
++include_HEADERS = gd.h	 gdcache.h  gdfontl.h	gdfonts.h 		gd_io.h  gdfontg.h  gdfontmb.h	gdfontt.h
 +
 +
-+libgd_la_SOURCES = gd.c gd_io.c gd_io_file.c gd_io_dp.c gd_io_ss.c gdhelpers.c 	gd_png.c gd_ss.c gd_gd.c gd_gd2.c gdfontt.c gdfonts.c gdfontmb.c 	gdfontl.c gdfontg.c gdttf.c gdft.c gdcache.c gdxpm.c gdtables.c gdkanji.c 	gd_jpeg.c gd_wbmp.c wbmp.c
++libgd_la_SOURCES = gd.c		  gd_io.c	gd_topal.c  gdfonts.c 	gd_io_dp.c	gd_wbmp.c   gdfontt.c	   	gd_io_file.c	gdcache.c   gdft.c 	gd_io_ss.c	gdhelpers.c    gdxpm.c 	gd_jpeg.c	gdfontg.c   gdkanji.c 	gd_gd.c		  gd_png.c	gdfontl.c   	gd_gd2.c	  gd_ss.c	gdfontmb.c  gdtables.c 	wbmp.c
 +
 +
-+bin_PROGRAMS = pngtogd pngtogd2 gdtopng gdtojpeg gd2topng gd2copypal gdparttopng webpng
-+pngtogd_LDADD = libgd.la
++bin_PROGRAMS = pngtogd webpng pngtogd2 gdtopng gd2topng gd2copypal 	gdparttopng gd2time 
 +
-+noinst_PROGRAMS = gdtest gddemo gd2time gdtestttf
 +
-+gdtest_SOURCES = gdtest.c gd.h
-+gdtest_LDADD = libgd.la
-+
-+gdtestttf_SOURCES = gdtestttf.c gd.h
-+gdtestttf_LDADD = libgd.la
++noinst_PROGRAMS = gddemo testac gdtest gdtestft
 +
 +gddemo_SOURCES = gddemo.c gd.h gdfonts.h gdfontg.h
 +gddemo_LDADD = libgd.la
 +
++testac_SOURCES = testac.c gd.h
++testac_LDADD = libgd.la
++
 +pngtogd_SOURCES = pngtogd.c gd.h
++pngtogd_LDADD = libgd.la
++
++webpng_SOURCES = webpng.c gd.h
++webpng_LDADD = libgd.la
 +
 +pngtogd2_SOURCES = pngtogd2.c gd.h
 +pngtogd2_LDADD = libgd.la
-+
-+gdtojpeg_SOURCES = gdtojpeg.c gd.h
-+gdtojpeg_LDADD = libgd.la
 +
 +gdtopng_SOURCES = gdtopng.c gd.h
 +gdtopng_LDADD = libgd.la
@@ -727,11 +742,14 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +gdparttopng_SOURCES = gdparttopng.c gd.h
 +gdparttopng_LDADD = libgd.la
 +
++gdtest_SOURCES = gdtest.c gd.h
++gdtest_LDADD = libgd.la
++
 +gd2time_SOURCES = gd2time.c gd.h
 +gd2time_LDADD = libgd.la
 +
-+webpng_SOURCES = webpng.c gd.h
-+webpng_LDADD = libgd.la
++gdtestft_SOURCES = gdtestft.c gd.h
++gdtestft_LDADD = libgd.la
 +
 +EXTRA_DIST = demoin.png index.html test/*
 +
@@ -747,30 +765,29 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +LDFLAGS =  -L${exec_prefix}/lib -L/usr/X11R6/lib
 +LIBS = -lfreetype -ljpeg -lpng -lz -lm  -lX11 -lXpm
 +libgd_la_LIBADD = 
-+libgd_la_OBJECTS =  gd.lo gd_io.lo gd_io_file.lo gd_io_dp.lo gd_io_ss.lo \
-+gdhelpers.lo gd_png.lo gd_ss.lo gd_gd.lo gd_gd2.lo gdfontt.lo \
-+gdfonts.lo gdfontmb.lo gdfontl.lo gdfontg.lo gdttf.lo gdft.lo \
-+gdcache.lo gdxpm.lo gdtables.lo gdkanji.lo gd_jpeg.lo gd_wbmp.lo \
-+wbmp.lo
-+bin_PROGRAMS =  pngtogd$(EXEEXT) pngtogd2$(EXEEXT) gdtopng$(EXEEXT) \
-+gdtojpeg$(EXEEXT) gd2topng$(EXEEXT) gd2copypal$(EXEEXT) \
-+gdparttopng$(EXEEXT) webpng$(EXEEXT)
-+noinst_PROGRAMS =  gdtest$(EXEEXT) gddemo$(EXEEXT) gd2time$(EXEEXT) \
-+gdtestttf$(EXEEXT)
++libgd_la_OBJECTS =  gd.lo gd_io.lo gd_topal.lo gdfonts.lo gd_io_dp.lo \
++gd_wbmp.lo gdfontt.lo gd_io_file.lo gdcache.lo gdft.lo gd_io_ss.lo \
++gdhelpers.lo gdxpm.lo gd_jpeg.lo gdfontg.lo gdkanji.lo gd_gd.lo \
++gd_png.lo gdfontl.lo gd_gd2.lo gd_ss.lo gdfontmb.lo gdtables.lo wbmp.lo
++bin_PROGRAMS =  pngtogd$(EXEEXT) webpng$(EXEEXT) pngtogd2$(EXEEXT) \
++gdtopng$(EXEEXT) gd2topng$(EXEEXT) gd2copypal$(EXEEXT) \
++gdparttopng$(EXEEXT) gd2time$(EXEEXT)
++noinst_PROGRAMS =  gddemo$(EXEEXT) testac$(EXEEXT) gdtest$(EXEEXT) \
++gdtestft$(EXEEXT)
 +PROGRAMS =  $(bin_PROGRAMS) $(noinst_PROGRAMS)
 +
 +pngtogd_OBJECTS =  pngtogd.$(OBJEXT)
 +pngtogd_DEPENDENCIES =  libgd.la
 +pngtogd_LDFLAGS = 
++webpng_OBJECTS =  webpng.$(OBJEXT)
++webpng_DEPENDENCIES =  libgd.la
++webpng_LDFLAGS = 
 +pngtogd2_OBJECTS =  pngtogd2.$(OBJEXT)
 +pngtogd2_DEPENDENCIES =  libgd.la
 +pngtogd2_LDFLAGS = 
 +gdtopng_OBJECTS =  gdtopng.$(OBJEXT)
 +gdtopng_DEPENDENCIES =  libgd.la
 +gdtopng_LDFLAGS = 
-+gdtojpeg_OBJECTS =  gdtojpeg.$(OBJEXT)
-+gdtojpeg_DEPENDENCIES =  libgd.la
-+gdtojpeg_LDFLAGS = 
 +gd2topng_OBJECTS =  gd2topng.$(OBJEXT)
 +gd2topng_DEPENDENCIES =  libgd.la
 +gd2topng_LDFLAGS = 
@@ -780,27 +797,27 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +gdparttopng_OBJECTS =  gdparttopng.$(OBJEXT)
 +gdparttopng_DEPENDENCIES =  libgd.la
 +gdparttopng_LDFLAGS = 
-+webpng_OBJECTS =  webpng.$(OBJEXT)
-+webpng_DEPENDENCIES =  libgd.la
-+webpng_LDFLAGS = 
-+gdtest_OBJECTS =  gdtest.$(OBJEXT)
-+gdtest_DEPENDENCIES =  libgd.la
-+gdtest_LDFLAGS = 
-+gddemo_OBJECTS =  gddemo.$(OBJEXT)
-+gddemo_DEPENDENCIES =  libgd.la
-+gddemo_LDFLAGS = 
 +gd2time_OBJECTS =  gd2time.$(OBJEXT)
 +gd2time_DEPENDENCIES =  libgd.la
 +gd2time_LDFLAGS = 
-+gdtestttf_OBJECTS =  gdtestttf.$(OBJEXT)
-+gdtestttf_DEPENDENCIES =  libgd.la
-+gdtestttf_LDFLAGS = 
++gddemo_OBJECTS =  gddemo.$(OBJEXT)
++gddemo_DEPENDENCIES =  libgd.la
++gddemo_LDFLAGS = 
++testac_OBJECTS =  testac.$(OBJEXT)
++testac_DEPENDENCIES =  libgd.la
++testac_LDFLAGS = 
++gdtest_OBJECTS =  gdtest.$(OBJEXT)
++gdtest_DEPENDENCIES =  libgd.la
++gdtest_LDFLAGS = 
++gdtestft_OBJECTS =  gdtestft.$(OBJEXT)
++gdtestft_DEPENDENCIES =  libgd.la
++gdtestft_LDFLAGS = 
 +CFLAGS = -g -O2
 +COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 +LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 +CCLD = $(CC)
 +LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
-+HEADERS =  $(include_HEADERS) $(noinst_HEADERS)
++HEADERS =  $(include_HEADERS)
 +
 +DIST_COMMON =  README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
 +Makefile.in NEWS acinclude.m4 aclocal.m4 config.guess config.sub \
@@ -814,15 +831,15 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +DEP_FILES =  .deps/gd.P .deps/gd2copypal.P .deps/gd2time.P \
 +.deps/gd2topng.P .deps/gd_gd.P .deps/gd_gd2.P .deps/gd_io.P \
 +.deps/gd_io_dp.P .deps/gd_io_file.P .deps/gd_io_ss.P .deps/gd_jpeg.P \
-+.deps/gd_png.P .deps/gd_ss.P .deps/gd_wbmp.P .deps/gdcache.P \
-+.deps/gddemo.P .deps/gdfontg.P .deps/gdfontl.P .deps/gdfontmb.P \
-+.deps/gdfonts.P .deps/gdfontt.P .deps/gdft.P .deps/gdhelpers.P \
-+.deps/gdkanji.P .deps/gdparttopng.P .deps/gdtables.P .deps/gdtest.P \
-+.deps/gdtestttf.P .deps/gdtojpeg.P .deps/gdtopng.P .deps/gdttf.P \
-+.deps/gdxpm.P .deps/pngtogd.P .deps/pngtogd2.P .deps/wbmp.P \
++.deps/gd_png.P .deps/gd_ss.P .deps/gd_topal.P .deps/gd_wbmp.P \
++.deps/gdcache.P .deps/gddemo.P .deps/gdfontg.P .deps/gdfontl.P \
++.deps/gdfontmb.P .deps/gdfonts.P .deps/gdfontt.P .deps/gdft.P \
++.deps/gdhelpers.P .deps/gdkanji.P .deps/gdparttopng.P .deps/gdtables.P \
++.deps/gdtest.P .deps/gdtestft.P .deps/gdtopng.P .deps/gdxpm.P \
++.deps/pngtogd.P .deps/pngtogd2.P .deps/testac.P .deps/wbmp.P \
 +.deps/webpng.P
-+SOURCES = $(libgd_la_SOURCES) $(pngtogd_SOURCES) $(pngtogd2_SOURCES) $(gdtopng_SOURCES) $(gdtojpeg_SOURCES) $(gd2topng_SOURCES) $(gd2copypal_SOURCES) $(gdparttopng_SOURCES) $(webpng_SOURCES) $(gdtest_SOURCES) $(gddemo_SOURCES) $(gd2time_SOURCES) $(gdtestttf_SOURCES)
-+OBJECTS = $(libgd_la_OBJECTS) $(pngtogd_OBJECTS) $(pngtogd2_OBJECTS) $(gdtopng_OBJECTS) $(gdtojpeg_OBJECTS) $(gd2topng_OBJECTS) $(gd2copypal_OBJECTS) $(gdparttopng_OBJECTS) $(webpng_OBJECTS) $(gdtest_OBJECTS) $(gddemo_OBJECTS) $(gd2time_OBJECTS) $(gdtestttf_OBJECTS)
++SOURCES = $(libgd_la_SOURCES) $(pngtogd_SOURCES) $(webpng_SOURCES) $(pngtogd2_SOURCES) $(gdtopng_SOURCES) $(gd2topng_SOURCES) $(gd2copypal_SOURCES) $(gdparttopng_SOURCES) $(gd2time_SOURCES) $(gddemo_SOURCES) $(testac_SOURCES) $(gdtest_SOURCES) $(gdtestft_SOURCES)
++OBJECTS = $(libgd_la_OBJECTS) $(pngtogd_OBJECTS) $(webpng_OBJECTS) $(pngtogd2_OBJECTS) $(gdtopng_OBJECTS) $(gd2topng_OBJECTS) $(gd2copypal_OBJECTS) $(gdparttopng_OBJECTS) $(gd2time_OBJECTS) $(gddemo_OBJECTS) $(testac_OBJECTS) $(gdtest_OBJECTS) $(gdtestft_OBJECTS)
 +
 +all: all-redirect
 +.SUFFIXES:
@@ -946,6 +963,10 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +	@rm -f pngtogd$(EXEEXT)
 +	$(LINK) $(pngtogd_LDFLAGS) $(pngtogd_OBJECTS) $(pngtogd_LDADD) $(LIBS)
 +
++webpng$(EXEEXT): $(webpng_OBJECTS) $(webpng_DEPENDENCIES)
++	@rm -f webpng$(EXEEXT)
++	$(LINK) $(webpng_LDFLAGS) $(webpng_OBJECTS) $(webpng_LDADD) $(LIBS)
++
 +pngtogd2$(EXEEXT): $(pngtogd2_OBJECTS) $(pngtogd2_DEPENDENCIES)
 +	@rm -f pngtogd2$(EXEEXT)
 +	$(LINK) $(pngtogd2_LDFLAGS) $(pngtogd2_OBJECTS) $(pngtogd2_LDADD) $(LIBS)
@@ -953,10 +974,6 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +gdtopng$(EXEEXT): $(gdtopng_OBJECTS) $(gdtopng_DEPENDENCIES)
 +	@rm -f gdtopng$(EXEEXT)
 +	$(LINK) $(gdtopng_LDFLAGS) $(gdtopng_OBJECTS) $(gdtopng_LDADD) $(LIBS)
-+
-+gdtojpeg$(EXEEXT): $(gdtojpeg_OBJECTS) $(gdtojpeg_DEPENDENCIES)
-+	@rm -f gdtojpeg$(EXEEXT)
-+	$(LINK) $(gdtojpeg_LDFLAGS) $(gdtojpeg_OBJECTS) $(gdtojpeg_LDADD) $(LIBS)
 +
 +gd2topng$(EXEEXT): $(gd2topng_OBJECTS) $(gd2topng_DEPENDENCIES)
 +	@rm -f gd2topng$(EXEEXT)
@@ -970,25 +987,25 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +	@rm -f gdparttopng$(EXEEXT)
 +	$(LINK) $(gdparttopng_LDFLAGS) $(gdparttopng_OBJECTS) $(gdparttopng_LDADD) $(LIBS)
 +
-+webpng$(EXEEXT): $(webpng_OBJECTS) $(webpng_DEPENDENCIES)
-+	@rm -f webpng$(EXEEXT)
-+	$(LINK) $(webpng_LDFLAGS) $(webpng_OBJECTS) $(webpng_LDADD) $(LIBS)
-+
-+gdtest$(EXEEXT): $(gdtest_OBJECTS) $(gdtest_DEPENDENCIES)
-+	@rm -f gdtest$(EXEEXT)
-+	$(LINK) $(gdtest_LDFLAGS) $(gdtest_OBJECTS) $(gdtest_LDADD) $(LIBS)
++gd2time$(EXEEXT): $(gd2time_OBJECTS) $(gd2time_DEPENDENCIES)
++	@rm -f gd2time$(EXEEXT)
++	$(LINK) $(gd2time_LDFLAGS) $(gd2time_OBJECTS) $(gd2time_LDADD) $(LIBS)
 +
 +gddemo$(EXEEXT): $(gddemo_OBJECTS) $(gddemo_DEPENDENCIES)
 +	@rm -f gddemo$(EXEEXT)
 +	$(LINK) $(gddemo_LDFLAGS) $(gddemo_OBJECTS) $(gddemo_LDADD) $(LIBS)
 +
-+gd2time$(EXEEXT): $(gd2time_OBJECTS) $(gd2time_DEPENDENCIES)
-+	@rm -f gd2time$(EXEEXT)
-+	$(LINK) $(gd2time_LDFLAGS) $(gd2time_OBJECTS) $(gd2time_LDADD) $(LIBS)
++testac$(EXEEXT): $(testac_OBJECTS) $(testac_DEPENDENCIES)
++	@rm -f testac$(EXEEXT)
++	$(LINK) $(testac_LDFLAGS) $(testac_OBJECTS) $(testac_LDADD) $(LIBS)
 +
-+gdtestttf$(EXEEXT): $(gdtestttf_OBJECTS) $(gdtestttf_DEPENDENCIES)
-+	@rm -f gdtestttf$(EXEEXT)
-+	$(LINK) $(gdtestttf_LDFLAGS) $(gdtestttf_OBJECTS) $(gdtestttf_LDADD) $(LIBS)
++gdtest$(EXEEXT): $(gdtest_OBJECTS) $(gdtest_DEPENDENCIES)
++	@rm -f gdtest$(EXEEXT)
++	$(LINK) $(gdtest_LDFLAGS) $(gdtest_OBJECTS) $(gdtest_LDADD) $(LIBS)
++
++gdtestft$(EXEEXT): $(gdtestft_OBJECTS) $(gdtestft_DEPENDENCIES)
++	@rm -f gdtestft$(EXEEXT)
++	$(LINK) $(gdtestft_LDFLAGS) $(gdtestft_OBJECTS) $(gdtestft_LDADD) $(LIBS)
 +
 +install-includeHEADERS: $(include_HEADERS)
 +	@$(NORMAL_INSTALL)
@@ -1216,52 +1233,50 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patched/Makefile
 +# Tell versions [3.59,3.63) of GNU make to not export all variables.
 +# Otherwise a system limit (for SysV at least) may be exceeded.
 +.NOEXPORT:
-diff -Naur gd-1.8.4/Makefile.am gd-1.8.4.patched/Makefile.am
---- gd-1.8.4/Makefile.am	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/Makefile.am	Mon Jul 22 00:04:09 2002
-@@ -0,0 +1,64 @@
+diff -Naur gd-2.0.1/Makefile.am gd-2.0.1.patched/Makefile.am
+--- gd-2.0.1/Makefile.am	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/Makefile.am	Tue Jul 30 05:55:00 2002
+@@ -0,0 +1,65 @@
 +## Process this file with automake to produce Makefile.in
 +
 +AUTOMAKE_OPTIONS = 1.3
 +
-+# library interface 4.0, gd release 1.8.4
-+libgd_la_LDFLAGS = -version-info 4:1
-+
-+noinst_HEADERS = gdcache.h 
++# library interface 2.0, gd release 2.0.1
++libgd_la_LDFLAGS = -version-info 2:0
 +
 +lib_LTLIBRARIES = libgd.la
 +
-+include_HEADERS = gd.h gd_io.h gdfontt.h gdfonts.h gdhelpers.h \
-+	gdfontmb.h gdfontl.h gdfontg.h wbmp.h jisx0208.h
++include_HEADERS = gd.h	 gdcache.h  gdfontl.h	gdfonts.h \
++		gd_io.h  gdfontg.h  gdfontmb.h	gdfontt.h
 +
-+libgd_la_SOURCES = gd.c gd_io.c gd_io_file.c gd_io_dp.c gd_io_ss.c gdhelpers.c \
-+	gd_png.c gd_ss.c gd_gd.c gd_gd2.c gdfontt.c gdfonts.c gdfontmb.c \
-+	gdfontl.c gdfontg.c gdttf.c gdft.c gdcache.c gdxpm.c gdtables.c gdkanji.c \
-+	gd_jpeg.c gd_wbmp.c wbmp.c
++libgd_la_SOURCES = gd.c		  gd_io.c	gd_topal.c  gdfonts.c \
++	gd_io_dp.c	gd_wbmp.c   gdfontt.c	   \
++	gd_io_file.c	gdcache.c   gdft.c \
++	gd_io_ss.c	gdhelpers.c    gdxpm.c \
++	gd_jpeg.c	gdfontg.c   gdkanji.c \
++	gd_gd.c		  gd_png.c	gdfontl.c   \
++	gd_gd2.c	  gd_ss.c	gdfontmb.c  gdtables.c \
++	wbmp.c
 +
-+bin_PROGRAMS = pngtogd pngtogd2 gdtopng gdtojpeg gd2topng gd2copypal gdparttopng webpng
++bin_PROGRAMS = pngtogd webpng pngtogd2 gdtopng gd2topng gd2copypal \
++	gdparttopng gd2time 
 +
-+pngtogd_LDADD = libgd.la
-+
-+noinst_PROGRAMS = gdtest gddemo gd2time gdtestttf
-+
-+gdtest_SOURCES = gdtest.c gd.h
-+gdtest_LDADD = libgd.la
-+
-+gdtestttf_SOURCES = gdtestttf.c gd.h
-+gdtestttf_LDADD = libgd.la
++noinst_PROGRAMS = gddemo testac gdtest gdtestft
 +
 +gddemo_SOURCES = gddemo.c gd.h gdfonts.h gdfontg.h
 +gddemo_LDADD = libgd.la
 +
++testac_SOURCES = testac.c gd.h
++testac_LDADD = libgd.la
++
 +pngtogd_SOURCES = pngtogd.c gd.h
 +pngtogd_LDADD = libgd.la
 +
++webpng_SOURCES = webpng.c gd.h
++webpng_LDADD = libgd.la
++
 +pngtogd2_SOURCES = pngtogd2.c gd.h
 +pngtogd2_LDADD = libgd.la
-+
-+gdtojpeg_SOURCES = gdtojpeg.c gd.h
-+gdtojpeg_LDADD = libgd.la
 +
 +gdtopng_SOURCES = gdtopng.c gd.h
 +gdtopng_LDADD = libgd.la
@@ -1275,19 +1290,22 @@ diff -Naur gd-1.8.4/Makefile.am gd-1.8.4.patched/Makefile.am
 +gdparttopng_SOURCES = gdparttopng.c gd.h
 +gdparttopng_LDADD = libgd.la
 +
++gdtest_SOURCES = gdtest.c gd.h
++gdtest_LDADD = libgd.la
++
 +gd2time_SOURCES = gd2time.c gd.h
 +gd2time_LDADD = libgd.la
 +
-+webpng_SOURCES = webpng.c gd.h
-+webpng_LDADD = libgd.la
++gdtestft_SOURCES = gdtestft.c gd.h
++gdtestft_LDADD = libgd.la
 +
 +EXTRA_DIST = demoin.png index.html test/*
 +
 +CLEANFILES = demoout.png
-diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
---- gd-1.8.4/Makefile.in	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/Makefile.in	Mon Jul 22 00:04:13 2002
-@@ -0,0 +1,614 @@
+diff -Naur gd-2.0.1/Makefile.in gd-2.0.1.patched/Makefile.in
+--- gd-2.0.1/Makefile.in	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/Makefile.in	Tue Jul 30 05:55:02 2002
+@@ -0,0 +1,612 @@
 +# Makefile.in generated automatically by automake 1.4-p4 from Makefile.am
 +
 +# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
@@ -1366,40 +1384,36 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +
 +AUTOMAKE_OPTIONS = 1.3
 +
-+# library interface 4.0, gd release 1.8.4
-+libgd_la_LDFLAGS = -version-info 4:1
-+
-+noinst_HEADERS = gdcache.h 
++# library interface 2.0, gd release 2.0.1
++libgd_la_LDFLAGS = -version-info 2:0
 +
 +lib_LTLIBRARIES = libgd.la
 +
-+include_HEADERS = gd.h gd_io.h gdfontt.h gdfonts.h gdhelpers.h 	gdfontmb.h gdfontl.h gdfontg.h wbmp.h jisx0208.h
++include_HEADERS = gd.h	 gdcache.h  gdfontl.h	gdfonts.h 		gd_io.h  gdfontg.h  gdfontmb.h	gdfontt.h
 +
 +
-+libgd_la_SOURCES = gd.c gd_io.c gd_io_file.c gd_io_dp.c gd_io_ss.c gdhelpers.c 	gd_png.c gd_ss.c gd_gd.c gd_gd2.c gdfontt.c gdfonts.c gdfontmb.c 	gdfontl.c gdfontg.c gdttf.c gdft.c gdcache.c gdxpm.c gdtables.c gdkanji.c 	gd_jpeg.c gd_wbmp.c wbmp.c
++libgd_la_SOURCES = gd.c		  gd_io.c	gd_topal.c  gdfonts.c 	gd_io_dp.c	gd_wbmp.c   gdfontt.c	   	gd_io_file.c	gdcache.c   gdft.c 	gd_io_ss.c	gdhelpers.c    gdxpm.c 	gd_jpeg.c	gdfontg.c   gdkanji.c 	gd_gd.c		  gd_png.c	gdfontl.c   	gd_gd2.c	  gd_ss.c	gdfontmb.c  gdtables.c 	wbmp.c
 +
 +
-+bin_PROGRAMS = pngtogd pngtogd2 gdtopng gdtojpeg gd2topng gd2copypal gdparttopng webpng
-+pngtogd_LDADD = libgd.la
++bin_PROGRAMS = pngtogd webpng pngtogd2 gdtopng gd2topng gd2copypal 	gdparttopng gd2time 
 +
-+noinst_PROGRAMS = gdtest gddemo gd2time gdtestttf
 +
-+gdtest_SOURCES = gdtest.c gd.h
-+gdtest_LDADD = libgd.la
-+
-+gdtestttf_SOURCES = gdtestttf.c gd.h
-+gdtestttf_LDADD = libgd.la
++noinst_PROGRAMS = gddemo testac gdtest gdtestft
 +
 +gddemo_SOURCES = gddemo.c gd.h gdfonts.h gdfontg.h
 +gddemo_LDADD = libgd.la
 +
++testac_SOURCES = testac.c gd.h
++testac_LDADD = libgd.la
++
 +pngtogd_SOURCES = pngtogd.c gd.h
++pngtogd_LDADD = libgd.la
++
++webpng_SOURCES = webpng.c gd.h
++webpng_LDADD = libgd.la
 +
 +pngtogd2_SOURCES = pngtogd2.c gd.h
 +pngtogd2_LDADD = libgd.la
-+
-+gdtojpeg_SOURCES = gdtojpeg.c gd.h
-+gdtojpeg_LDADD = libgd.la
 +
 +gdtopng_SOURCES = gdtopng.c gd.h
 +gdtopng_LDADD = libgd.la
@@ -1413,11 +1427,14 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +gdparttopng_SOURCES = gdparttopng.c gd.h
 +gdparttopng_LDADD = libgd.la
 +
++gdtest_SOURCES = gdtest.c gd.h
++gdtest_LDADD = libgd.la
++
 +gd2time_SOURCES = gd2time.c gd.h
 +gd2time_LDADD = libgd.la
 +
-+webpng_SOURCES = webpng.c gd.h
-+webpng_LDADD = libgd.la
++gdtestft_SOURCES = gdtestft.c gd.h
++gdtestft_LDADD = libgd.la
 +
 +EXTRA_DIST = demoin.png index.html test/*
 +
@@ -1433,30 +1450,29 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +LDFLAGS = @LDFLAGS@
 +LIBS = @LIBS@
 +libgd_la_LIBADD = 
-+libgd_la_OBJECTS =  gd.lo gd_io.lo gd_io_file.lo gd_io_dp.lo gd_io_ss.lo \
-+gdhelpers.lo gd_png.lo gd_ss.lo gd_gd.lo gd_gd2.lo gdfontt.lo \
-+gdfonts.lo gdfontmb.lo gdfontl.lo gdfontg.lo gdttf.lo gdft.lo \
-+gdcache.lo gdxpm.lo gdtables.lo gdkanji.lo gd_jpeg.lo gd_wbmp.lo \
-+wbmp.lo
-+bin_PROGRAMS =  pngtogd$(EXEEXT) pngtogd2$(EXEEXT) gdtopng$(EXEEXT) \
-+gdtojpeg$(EXEEXT) gd2topng$(EXEEXT) gd2copypal$(EXEEXT) \
-+gdparttopng$(EXEEXT) webpng$(EXEEXT)
-+noinst_PROGRAMS =  gdtest$(EXEEXT) gddemo$(EXEEXT) gd2time$(EXEEXT) \
-+gdtestttf$(EXEEXT)
++libgd_la_OBJECTS =  gd.lo gd_io.lo gd_topal.lo gdfonts.lo gd_io_dp.lo \
++gd_wbmp.lo gdfontt.lo gd_io_file.lo gdcache.lo gdft.lo gd_io_ss.lo \
++gdhelpers.lo gdxpm.lo gd_jpeg.lo gdfontg.lo gdkanji.lo gd_gd.lo \
++gd_png.lo gdfontl.lo gd_gd2.lo gd_ss.lo gdfontmb.lo gdtables.lo wbmp.lo
++bin_PROGRAMS =  pngtogd$(EXEEXT) webpng$(EXEEXT) pngtogd2$(EXEEXT) \
++gdtopng$(EXEEXT) gd2topng$(EXEEXT) gd2copypal$(EXEEXT) \
++gdparttopng$(EXEEXT) gd2time$(EXEEXT)
++noinst_PROGRAMS =  gddemo$(EXEEXT) testac$(EXEEXT) gdtest$(EXEEXT) \
++gdtestft$(EXEEXT)
 +PROGRAMS =  $(bin_PROGRAMS) $(noinst_PROGRAMS)
 +
 +pngtogd_OBJECTS =  pngtogd.$(OBJEXT)
 +pngtogd_DEPENDENCIES =  libgd.la
 +pngtogd_LDFLAGS = 
++webpng_OBJECTS =  webpng.$(OBJEXT)
++webpng_DEPENDENCIES =  libgd.la
++webpng_LDFLAGS = 
 +pngtogd2_OBJECTS =  pngtogd2.$(OBJEXT)
 +pngtogd2_DEPENDENCIES =  libgd.la
 +pngtogd2_LDFLAGS = 
 +gdtopng_OBJECTS =  gdtopng.$(OBJEXT)
 +gdtopng_DEPENDENCIES =  libgd.la
 +gdtopng_LDFLAGS = 
-+gdtojpeg_OBJECTS =  gdtojpeg.$(OBJEXT)
-+gdtojpeg_DEPENDENCIES =  libgd.la
-+gdtojpeg_LDFLAGS = 
 +gd2topng_OBJECTS =  gd2topng.$(OBJEXT)
 +gd2topng_DEPENDENCIES =  libgd.la
 +gd2topng_LDFLAGS = 
@@ -1466,27 +1482,27 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +gdparttopng_OBJECTS =  gdparttopng.$(OBJEXT)
 +gdparttopng_DEPENDENCIES =  libgd.la
 +gdparttopng_LDFLAGS = 
-+webpng_OBJECTS =  webpng.$(OBJEXT)
-+webpng_DEPENDENCIES =  libgd.la
-+webpng_LDFLAGS = 
-+gdtest_OBJECTS =  gdtest.$(OBJEXT)
-+gdtest_DEPENDENCIES =  libgd.la
-+gdtest_LDFLAGS = 
-+gddemo_OBJECTS =  gddemo.$(OBJEXT)
-+gddemo_DEPENDENCIES =  libgd.la
-+gddemo_LDFLAGS = 
 +gd2time_OBJECTS =  gd2time.$(OBJEXT)
 +gd2time_DEPENDENCIES =  libgd.la
 +gd2time_LDFLAGS = 
-+gdtestttf_OBJECTS =  gdtestttf.$(OBJEXT)
-+gdtestttf_DEPENDENCIES =  libgd.la
-+gdtestttf_LDFLAGS = 
++gddemo_OBJECTS =  gddemo.$(OBJEXT)
++gddemo_DEPENDENCIES =  libgd.la
++gddemo_LDFLAGS = 
++testac_OBJECTS =  testac.$(OBJEXT)
++testac_DEPENDENCIES =  libgd.la
++testac_LDFLAGS = 
++gdtest_OBJECTS =  gdtest.$(OBJEXT)
++gdtest_DEPENDENCIES =  libgd.la
++gdtest_LDFLAGS = 
++gdtestft_OBJECTS =  gdtestft.$(OBJEXT)
++gdtestft_DEPENDENCIES =  libgd.la
++gdtestft_LDFLAGS = 
 +CFLAGS = @CFLAGS@
 +COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 +LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 +CCLD = $(CC)
 +LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
-+HEADERS =  $(include_HEADERS) $(noinst_HEADERS)
++HEADERS =  $(include_HEADERS)
 +
 +DIST_COMMON =  README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
 +Makefile.in NEWS acinclude.m4 aclocal.m4 config.guess config.sub \
@@ -1500,15 +1516,15 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +DEP_FILES =  .deps/gd.P .deps/gd2copypal.P .deps/gd2time.P \
 +.deps/gd2topng.P .deps/gd_gd.P .deps/gd_gd2.P .deps/gd_io.P \
 +.deps/gd_io_dp.P .deps/gd_io_file.P .deps/gd_io_ss.P .deps/gd_jpeg.P \
-+.deps/gd_png.P .deps/gd_ss.P .deps/gd_wbmp.P .deps/gdcache.P \
-+.deps/gddemo.P .deps/gdfontg.P .deps/gdfontl.P .deps/gdfontmb.P \
-+.deps/gdfonts.P .deps/gdfontt.P .deps/gdft.P .deps/gdhelpers.P \
-+.deps/gdkanji.P .deps/gdparttopng.P .deps/gdtables.P .deps/gdtest.P \
-+.deps/gdtestttf.P .deps/gdtojpeg.P .deps/gdtopng.P .deps/gdttf.P \
-+.deps/gdxpm.P .deps/pngtogd.P .deps/pngtogd2.P .deps/wbmp.P \
++.deps/gd_png.P .deps/gd_ss.P .deps/gd_topal.P .deps/gd_wbmp.P \
++.deps/gdcache.P .deps/gddemo.P .deps/gdfontg.P .deps/gdfontl.P \
++.deps/gdfontmb.P .deps/gdfonts.P .deps/gdfontt.P .deps/gdft.P \
++.deps/gdhelpers.P .deps/gdkanji.P .deps/gdparttopng.P .deps/gdtables.P \
++.deps/gdtest.P .deps/gdtestft.P .deps/gdtopng.P .deps/gdxpm.P \
++.deps/pngtogd.P .deps/pngtogd2.P .deps/testac.P .deps/wbmp.P \
 +.deps/webpng.P
-+SOURCES = $(libgd_la_SOURCES) $(pngtogd_SOURCES) $(pngtogd2_SOURCES) $(gdtopng_SOURCES) $(gdtojpeg_SOURCES) $(gd2topng_SOURCES) $(gd2copypal_SOURCES) $(gdparttopng_SOURCES) $(webpng_SOURCES) $(gdtest_SOURCES) $(gddemo_SOURCES) $(gd2time_SOURCES) $(gdtestttf_SOURCES)
-+OBJECTS = $(libgd_la_OBJECTS) $(pngtogd_OBJECTS) $(pngtogd2_OBJECTS) $(gdtopng_OBJECTS) $(gdtojpeg_OBJECTS) $(gd2topng_OBJECTS) $(gd2copypal_OBJECTS) $(gdparttopng_OBJECTS) $(webpng_OBJECTS) $(gdtest_OBJECTS) $(gddemo_OBJECTS) $(gd2time_OBJECTS) $(gdtestttf_OBJECTS)
++SOURCES = $(libgd_la_SOURCES) $(pngtogd_SOURCES) $(webpng_SOURCES) $(pngtogd2_SOURCES) $(gdtopng_SOURCES) $(gd2topng_SOURCES) $(gd2copypal_SOURCES) $(gdparttopng_SOURCES) $(gd2time_SOURCES) $(gddemo_SOURCES) $(testac_SOURCES) $(gdtest_SOURCES) $(gdtestft_SOURCES)
++OBJECTS = $(libgd_la_OBJECTS) $(pngtogd_OBJECTS) $(webpng_OBJECTS) $(pngtogd2_OBJECTS) $(gdtopng_OBJECTS) $(gd2topng_OBJECTS) $(gd2copypal_OBJECTS) $(gdparttopng_OBJECTS) $(gd2time_OBJECTS) $(gddemo_OBJECTS) $(testac_OBJECTS) $(gdtest_OBJECTS) $(gdtestft_OBJECTS)
 +
 +all: all-redirect
 +.SUFFIXES:
@@ -1632,6 +1648,10 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +	@rm -f pngtogd$(EXEEXT)
 +	$(LINK) $(pngtogd_LDFLAGS) $(pngtogd_OBJECTS) $(pngtogd_LDADD) $(LIBS)
 +
++webpng$(EXEEXT): $(webpng_OBJECTS) $(webpng_DEPENDENCIES)
++	@rm -f webpng$(EXEEXT)
++	$(LINK) $(webpng_LDFLAGS) $(webpng_OBJECTS) $(webpng_LDADD) $(LIBS)
++
 +pngtogd2$(EXEEXT): $(pngtogd2_OBJECTS) $(pngtogd2_DEPENDENCIES)
 +	@rm -f pngtogd2$(EXEEXT)
 +	$(LINK) $(pngtogd2_LDFLAGS) $(pngtogd2_OBJECTS) $(pngtogd2_LDADD) $(LIBS)
@@ -1639,10 +1659,6 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +gdtopng$(EXEEXT): $(gdtopng_OBJECTS) $(gdtopng_DEPENDENCIES)
 +	@rm -f gdtopng$(EXEEXT)
 +	$(LINK) $(gdtopng_LDFLAGS) $(gdtopng_OBJECTS) $(gdtopng_LDADD) $(LIBS)
-+
-+gdtojpeg$(EXEEXT): $(gdtojpeg_OBJECTS) $(gdtojpeg_DEPENDENCIES)
-+	@rm -f gdtojpeg$(EXEEXT)
-+	$(LINK) $(gdtojpeg_LDFLAGS) $(gdtojpeg_OBJECTS) $(gdtojpeg_LDADD) $(LIBS)
 +
 +gd2topng$(EXEEXT): $(gd2topng_OBJECTS) $(gd2topng_DEPENDENCIES)
 +	@rm -f gd2topng$(EXEEXT)
@@ -1656,25 +1672,25 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +	@rm -f gdparttopng$(EXEEXT)
 +	$(LINK) $(gdparttopng_LDFLAGS) $(gdparttopng_OBJECTS) $(gdparttopng_LDADD) $(LIBS)
 +
-+webpng$(EXEEXT): $(webpng_OBJECTS) $(webpng_DEPENDENCIES)
-+	@rm -f webpng$(EXEEXT)
-+	$(LINK) $(webpng_LDFLAGS) $(webpng_OBJECTS) $(webpng_LDADD) $(LIBS)
-+
-+gdtest$(EXEEXT): $(gdtest_OBJECTS) $(gdtest_DEPENDENCIES)
-+	@rm -f gdtest$(EXEEXT)
-+	$(LINK) $(gdtest_LDFLAGS) $(gdtest_OBJECTS) $(gdtest_LDADD) $(LIBS)
++gd2time$(EXEEXT): $(gd2time_OBJECTS) $(gd2time_DEPENDENCIES)
++	@rm -f gd2time$(EXEEXT)
++	$(LINK) $(gd2time_LDFLAGS) $(gd2time_OBJECTS) $(gd2time_LDADD) $(LIBS)
 +
 +gddemo$(EXEEXT): $(gddemo_OBJECTS) $(gddemo_DEPENDENCIES)
 +	@rm -f gddemo$(EXEEXT)
 +	$(LINK) $(gddemo_LDFLAGS) $(gddemo_OBJECTS) $(gddemo_LDADD) $(LIBS)
 +
-+gd2time$(EXEEXT): $(gd2time_OBJECTS) $(gd2time_DEPENDENCIES)
-+	@rm -f gd2time$(EXEEXT)
-+	$(LINK) $(gd2time_LDFLAGS) $(gd2time_OBJECTS) $(gd2time_LDADD) $(LIBS)
++testac$(EXEEXT): $(testac_OBJECTS) $(testac_DEPENDENCIES)
++	@rm -f testac$(EXEEXT)
++	$(LINK) $(testac_LDFLAGS) $(testac_OBJECTS) $(testac_LDADD) $(LIBS)
 +
-+gdtestttf$(EXEEXT): $(gdtestttf_OBJECTS) $(gdtestttf_DEPENDENCIES)
-+	@rm -f gdtestttf$(EXEEXT)
-+	$(LINK) $(gdtestttf_LDFLAGS) $(gdtestttf_OBJECTS) $(gdtestttf_LDADD) $(LIBS)
++gdtest$(EXEEXT): $(gdtest_OBJECTS) $(gdtest_DEPENDENCIES)
++	@rm -f gdtest$(EXEEXT)
++	$(LINK) $(gdtest_LDFLAGS) $(gdtest_OBJECTS) $(gdtest_LDADD) $(LIBS)
++
++gdtestft$(EXEEXT): $(gdtestft_OBJECTS) $(gdtestft_DEPENDENCIES)
++	@rm -f gdtestft$(EXEEXT)
++	$(LINK) $(gdtestft_LDFLAGS) $(gdtestft_OBJECTS) $(gdtestft_LDADD) $(LIBS)
 +
 +install-includeHEADERS: $(include_HEADERS)
 +	@$(NORMAL_INSTALL)
@@ -1902,133 +1918,9 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patched/Makefile.in
 +# Tell versions [3.59,3.63) of GNU make to not export all variables.
 +# Otherwise a system limit (for SysV at least) may be exceeded.
 +.NOEXPORT:
-diff -Naur gd-1.8.4/Makefile.nt gd-1.8.4.patched/Makefile.nt
---- gd-1.8.4/Makefile.nt	Tue Feb  6 11:44:02 2001
-+++ gd-1.8.4.patched/Makefile.nt	Wed Dec 31 16:00:00 1969
-@@ -1,120 +0,0 @@
--#NMAKE makefile for Windows 95/98/NT developers.
--#Produces a static library (libgd.lib). Thanks to Joe Gregorio.
--#This is out of date.
--
--COMPILER=cl
--
--#If the ar command fails on your system, consult the ar manpage
--#for your system. 
--AR=LIB
--
--#If the install command is not in your path, provide
--#an explicit path for it here, or install manually.
--INSTALL=install
--
--#If you don't have FreeType and/or Xpm installed, including the
--#header files, uncomment this (default).
--CFLAGS=-Ox -GX 
--
--#If you do have FreeType and/or Xpm fully installed, uncomment a
--#variation of this and comment out the line above. See also LIBS below.
--#CFLAGS=-O -DHAVE_LIBXPM -DHAVE_LIBJPEG -DHAVE_LIBPNG -DHAVE_LIBTTF
--
--# -DHAVE_LIBFREETYPE can be used instead of -DHAVE_TTF to use the
--# newer FreeType2 libraries
--
--#Libraries required for applications 
--LIBS=gd.lib libpng.lib zlib.lib 
--#LIBS=gd.lib libpng.lib zlib.lib libjpeg.lib libttf.lib
--
--#Libraries required for gd.lib itself
--GDLIBS=libpng.lib zlib.lib
--#GDLIBS=libpng.lib zlib.lib libjpeg.lib libttf.lib
--
--#Typical install locations for freetype, zlib, jpeg, xpm and 
--#libpng header files. If yours are somewhere else, change this. 
--INCLUDEDIRS=-I d:\zlib -I d:\libpng -I d:\libjpeg -I d:\libttf
--
--#Typical install locations for freetype, zlib, xpm, libjpeg and 
--#libpng libraries.
--#
--#If yours are somewhere else, other than a standard location
--#such as /lib or /usr/lib, then change this. Be sure to keep
--#-L. as this allows the gd library itself to be found.
--#Put -L. first so that old versions of the gd library elsewhere
--#on your system can't cause conflicts while building a new one.
--LIB=d:\devstudio\vc\lib;d:\zlib;d:\libpng;d:\libjpeg;d:\libttf
--
--#Location where gd.lib should be installed by "make install".
--INSTALL_LIB=/usr/local/lib
--
--#Location where .h files should be installed by "make install".
--INSTALL_INCLUDE=/usr/local/include
--
--#Location where useful non-test programs should be installed by "make install".
--INSTALL_BIN=/usr/local/bin
--
--#
--#
--# Changes should not be required below here.
--#
--#
--
--VERSION=1.8.1
--
--CC=$(COMPILER) $(INCLUDEDIRS)
--LINK=$(CC) $(LIBS)
--
--PROGRAMS=$(BIN_PROGRAMS) $(TEST_PROGRAMS)
--
--BIN_PROGRAMS=pngtogd.exe pngtogd2.exe gdtopng.exe gd2topng.exe gd2copypal.exe gdparttopng.exe webpng.exe
--TEST_PROGRAMS=gdtest.exe gddemo.exe gd2time.exe gdtestttf.exe gdtestft.exe
--
--all: gd.lib $(PROGRAMS)
--
--gddemo.exe: gddemo.c gd.lib
--	$(CC) gddemo.c $(LIBDIRS) $(LIBS)
--
--pngtogd.exe: pngtogd.c gd.lib
--	$(CC) pngtogd.c $(LIBDIRS) $(LIBS) 
--
--webpng.exe: webpng.c gd.lib
--	$(CC) webpng.c 	$(LIBDIRS) $(LIBS)
--
--pngtogd2.exe: pngtogd2.c gd.lib
--	$(CC) pngtogd2.c	$(LIBDIRS) $(LIBS)
--
--gdtopng.exe: gdtopng.c gd.lib
--	$(CC) gdtopng.c 	$(LIBDIRS) $(LIBS)
--
--gd2topng.exe: gd2topng.c gd.lib
--	$(CC) gd2topng.c	$(LIBDIRS) $(LIBS)
--
--gd2copypal.exe: gd2copypal.c gd.lib
--	$(CC) gd2copypal.c	$(LIBDIRS) $(LIBS)
--
--gdparttopng.exe: gdparttopng.c gd.lib
--	$(CC) gdparttopng.c	$(LIBDIRS) $(LIBS)
--
--gdtest.exe: gdtest.c gd.lib
--	$(CC) gdtest.c 	$(LIBDIRS) $(LIBS)
--
--gd2time.exe: gd2time.c gd.lib
--	$(CC) gd2time.c	$(LIBDIRS) $(LIBS)
--
--gdtestttf.exe: gdtestttf.c gd.lib
--	$(CC) gdtestttf.c 	$(LIBDIRS) $(LIBS)
--
--gdtestft.exe: gdtestft.c gd.lib
--	$(CC) gdtestft.c 	$(LIBDIRS) $(LIBS)
--
--OBJS=gd.obj gd_gd.obj gd_gd2.obj gd_io.obj gd_io_dp.obj gd_io_file.obj gd_ss.obj \
--	gd_io_ss.obj gd_png.obj gdxpm.obj gdfontt.obj gdfonts.obj gdfontmb.obj gdfontl.obj \
--	gdfontg.obj gdtables.obj gdttf.obj gdft.c gdcache.obj gdkanji.obj gd_jpeg.obj
--
--gd.lib:  $(OBJS) gd.h gdfontt.h gdfonts.h gdfontmb.h gdfontl.h gdfontg.h	
--	$(AR) $(OBJS) $(GDLIBS) 
--
--clean:
--	del *.obj *.lib $(PROGRAMS)
--
-diff -Naur gd-1.8.4/NEWS gd-1.8.4.patched/NEWS
---- gd-1.8.4/NEWS	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/NEWS	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/NEWS gd-2.0.1.patched/NEWS
+--- gd-2.0.1/NEWS	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/NEWS	Tue Jul 30 05:29:17 2002
 @@ -0,0 +1,132 @@
 +990729 Thomas Boutell (TBB)
 +	- It would probably be a good idea to free the 
@@ -2162,11 +2054,11 @@ diff -Naur gd-1.8.4/NEWS gd-1.8.4.patched/NEWS
 +Extracting 100 times from (3000, 2000), size is 50x25
 +15 seconds to extract (& destroy) 100 times
 +
-diff -Naur gd-1.8.4/README gd-1.8.4.patched/README
---- gd-1.8.4/README	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/README	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/README gd-2.0.1.patched/README
+--- gd-2.0.1/README	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/README	Tue Jul 30 22:21:05 2002
 @@ -0,0 +1,25 @@
-+GD 1.8.4_patch
++GD 2.0.1_patch
 +
 +This is a patched version of Tom Boutell's GD library version 1.8.4.
 +It uses the GNU Autoconfig system to make it easier to compile libgd
@@ -2191,14 +2083,14 @@ diff -Naur gd-1.8.4/README gd-1.8.4.patched/README
 +other questions relating to libgd should be directed to Tom Boutell
 +(boutell@boutell.com).
 +
-diff -Naur gd-1.8.4/acinclude.m4 gd-1.8.4.patched/acinclude.m4
---- gd-1.8.4/acinclude.m4	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/acinclude.m4	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/acinclude.m4 gd-2.0.1.patched/acinclude.m4
+--- gd-2.0.1/acinclude.m4	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/acinclude.m4	Tue Jul 30 05:29:34 2002
 @@ -0,0 +1 @@
 +#placeholder for a real acinclude.m4 (someday)
-diff -Naur gd-1.8.4/aclocal.m4 gd-1.8.4.patched/aclocal.m4
---- gd-1.8.4/aclocal.m4	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/aclocal.m4	Sun Jul 21 23:57:49 2002
+diff -Naur gd-2.0.1/aclocal.m4 gd-2.0.1.patched/aclocal.m4
+--- gd-2.0.1/aclocal.m4	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/aclocal.m4	Tue Jul 30 05:29:34 2002
 @@ -0,0 +1,3448 @@
 +dnl aclocal.m4 generated automatically by aclocal 1.4-p4
 +
@@ -5648,260 +5540,9 @@ diff -Naur gd-1.8.4/aclocal.m4 gd-1.8.4.patched/aclocal.m4
 +# This is just to silence aclocal about the macro not being used
 +ifelse([AC_DISABLE_FAST_INSTALL])
 +
-diff -Naur gd-1.8.4/bdftogd gd-1.8.4.patched/bdftogd
---- gd-1.8.4/bdftogd	Tue Feb  6 11:44:01 2001
-+++ gd-1.8.4.patched/bdftogd	Wed Dec 31 16:00:00 1969
-@@ -1,205 +0,0 @@
--#!/usr/bin/perl -w
--
--#
--# Simple convertor from bdf to gd font format.
--#
--# Author: Jan Pazdziora, adelton@fi.muni.cz, http://www.fi.muni.cz/~adelton/
--# at Faculty of Informatics, Masaryk University in Brno, Czech Republic.
--#
--# Example of use:
--# fstobdf -s fontserverhost:7100 -fn 8x16 | ./bdftogd FontLarge gdfontl
--#
--
--use strict;
--
--my $VERSION = '0.60';
--my $now = localtime;
--
--if (@ARGV != 2)
--	{ die "usage: bdftogd fontname filename, eg. bdftogd FontLarge gdfontl\n"; }
--
--my $gdname = shift;
--$gdname = 'gd' . $gdname unless $gdname =~ /^gd/i;
--
--my $filename = shift;
--$filename = 'gd' . $filename unless $filename =~ /^gd/i;
--
--if (-f "$filename.c") { die "File $filename.c already exists, won't overwrite\n"; }
--if (-f "$filename.h") { die "File $filename.h already exists, won't overwrite\n"; }
--
--my ($width, $height);
--my (@data, @left, @bottom);
--my ($globalleft, $globaltop);
--
--my ($minchar, $maxchar);
--
--my ($copyright, $fontdef);
--
--my $currentchar;
--my $gobitmap = 0;
--
--
--while (<>)
--	{
--	chomp;
--	s/\r$//;
--	my ($tag, $value) = split / /, $_, 2;
--	die "Font is not fixed width\n"
--			if $tag eq 'SPACING' and not $value =~ /[CM]/i;
--	
--	$currentchar = $value if $tag eq 'ENCODING';
--	$minchar = $currentchar if not defined $minchar
--		or $currentchar < $minchar;
--	$maxchar = $currentchar if not defined $maxchar
--		or $currentchar > $maxchar;
--	
--	if ($tag eq 'ENDCHAR')
--		{
--		$gobitmap = 0;
--		my $bottom = $globaltop - $bottom[$currentchar];
--		
--
--		if ($bottom > 0)
--			{ $data[$currentchar] = substr $data[$currentchar], 0, length($data[$currentchar]) - $bottom * $width; }
--		else
--			{ $data[$currentchar] .= '0' x (-$bottom * $width); }
--		}
--
--	if ($tag eq 'FONTBOUNDINGBOX')
--		{
--		my ($tag, $wid, $hei, $left, $top) = split / /;
--		if (defined $top)
--			{
--			$globalleft = $left;
--			$globaltop = $top;
--			$height = $hei;
--			$width = $wid;
--			}
--		}
--	if ($tag eq 'FONT' and not defined $fontdef)
--		{ $fontdef = $value; }
--	if ($tag eq 'COPYRIGHT' and not defined $copyright)
--		{ $copyright = $value; }
--	
--	if ($tag eq 'BBX')
--		{
--		my ($tag, $wid, $hei, $left, $bottom) = split / /;
--		if (defined $bottom)
--			{
--			$left[$currentchar] = $left;
--			$bottom[$currentchar] = $bottom;
--			}
--		}
--
--	if ($gobitmap)
--		{
--		my $value = pack 'H*', $_;
--		my $bits = unpack 'B*', $value;
--		$bits = ('0' x $left[$currentchar]) . $bits;
--		$bits .= '0' x ($width - length $bits);
--		$bits = substr $bits, 0, $width;
--		$data[$currentchar] .= $bits;
--		}
--	
--	if ($tag eq 'BITMAP')
--		{
--		$gobitmap = 1;
--		$data[$currentchar] = '';
--		}
--	}
--
--my $info = <<"EOF";
--/*
--	This is a header file for gd font, generated using
--	bdftogd version $VERSION by Jan Pazdziora, adelton\@fi.muni.cz
--	from bdf font
--	$fontdef
--	at $now.
--EOF
--
--if (defined $copyright)
--	{
--	$info .= <<"EOF";
--	The original bdf was holding following copyright:
--	$copyright
-- */
--EOF
--	}
--else
--	{
--	$info .= <<"EOF";
--	No copyright info was found in the original bdf.
-- */
--EOF
--	}
--
--open FILEC, "> $filename.c" or die "Error writing $filename.c: $!\n";
--open FILEH, "> $filename.h" or die "Error writing $filename.h: $!\n";
--print FILEC <<"EOF";
--
--$info
--
--#include "$filename.h"
--
--char ${gdname}Data[] = {
--EOF
--
--$minchar = 0 unless defined $minchar;
--$maxchar = 255 unless defined $maxchar;
--for (my $i = $minchar; $i <= $maxchar; $i++)
--	{
--	$data[$i] = '' unless defined $data[$i];
--	$data[$i] = '0' x ($width * $height - length $data[$i]) . $data[$i];
--	
--	print FILEC "/* Char $i */\n";
--	for my $line (0 .. $height - 1)
--		{ print FILEC join ',', split(//, substr($data[$i], $line * $width, $width)), "\n"; }
--
--	print FILEC "\n";
--
--	next;
--	
--	for my $line (0 .. $height - 1)
--		{ print substr($data[$i], $line * $width, $width), "\n"; }
--	}
--
--my $capdef = "\U_${filename}_H_";
--
--print FILEC <<"EOF";
--
--};
--
--gdFont ${gdname}Rep = {
--	@{[ $maxchar - $minchar + 1]},
--	$minchar,
--	$width,
--	$height,
--	${gdname}Data
--};
--
--gdFontPtr ${gdname} = &${gdname}Rep;
--
--/* This file has not been truncated. */
--
--EOF
--
--
--close FILEC;
--
--print FILEH <<"EOF";
--
--#ifndef $capdef
--#define $capdef 1
--
--$info
--
--#include "gd.h"
--
--extern gdFontPtr $gdname;
--
--#endif
--
--EOF
--
--1;
--
-diff -Naur gd-1.8.4/config.cache gd-1.8.4.patched/config.cache
---- gd-1.8.4/config.cache	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/config.cache	Sun Jul 21 23:27:23 2002
-@@ -0,0 +1,38 @@
-+# This file is a shell script that caches the results of configure
-+# tests run on this system so they can be shared between configure
-+# scripts and configure runs.  It is not useful on other systems.
-+# If it contains results you don't want to keep, you may remove or edit it.
-+#
-+# By default, configure uses ./config.cache as the cache file,
-+# creating it if it does not exist already.  You can give configure
-+# the --cache-file=FILE option to use a different cache file; that is
-+# what configure does when it calls configure scripts in
-+# subdirectories, so they share the cache.
-+# Giving --cache-file=/dev/null disables caching, for debugging configure.
-+# config.status only pays attention to the cache file if you give it the
-+# --recheck option to rerun configure.
-+#
-+ac_cv_c_const=${ac_cv_c_const=yes}
-+ac_cv_exeext=${ac_cv_exeext=no}
-+ac_cv_have_x=${ac_cv_have_x=$'have_x=yes \t\tac_x_includes=/usr/X11R6/include ac_x_libraries=/usr/X11R6/lib'}
-+ac_cv_header_malloc_h=${ac_cv_header_malloc_h=yes}
-+ac_cv_header_png_h=${ac_cv_header_png_h=yes}
-+ac_cv_header_stdc=${ac_cv_header_stdc=yes}
-+ac_cv_header_unistd_h=${ac_cv_header_unistd_h=yes}
-+ac_cv_header_zlib_h=${ac_cv_header_zlib_h=yes}
-+ac_cv_lib_m_main=${ac_cv_lib_m_main=yes}
-+ac_cv_lib_png_png_check_sig=${ac_cv_lib_png_png_check_sig=yes}
-+ac_cv_lib_z_deflate=${ac_cv_lib_z_deflate=yes}
-+ac_cv_path_LD=${ac_cv_path_LD=/usr/i386-slackware-linux/bin/ld}
-+ac_cv_path_NM=${ac_cv_path_NM=$'/usr/bin/nm -B'}
-+ac_cv_path_install=${ac_cv_path_install=$'/usr/bin/ginstall -c'}
-+ac_cv_prog_CC=${ac_cv_prog_CC=gcc}
-+ac_cv_prog_CPP=${ac_cv_prog_CPP=$'gcc -E'}
-+ac_cv_prog_LN_S=${ac_cv_prog_LN_S=$'ln -s'}
-+ac_cv_prog_RANLIB=${ac_cv_prog_RANLIB=ranlib}
-+ac_cv_prog_cc_cross=${ac_cv_prog_cc_cross=no}
-+ac_cv_prog_cc_g=${ac_cv_prog_cc_g=yes}
-+ac_cv_prog_cc_works=${ac_cv_prog_cc_works=yes}
-+ac_cv_prog_gcc=${ac_cv_prog_gcc=yes}
-+ac_cv_prog_gnu_ld=${ac_cv_prog_gnu_ld=yes}
-+ac_cv_prog_make_make_set=${ac_cv_prog_make_make_set=yes}
-diff -Naur gd-1.8.4/config.guess gd-1.8.4.patched/config.guess
---- gd-1.8.4/config.guess	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/config.guess	Mon Jul 22 00:01:36 2002
+diff -Naur gd-2.0.1/config.guess gd-2.0.1.patched/config.guess
+--- gd-2.0.1/config.guess	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/config.guess	Tue Jul 30 05:38:57 2002
 @@ -0,0 +1,1371 @@
 +#! /bin/sh
 +# Attempt to guess a canonical system name.
@@ -7274,900 +6915,9 @@ diff -Naur gd-1.8.4/config.guess gd-1.8.4.patched/config.guess
 +# time-stamp-format: "%:y-%02m-%02d"
 +# time-stamp-end: "'"
 +# End:
-diff -Naur gd-1.8.4/config.log gd-1.8.4.patched/config.log
---- gd-1.8.4/config.log	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/config.log	Mon Jul 22 00:04:38 2002
-@@ -0,0 +1,429 @@
-+This file contains any messages produced by compilers while
-+running configure, to aid debugging if configure makes a mistake.
-+
-+It was created by configure, which was
-+generated by GNU Autoconf 2.50.  Invocation command line was
-+
-+  $ ./configure --enable-jpeg --enable-freetype --enable-xpm
-+
-+## ---------- ##
-+## Platform.  ##
-+## ---------- ##
-+
-+hostname = pesto
-+uname -m = i686
-+uname -r = 2.4.9
-+uname -s = Linux
-+uname -v = #16 Sat Feb 9 09:57:25 EST 2002
-+
-+/usr/bin/uname -p = unknown
-+/bin/uname -X     = unknown
-+
-+/bin/arch              = i686
-+/usr/bin/arch -k       = unknown
-+/usr/convex/getsysinfo = unknown
-+hostinfo               = unknown
-+/bin/machine           = unknown
-+/usr/bin/oslevel       = unknown
-+/bin/universe          = unknown
-+
-+PATH = /home/lstein/bin:/usr/local/bin:/usr/X11/bin:/usr/bin:/bin:/usr/local/games:/usr/local/mysql/bin:/opt/kde/bin:/usr/local/ant/bin:/opt/gnome/bin:/usr/local/java/bin:.
-+
-+## ------------ ##
-+## Core tests.  ##
-+## ------------ ##
-+
-+configure:1070: PATH=".;."; conftest.sh
-+./configure: conftest.sh: command not found
-+configure:1073: $? = 127
-+configure:1119: checking for a BSD compatible install
-+configure:1168: result: /usr/bin/ginstall -c
-+configure:1179: checking whether build environment is sane
-+configure:1222: result: yes
-+configure:1243: checking whether make sets ${MAKE}
-+configure:1263: result: yes
-+configure:1291: checking for working aclocal
-+configure:1298: result: found
-+configure:1306: checking for working autoconf
-+configure:1313: result: found
-+configure:1321: checking for working automake
-+configure:1328: result: found
-+configure:1336: checking for working autoheader
-+configure:1343: result: found
-+configure:1351: checking for working makeinfo
-+configure:1358: result: found
-+configure:1409: checking for gcc
-+configure:1424: found /usr/bin/gcc
-+configure:1432: result: gcc
-+configure:1676: checking for C compiler default output
-+configure:1679: gcc    conftest.c  >&5
-+configure:1682: $? = 0
-+configure:1705: result: a.out
-+configure:1710: checking whether the C compiler works
-+configure:1716: ./a.out
-+configure:1719: $? = 0
-+configure:1734: result: yes
-+configure:1741: checking whether we are cross compiling
-+configure:1743: result: no
-+configure:1746: checking for executable suffix
-+configure:1748: gcc -o conftest    conftest.c  >&5
-+configure:1751: $? = 0
-+configure:1773: result: 
-+configure:1779: checking for object suffix
-+configure:1797: gcc -c   conftest.c >&5
-+configure:1800: $? = 0
-+configure:1819: result: o
-+configure:1823: checking whether we are using the GNU C compiler
-+configure:1844: gcc -c   conftest.c >&5
-+configure:1847: $? = 0
-+configure:1850: test -s conftest.o
-+configure:1853: $? = 0
-+configure:1865: result: yes
-+configure:1871: checking whether gcc accepts -g
-+configure:1889: gcc -c -g  conftest.c >&5
-+configure:1892: $? = 0
-+configure:1895: test -s conftest.o
-+configure:1898: $? = 0
-+configure:1908: result: yes
-+configure:1935: gcc -c -g -O2  conftest.c >&5
-+conftest.c:2: parse error before `me'
-+configure:1938: $? = 1
-+configure: failed program was:
-+#ifndef __cplusplus
-+  choke me
-+#endif
-+configure:2033: checking for strerror in -lcposix
-+configure:2060: gcc -o conftest -g -O2   conftest.c -lcposix   >&5
-+/usr/i386-slackware-linux/bin/ld: cannot find -lcposix
-+collect2: ld returned 1 exit status
-+configure:2063: $? = 1
-+configure: failed program was:
-+#line 2041 "configure"
-+#include "confdefs.h"
-+
-+/* Override any gcc2 internal prototype to avoid an error.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+/* We use char because int might match the return type of a gcc2
-+   builtin and then its argument prototype would still apply.  */
-+char strerror ();
-+int
-+main ()
-+{
-+strerror ();
-+  ;
-+  return 0;
-+}
-+configure:2080: result: no
-+configure:2158: checking build system type
-+configure:2176: result: i686-pc-linux-gnu
-+configure:2183: checking host system type
-+configure:2197: result: i686-pc-linux-gnu
-+configure:2214: checking for ld used by GCC
-+configure:2277: result: /usr/i386-slackware-linux/bin/ld
-+configure:2286: checking if the linker (/usr/i386-slackware-linux/bin/ld) is GNU ld
-+GNU ld version 2.11.90.0.19 (with BFD 2.11.90.0.19)
-+configure:2298: result: yes
-+configure:2302: checking for /usr/i386-slackware-linux/bin/ld option to reload object files
-+configure:2309: result: -r
-+configure:2314: checking for BSD-compatible nm
-+configure:2350: result: /usr/bin/nm -B
-+configure:2353: checking whether ln -s works
-+configure:2357: result: yes
-+configure:2364: checking how to recognise dependant libraries
-+configure:2532: result: pass_all
-+configure:2538: checking command to parse /usr/bin/nm -B output
-+configure:2615: gcc -c -g -O2  conftest.c >&5
-+configure:2618: $? = 0
-+configure:2622: /usr/bin/nm -B conftest.o \| sed -n -e 's/^.*[ 	]\([ABCDGISTW][ABCDGISTW]*\)[ 	][ 	]*\(\)\([_A-Za-z][_A-Za-z0-9]*\)$/\1 \2\3 \3/p' \> conftest.nm
-+configure:2625: $? = 0
-+configure:2677: gcc -o conftest -g -O2   conftest.c conftstm.o >&5
-+configure:2680: $? = 0
-+configure:2721: result: ok
-+configure:2730: checking how to run the C preprocessor
-+configure:2757: gcc -E  conftest.c
-+configure:2763: $? = 0
-+configure:2790: gcc -E  conftest.c
-+configure:2787: ac_nonexistent.h: No such file or directory
-+configure:2796: $? = 1
-+configure: failed program was:
-+#line 2786 "configure"
-+#include "confdefs.h"
-+#include <ac_nonexistent.h>
-+configure:2833: result: gcc -E
-+configure:2848: gcc -E  conftest.c
-+configure:2854: $? = 0
-+configure:2881: gcc -E  conftest.c
-+configure:2878: ac_nonexistent.h: No such file or directory
-+configure:2887: $? = 1
-+configure: failed program was:
-+#line 2877 "configure"
-+#include "confdefs.h"
-+#include <ac_nonexistent.h>
-+configure:2929: checking for dlfcn.h
-+configure:2939: gcc -E  conftest.c
-+configure:2945: $? = 0
-+configure:2964: result: yes
-+configure:3151: checking for ranlib
-+configure:3166: found /usr/bin/ranlib
-+configure:3175: result: ranlib
-+configure:3225: checking for strip
-+configure:3240: found /usr/bin/strip
-+configure:3249: result: strip
-+configure:3444: checking for objdir
-+configure:3455: result: .libs
-+configure:3470: checking for gcc option to produce PIC
-+configure:3620: result: -fPIC
-+configure:3624: checking if gcc PIC flag -fPIC works
-+configure:3644: gcc -c -g -O2 -fPIC -DPIC  conftest.c >&5
-+configure:3647: $? = 0
-+configure:3650: test -s conftest.o
-+configure:3653: $? = 0
-+configure:3689: result: yes
-+configure:3705: checking if gcc static flag -static works
-+configure:3726: gcc -o conftest -g -O2   -static conftest.c  >&5
-+configure:3729: $? = 0
-+configure:3732: test -s conftest
-+configure:3735: $? = 0
-+configure:3749: result: yes
-+configure:3760: checking if gcc supports -c -o file.o
-+configure:3780: gcc -c -g -O2 -o out/conftest2.o  conftest.c >&5
-+configure:3804: result: yes
-+configure:3809: checking if gcc supports -c -o file.lo
-+configure:3831: gcc -c -g -O2 -c -o conftest.lo  conftest.c >&5
-+configure:3834: $? = 0
-+configure:3837: test -s conftest.o
-+configure:3840: $? = 1
-+configure: failed program was:
-+#line 3819 "configure"
-+#include "confdefs.h"
-+
-+int
-+main ()
-+{
-+int some_variable = 0;
-+  ;
-+  return 0;
-+}
-+configure:3860: result: 
-+configure:3891: checking if gcc supports -fno-rtti -fno-exceptions
-+configure:3910: gcc -c -g -O2 -fno-rtti -fno-exceptions -c conftest.c  conftest.c >&5
-+configure:3913: $? = 0
-+configure:3916: test -s conftest.o
-+configure:3919: $? = 0
-+configure:3935: result: yes
-+configure:3946: checking whether the linker (/usr/i386-slackware-linux/bin/ld) supports shared libraries
-+configure:4558: result: yes
-+configure:4563: checking how to hardcode library paths into programs
-+configure:4587: result: immediate
-+configure:4592: checking whether stripping libraries is possible
-+configure:4597: result: yes
-+configure:4608: checking dynamic linker characteristics
-+configure:4990: result: GNU/Linux ld.so
-+configure:4995: checking if libtool supports shared libraries
-+configure:4997: result: yes
-+configure:5561: checking whether -lc should be explicitly linked in
-+configure:5569: gcc -c -g -O2  conftest.c >&5
-+configure:5572: $? = 0
-+configure:5586: gcc -shared conftest.o  -v -Wl,-soname -Wl,conftest -o conftest 2\>\&1 \| grep  -lc  \>/dev/null 2\>\&1
-+configure:5589: $? = 0
-+configure:5602: result: no
-+configure:6175: checking for a BSD compatible install
-+configure:6224: result: /usr/bin/ginstall -c
-+configure:6235: checking for X
-+configure:6444: result: libraries /usr/X11R6/lib, headers /usr/X11R6/include
-+configure:6451: checking for main in -lm
-+configure:6471: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -lm   >&5
-+configure:6474: $? = 0
-+configure:6477: test -s conftest
-+configure:6480: $? = 0
-+configure:6491: result: yes
-+configure:6502: checking for deflate in -lz
-+configure:6529: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -lz  -lm  >&5
-+configure:6532: $? = 0
-+configure:6535: test -s conftest
-+configure:6538: $? = 0
-+configure:6549: result: yes
-+configure:6564: checking for png_check_sig in -lpng
-+configure:6591: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -lpng  -lz -lm  >&5
-+configure:6594: $? = 0
-+configure:6597: test -s conftest
-+configure:6600: $? = 0
-+configure:6611: result: yes
-+configure:6633: checking for jpeglib.h
-+configure:6643: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:6649: $? = 0
-+configure:6668: result: yes
-+configure:6681: checking for jpeg_start_compress in -ljpeg
-+configure:6708: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -ljpeg  -lpng -lz -lm  >&5
-+configure:6711: $? = 0
-+configure:6714: test -s conftest
-+configure:6717: $? = 0
-+configure:6728: result: yes
-+configure:6751: checking for freetype/freetype.h
-+configure:6761: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:6767: $? = 0
-+configure:6786: result: yes
-+configure:6799: checking for FT_Init_FreeType in -lfreetype
-+configure:6826: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -lfreetype  -ljpeg -lpng -lz -lm  >&5
-+configure:6829: $? = 0
-+configure:6832: test -s conftest
-+configure:6835: $? = 0
-+configure:6846: result: yes
-+configure:6869: checking for X11/xpm.h
-+configure:6879: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:6885: $? = 0
-+configure:6904: result: yes
-+configure:6917: checking for XpmCreateImageFromData in -lXpm
-+configure:6944: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -lXpm -lX11 -lfreetype -ljpeg -lpng -lz -lm  >&5
-+configure:6947: $? = 0
-+configure:6950: test -s conftest
-+configure:6953: $? = 0
-+configure:6964: result: yes
-+configure:6980: checking for ANSI C header files
-+configure:6994: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:7000: $? = 0
-+configure:7087: gcc -o conftest -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include  -L${exec_prefix}/lib -L/usr/X11R6/lib conftest.c -lfreetype -ljpeg -lpng -lz -lm  -lX11 -lXpm >&5
-+configure:7090: $? = 0
-+configure:7092: ./conftest
-+configure:7095: $? = 0
-+configure:7108: result: yes
-+configure:7121: checking for malloc.h
-+configure:7131: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:7137: $? = 0
-+configure:7156: result: yes
-+configure:7121: checking for unistd.h
-+configure:7131: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:7137: $? = 0
-+configure:7156: result: yes
-+configure:7169: checking for zlib.h
-+configure:7179: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:7185: $? = 0
-+configure:7204: result: yes
-+configure:7221: checking for png.h
-+configure:7231: gcc -E  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c
-+configure:7237: $? = 0
-+configure:7256: result: yes
-+configure:7270: checking for gcc option to accept ANSI C
-+configure:7327: gcc  -c -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c >&5
-+configure:7330: $? = 0
-+configure:7333: test -s conftest.o
-+configure:7336: $? = 0
-+configure:7353: result: none needed
-+configure:7361: checking for an ANSI C-conforming const
-+configure:7425: gcc -c -g -O2  -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include conftest.c >&5
-+configure:7428: $? = 0
-+configure:7431: test -s conftest.o
-+configure:7434: $? = 0
-+configure:7444: result: yes
-+configure:7564: creating ./config.status
-+
-+## ----------------------- ##
-+## Running config.status.  ##
-+## ----------------------- ##
-+
-+This file was extended by config.status 2.50, executed with
-+  > ./config.status 
-+on pesto
-+
-+config.status:8000: creating Makefile
-+
-+## ----------------- ##
-+## Cache variables.  ##
-+## ----------------- ##
-+
-+ac_cv_build=i686-pc-linux-gnu
-+ac_cv_build_alias=i686-pc-linux-gnu
-+ac_cv_c_compiler_gnu=yes
-+ac_cv_c_const=yes
-+ac_cv_env_CC_set=
-+ac_cv_env_CC_value=
-+ac_cv_env_CFLAGS_set=
-+ac_cv_env_CFLAGS_value=
-+ac_cv_env_CPPFLAGS_set=
-+ac_cv_env_CPPFLAGS_value=
-+ac_cv_env_CPP_set=
-+ac_cv_env_CPP_value=
-+ac_cv_env_LDFLAGS_set=
-+ac_cv_env_LDFLAGS_value=
-+ac_cv_env_build_alias_set=
-+ac_cv_env_build_alias_value=
-+ac_cv_env_host_alias_set=
-+ac_cv_env_host_alias_value=
-+ac_cv_env_target_alias_set=
-+ac_cv_env_target_alias_value=
-+ac_cv_have_x=$'have_x=yes \t\tac_x_includes=/usr/X11R6/include ac_x_libraries=/usr/X11R6/lib'
-+ac_cv_header_X11_xpm_h=yes
-+ac_cv_header_dlfcn_h=yes
-+ac_cv_header_freetype_freetype_h=yes
-+ac_cv_header_jpeglib_h=yes
-+ac_cv_header_malloc_h=yes
-+ac_cv_header_png_h=yes
-+ac_cv_header_stdc=yes
-+ac_cv_header_unistd_h=yes
-+ac_cv_header_zlib_h=yes
-+ac_cv_host=i686-pc-linux-gnu
-+ac_cv_host_alias=i686-pc-linux-gnu
-+ac_cv_lib_Xpm_XpmCreateImageFromData=yes
-+ac_cv_lib_cposix_strerror=no
-+ac_cv_lib_freetype_FT_Init_FreeType=yes
-+ac_cv_lib_jpeg_jpeg_start_compress=yes
-+ac_cv_lib_m_main=yes
-+ac_cv_lib_png_png_check_sig=yes
-+ac_cv_lib_z_deflate=yes
-+ac_cv_objext=o
-+ac_cv_path_install=$'/usr/bin/ginstall -c'
-+ac_cv_prog_CPP=$'gcc -E'
-+ac_cv_prog_ac_ct_CC=gcc
-+ac_cv_prog_ac_ct_RANLIB=ranlib
-+ac_cv_prog_ac_ct_STRIP=strip
-+ac_cv_prog_cc_g=yes
-+ac_cv_prog_cc_stdc=
-+ac_cv_prog_make_make_set=yes
-+lt_cv_archive_cmds_need_lc=no
-+lt_cv_compiler_c_o=yes
-+lt_cv_compiler_o_lo=no
-+lt_cv_deplibs_check_method=pass_all
-+lt_cv_file_magic_cmd=$'$MAGIC_CMD'
-+lt_cv_file_magic_test_file=$'/lib/libc.so.6 /lib/libc-2.2.3.so'
-+lt_cv_global_symbol_to_cdecl=$'sed -n -e \'s/^. .* \\(.*\\)$/extern char \\1;/p\''
-+lt_cv_ld_reload_flag=-r
-+lt_cv_path_LD=/usr/i386-slackware-linux/bin/ld
-+lt_cv_path_NM=$'/usr/bin/nm -B'
-+lt_cv_prog_cc_can_build_shared=yes
-+lt_cv_prog_cc_no_builtin=
-+lt_cv_prog_cc_pic=$' -fPIC'
-+lt_cv_prog_cc_pic_works=yes
-+lt_cv_prog_cc_shlib=
-+lt_cv_prog_cc_static=-static
-+lt_cv_prog_cc_static_works=yes
-+lt_cv_prog_cc_wl=-Wl,
-+lt_cv_prog_gnu_ld=yes
-+lt_cv_sys_global_symbol_pipe=$'sed -n -e \'s/^.*[ \t]\\([ABCDGISTW][ABCDGISTW]*\\)[ \t][ \t]*\\(\\)\\([_A-Za-z][_A-Za-z0-9]*\\)$/\\1 \\2\\3 \\3/p\''
-+lt_cv_sys_path_separator=:
-+
-+## ------------ ##
-+## confdefs.h.  ##
-+## ------------ ##
-+
-+#define PACKAGE "gd"
-+#define VERSION "1.8.4"
-+#define HAVE_DLFCN_H 1
-+#define HAVE_LIBM 1
-+#define HAVE_LIBZ 1
-+#define HAVE_LIBPNG 1
-+#define HAVE_JPEGLIB_H 1
-+#define HAVE_LIBJPEG 1
-+#define HAVE_FREETYPE_FREETYPE_H 1
-+#define HAVE_LIBFREETYPE 1
-+#define HAVE_X11_XPM_H 1
-+#define HAVE_LIBXPM 1
-+#define STDC_HEADERS 1
-+#define HAVE_MALLOC_H 1
-+#define HAVE_UNISTD_H 1
-+#define HAVE_ZLIB_H 1
-+#define HAVE_PNG_H 1
-+
-+
-+configure: exit 0
-diff -Naur gd-1.8.4/config.status gd-1.8.4.patched/config.status
---- gd-1.8.4/config.status	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/config.status	Mon Jul 22 00:04:38 2002
-@@ -0,0 +1,454 @@
-+#! /bin/sh
-+# Generated automatically by configure.
-+# Run this file to recreate the current configuration.
-+# Compiler output produced by configure, useful for debugging
-+# configure, is in config.log if it exists.
-+
-+debug=false
-+SHELL=${CONFIG_SHELL-/bin/sh}
-+ac_cs_invocation="$0 $@"
-+
-+# Be Bourne compatible
-+if test -n "${ZSH_VERSION+set}" && (emulate sh) >/dev/null 2>&1; then
-+  emulate sh
-+  NULLCMD=:
-+elif test -n "${BASH_VERSION+set}" && (set -o posix) >/dev/null 2>&1; then
-+  set -o posix
-+fi
-+
-+# Name of the executable.
-+as_me=`echo "$0" |sed 's,.*[\\/],,'`
-+
-+if expr a : '\(a\)' >/dev/null 2>&1; then
-+  as_expr=expr
-+else
-+  as_expr=false
-+fi
-+
-+rm -f conf$$ conf$$.exe conf$$.file
-+echo >conf$$.file
-+if ln -s conf$$.file conf$$ 2>/dev/null; then
-+  # We could just check for DJGPP; but this test a) works b) is more generic
-+  # and c) will remain valid once DJGPP supports symlinks (DJGPP 2.04).
-+  if test -f conf$$.exe; then
-+    # Don't use ln at all; we don't have any links
-+    as_ln_s='cp -p'
-+  else
-+    as_ln_s='ln -s'
-+  fi
-+elif ln conf$$.file conf$$ 2>/dev/null; then
-+  as_ln_s=ln
-+else
-+  as_ln_s='cp -p'
-+fi
-+rm -f conf$$ conf$$.exe conf$$.file
-+
-+as_executable_p="test -f"
-+
-+# Support unset when possible.
-+if (FOO=FOO; unset FOO) >/dev/null 2>&1; then
-+  as_unset=unset
-+else
-+  as_unset=false
-+fi
-+
-+# NLS nuisances.
-+$as_unset LANG || test "${LANG+set}" != set || { LANG=C; export LANG; }
-+$as_unset LC_ALL || test "${LC_ALL+set}" != set || { LC_ALL=C; export LC_ALL; }
-+$as_unset LC_TIME || test "${LC_TIME+set}" != set || { LC_TIME=C; export LC_TIME; }
-+$as_unset LC_CTYPE || test "${LC_CTYPE+set}" != set || { LC_CTYPE=C; export LC_CTYPE; }
-+$as_unset LANGUAGE || test "${LANGUAGE+set}" != set || { LANGUAGE=C; export LANGUAGE; }
-+$as_unset LC_COLLATE || test "${LC_COLLATE+set}" != set || { LC_COLLATE=C; export LC_COLLATE; }
-+$as_unset LC_NUMERIC || test "${LC_NUMERIC+set}" != set || { LC_NUMERIC=C; export LC_NUMERIC; }
-+$as_unset LC_MESSAGES || test "${LC_MESSAGES+set}" != set || { LC_MESSAGES=C; export LC_MESSAGES; }
-+
-+# IFS
-+# We need space, tab and new line, in precisely that order.
-+as_nl='
-+'
-+IFS=" 	$as_nl"
-+
-+# CDPATH.
-+$as_unset CDPATH || test "${CDPATH+set}" != set || { CDPATH=:; export CDPATH; }
-+
-+exec 6>&1
-+
-+config_files=" Makefile"
-+
-+ac_cs_usage="\
-+\`$as_me' instantiates files from templates according to the
-+current configuration.
-+
-+Usage: $0 [OPTIONS] [FILE]...
-+
-+  -h, --help       print this help, then exit
-+  -V, --version    print version number, then exit
-+  -d, --debug      don't remove temporary files
-+      --recheck    update $as_me by reconfiguring in the same conditions
-+  --file=FILE[:TEMPLATE]
-+                   instantiate the configuration file FILE
-+
-+Configuration files:
-+$config_files
-+
-+Report bugs to <bug-autoconf@gnu.org>."
-+ac_cs_version="\
-+config.status
-+configured by ./configure, generated by GNU Autoconf 2.50,
-+  with options \"--enable-jpeg --enable-freetype --enable-xpm\"
-+
-+Copyright 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001
-+Free Software Foundation, Inc.
-+This config.status script is free software; the Free Software Foundation
-+gives unlimited permission to copy, distribute and modify it."
-+srcdir=.
-+INSTALL="/usr/bin/ginstall -c"
-+# If no file are specified by the user, then we need to provide default
-+# value.  By we need to know if files were specified by the user.
-+ac_need_defaults=:
-+while test $# != 0
-+do
-+  case $1 in
-+  --*=*)
-+    ac_option=`expr "x$1" : 'x\([^=]*\)='`
-+    ac_optarg=`expr "x$1" : 'x[^=]*=\(.*\)'`
-+    shift
-+    set dummy "$ac_option" "$ac_optarg" ${1+"$@"}
-+    shift
-+    ;;
-+  -*);;
-+  *) # This is not an option, so the user has probably given explicit
-+     # arguments.
-+     ac_need_defaults=false;;
-+  esac
-+
-+  case $1 in
-+  # Handling of the options.
-+  -recheck | --recheck | --rechec | --reche | --rech | --rec | --re | --r)
-+    echo "running /bin/sh ./configure " --enable-jpeg --enable-freetype --enable-xpm " --no-create --no-recursion"
-+    exec /bin/sh ./configure --enable-jpeg --enable-freetype --enable-xpm --no-create --no-recursion ;;
-+  --version | --vers* | -V )
-+    echo "$ac_cs_version"; exit 0 ;;
-+  --he | --h)
-+    # Conflict between --help and --header
-+    { { echo "$as_me:7732: error: ambiguous option: $1
-+Try \`$0 --help' for more information." >&5
-+echo "$as_me: error: ambiguous option: $1
-+Try \`$0 --help' for more information." >&2;}
-+   { (exit 1); exit 1; }; };;
-+  --help | --hel | -h )
-+    echo "$ac_cs_usage"; exit 0 ;;
-+  --debug | --d* | -d )
-+    debug=: ;;
-+  --file | --fil | --fi | --f )
-+    shift
-+    CONFIG_FILES="$CONFIG_FILES $1"
-+    ac_need_defaults=false;;
-+  --header | --heade | --head | --hea )
-+    shift
-+    CONFIG_HEADERS="$CONFIG_HEADERS $1"
-+    ac_need_defaults=false;;
-+
-+  # Handling of arguments.
-+  'Makefile' ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-+
-+  # This is an error.
-+  -*) { { echo "$as_me:7754: error: unrecognized option: $1
-+Try \`$0 --help' for more information." >&5
-+echo "$as_me: error: unrecognized option: $1
-+Try \`$0 --help' for more information." >&2;}
-+   { (exit 1); exit 1; }; } ;;
-+  *) { { echo "$as_me:7759: error: invalid argument: $1" >&5
-+echo "$as_me: error: invalid argument: $1" >&2;}
-+   { (exit 1); exit 1; }; };;
-+  esac
-+  shift
-+done
-+
-+exec 5>>config.log
-+cat >&5 << _ACEOF
-+
-+## ----------------------- ##
-+## Running config.status.  ##
-+## ----------------------- ##
-+
-+This file was extended by $as_me 2.50, executed with
-+  > $ac_cs_invocation
-+on `(hostname || uname -n) 2>/dev/null | sed 1q`
-+
-+_ACEOF
-+# If the user did not use the arguments to specify the items to instantiate,
-+# then the envvar interface is used.  Set only those that are not.
-+# We use the long form for the default assignment because of an extremely
-+# bizarre bug on SunOS 4.1.3.
-+if $ac_need_defaults; then
-+  test "${CONFIG_FILES+set}" = set || CONFIG_FILES=$config_files
-+fi
-+
-+# Create a temporary directory, and hook for its removal unless debugging.
-+$debug ||
-+{
-+  trap 'exit_status=$?; rm -rf $tmp && exit $exit_status' 0
-+  trap '{ (exit $?); exit $?; }' 1 2 13 15
-+}
-+
-+# Create a (secure) tmp directory for tmp files.
-+: ${TMPDIR=/tmp}
-+{
-+  tmp=`(umask 077 && mktemp -d -q "$TMPDIR/csXXXXXX") 2>/dev/null` &&
-+  test -n "$tmp" && test -d "$tmp"
-+}  ||
-+{
-+  tmp=$TMPDIR/cs$$-$RANDOM
-+  (umask 077 && mkdir $tmp)
-+} ||
-+{
-+   echo "$me: cannot create a temporary directory in $TMPDIR" >&2
-+   { (exit 1); exit 1; }
-+}
-+
-+
-+#
-+# CONFIG_FILES section.
-+#
-+
-+# No need to generate the scripts if there are no CONFIG_FILES.
-+# This happens for instance when ./config.status config.h
-+if test -n "$CONFIG_FILES"; then
-+  # Protect against being on the right side of a sed subst in config.status.
-+  sed 's/,@/@@/; s/@,/@@/; s/,;t t$/@;t t/; /@;t t$/s/[\\&,]/\\&/g;
-+   s/@@/,@/; s/@@/@,/; s/@;t t$/,;t t/' >$tmp/subs.sed <<\CEOF
-+s,@SHELL@,/bin/sh,;t t
-+s,@exec_prefix@,${prefix},;t t
-+s,@prefix@,/usr/local,;t t
-+s,@program_transform_name@,s,x,x,,;t t
-+s,@bindir@,${exec_prefix}/bin,;t t
-+s,@sbindir@,${exec_prefix}/sbin,;t t
-+s,@libexecdir@,${exec_prefix}/libexec,;t t
-+s,@datadir@,${prefix}/share,;t t
-+s,@sysconfdir@,${prefix}/etc,;t t
-+s,@sharedstatedir@,${prefix}/com,;t t
-+s,@localstatedir@,${prefix}/var,;t t
-+s,@libdir@,${exec_prefix}/lib,;t t
-+s,@includedir@,${prefix}/include,;t t
-+s,@oldincludedir@,/usr/include,;t t
-+s,@infodir@,${prefix}/info,;t t
-+s,@mandir@,${prefix}/man,;t t
-+s,@PACKAGE_NAME@,,;t t
-+s,@PACKAGE_TARNAME@,,;t t
-+s,@PACKAGE_VERSION@,,;t t
-+s,@PACKAGE_STRING@,,;t t
-+s,@PACKAGE_BUGREPORT@,,;t t
-+s,@ECHO_C@,,;t t
-+s,@ECHO_N@,-n,;t t
-+s,@ECHO_T@,,;t t
-+s,@PATH_SEPARATOR@,:,;t t
-+s,@DEFS@,-DPACKAGE=\"gd\" -DVERSION=\"1.8.4\" -DHAVE_DLFCN_H=1 -DHAVE_LIBM=1 -DHAVE_LIBZ=1 -DHAVE_LIBPNG=1 -DHAVE_JPEGLIB_H=1 -DHAVE_LIBJPEG=1 -DHAVE_FREETYPE_FREETYPE_H=1 -DHAVE_LIBFREETYPE=1 -DHAVE_X11_XPM_H=1 -DHAVE_LIBXPM=1 -DSTDC_HEADERS=1 -DHAVE_MALLOC_H=1 -DHAVE_UNISTD_H=1 -DHAVE_ZLIB_H=1 -DHAVE_PNG_H=1 ,;t t
-+s,@LIBS@,-lfreetype -ljpeg -lpng -lz -lm  -lX11 -lXpm,;t t
-+s,@INSTALL_PROGRAM@,${INSTALL},;t t
-+s,@INSTALL_SCRIPT@,${INSTALL},;t t
-+s,@INSTALL_DATA@,${INSTALL} -m 644,;t t
-+s,@PACKAGE@,gd,;t t
-+s,@VERSION@,1.8.4,;t t
-+s,@ACLOCAL@,aclocal,;t t
-+s,@AUTOCONF@,autoconf,;t t
-+s,@AUTOMAKE@,automake,;t t
-+s,@AUTOHEADER@,autoheader,;t t
-+s,@MAKEINFO@,makeinfo,;t t
-+s,@SET_MAKE@,,;t t
-+s,@CC@,gcc,;t t
-+s,@CFLAGS@,-g -O2,;t t
-+s,@LDFLAGS@, -L${exec_prefix}/lib -L/usr/X11R6/lib,;t t
-+s,@CPPFLAGS@, -I/usr/X11R6/include/freetype2 -I/usr/include/freetype2 -I${prefix}/include -I/usr/X11R6/include,;t t
-+s,@ac_ct_CC@,gcc,;t t
-+s,@EXEEXT@,,;t t
-+s,@OBJEXT@,o,;t t
-+s,@build@,i686-pc-linux-gnu,;t t
-+s,@build_cpu@,i686,;t t
-+s,@build_vendor@,pc,;t t
-+s,@build_os@,linux-gnu,;t t
-+s,@host@,i686-pc-linux-gnu,;t t
-+s,@host_cpu@,i686,;t t
-+s,@host_vendor@,pc,;t t
-+s,@host_os@,linux-gnu,;t t
-+s,@LN_S@,ln -s,;t t
-+s,@ECHO@,echo,;t t
-+s,@RANLIB@,ranlib,;t t
-+s,@ac_ct_RANLIB@,ranlib,;t t
-+s,@STRIP@,strip,;t t
-+s,@ac_ct_STRIP@,strip,;t t
-+s,@CPP@,gcc -E,;t t
-+s,@LIBTOOL@,$(SHELL) $(top_builddir)/libtool,;t t
-+CEOF
-+
-+  # Split the substitutions into bite-sized pieces for seds with
-+  # small command number limits, like on Digital OSF/1 and HP-UX.
-+  ac_max_sed_lines=48
-+  ac_sed_frag=1 # Number of current file.
-+  ac_beg=1 # First line for current file.
-+  ac_end=$ac_max_sed_lines # Line after last line for current file.
-+  ac_more_lines=:
-+  ac_sed_cmds=
-+  while $ac_more_lines; do
-+    if test $ac_beg -gt 1; then
-+      sed "1,${ac_beg}d; ${ac_end}q" $tmp/subs.sed >$tmp/subs.frag
-+    else
-+      sed "${ac_end}q" $tmp/subs.sed >$tmp/subs.frag
-+    fi
-+    if test ! -s $tmp/subs.frag; then
-+      ac_more_lines=false
-+    else
-+      # The purpose of the label and of the branching condition is to
-+      # speed up the sed processing (if there are no `@' at all, there
-+      # is no need to browse any of the substitutions).
-+      # These are the two extra sed commands mentioned above.
-+      (echo ':t
-+  /@[a-zA-Z_][a-zA-Z_0-9]*@/!b' && cat $tmp/subs.frag) >$tmp/subs-$ac_sed_frag.sed
-+      if test -z "$ac_sed_cmds"; then
-+  	ac_sed_cmds="sed -f $tmp/subs-$ac_sed_frag.sed"
-+      else
-+  	ac_sed_cmds="$ac_sed_cmds | sed -f $tmp/subs-$ac_sed_frag.sed"
-+      fi
-+      ac_sed_frag=`expr $ac_sed_frag + 1`
-+      ac_beg=$ac_end
-+      ac_end=`expr $ac_end + $ac_max_sed_lines`
-+    fi
-+  done
-+  if test -z "$ac_sed_cmds"; then
-+    ac_sed_cmds=cat
-+  fi
-+fi # test -n "$CONFIG_FILES"
-+
-+for ac_file in : $CONFIG_FILES; do test "x$ac_file" = x: && continue
-+  # Support "outfile[:infile[:infile...]]", defaulting infile="outfile.in".
-+  case $ac_file in
-+  - | *:- | *:-:* ) # input from stdin
-+        cat >$tmp/stdin
-+        ac_file_in=`echo "$ac_file" | sed 's,[^:]*:,,'`
-+        ac_file=`echo "$ac_file" | sed 's,:.*,,'` ;;
-+  *:* ) ac_file_in=`echo "$ac_file" | sed 's,[^:]*:,,'`
-+        ac_file=`echo "$ac_file" | sed 's,:.*,,'` ;;
-+  * )   ac_file_in=$ac_file.in ;;
-+  esac
-+
-+  # Compute @srcdir@, @top_srcdir@, and @INSTALL@ for subdirectories.
-+  ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
-+         X"$ac_file" : 'X\(//\)[^/]' \| \
-+         X"$ac_file" : 'X\(//\)$' \| \
-+         X"$ac_file" : 'X\(/\)' \| \
-+         .     : '\(.\)' 2>/dev/null ||
-+echo X"$ac_file" |
-+    sed '/^X\(.*[^/]\)\/\/*[^/][^/]*\/*$/{ s//\1/; q; }
-+  	  /^X\(\/\/\)[^/].*/{ s//\1/; q; }
-+  	  /^X\(\/\/\)$/{ s//\1/; q; }
-+  	  /^X\(\/\).*/{ s//\1/; q; }
-+  	  s/.*/./; q'`
-+  if test "$ac_dir" != "$ac_file" && test "$ac_dir" != .; then
-+    { case "$ac_dir" in
-+  [\\/]* | ?:[\\/]* ) as_incr_dir=;;
-+  *)                      as_incr_dir=.;;
-+esac
-+as_dummy="$ac_dir"
-+for as_mkdir_dir in `IFS='/\\'; set X $as_dummy; shift; echo "$@"`; do
-+  case $as_mkdir_dir in
-+    # Skip DOS drivespec
-+    ?:) as_incr_dir=$as_mkdir_dir ;;
-+    *)
-+      as_incr_dir=$as_incr_dir/$as_mkdir_dir
-+      test -d "$as_incr_dir" || mkdir "$as_incr_dir"
-+    ;;
-+  esac
-+done; }
-+
-+    ac_dir_suffix="/`echo $ac_dir|sed 's,^\./,,'`"
-+    # A "../" for each directory in $ac_dir_suffix.
-+    ac_dots=`echo "$ac_dir_suffix" | sed 's,/[^/]*,../,g'`
-+  else
-+    ac_dir_suffix= ac_dots=
-+  fi
-+
-+  case $srcdir in
-+  .)  ac_srcdir=.
-+      if test -z "$ac_dots"; then
-+         ac_top_srcdir=.
-+      else
-+         ac_top_srcdir=`echo $ac_dots | sed 's,/$,,'`
-+      fi ;;
-+  [\\/]* | ?:[\\/]* )
-+      ac_srcdir=$srcdir$ac_dir_suffix;
-+      ac_top_srcdir=$srcdir ;;
-+  *) # Relative path.
-+    ac_srcdir=$ac_dots$srcdir$ac_dir_suffix
-+    ac_top_srcdir=$ac_dots$srcdir ;;
-+  esac
-+
-+  case $INSTALL in
-+  [\\/$]* | ?:[\\/]* ) ac_INSTALL=$INSTALL ;;
-+  *) ac_INSTALL=$ac_dots$INSTALL ;;
-+  esac
-+
-+  if test x"$ac_file" != x-; then
-+    { echo "$as_me:8000: creating $ac_file" >&5
-+echo "$as_me: creating $ac_file" >&6;}
-+    rm -f "$ac_file"
-+  fi
-+  # Let's still pretend it is `configure' which instantiates (i.e., don't
-+  # use $as_me), people would be surprised to read:
-+  #    /* config.h.  Generated automatically by config.status.  */
-+  configure_input="Generated automatically from `echo $ac_file_in |
-+                                                 sed 's,.*/,,'` by configure."
-+
-+  # First look for the input files in the build tree, otherwise in the
-+  # src tree.
-+  ac_file_inputs=`IFS=:
-+    for f in $ac_file_in; do
-+      case $f in
-+      -) echo $tmp/stdin ;;
-+      [\\/$]*)
-+         # Absolute (can't be DOS-style, as IFS=:)
-+         test -f "$f" || { { echo "$as_me:8018: error: cannot find input file: $f" >&5
-+echo "$as_me: error: cannot find input file: $f" >&2;}
-+   { (exit 1); exit 1; }; }
-+         echo $f;;
-+      *) # Relative
-+         if test -f "$f"; then
-+           # Build tree
-+           echo $f
-+         elif test -f "$srcdir/$f"; then
-+           # Source tree
-+           echo $srcdir/$f
-+         else
-+           # /dev/null tree
-+           { { echo "$as_me:8031: error: cannot find input file: $f" >&5
-+echo "$as_me: error: cannot find input file: $f" >&2;}
-+   { (exit 1); exit 1; }; }
-+         fi;;
-+      esac
-+    done` || { (exit 1); exit 1; }
-+  sed "/^[ 	]*VPATH[ 	]*=/{
-+s/:*\$(srcdir):*/:/;
-+s/:*\${srcdir}:*/:/;
-+s/:*@srcdir@:*/:/;
-+s/^\([^=]*=[ 	]*\):*/\1/;
-+s/:*$//;
-+s/^[^=]*=[ 	]*$//;
-+}
-+
-+:t
-+/@[a-zA-Z_][a-zA-Z_0-9]*@/!b
-+s,@configure_input@,$configure_input,;t t
-+s,@srcdir@,$ac_srcdir,;t t
-+s,@top_srcdir@,$ac_top_srcdir,;t t
-+s,@INSTALL@,$ac_INSTALL,;t t
-+" $ac_file_inputs | (eval "$ac_sed_cmds") >$tmp/out
-+  rm -f $tmp/stdin
-+  if test x"$ac_file" != x-; then
-+    mv $tmp/out $ac_file
-+  else
-+    cat $tmp/out
-+    rm -f $tmp/out
-+  fi
-+
-+done
-+
-+{ (exit 0); exit 0; }
-diff -Naur gd-1.8.4/config.sub gd-1.8.4.patched/config.sub
---- gd-1.8.4/config.sub	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/config.sub	Mon Jul 22 00:01:48 2002
+diff -Naur gd-2.0.1/config.sub gd-2.0.1.patched/config.sub
+--- gd-2.0.1/config.sub	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/config.sub	Tue Jul 30 05:38:59 2002
 @@ -0,0 +1,1362 @@
 +#! /bin/sh
 +# Configuration validation subroutine script.
@@ -9531,9 +8281,9 @@ diff -Naur gd-1.8.4/config.sub gd-1.8.4.patched/config.sub
 +# time-stamp-format: "%:y-%02m-%02d"
 +# time-stamp-end: "'"
 +# End:
-diff -Naur gd-1.8.4/configure gd-1.8.4.patched/configure
---- gd-1.8.4/configure	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/configure	Mon Jul 22 00:04:18 2002
+diff -Naur gd-2.0.1/configure gd-2.0.1.patched/configure
+--- gd-2.0.1/configure	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/configure	Tue Jul 30 05:46:01 2002
 @@ -0,0 +1,8085 @@
 +#! /bin/sh
 +# Guess values for system-dependent variables and create Makefiles.
@@ -17620,9 +16370,9 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patched/configure
 +  $ac_cs_success || { (exit 1); exit 1; }
 +fi
 +
-diff -Naur gd-1.8.4/configure.ac gd-1.8.4.patched/configure.ac
---- gd-1.8.4/configure.ac	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/configure.ac	Sun Jul 21 23:51:43 2002
+diff -Naur gd-2.0.1/configure.ac gd-2.0.1.patched/configure.ac
+--- gd-2.0.1/configure.ac	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/configure.ac	Tue Jul 30 05:28:14 2002
 @@ -0,0 +1,62 @@
 +dnl Process this file with autoconf to produce a configure script.
 +AC_INIT(gd.c)
@@ -17686,9 +16436,188 @@ diff -Naur gd-1.8.4/configure.ac gd-1.8.4.patched/configure.ac
 +AC_C_CONST
 +
 +AC_OUTPUT(Makefile)
-diff -Naur gd-1.8.4/gd.h gd-1.8.4.patched/gd.h
---- gd-1.8.4/gd.h	Tue Feb  6 11:44:01 2001
-+++ gd-1.8.4.patched/gd.h	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/gd.c gd-2.0.1.patched/gd.c
+--- gd-2.0.1/gd.c	Tue Apr  3 16:44:41 2001
++++ gd-2.0.1.patched/gd.c	Tue Jul 30 05:24:30 2002
+@@ -309,7 +309,7 @@
+   v = 1 - b;
+   if (h == HWB_UNDEFINED)
+     RETURN_RGB (v, v, v);
+-  i = floor (h);
++  i = (int) h;
+   f = h - i;
+   if (i & 1)
+     f = 1 - f;			/* if i is odd */
+@@ -748,6 +748,7 @@
+     }
+   else
+     {
++      p = gdImageGetPixel (im->tile, srcx, srcy);
+       /* Allow for transparency */
+       if (p != gdImageGetTransparent (im->tile))
+ 	{
+@@ -1125,13 +1126,6 @@
+   *onP = on;
+ }
+ 
+-int
+-gdImageBoundsSafe (gdImagePtr im, int x, int y)
+-{
+-  return (!(((y < 0) || (y >= im->sy)) ||
+-	    ((x < 0) || (x >= im->sx))));
+-}
+-
+ void
+ gdImageChar (gdImagePtr im, gdFontPtr f, int x, int y,
+ 	     int c, int color)
+@@ -1852,7 +1846,7 @@
+     {
+       int got;
+       accum += (double) dstW / (double) srcW;
+-      got = (int) floor (accum);
++      got = (int) accum;
+       stx[i] = got;
+       accum -= got;
+     }
+@@ -1861,7 +1855,7 @@
+     {
+       int got;
+       accum += (double) dstH / (double) srcH;
+-      got = (int) floor (accum);
++      got = (int) accum;
+       sty[i] = got;
+       accum -= got;
+     }
+@@ -1927,11 +1921,11 @@
+ 			  else
+ 			    {
+ 			      /* Find or create the best match */
+-			      mapTo = gdImageColorResolveAlpha (dst,
+-						      gdTrueColorGetRed (c),
+-						    gdTrueColorGetGreen (c),
+-						     gdTrueColorGetBlue (c),
+-						   gdTrueColorGetAlpha (c));
++			      nc = gdImageColorResolveAlpha (dst,
++						      gdImageRed (src, c),
++						    gdImageGreen (src, c),
++						     gdImageBlue (src, c),
++						    gdImageAlpha (src, c));
+ 			    }
+ 			  colorMap[c] = nc;
+ 			}
+@@ -1977,7 +1971,6 @@
+     {
+       for (x = dstX; (x < dstX + dstW); x++)
+ 	{
+-	  int pd = gdImageGetPixel (dst, x, y);
+ 	  float sy1, sy2, sx1, sx2;
+ 	  float sx, sy;
+ 	  float spixels = 0;
+@@ -1990,18 +1983,18 @@
+ 	  do
+ 	    {
+ 	      float yportion;
+-	      if (floor (sy) == floor (sy1))
++	      if ((int) sy == (int) sy1)
+ 		{
+-		  yportion = 1.0 - (sy - floor (sy));
++		  yportion = 1.0 - (sy - (int) sy);
+ 		  if (yportion > sy2 - sy1)
+ 		    {
+ 		      yportion = sy2 - sy1;
+ 		    }
+-		  sy = floor (sy);
++		  sy = (int) sy;
+ 		}
+-	      else if (sy == floor (sy2))
++	      else if (sy == (int) sy2)
+ 		{
+-		  yportion = sy2 - floor (sy2);
++		  yportion = sy2 - (int) sy2;
+ 		}
+ 	      else
+ 		{
+@@ -2017,33 +2010,44 @@
+ 		  float xportion;
+ 		  float pcontribution;
+ 		  int p;
+-		  if (floor (sx) == floor (sx1))
++		  if ((int) sx == (int) sx1)
+ 		    {
+-		      xportion = 1.0 - (sx - floor (sx));
++		      xportion = 1.0 - (sx - (int) sx);
+ 		      if (xportion > sx2 - sx1)
+ 			{
+ 			  xportion = sx2 - sx1;
+ 			}
+-		      sx = floor (sx);
++		      sx = (int) sx;
+ 		    }
+-		  else if (sx == floor (sx2))
++		  else if (sx == (int) sx2)
+ 		    {
+-		      xportion = sx2 - floor (sx2);
++		      xportion = sx2 - (int) sx2;
+ 		    }
+ 		  else
+ 		    {
+ 		      xportion = 1.0;
+ 		    }
+ 		  pcontribution = xportion * yportion;
+-		  p = gdImageGetTrueColorPixel (
+-						 src,
+-						 (int) sx,
+-						 (int) sy);
+-		  red += gdTrueColorGetRed (p) * pcontribution;
+-		  green += gdTrueColorGetGreen (p) * pcontribution;
+-		  blue += gdTrueColorGetBlue (p) * pcontribution;
+-		  alpha += gdTrueColorGetAlpha (p) * pcontribution;
+-		  spixels += xportion * yportion;
++		  if (gdImageBoundsSafe (src, (int) sx, (int) sy))
++		    {
++		      if (gdImageTrueColor(src))
++		        {
++			  p = gdImageTrueColorPixel(src, (int) sx, (int) sy);
++			  red   += gdTrueColorGetRed(p)   * pcontribution;
++			  green += gdTrueColorGetGreen(p) * pcontribution;
++			  blue  += gdTrueColorGetBlue(p)  * pcontribution;
++			  alpha += gdTrueColorGetAlpha(p) * pcontribution;
++		        }
++		      else
++			{
++			  p = gdImagePalettePixel(src, (int) sx, (int) sy);
++			  red   += src->red[p]   * pcontribution;
++			  green += src->green[p] * pcontribution;
++			  blue  += src->blue[p]  * pcontribution;
++			  alpha += src->alpha[p] * pcontribution;
++			}
++		      spixels += xportion * yportion;
++		    }
+ 		  sx += 1.0;
+ 		}
+ 	      while (sx < sx2);
+@@ -2074,12 +2078,15 @@
+ 	    {
+ 	      alpha = gdAlphaMax;
+ 	    }
+-	  gdImageSetPixel (dst,
+-			   x, y,
+-			   gdTrueColorAlpha ((int) red,
++	  if (gdImageBoundsSafe (dst, x, y))
++	    {
++	      gdImageTrueColorPixel (dst,
++			   x, y) =
++			   (gdTrueColorAlpha ((int) red,
+ 					     (int) green,
+ 					     (int) blue,
+ 					     (int) alpha));
++	    }
+ 	}
+     }
+ }
+diff -Naur gd-2.0.1/gd.h gd-2.0.1.patched/gd.h
+--- gd-2.0.1/gd.h	Tue Apr  3 16:44:41 2001
++++ gd-2.0.1.patched/gd.h	Tue Jul 30 11:34:45 2002
 @@ -24,6 +24,18 @@
  #include <stdio.h>
  #include "gd_io.h"
@@ -17697,238 +16626,127 @@ diff -Naur gd-1.8.4/gd.h gd-1.8.4.patched/gd.h
 +#define HAVE_JPEG
 +#endif 
 +
-+#if defined(HAVE_LIBTTF) && defined(HAVE_FREETYPE_H)
-+#define HAVE_TTF
++#if defined(HAVE_LIBFREETYPE) && defined(HAVE_FREETYPE_FREETYPE_H)
++#define HAVE_FREETYPE
 +#endif 
 +
 +#if defined(HAVE_LIBXPM) && defined(HAVE_X11_XPM_H)
 +#define HAVE_XPM
 +#endif 
 +
- /* This can't be changed in the current palette-only version of gd. */
+ /* The maximum number of palette entries in palette-based images.
+ 	In the wonderful new world of gd 2.0, you can of course have
+ 	many more colors when using truecolor mode. */
+@@ -235,7 +247,6 @@
+ void gdImageRectangle(gdImagePtr im, int x1, int y1, int x2, int y2, int color);
+ /* Solid bar. Upper left corner first, lower right corner second. */
+ void gdImageFilledRectangle(gdImagePtr im, int x1, int y1, int x2, int y2, int color);
+-int gdImageBoundsSafe(gdImagePtr im, int x, int y);
+ void gdImageChar(gdImagePtr im, gdFontPtr f, int x, int y, int c, int color);
+ void gdImageCharUp(gdImagePtr im, gdFontPtr f, int x, int y, int c, int color);
+ void gdImageString(gdImagePtr im, gdFontPtr f, int x, int y, unsigned char *s, int color);
+@@ -283,17 +294,17 @@
+ /* A simpler way to obtain an opaque truecolor value for drawing on a
+ 	truecolor image. Not for use with palette images! */
  
- #define gdMaxColors 256
-@@ -122,6 +134,7 @@
- gdImagePtr gdImageCreateFromGd2PartCtx(gdIOCtxPtr in, int srcx, int srcy, int w, int h);
+-#define gdTrueColor(r, g, b) (((r) << 16) + \
+-	((g) << 8) + \
++#define gdTrueColor(r, g, b) (((r) << 16) | \
++	((g) << 8) | \
+ 	(b))
  
- gdImagePtr gdImageCreateFromXbm(FILE *fd);
-+gdImagePtr gdImageCreateFromXpm(char* filename);
+ /* Returns a truecolor value with an alpha channel component.
+ 	gdAlphaMax (127, **NOT 255**) is transparent, 0 is completely
+ 	opaque. */
  
- void gdImageDestroy(gdImagePtr im);
- void gdImageSetPixel(gdImagePtr im, int x, int y, int color);
-diff -Naur gd-1.8.4/gd_jpeg.c gd-1.8.4.patched/gd_jpeg.c
---- gd-1.8.4/gd_jpeg.c	Tue Feb 13 12:05:32 2001
-+++ gd-1.8.4.patched/gd_jpeg.c	Sun Jul 21 23:25:42 2002
-@@ -760,6 +760,30 @@
-   dest->pub.term_destination = term_destination;
-   dest->outfile = outfile;
+-#define gdTrueColorAlpha(r, g, b, a) (((a) << 24) + \
+-	((r) << 16) + \
+-	((g) << 8) + \
++#define gdTrueColorAlpha(r, g, b, a) (((a) << 24) | \
++	((r) << 16) | \
++	((g) << 8) | \
+ 	(b))
+ 
+ void gdImageColorDeallocate(gdImagePtr im, int color);
+@@ -456,6 +467,10 @@
+ 	of image is also your responsibility. */
+ #define gdImagePalettePixel(im, x, y) (im)->pixels[(y)][(x)]
+ #define gdImageTrueColorPixel(im, x, y) (im)->tpixels[(y)][(x)]
++#define gdImageBoundsSafe(im, x, y) \
++		(((y) >= 0) && ((y) < (im)->sy) && \
++		 ((x) >= 0) && ((x) < (im)->sx))
++
+ 
+ /* I/O Support routines. */
+ 
+diff -Naur gd-2.0.1/gdcache.c gd-2.0.1.patched/gdcache.c
+--- gd-2.0.1/gdcache.c	Tue Apr  3 16:44:42 2001
++++ gd-2.0.1.patched/gdcache.c	Tue Jul 30 11:35:06 2002
+@@ -4,7 +4,7 @@
+ #ifdef HAVE_LIBTTF
+ #define NEED_CACHE 1
+ #else
+-#ifdef HAVE_LIBFREETYPE
++#ifdef HAVE_FREETYPE
+ #define NEED_CACHE 1
+ #endif
+ #endif
+diff -Naur gd-2.0.1/gdft.c gd-2.0.1.patched/gdft.c
+--- gd-2.0.1/gdft.c	Tue Apr  3 16:44:42 2001
++++ gd-2.0.1.patched/gdft.c	Tue Jul 30 11:35:20 2002
+@@ -29,7 +29,7 @@
+ 		   angle, x, y, string);
  }
--
-+#else  /* HAVE_JPEG */
-+void gdImageJpeg(gdImagePtr im, FILE *outFile, int quality)
-+{
-+  fprintf(stderr,"libgd was not built with jpeg support\n");
-+}
-+void* gdImageJpegPtr(gdImagePtr im, int *size, int quality)
-+{
-+  fprintf(stderr,"libgd was not built with jpeg support\n");
-+  return NULL;
-+}
-+void gdImageJpegCtx(gdImagePtr im, gdIOCtx *outfile, int quality)
-+{
-+  fprintf(stderr,"libgd was not built with jpeg support\n");
-+}
-+gdImagePtr gdImageCreateFromJpeg(FILE *inFile)
-+{
-+  fprintf(stderr,"libgd was not built with jpeg support\n");
-+  return NULL;
-+}
-+gdImagePtr
-+gdImageCreateFromJpegCtx(gdIOCtx *infile)
-+{
-+  fprintf(stderr,"libgd was not built with jpeg support\n");
-+  return NULL;
-+}
- #endif /* HAVE_JPEG */
  
-diff -Naur gd-1.8.4/gdtestft.c gd-1.8.4.patched/gdtestft.c
---- gd-1.8.4/gdtestft.c	Tue Feb  6 11:44:02 2001
-+++ gd-1.8.4.patched/gdtestft.c	Wed Dec 31 16:00:00 1969
-@@ -1,94 +0,0 @@
--#include "gd.h"
--#include <string.h>
--
--#define PI 3.141592
--#define DEG2RAD(x) ((x)*PI/180.)
--
--#define MAX(x,y) ((x) > (y) ? (x) : (y))
--#define MIN(x,y) ((x) < (y) ? (x) : (y))
--
--#define MAX4(x,y,z,w) \
--	((MAX((x),(y))) > (MAX((z),(w))) ? (MAX((x),(y))) : (MAX((z),(w))))
--#define MIN4(x,y,z,w) \
--	((MIN((x),(y))) < (MIN((z),(w))) ? (MIN((x),(y))) : (MIN((z),(w))))
--
--#define MAXX(x) MAX4(x[0],x[2],x[4],x[6])
--#define MINX(x) MIN4(x[0],x[2],x[4],x[6])
--#define MAXY(x) MAX4(x[1],x[3],x[5],x[7])
--#define MINY(x) MIN4(x[1],x[3],x[5],x[7])
--
--int main(int argc, char *argv[])
--{
 -#ifndef HAVE_LIBFREETYPE
--	fprintf(stderr, "gd was not compiled with HAVE_LIBFREETYPE defined.\n");
--	fprintf(stderr, "Install the FreeType library, including the\n");
--	fprintf(stderr, "header files. Then edit the gd Makefile, type\n");
--	fprintf(stderr, "make clean, and type make again.\n");
--	return 1;
--#else
--	gdImagePtr im;
--	int black;
--	int white;
--	int brect[8];
--	int x, y;
--	char *err;
--	FILE *out;
--#ifdef JISX0208
--	char *s = "Hello. ‚±‚ñ‚É‚¿‚Í Qyjpqg,"; /* String to draw. */
--#else
--	char *s = "Hello. Qyjpqg,"; /* String to draw. */
--#endif
--
--	double sz = 40.;
--
--#if 0
--	double angle = 0.;
--#else
--	double angle = DEG2RAD(-90);
--#endif
--
--#ifdef JISX0208
--	char *f = "/usr/openwin/lib/locale/ja/X11/fonts/TT/HG-MinchoL.ttf"; /* UNICODE */
--	/* char *f = "/usr/local/lib/fonts/truetype/DynaFont/dfpop1.ttf"; */ /* SJIS */
--#else
--	char *f = "times"; /* TrueType font */
--#endif
--	
--	/* obtain brect so that we can size the image */
--	err = gdImageStringFT((gdImagePtr)NULL,&brect[0],0,f,sz,angle,0,0,s);
--	if (err) {fprintf(stderr,err); return 1;}
--
--	/* create an image just big enough for the string */
--	x = MAXX(brect) - MINX(brect) + 6;
--	y = MAXY(brect) - MINY(brect) + 6;
--#if 0
--	im = gdImageCreate(500,500);
--#else
--	im = gdImageCreate(x,y);
--#endif
--
--	/* Background color (first allocated) */
--	white = gdImageColorResolve(im, 255, 255, 255);
--	black = gdImageColorResolve(im, 0, 0, 0);
--
--	/* render the string, offset origin to center string*/
--	x = 0 - MINX(brect) + 3;
--	y = 0 - MINY(brect) + 3;
--
--	err = gdImageStringFT(im,NULL,black,f,sz,angle,x,y,s);
--	if (err) {fprintf(stderr,err); return 1;}
--	/* TBB: Write img to test/fttest.png */
--	out = fopen("test/fttest.png", "wb");
--	if (!out) {
--		fprintf(stderr, "Can't create test/fttest.png\n");
--		exit(1);
--	}
--	gdImagePng(im, out);
--	fclose(out);
--	fprintf(stderr, "Test image written to test/fttest.png\n");
--	/* Destroy it */
--	gdImageDestroy(im);
--
--	return 0;
--#endif /* HAVE_FREETYPE */
--}	
-diff -Naur gd-1.8.4/gdtojpeg.c gd-1.8.4.patched/gdtojpeg.c
---- gd-1.8.4/gdtojpeg.c	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/gdtojpeg.c	Sun Jul 21 23:25:42 2002
-@@ -0,0 +1,40 @@
-+#include <stdio.h>
-+#include "gd.h"
-+
-+/* A short program which converts a .gd file into a .jpeg file, for
-+	your convenience in creating images on the fly from a
-+	basis image that must be loaded quickly. The .gd format
-+	is not intended to be a general-purpose format. */
-+
-+int main(int argc, char **argv)
-+{
-+	gdImagePtr im;
-+	FILE *in, *out;
-+	if (argc != 3) {
-+		fprintf(stderr, "Usage: gdtopng filename.gd filename.jpeg\n");
-+		exit(1);
-+	}
-+	in = fopen(argv[1], "rb");
-+	if (!in) {
-+		fprintf(stderr, "Input file does not exist!\n");
-+		exit(1);
-+	}
-+	im = gdImageCreateFromGd(in);
-+	fclose(in);
-+	if (!im) {
-+		fprintf(stderr, "Input is not in PNG format!\n");
-+		exit(1);
-+	}
-+	out = fopen(argv[2], "wb");
-+	if (!out) {
-+		fprintf(stderr, "Output file cannot be written to!\n");
-+		gdImageDestroy(im);
-+		exit(1);	
-+	}
-+	gdImageJpeg(im, out, 50);
-+	fclose(out);
-+	gdImageDestroy(im);
-+
-+	return 0;
-+}
-+
-diff -Naur gd-1.8.4/gdttf.c gd-1.8.4.patched/gdttf.c
---- gd-1.8.4/gdttf.c	Tue Feb  6 11:44:02 2001
-+++ gd-1.8.4.patched/gdttf.c	Sun Jul 21 23:25:42 2002
-@@ -11,7 +11,7 @@
- #include <string.h>
- #include <math.h>
- #include "gd.h"
--#ifndef HAVE_LIBTTF
-+#ifndef HAVE_TTF
- char * gdImageStringTTF(gdImage *im, int *brect, int fg, char *fontname,
-                 double ptsize, double angle, int x, int y, char *string)
++#ifndef HAVE_FREETYPE
+ char *
+ gdImageStringFT (gdImage * im, int *brect, int fg, char *fontlist,
+ 		 double ptsize, double angle, int x, int y, char *string)
+@@ -933,4 +933,4 @@
+     : (v1 > 0 ? ((v1 + 63) >> 6) : v1 >> 6);
+ }
+ 
+-#endif /* HAVE_LIBFREETYPE */
++#endif /* HAVE_FREETYPE */
+diff -Naur gd-2.0.1/gdtestft.c gd-2.0.1.patched/gdtestft.c
+--- gd-2.0.1/gdtestft.c	Tue Apr  3 16:44:42 2001
++++ gd-2.0.1.patched/gdtestft.c	Tue Jul 30 11:35:38 2002
+@@ -21,8 +21,8 @@
+ int
+ main (int argc, char *argv[])
  {
-diff -Naur gd-1.8.4/gdxpm.c gd-1.8.4.patched/gdxpm.c
---- gd-1.8.4/gdxpm.c	Tue Feb  6 11:44:02 2001
-+++ gd-1.8.4.patched/gdxpm.c	Sun Jul 21 23:25:42 2002
-@@ -18,7 +18,7 @@
+-#ifndef HAVE_LIBFREETYPE
+-  fprintf (stderr, "gd was not compiled with HAVE_LIBFREETYPE defined.\n");
++#ifndef HAVE_FREETYPE
++  fprintf (stderr, "gd was not compiled with HAVE_FREETYPE defined.\n");
+   fprintf (stderr, "Install the FreeType library, including the\n");
+   fprintf (stderr, "header files. Then edit the gd Makefile, type\n");
+   fprintf (stderr, "make clean, and type make again.\n");
+diff -Naur gd-2.0.1/gdxpm.c gd-2.0.1.patched/gdxpm.c
+--- gd-2.0.1/gdxpm.c	Tue Apr  3 16:44:42 2001
++++ gd-2.0.1.patched/gdxpm.c	Tue Jul 30 05:58:34 2002
+@@ -20,7 +20,7 @@
  
  #else
  
 -#include "xpm.h"
-+#include <X11/xpm.h>
++#include "X11/xpm.h"
  
- gdImagePtr gdImageCreateFromXpm(char *filename)
- 	{
-diff -Naur gd-1.8.4/install-item gd-1.8.4.patched/install-item
---- gd-1.8.4/install-item	Tue Feb  6 11:44:02 2001
-+++ gd-1.8.4.patched/install-item	Wed Dec 31 16:00:00 1969
+ gdImagePtr
+ gdImageCreateFromXpm (char *filename)
+diff -Naur gd-2.0.1/install-item gd-2.0.1.patched/install-item
+--- gd-2.0.1/install-item	Tue Apr  3 16:44:42 2001
++++ gd-2.0.1.patched/install-item	Wed Dec 31 19:00:00 1969
 @@ -1,5 +0,0 @@
 -#!/bin/sh
 -
 -cp $2 $3
 -chmod $1 $3
 -
-diff -Naur gd-1.8.4/install-sh gd-1.8.4.patched/install-sh
---- gd-1.8.4/install-sh	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/install-sh	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/install-sh gd-2.0.1.patched/install-sh
+--- gd-2.0.1/install-sh	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/install-sh	Tue Jul 30 05:29:46 2002
 @@ -0,0 +1,250 @@
 +#!/bin/sh
 +#
@@ -18180,9 +16998,5391 @@ diff -Naur gd-1.8.4/install-sh gd-1.8.4.patched/install-sh
 +
 +
 +exit 0
-diff -Naur gd-1.8.4/libtool gd-1.8.4.patched/libtool
---- gd-1.8.4/libtool	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/libtool	Mon Jul 22 00:04:36 2002
+diff -Naur gd-2.0.1/libgd.so.2.0.0 gd-2.0.1.patched/libgd.so.2.0.0
+--- gd-2.0.1/libgd.so.2.0.0	Tue Apr  3 16:44:42 2001
++++ gd-2.0.1.patched/libgd.so.2.0.0	Wed Dec 31 19:00:00 1969
+@@ -1,5377 +0,0 @@
+-ELF              pC  4   ÿ     4    (                  _X _X          `X `h `h ä @ì          (< (L (L P   P             å   ;       ù                  ô   B               p       ı   U   ”           
+-   Ã       Ü          4       5       T       [   ö   K   "   a   \   ¬   Ç              ·   ¨               ©   Ô   `   Y       Â   ğ   @                                        •       ~   ®                        I           ^   L       +            ‹   o   v   î   š       V   %   	   '   q           R   2   Q       ï   )   3       §   £   —   ä           „       Å               ½               ­   ¼          y              ¹   ,       N       (               Ï          Ë              ±   Ê   $   ş       >      ª   w                         á   ›   |   k   ¯       Á                     7   c       Ù   .      ˆ   Ÿ   ‚           ‡       !   Z   ³       º   ë       µ   i      9       <   Ñ       Ú   *                            É   €                   =   ó       &     Ö                  ×   ’           /       8       r   Ì   õ           Ò   Ğ   â   ‘     “        »   j   Õ   È   ¤       F   ¦              0   ø   X   ¢                             Í                               C                          Ó      ¶           W   Š       ß   ¸   ò       ì           ?   ƒ       é               D       –   #           6   °   n   P                       ™           ‰               Ä                   ê   ]   O           …       f               m           ñ   z       J   _           ¿           b       Î         ´   A           }       t               M                   {   à                   E   g       ü           u                      x           À                  Æ   Ø       S   ç              ²               İ                                           1               Œ   æ           í       û   ˜                                              œ       ú               è   †                                 -   s       e               h               Ş          ã       ¾   ¥   ÷           :       G           Û   H                                                   «                   ¡   d                               l   ÿ                                    (L      ñÿ
+-   L      ñÿ    pC  ‰    .   @#      7              >    #      G   üD  9    ^   8F  ü     m   |#      t   4G  &     ˆ   \G  "    ¡              §   N  F    ¾   XO  &     Ğ   €O  º     ç   <P  &     ü   dP  î       TQ  &     *  |Q      C  S  '     Z  DS  W     r  œS       …  ä\  …     •  œU  ¤    ¥  4g  2     ·  Ô˜  Œ    Ä  l]  ”     İ   ^  ¥    é             ï             ó             ÷  ¨b  Š    	  hg  á       Lh  á     #  0i  ^     1             8  i  ^     H  ği  f     X  Xj  f     j  ğj  2     p             u  $k  /     €  Tk      ‘  Ø@     	 ˜  xF     	 Ÿ  $  D    ´  Øm  .     É  n      İ  (p  ]    é  ˆs  &    ú  °t  R       u  î      ôv  µ    .  ¬z      C  ¼~  F    V  ƒ  Ö    k  Üˆ  „    €             †                          ’             š             ¡             ­             µ  `Œ  Â     Ä  \#      Î  h“       Û             á  €“       ñ             ø   ”         ”        (•      +  <–       <  P–  „    K  `š       `  tš       q  ˆš  î    ~  l¶  9     ˆ  ¨¶  e     ’  ·  Ë     ›  8  E     ¯  H¾  v     ¼  €  ¶     Ó  L¶       Ú  8  æ     ç  €µ  )     î  ¬µ  6     ø  äµ  h       0   <       l   Y       €¸  ¢     (  $¹  Š     8             ?  \¸  !     F  4¸  %     M  ¸  )     V             a  ,¤  E     v  t¤  <      °¨  U     §  ©  Ğ    Ã             É             Ğ             Ù  Ü·  )     â  |´  D     í  À´  a     û  $µ  ;       `µ                                              #             )             /  œT      <  ,À  >     M  ´À  ~     X  ÔĞ      f  lÀ  E       lÃ  Ï    ™                           ²             ·             ¿             Î  $Ã  E     ã             ñ                                       7             @             R             b             p             }                                       «             ¹             Æ             Û             ì             û               <Ğ  <       xĞ  Y     !             9             R             c             p             }             Š             ™             ©             ·             Ä  üİ  @     Ğ  œŞ      ß  <Ş  ]     î             ı             	             #	             4	             L	  ´ë  b     ^	             t	             ˆ	             	             —	             ©	             ¾	             Ó	  ´ã  E     é	  üã  ;    
+-             
+-  Øé  ²     )
+-             :
+-             P
+-             d
+-             {
+-             “
+-  8è       Ÿ
+-  Tè      ±
+-  té  Z     Á
+-  Ğé       Í
+-             ä
+-  Œê  J     õ
+-  Øê  q     	  Lë  f       ì       /  `h  (   	 >  `     	 L  t     	 W  x  N   	 g  xŞ     	 v  ŒŞ     	 ‚  Ş  [   	 —  9     	 «  ¤9     	 ¼  ¨9  €   	 Ì  ¨¹     	 Û  ¼¹     	 ç  À¹  ‡   	 ÷  À@     	   Ô@     	   8ì  5     #  ìö  .    3             :             A  ô! *    M             T             [             g             t  d J     ‚  	 !                              ¯  l Â     ¹             Ë             Ú             è             õ                                       -             ;   F     I  ° Y     W             `             h             o  0 ]     v   ®     }  @ A     ˆ  „ ²     “  8     œ  H ?    ¦  ˆ       ¯  ¨ ş     ¹             Å  ¨      Ï  À      Ø  Ü ë     ç  È B       ! E       T! @     "  ”! ]     1             8             ?             G             L  à; X    \  8= +    l  D ÿ    †             Œ             “  K      ñÿš  xL      ñÿ¡  xL      ñÿ­   T      ñÿ _DYNAMIC _GLOBAL_OFFSET_TABLE_ gdImageCreate gdMalloc memset gdCalloc gdImageCreateTrueColor gdImageDestroy gdFree gdImageColorClosest gdImageColorClosestAlpha floor gdImageColorClosestHWB gdImageColorExact gdImageColorExactAlpha gdImageColorAllocate gdImageColorAllocateAlpha gdImageColorResolve gdImageColorResolveAlpha gdImageColorDeallocate gdImageColorTransparent gdImagePaletteCopy gdImageGetPixel gdImageSetPixel gdImageBoundsSafe gdAlphaBlend gdImageGetTrueColorPixel gdImageLine atan2 cos sin gdImageDashedLine gdImageChar gdImageCharUp gdImageString strlen gdImageStringUp gdImageString16 gdImageStringUp16 lsqrt sqrt gdImageArc gdImageFilledArc gdCosT gdSinT gdImageFilledPolygon gdImageFilledEllipse gdImageFillToBorder gdImageFill gdImageRectangle gdImageFilledRectangle gdImageCopy gdImageCopyMerge gdImageCopyMergeGray gdImageCopyResized gdImageCopyResampled gdImageCreateFromXbm fgets strchr atoi __uflow sscanf _IO_stderr_ fprintf gdImagePolygon gdRealloc gdCompareInt qsort gdImageSetStyle memcpy gdImageSetThickness gdImageSetBrush gdImageSetTile gdImageInterlace gdImageCompare gdImageAlphaBlending gdImageSaveAlpha _gdGetColors gdGetByte gdGetWord gdGetInt gdImageCreateFromGd gdNewFileCtx gdImageCreateFromGdCtx gdGetC _gdPutColors gdPutC gdPutWord gdPutInt gdImageGd gdImageGdPtr gdNewDynamicCtx gdDPExtractData strcmp gdTell gdSeek gdGetBuf uncompress gdImageCreateFromGd2 gdImageCreateFromGd2Ctx gdImageCreateFromGd2Part gdImageCreateFromGd2PartCtx errno printf compress gdPutBuf gdImageGd2 gdImageGd2Ptr Putword Putchar fwrite fread __overflow fseek ftell fileIOCtxPtr gdImagePngToSink gdNewSSCtx gdImagePngCtx gdImageCreateFromPngSource gdImageCreateFromPngCtx fflush png_get_error_ptr exit longjmp png_get_io_ptr gdImageCreateFromPng png_check_sig png_create_read_struct png_create_info_struct png_destroy_read_struct __setjmp png_set_sig_bytes png_set_read_fn png_read_info png_get_IHDR png_set_strip_16 png_set_packing png_get_PLTE png_get_valid png_get_tRNS png_read_update_info png_get_rowbytes png_read_image png_read_end gdImagePng gdImagePngPtr png_create_write_struct png_destroy_write_struct png_set_write_fn png_set_IHDR png_set_tRNS png_set_PLTE png_write_info png_write_image png_write_end jpeg_destroy gdImageJpeg gdImageJpegCtx gdImageJpegPtr jpeg_std_error jpeg_CreateCompress jpeg_set_defaults jpeg_set_quality jpeg_simple_progression jpeg_gdIOCtx_dest jpeg_destroy_compress jpeg_start_compress sprintf strcat jpeg_write_marker jpeg_write_scanlines jpeg_finish_compress gdImageCreateFromJpeg gdImageCreateFromJpegCtx jpeg_CreateDecompress jpeg_gdIOCtx_src jpeg_read_header jpeg_start_decompress jpeg_read_scanlines jpeg_finish_decompress jpeg_destroy_decompress init_source fill_input_buffer skip_input_data term_source jpeg_resync_to_restart init_destination empty_output_buffer term_destination gdImageCreateFromXpm gdFontTinyData gdFontTinyRep gdFontTiny gdFontSmallData gdFontSmallRep gdFontSmall gdFontMediumBoldData gdFontMediumBoldRep gdFontMediumBold gdFontLargeData gdFontLargeRep gdFontLarge gdFontGiantData gdFontGiantRep gdFontGiant gdImageStringTTF gdImageStringFT strdup getenv gd_strtok_r access strtok FT_New_Face FT_Done_Face gdCacheCreate gdCacheGet FT_Init_FreeType FT_Set_Char_Size any2eucjp FT_Get_Char_Index FT_Get_Kerning FT_Load_Glyph FT_Get_Glyph FT_Glyph_Get_CBox FT_Glyph_Transform FT_Glyph_To_Bitmap FT_Done_Glyph gdroundupdown gdCacheDelete vfprintf strncmp strcpy getmbi putmbi skipheader createwbmp readwbmp writewbmp freewbmp printwbmp _IO_stdout_ gd_putout gd_getin gdImageWBMPCtx gdImageCreateFromWBMPCtx gdImageCreateFromWBMP gdImageWBMP gdImageWBMPPtr calloc malloc realloc free pass2_no_dither pass2_fs_dither gdImageTrueColorToPalette fopen fclose _etext _edata __bss_start _end   }C    “C    ¨C    D    	E    E    4E    ŸE    rF  	  ‡F  	  ÊF  	  ãF  	  G  	  G  	  +G  	  _J     mJ     {J     ‰J     —J     ¥J     K     !K     uK     ˆK     éK     :L    ªL     °L     ´L     ¸L     ¼L     ÀL     ÄL     ÈL     \^    j^    `    `    c    c    ³d    Ád    ;i  $  ›i  $   k  )  Ôk  ,  l  -  ¥w     ¹w     “x     §x     Šy     y     U{     j{     {     ”{     é{     s|     È|     V}     ¤}     Ô~    ï~    G    ÷    ä‚  	  ó‚  	  `„    t„    •„    Î„    ì„    …    h…    |…    …    Ö…    ô…    †    ›‡     ¸‡     Õ‡     ò‡     ÷ˆ  :  ‰  ;  B‰  ;  b‰  <  ‰  :  ´‰  ;  Ú‰  ;  ú‰  <  %Š  :  ×Š  =  ‹  =  d‹  =  ¤‹     °‹  >  1Œ     6Œ  ?  ;Œ  @  c    6  B  i’  C  ’  D  š“  	  ¯“    İ“  F  ¢š  O  Ìš  P  îš  Q  ›  O  2›  P  ’›  O  Á›  O  ñ›  O  #œ  O  œ  P  »œ  P  Õœ  P  ñœ    )    D  S  Ù  U  )    N  W  m  X  ƒ  Y  ½  W  Ø  W  ó  W  Ÿ  W  -Ÿ  X  @Ÿ  X  SŸ  X  éŸ  Y     W  <   S  {   \      ]  å   U  ¡     ¡  ^  9¡  P  m¡  P  ‰¡  P  ¥¡  P  á¡  P  ¢  P  1¢  P  t¢    §¢  Q  Ò¢  Q  M£    z£  N  ™£    ·£  _  Î£  `  å£  a  	¤  b  8¤  S  n¥    ¥    ×¦  Q  %§  O  M¨  	  Y¨  	  e¨  	  y¨    …¨  	  ‘¨  	  ¨  	  ¼¨  S  i©    Ÿ©  N  Mª    ^ª    «  _  ¬  `  ¬  g  "¬     '¬  h  “¬     ˜¬  h  ò¬  Q  ­  U  q®  	  }®  	  ‰®  	   ®    ¬®  	  ¸®  	  Ä®  	  ø®     ¯  W  ¯  X  *¯  X  =¯  X  M¯  X  ]¯  X  m¯  X  }¯  X  x°     €°     «°    ¼°    Ë°  _  ô°  `  ±    ±  V  É²  Y  ô²  W  )³  i  7³     <³  h  M³  _  ³  j  œ³  g  ¢³     §³  h  Ï³  _  â³  `  ´  Y  4´  Y  I´  `  U´  	  a´  	  m´  	  ˆ´  S  Ï´  \  ü´  ]  ‰¸    À¸  	  Ú¸     ä¸     î¸     ø¸     ¹     ¹     ¹     ƒ¹  	  Ê¹  	  à¹  	  	º  	  Áº    Û»  F  Z¼    ?½  F  ‘½  B  Á½    ö½  F  ¾  	  Q¾    v¾     €¾     Š¾     ”¾     ¾     ¨¾     ²¾     È¾  	  ò¾  o  "¿  p  g¿  q  ¬¿  =  ê¿  r  À  s  :À  v  OÀ  w  zÀ  v  ‹À  y  ½À    ëÀ     õÀ     ÿÀ     	Á     'Á     <Á  	  cÂ     hÂ  ?  mÂ  @  uÂ  ?  zÂ  z  †Â  {  —Â     œÂ  ?  ¡Â  @  ©Â  ?  ®Â  z  ¸Â  |  ÇÂ  }  ÜÂ  ~  ïÂ  a   Ã  ~  Ã  j  0Ã  S  ¤Ã    ¶Ã  a  ÄÃ  €  ÛÃ     àÃ     åÃ     êÃ    ıÃ     Ä  ?  Ä  @  Ä  ‚  0Ä     5Ä  ?  :Ä  @  JÄ  ƒ  YÄ     ^Ä  „  lÄ     qÄ  ?  vÄ  @  ˆÄ  ƒ  ŸÄ  …  §Ä     ´Ä  †  ÄÄ  ‡  ìÄ  ˆ  Å    %Å    8Å     =Å  ?  BÅ  @  TÅ  ƒ  `Å  	  lÅ  	  ‡Å  ‰  ›Å  Š  ºÅ     ÀÅ     ÄÅ     ÈÅ     ÌÅ     ĞÅ     ÔÅ     ØÅ     íÅ  ‹  ÿÅ  Œ  *Æ    ªÆ    ½Æ     ÂÆ  ?  ÇÆ  @  ÙÆ  ƒ  ƒÈ  Œ  ¡È    ßÈ  Œ  É    }É    É    ¢É    µÉ     ºÉ  ?  ¿É  @  ÑÉ  ƒ  îÉ    Ê     Ê  ?  Ê  @  Ê  ƒ  )Ê  	  yÊ    ‡Ê  ‘  æË  ƒ  Ğ  	  Ğ  	  $Ğ  	  HĞ  S  ‡Ğ  \  ¬Ğ  ]  "Ñ     'Ñ     ,Ñ     1Ñ  ”  JÑ     OÑ  ?  TÑ  @  hÑ  ‚  Ñ     †Ñ  ?  ‹Ñ  @  œÑ  •  ©Ñ     ®Ñ  „  ¼Ñ     ÁÑ  ?  ÆÑ  @  ÜÑ  •  éÑ     îÑ     şÑ  –  qÓ  —  ŸÓ  —  ÍÓ  —  ]Ô  ˜  ûÕ  ˜  ª×  ™  À×  š  Ï×  Š  Ø    ,Ø     1Ø  ?  6Ø  @  jØ    Ø     ”Ø  ?  ™Ø  @  ËØ  	  ïÚ  ›  Û  œ  7Û  	  LÛ  	  tÛ    ‹Û     Û  ?  •Û  @  µÛ    ÚÛ     ßÛ  ?  äÛ  @  Ü  	  ŸÜ  ›  µÜ  œ  çÜ  	  üÜ  	  İ  ›  ,İ  œ  Bİ  •  \İ     aİ  ?  fİ  @  İ  ?  „İ  z  ™İ    ­İ  }  µİ     ºİ  ?  ¿İ  @  Éİ     Îİ  ?  Óİ  @  Ûİ  ?  àİ  z  êİ  |  Ş  S  KŞ  \  tŞ  ]  ÀŞ    ÖŞ    åŞ  ¡  ß  „  'ß  	  <ß     Oß  ¢  Šß  £  ¥ß  ¤  Àß  ¥  ëß    à     à  ?  à  @  à  §  >à  ¨  Hà     Nà     Zà  ©  là     ~à  $  Œà  ©  ™à     «à  $  ¹à  ª  Èà  $  æà  «  ıá  ¬  â     "â  ?  'â  @  =ã  ¬  ]ã     bã  ?  gã  @  „ã  ­  “ã  §  ¢ã  	  Àã  S  +ä    Aä    Pä  ¡  sä  „  ’ä  	  «ä    Ää     ×ä  °  ûä  ²  å     "å  ?  'å  @  Gå     Lå  ?  Qå  @  qå     vå  ?  {å  @  ‘å    «å     °å  ?  µå  @  Öå  ³  åå     êå  ?  ïå  @  æ     æ  ?  æ  @  0æ    Hæ     Mæ  ?  Ræ  @  æ  ´  ½æ     Âæ  ?  Çæ  @  œç  µ  «ç     °ç  ?  µç  @  Äç  ¶  Óç  	  ìç  ¶  è  	  è    {è    «è  a  =ê  ·  Gê  ¸  Qê  ¹  [ê  »  eê  º  üê  j  ƒë  j  ğë  ¼  úë  ½  ì  ¾  ì     !ì  ?  &ì  @  [î  ^  ™î    ªî  Ñ  Åî     Êî  Ò  ßî     èî  Ñ  ûî  Ñ  ï     ï  Ó  1ï  $  ?ï  $  Tï  B  kï     tï  ©  ‚ï  Ô  ™ï     ¢ï  Õ  Áï     Êï  ©  Øï  Ô  íï     ôï  Õ  ğ     ğ  Ó  1ğ  	  =ğ  	  Oğ     sğ  Ö  Šğ     ğ  	  ßñ     ò  ×  ò  	  &ò  	  ™ò    ô    8ô  	  Mô     Uô     Zô     _ô     fô  Ø  pô     õ     Šö     ö  Ù  şö    ÷    ˆ÷     ÷     •÷  Ú  ¬÷     ¹÷     ¾÷     Ã÷     Ê÷  Ø  ß÷     ş÷     ø     'ø  Ù  ?ø     ø     Æø  Û  İø     êø     ù     Öù    ú  Ü  Áú     Éú     û     û     €û     Óû     Ûû     ü     ü     õş  İ  \ÿ  Ş  Šÿ  ß  §ÿ     Ïÿ  à    á   â  I ã  f    Î ä  è    ø           	  m   í 	  ı 	  Ö	   E
+-    J
+-    O
+- ?  T
+- @  d
+- ?  i
+- ç  q
+-    v
+- ?  {
+- @  ¨
+-    ±
+-    ¹
+-    Â
+-    Ì
+-    Õ
+-    ?    T    }        Ê    *    H    •    ¸    ä    ú    2    P    {    œ    ö        4    F    W    ]    i    n Ò  |     Ò  ‘    – Ò  ¤    © Ò  ¹    ¾ Ò  Ì    Ñ Ò  ä    í ^  û     ^       ^  .    ;    D è  S    ]    f    o    B    á    ê ^  ø     ^       ^  ù        ' é  k    t    x    |    €    „    ˆ    Œ        •    ¢    «    ½    Ê    Ó    å    ò    û            +    0 é  E    V    [ é  i    v        ‘    ¢    § é  ¹    Ê    Ï é  á    ò    ÷ é  $    D    X    f    s    ÿ        +    4 é  M    V é  w $  ˆ    ¯    É    Û    à $  ï     é       é     ¼   Ö 	  C   € 	  Ú 	   	  @   Z 	  “ 	  Ÿ 	   ò   ò   ò   q  % ò  . ò  5 ò  ; ò  D ò  I q  U ò  ^ ò  m ò  s ò  | ò   q   ò  – ò  µ W  È U  ó í       ?   @  U   ‘ ó  š ï  ¨    ­ ?  ² @  ¾ ğ  Ş ô  ã î        ğ  @    W    À    İ    ù  ğ  ! S  `! S  £! \  Ì! ]  "   ,# ú  H# û  h# ü  „# ı  3   ö3 	  qB   êC   BD   ~D   ÅD   âD   	E   \E   ÇE   F   ^F    cF    hF  F   XG 3  qG ’  }G  ‰G   >I 	  WI 	  ¹I 	  ×I 	  sJ 	  –J 	  ·J 	  ÏJ 	  çJ 	  ùJ 	  p À  t Á  ˆŞ Ã  ŒŞ Ä   9 Æ  ¤9 Ç  ¸¹ É  ¼¹ Ê  Ğ@ Ì  Ô@ Í  üM    U‰åƒìShH  èüÿÿÿƒÄ‰EøhH  j ‹EøPèüÿÿÿƒÄ‹E‰Â•    PèüÿÿÿƒÄ‰À‹Uø‰‹EøÇ€      ‹EøÇ€      ‹EøÇ€      ‹EøÇ€       ‹EøÇ€,      ÇEü    ‹Eü9Eë,j‹EPèüÿÿÿƒÄ‰À‹Uø‹Mü‰Ë    ‹‰
+-ÿEüëÍv ‹Eø‹U‰P‹Eø‹U‰P‹EøÇ@    ‹EøÇ€  ÿÿÿÿ‹EøÇ€0      ‹EøÇ€4     ÇEü    }üÿ   ~ëKv ‹Eø‹UüÇ„     ‹Eø‹UüÇD    ‹Eø‹UüÇ„      ‹Eø‹UüÇ„      ÿEüë¬6‹EøÇ€8      ‹EøÇ€<      ‹Eøë‹]ôÉÃv U‰åƒìShH  èüÿÿÿƒÄ‰EøhH  j ‹EøPèüÿÿÿƒÄ‹E‰Â•    PèüÿÿÿƒÄ‰À‹Uø‰‚<  ‹EøÇ€      ‹EøÇ€      ‹EøÇ€      ‹EøÇ€       ‹EøÇ€,      ÇEü    ‹Eü9Eë0j‹EPèüÿÿÿƒÄ‰À‹Uø‹Mü‰Ë    ‹’<  ‰
+-ÿEüëÉv ‹Eø‹U‰P‹Eø‹U‰P‹EøÇ€  ÿÿÿÿ‹EøÇ€0      ‹EøÇ€8     ‹EøÇ€D     ‹EøÇ€@      ‹EøÇ€4     ‹Eøëv ‹]ôÉÃv U‰åƒì‹Eƒ8 tHÇEü    ‹E‹Uü9Pë&6‹E‹Uü‰Ñ    ‹ ‹RèüÿÿÿƒÄÿEüëÏ6‹E‹RèüÿÿÿƒÄ‹Eƒ¸<   tPÇEü    ‹E‹Uü9Pë*6‹E‹Uü‰Ñ    ‹€<  ‹RèüÿÿÿƒÄÿEüëË6‹E‹<  RèüÿÿÿƒÄ‹Eƒ¸   t‹E‹  RèüÿÿÿƒÄ‹Eƒ¸,   t‹E‹,  RèüÿÿÿƒÄ‹EPèüÿÿÿƒÄÉÃU‰åj ‹EP‹EP‹EP‹EPè   ƒÄ‰Â‰ĞëÉÃ6U‰åƒì$ÇEèÿÿÿÿÇEä   ÇEà    ‹Eƒ¸8   t%‹EÁà‹UÁâĞ‹UÁâĞ‰ÂU‰Ğé×   v ÇEü    ‹E‹Uü9Péµ   ‹E‹Uüƒ¼   té–   v ‹E‹Uü‹L+M‰Mø‹E‹Uü‹Œ  +M‰Mô‹E‹Uü‹Œ  +M‰Mğ‹E‹Uü‹Œ  +M‰Mì‹Eø¯Eø‹Uô¯UôĞ‹Uğ¯UğĞ‹Uì¯Uì‰MÜƒ}ä u‹EÜ9Eàë‹EÜ‰Eà‹Eü‰EèÇEä    ÿEüé<ÿÿÿ‹Eèëv ÉÃ6U‰åƒì$‹E‰Eü‹U‰Uø‹E‰EôÙEüØ]øfßà€äE€üuÙEüØ]ôfßà€äE€üuÙEüëÙEôëv ÙEøØ]ôfßà€äE€üuÙEøë6ÙEôÙ]ğÙEüØ]øfßà€äE€üu!ÙEøØ]ôfßà€äE€üuÙEôëv ÙEøëv ÙEüØ]ôfßà€äE€üuÙEôë6ÙEüÙ]ìÙèØeìÙ]èÙEìÙEğÚéfßà€äD€ô@u7‹U‰UÜ‹EÜÇ   €¿‹U‰UÜ‹EÜ‹Uğ‰P‹E‰EÜ‹UÜ‹Eè‰B‹EéÊ   6ÙEüÙEğÚéfßà€äD€ô@u	ÙEøØeôë#ÙEøÙEğÚéfßà€äD€ô@u	ÙEôØeüëÙEüØeøÙ]äÙEüÙEğÚéfßà€äE€ü@t(ÙEøÙEğÚéfßà€äD€ô@u	ÇEÜ   ëÇEÜ   ë
+-v ÇEÜ   ‹UÜ‰Uà‹E‰EÜÛEàÙEìØeğÙEäŞñŞé‹UÜÙ‹E‰EÜ‹UÜ‹Eğ‰B‹U‰UÜ‹EÜ‹Uè‰P‹EëÉÃ6U‰åƒìDÛEİK ŞùÙ]ôÛEİK ŞùÙ]øÛEİK ŞùÙ]üÛEİK ŞùÙ]èÛEİK ŞùÙ]ìÛEİK ŞùÙ]ğEÜ‰E¼ÿu¼‹Eü‰E¼ÿu¼‹Eø‰E¼ÿu¼‹Eô‰E¼ÿu¼è©ıÿÿƒÄEĞ‰E¼ÿu¼‹Eğ‰E¼ÿu¼‹Eì‰E¼ÿu¼‹Eè‰E¼ÿu¼è}ıÿÿƒÄÙEÜÙK Úéfßà€äE€ü@tÙEĞÙK Úéfßà€äE€ü@tëÇEÌ    ëUv ÙEÜØeĞÙ}Ä‹EÄ´‰EÀÙmÀƒìÛ$ZÙmÄ‰U¼ƒ}¼ }÷]¼ÛE¼Ù]ÌÙEÌÙK ŞÙfßà€äE€üuÙK ØeÌÙ]ÌÙEÌØMÌÙEàØeÔÙEàØeÔŞÉŞÁÙEäØeØÙEäØeØŞÉŞÁÙ]ÌÙEÌë ÉÃ6U‰åƒì(‹E‰Eü‹M‰Mø‹E‰EôÙèØeôÙ]ğÙEüÙK Úéfßà€äD€ô@u6‹M‰MØ‹EØ‹Mğ‰‹E‰EØ‹MØ‹Eğ‰A‹M‰MØ‹EØ‹Mğ‰H‹EéŞ  6ÙEüƒìİ$èüÿÿÿƒÄÙ}à‹Eà´‰EÜÙmÜÛ]äÙmàÛEäÙEüŞáÙ]è‹Mäƒá‰MØƒ}Ø tÙèØeèÙ]èÙEğØeøØMèÙEøŞÁÙ]ìƒ}ä‡r  ‹Eä‰EØ‹UØ•    ‰MØ‹EØ‹°L  ÿâÌL   M  4M  hM  œM  ĞM  ÌL  ‹M‰MØ‹EØ‹Mğ‰‹E‰EØ‹MØ‹Eì‰A‹M‰MØ‹EØ‹Mø‰H‹Eé  ‹E‰EØ‹MØ‹Eì‰‹M‰MØ‹EØ‹Mğ‰H‹E‰EØ‹MØ‹Eø‰A‹EéØ   ‹M‰MØ‹EØ‹Mø‰‹E‰EØ‹MØ‹Eğ‰A‹M‰MØ‹EØ‹Mì‰H‹Eé¤   ‹E‰EØ‹MØ‹Eø‰‹M‰MØ‹EØ‹Mì‰H‹E‰EØ‹MØ‹Eğ‰A‹Eësv ‹M‰MØ‹EØ‹Mì‰‹E‰EØ‹MØ‹Eø‰A‹M‰MØ‹EØ‹Mğ‰H‹Eë?v ‹E‰EØ‹MØ‹Eğ‰‹M‰MØ‹EØ‹Mø‰H‹E‰EØ‹MØ‹Eì‰A‹Eëv ‹Eëv ÉÃ6U‰åƒìÇEøÿÿÿÿÇEô   ÇEğ    ‹E‰Eè‹Eèƒ¸8   t'‹EÁà‰Eè‹UÁâ‹EèĞ‰Eè‹UèU‰Ğéó   v ÇEü    ‹E‰Eè‹Uü‹Eè9PéË   v ‹E‰Eè‹Uü‹Eèƒ¼   té¢   ‹E‰Eèÿuè‹E‰Eèÿuè‹E‰Eèÿuè‹E‰Eè‹Uü‹Eè‹„  ‰Eèÿuè‹E‰Eè‹Uü‹Eè‹„  ‰Eèÿuè‹E‰Eè‹Uü‹Eè‹D‰EèÿuèèLûÿÿƒÄÙ]ìƒ}ô uÙEìØ]ğfßà€äE€ütë‹Eì‰Eğ‹Eü‰Eè‹Eè‰EøÇEô    ÿEüé"ÿÿÿv ‹Eøëv ÉÃ6U‰åj ‹EP‹EP‹EP‹EPè   ƒÄ‰Â‰ĞëÉÃ6U‰åƒì‹Eƒ¸8   t"‹EÁà‹UÁâĞ‹UÁâĞ‰ÂU‰Ğé„   ÇEü    ‹E‹Uü9Pëh‹E‹Uüƒ¼   tëN6‹E‹Uü‹D9Eu=‹E‹Uü‹„  9Eu+‹E‹Uü‹„  9Eu‹E‹Uü‹„8  9Eu‹Eüë6ÿEüëv ¸ÿÿÿÿëÉÃ6U‰åj ‹EP‹EP‹EP‹EPè   ƒÄ‰Â‰ĞëÉÃ6U‰åƒìÇEøÿÿÿÿ‹Eƒ¸8   t#‹EÁà‹UÁâĞ‹UÁâĞ‰ÂU‰Ğé±   ÇEü    ‹E‹Uü9Pë ‹E‹Uüƒ¼   t‹Eü‰EøëÿEüëÖv ƒ}øÿu ‹E‹P‰Uø}ø   u¸ÿÿÿÿë]‹Eÿ@‹E‹Uø‹M‰L‹E‹Uø‹M‰Œ  ‹E‹Uø‹M‰Œ  ‹E‹Uø‹M‰Œ8  ‹E‹UøÇ„      ‹Eøëv ÉÃ6U‰åj ‹EP‹EP‹EP‹EPè   ƒÄ‰Â‰ĞëÉÃ6U‰åƒì$SÇEøÿÿÿÿÇEôÿÿÿÿÇEÜø ‹Eƒ¸8   t$‹EÁà‹UÁâĞ‹UÁâĞ‰ÂU‰ĞéN  6ÇEü    ‹E‹Uü9Pé¹   ‹E‹Uüƒ¼   t‹Eü‰Eôé•   ‹E‹Uü‹\+]‰]ğ‹E‹Uü‹œ  +]‰]ì‹E‹Uü‹œ  +]‰]è‹E‹Uü‹œ8  +]‰]ä‹Eğ¯Eğ‹Uì¯UìĞ‹Uè¯UèĞ‹Uä¯Uä‰]à‹Eà9EÜ~ƒ}à u‹Eüé“   v ‹Eà‰EÜ‹Eü‰EøÿEüé7ÿÿÿƒ}ôÿu ‹E‹P‰Uô}ô   u‹Eøë_v ‹Eÿ@‹E‹Uô‹M‰L‹E‹Uô‹M‰Œ  ‹E‹Uô‹M‰Œ  ‹E‹Uô‹M‰Œ8  ‹E‹UôÇ„      ‹Eôëv ‹]ØÉÃv U‰å‹Eƒ¸8   tëv ‹E‹UÇ„     ÉÃU‰å‹Eƒ¸8   u:‹Eƒ¸  ÿt‹E‹U‹Š  Ç„ˆ8      ƒ}ÿt‹E‹UÇ„8     ‹E‹U‰  ÉÃU‰åì  S‹Eƒ¸8   téİ  ‹Eƒ¸8   téË  v ÇEü    }üÿ   ~ë6‹EüÇ„…ğûÿÿÿÿÿÿÿEüëàÇEø    ‹E‹Uø9Pé½   ÇEô    ‹E‹Uô9Pé   ‹EôP‹EøP‹EPè¯  ƒÄ‰À‰Eğ‹Eğƒ¼…ğûÿÿÿuM‹E‹Uğ‹„8  P‹E‹Uğ‹„  P‹E‹Uğ‹„  P‹E‹Uğ‹DP‹EPèÔòÿÿƒÄ‰À‹Uğ‰„•ğûÿÿ‹Eğ‹”…ğûÿÿR‹EôP‹EøP‹EPèé   ƒÄÿEôéUÿÿÿ6ÿEøé3ÿÿÿÇEü    ‹E‹Uü9Pë|‹E‹Uü‹M‹]ü‹L™‰L‹E‹Uü‹M‹]ü‹Œ™  ‰Œ  ‹E‹Uü‹M‹]ü‹Œ™  ‰Œ  ‹E‹Uü‹M‹]ü‹Œ™8  ‰Œ8  ‹E‹UüÇ„      ÿEüéxÿÿÿ‹E‹P‰Uü‹E‹Uü9Pë6‹E‹UüÇ„     ÿEüëÛ6‹E‹U‹J‰H‹ìûÿÿÉÃU‰åƒìWVS‹E‰Eøƒ}øü„ï   ƒ}øüƒ}øû„Ã  éæ  6ƒ}øı„Š  ƒ}øştéÏ  v ‹U‰Uø‹}øƒ¿,   u
+-é=  ë>6‹E‰Eô‹U‰Uø‹}ø‹(  ‰Ë    ‹Eô‹€,  ‰Eô‹Uô‹
+-‰Mü‹}øÿ‡(  ƒ}üút,‹Eü‰Eøÿuø‹U‰Uøÿuø‹}‰}øÿuø‹E‰Eøÿuøè1ÿÿÿƒÄ‹U‰Uø‹}‰}ô‹M‹Eô‹˜(  ‰Ø™÷¹$  ‰Ñ‰Eô‹}ø‰(  é–  6‹E‰Eø‹Uøƒº,   ué}  ‹}‰}ô‹E‰Eø‹Uø‹Š(  ‰Ë    ‹}ô‹¿,  ‰}ô‹Eô‹‰Mü‹Uøÿ‚(  ƒ}üút+ƒ}ü t%jı‹}‰}øÿuø‹E‰Eøÿuø‹U‰UøÿuøèvşÿÿƒÄ‹}‰}ø‹E‰Eô‹M‹Uô‹š(  ‰Ø™÷¹$  ‰Ñ‰Eô‹}ø‰(  éÛ  v ‹E‰Eøÿuø‹U‰Uøÿuø‹}‰}øÿuøèÀ  ƒÄé°  ‹E‰Eøÿuø‹U‰Uøÿuø‹}‰}øÿuøèÈ  ƒÄéˆ  ‹E‰Eøÿuø‹U‰Uøÿuø‹}‰}øÿuøèd  ƒÄ‰Eøƒ}ø „V  ‹E‰Eø‹Uøƒº8   „  ‹}‰}ø‹Eøƒ¸@   „œ   ‹U‰Uøÿuø‹}‰}ô‹E‰Eø‹Mø    ‰Uø‹}ô‹¿<  ‰}ô‹M‰Ë    ‹Eø‹Uô‹‰Eø‹}ø‹<‰}ôÿuôèq@  ƒÄ‰Eø‹M‹E‰Eô‹]ô    ‰Uô‹‰<  ‹]‰Şµ    ‹}ô‹<9‰}ô‹Uø‹Eô‰ëOv ‹}‰}ô‹E‰Eø‹Mø    ‰Uø‹}ô‹¿<  ‰}ô‹M‰Ë    ‹Eø‹Uô‹‰Eø‹}‰}ô‹Uô‹Eø‰ë@6‹}‰}ø‹E‰Eô‹Mô    ‰Uô‹}ø‹?‰}ø‹Eô‹Uø‹E‰EôŠUˆUøŠEø‹Uôˆë eè[^_ÉÃU‰åƒì,S‹Eƒ¸   ué  ‹E‹  ‹B‰ÂÁú‰ÑÁé‰ĞÁø‰Eô‹]+]ô‰]è‹E‹  ‹]èZ‰]à‹E‹  ‹B‰ÂÁú‰ÑÁé‰ĞÁø‰Eğ‹]+]ğ‰]ì‹E‹  ‹]ìZ‰]äÇEØ    ‹Eƒ¸8   ty‹Eè‰Eø‹Eø9EàëaÇEÜ    ‹Eì‰Eü‹Eü9EäëA‹EØP‹EÜP‹E‹  RèI  ƒÄ‰À‰EÔ‹EÔP‹EøP‹EüP‹EPè\ûÿÿƒÄÿEÜÿEüë¶ÿEØÿEøë•é  v ‹Eè‰Eø‹Eø9Eàéù   ÇEÜ    ‹Eì‰Eü‹Eü9EäéÒ   6‹EØP‹EÜP‹E‹  RèA  ƒÄ‰À‰EÔ‹E‹  ‹EÔ9‚  „‹   ‹E‹  ƒº8   tW‹EÔ%   ‰ÂÁúR¶EÔP‹EÔ% ÿ  ‰ÂÁúR‹EÔ%  ÿ ‰ÂÁúR‹EPèoöÿÿƒÄ‰ÀP‹EøP‹EüP‹EPèxúÿÿƒÄë%v ‹E‹UÔ‹„$  P‹EøP‹EüP‹EPèQúÿÿƒÄÿEÜÿEüé$ÿÿÿv ÿEØÿEøéûşÿÿ‹]ĞÉÃv U‰åƒìS‹Eƒ¸    uéT  ‹E‹   ‰Uğ‹M‰È‹]ğ™÷{‰Uğ‹Uğ‰Uü‹E‹˜   ‰]ğ‹M‰È‹]ğ™÷{‰Uğ‹Uğ‰Uø‹Eƒ¸8   tB‹EøP‹EüP‹E‹˜   ‰]ğÿuğèz  ƒÄ‰À‰Eô‹EôP‹EP‹EP‹EPèùÿÿƒÄéÅ   ‹E‹   ‰Uğ‹Eô‹]ğ9ƒ  „¦   ‹E‹   ‰Uğ‹]ğƒ»8   tf‹Eô%   ‰ÂÁú‰Uğÿuğ¶EôP‹Eô% ÿ  ‰ÃÁû‰]ğÿuğ‹Eô%  ÿ ‰ÂÁú‰Uğÿuğ‹EPèçôÿÿƒÄ‰ÀP‹EP‹EP‹EPèğøÿÿƒÄë+v ‹E‹]ô‰]ğ‹Uğ‹„$  P‹EP‹EP‹EPèÃøÿÿƒÄ‹]ìÉÃv U‰åS‹EP‹EP‹EPè;
+-  ƒÄ‰À…Àt^‹Eƒ¸8   t.‹U‹E‰Á    ‹’<  ‹M‰Ë    ‹‹
+-ë-ë"6‹E‹U‰Ñ    ‹ ‹U¶
+-‰Èë
+-6ë61Àë ‹]üÉÃv U‰åƒìWVS‹EP‹EP‹EPè^ÿÿÿƒÄ‰À‰Eü‹Eƒ¸8   uV‹E‹Uü‹\Áã‹E‹Uü‹´  Áæ‹E‹Uü‹¼  ‹E‹  9Uüu–   øëø‰Àëv ë
+-6‹Eüëv eğ[^_ÉÃU‰åƒìTS‹E‹4  ‰UÄ‹U+U‰Ğ…À}÷Ø‰Eü‹U+U‰Ğ…À}÷Ø‰Eø‹Eø9EüŒ3  ÛEÄİ]´ÛEüÛEøÙÉƒìİ$ƒìİ$èüÿÿÿƒÄƒìİ$èüÿÿÿƒÄİE´ŞÉÙ}À‹]À·‰]¼Ùm¼Û]ĞÙmÀƒ}Ğ uÇEĞ   ‹Uø‰ĞÂ‰Ó+]ü‰]ì‹Uø‰Ğ‰]ô‹Uø+Uü‰Ğ‰]ğ‹E9E}‹E‰Eè‹E‰EäÇEÔÿÿÿÿ‹E‰Eàë6‹E‰Eè‹E‰EäÇEÔ   ‹E‰Eà‹EĞ‰ÂÁú‰ÑÁé‰ĞÁø‹]ä)Ã‰]È‹EÈ‰EÌ‹EÈEĞ9EÌ|ë#v ‹EP‹EÌP‹EèP‹EPèWöÿÿƒÄÿEÌëÓv ‹E+E‰Â¯UÔ…Òˆ   ‹Eè9Eàëv6ÿEèƒ}ì }‹]ô]ìëv ÿEä‹]ğ]ì‹EĞ‰ÂÁú‰ÑÁé‰ĞÁø‹]ä)Ã‰]È‹EÈ‰EÌ‹EÈEĞ9EÌ|ë#v ‹EP‹EÌP‹EèP‹EPèÇõÿÿƒÄÿEÌëÓv ë‚6éƒ   v ‹Eè9Eàëv6ÿEèƒ}ì }‹]ô]ìëv ÿMä‹]ğ]ì‹EĞ‰ÂÁú‰ÑÁé‰ĞÁø‹]ä)Ã‰]È‹EÈ‰EÌ‹EÈEĞ9EÌ|ë#v ‹EP‹EÌP‹EèP‹EPè?õÿÿƒÄÿEÌëÓv ë‚6é/  v ÛEÄİ]¬ÛEüÛEøÙÉƒìİ$ƒìİ$èüÿÿÿƒÄƒìİ$èüÿÿÿƒÄİE¬ŞÉÙ}À‹]À·‰]¼Ùm¼Û]ĞÙmÀƒ}Ğ uÇEĞ   ‹Uü‰ĞÂ‰Ó+]ø‰]ì‹Uü‰Ğ‰]ô‹Uü+Uø‰Ğ‰]ğ‹E9E}‹E‰Eä‹E‰Eè‹E‰EÜÇEØÿÿÿÿëv ‹E‰Eä‹E‰Eè‹E‰EÜÇEØ   ‹EĞ‰ÂÁú‰ÑÁé‰ĞÁø‹]è)Ã‰]È‹EÈ‰EÌ‹EÈEĞ9EÌ|ë#v ‹EP‹EäP‹EÌP‹EPè#ôÿÿƒÄÿEÌëÓv ‹E+E‰Â¯UØ…Òˆ   ‹Eä9EÜëv6ÿEäƒ}ì }‹]ô]ìëv ÿEè‹]ğ]ì‹EĞ‰ÂÁú‰ÑÁé‰ĞÁø‹]è)Ã‰]È‹EÈ‰EÌ‹EÈEĞ9EÌ|ë#v ‹EP‹EäP‹EÌP‹EPè“óÿÿƒÄÿEÌëÓv ë‚6éƒ   v ‹Eä9EÜëv6ÿEäƒ}ì }‹]ô]ìëv ÿMè‹]ğ]ì‹EĞ‰ÂÁú‰ÑÁé‰ĞÁø‹]è)Ã‰]È‹EÈ‰EÌ‹EÈEĞ9EÌ|ë#v ‹EP‹EäP‹EÌP‹EPèóÿÿƒÄÿEÌëÓv ë‚6‹]¨ÉÃv U‰åƒì`ÇEĞ    ÇEÌ   ‹E‹4  ‰U¸‹U+U‰Ğ…À}÷Ø‰Eü‹U+U‰Ğ…À}÷Ø‰Eø‹Eø9EüŒ¢  ÛE¸İ]¨ÛEüÛEøÙÉƒìİ$ƒìİ$èüÿÿÿƒÄƒìİ$èüÿÿÿƒÄİE¨ŞÉÙ}´‹M´µ‰M°Ùm°Û]ÈÙm´ÇE¼   ‹Uø‰ĞÂ‰Ñ+Mü‰Mì‹Uø‰Ğ‰Mô‹Uø+Uü‰Ğ‰Mğ‹E9E}‹E‰Eè‹E‰EäÇEÔÿÿÿÿ‹E‰Eàëv ‹E‰Eè‹E‰EäÇEÔ   ‹E‰Eà‹E¼P‹EÈPEĞPEÌP‹EP‹EäP‹EèP‹EPèb  ƒÄ ‹E+E‰Â¯UÔ…Ò~W‹Eè9EàëIÿEèƒ}ì }‹MôMìëv ÿEä‹MğMì‹E¼P‹EÈPEĞPEÌP‹EP‹EäP‹EèP‹EPè  ƒÄ ë®ëV6‹Eè9EàëJ6ÿEèƒ}ì }‹MôMìëv ÿMä‹MğMì‹E¼P‹EÈPEĞPEÌP‹EP‹EäP‹EèP‹EPèª  ƒÄ ë­é›  v ÛE¸İ] ÛEüÛEøÙÉƒìİ$ƒìİ$èüÿÿÿƒÄƒìİ$èüÿÿÿƒÄİE ŞÉÙ}´‹M´µ‰M°Ùm°Û]ÈÙm´ÇE¼    ‹Uü‰ĞÂ‰Ñ+Mø‰Mì‹Uü‰Ğ‰Mô‹Uü+Uø‰Ğ‰Mğ‹E9E}‹E‰Eä‹E‰Eè‹E‰EÜÇEØÿÿÿÿë‹E‰Eä‹E‰Eè‹E‰EÜÇEØ   ‹E¼P‹EÈPEĞPEÌP‹EP‹EäP‹EèP‹EPèÂ   ƒÄ ‹E+E‰Â¯UØ…Ò~W‹Eä9EÜëIÿEäƒ}ì }‹MôMìëv ÿEè‹MğMì‹E¼P‹EÈPEĞPEÌP‹EP‹EäP‹EèP‹EPèb   ƒÄ ë®ëV6‹Eä9EÜëJ6ÿEäƒ}ì }‹MôMìëv ÿMè‹MğMì‹E¼P‹EÈPEĞPEÌP‹EP‹EäP‹EèP‹EPè
+-   ƒÄ ë­ÉÃ6U‰åƒìS‹E‹‰Uü‹E‹‰UøÿEüƒ}üuÇEü    ƒ}ø ”À¶Ø‰]øƒ}ø „ª   ƒ}$ tT‹E ‰ÂÁú‰ÑÁé‰ĞÁø‹])Ã‰]ğ‹Eğ‰Eô‹EğE 9Eô|ë ‹EP‹EôP‹EP‹EPèßîÿÿƒÄÿEôëÖv ëR6‹E ‰ÂÁú‰ÑÁé‰ĞÁø‹])Ã‰]ğ‹Eğ‰Eô‹EğE 9Eô|ë ‹EP‹EP‹EôP‹EPè‹îÿÿƒÄÿEôëÖv ‹E‹Uü‰‹E‹Uø‰‹]ìÉÃv U‰å1Àƒ} |!‹U‹M9J~ƒ} |‹U‹M9J~¸   ‰Àë ÉÃ6U‰åƒìSÇEü    ÇEø    ‹E‹U9P‹E‹U‹@9E}ë
+-6é£   v ‹E‹U+P‹E¯P‹E‰Ó¯X‰]ì‹E‰Eğ‹E‹UP9Uğ|ën6‹E‰Eô‹E‹UP9Uô|ëF6‹E‹U‹Mø¯J‰ÊUì‰ÑMü‹X€8 t‹EP‹EğP‹EôP‹EPèuíÿÿƒÄÿEüÿEôë¬6ÇEü    ÿEøÿEğëƒ‹]èÉÃv U‰åƒìSÇEü    ÇEø    ‹E‹U9P‹E‹U‹@9E}ë
+-6é£   v ‹E‹U+P‹E¯P‹E‰Ó¯X‰]ì‹E‰Eğ‹E‹U+P9Uğën6‹E‰Eô‹E‹UP9Uô|ëF6‹E‹U‹Mø¯J‰ÊUì‰ÑMü‹X€8 t‹EP‹EğP‹EôP‹EPè‘ìÿÿƒÄÿEøÿEôë¬6ÇEø    ÿEüÿMğëƒ‹]èÉÃv U‰åƒì‹EPèüÿÿÿƒÄ‰EøÇEü    ‹Eü9Eøë66‹EP‹EEü¶R‹EP‹EP‹EP‹EPèíıÿÿƒÄ‹E‹HMÿEüëÀÉÃ6U‰åƒì‹EPèüÿÿÿƒÄ‰EøÇEü    ‹Eü9Eøë66‹EP‹EEü¶R‹EP‹EP‹EP‹EPèqşÿÿƒÄ‹E‹H)MÿEüëÀÉÃ6U‰åƒì‹EPèÁ   ƒÄ‰À‰EøÇEü    ‹Eü9Eøë<‹EP‹Uü‰ĞÂ‹E·R‹EP‹EP‹EP‹EPè(ıÿÿƒÄ‹E‹HMÿEüë½v ÉÃ6U‰åƒì‹EPèY   ƒÄ‰À‰EøÇEü    ‹Eü9Eøë<‹EP‹Uü‰ĞÂ‹E·R‹EP‹EP‹EP‹EPè¤ıÿÿƒÄ‹E‹H)MÿEüë½v ÉÃ6U‰åƒìÇEü    ‹Efƒ8 uëƒEÿEüëìv ‹Eüëv ÉÃ6U‰åƒìÛEƒìİ$èüÿÿÿƒÄÙ}ø‹Uø¶‰UôÙmôÛ]üÙmø‹Eüë ÉÃ6U‰åj‹E$P‹E P‹EP‹EP‹EP‹EP‹EP‹EPè   ƒÄ$ÉÃU‰åƒì<SÇEà    ÇEÜ    ‹E‰ÂÁú‰ÑÁé‰ĞÁø‰EĞ‹E‰ÂÁú‰ÑÁé‰ĞÁø‰EÌ‹E 9EëE h  ëìv ‹E‰Eä‹Eä9E }éù   ‹Mä‰È»h  ™÷û‹•    ¯MĞ‰È…À}ÿ  Áø
+-‹]Ã‰]È‹Mä‰È»h  ™÷û‹•    ¯MÌ‰È…À}ÿ  Áø
+-‹]Ã‰]Ä‹Eä9Ett‹E(ƒà…Àuh‹E(ƒà…Àt$‹E$P‹EÄP‹EÈP‹EÜP‹EàP‹EPè§ñÿÿƒÄë<6‹Eà‰Eè‹EÜ‰Eì‹EÈ‰Eğ‹EÄ‰Eô‹E‰Eø‹E‰Eü‹E$PjEèP‹EPè   ƒÄë‹EÈ‰EØ‹EÄ‰EÔ‹EÈ‰Eà‹EÄ‰EÜÿEäéúşÿÿ‹E(ƒà…À„²   ‹E(ƒà…Àtl‹E(ƒà…Àt@‹E$P‹EÜP‹EàP‹EP‹EP‹EPèñÿÿƒÄ‹E$P‹EÔP‹EØP‹EP‹EP‹EPèåğÿÿƒÄ‹E$P‹EÜP‹EàP‹EÔP‹EØP‹EPèÅğÿÿƒÄë:‹EØ‰Eè‹EÔ‰Eì‹Eà‰Eğ‹EÜ‰Eô‹E‰Eø‹E‰Eü‹E$PjEèP‹EPè­  ƒÄëT‹E(ƒà…ÀtJ‹E(ƒà…Àt@‹E$P‹EÜP‹EàP‹EP‹EP‹EPèSğÿÿƒÄ‹E$P‹EÔP‹EØP‹EP‹EP‹EPè3ğÿÿƒÄ‹]ÀÉÃv U‰åj ‹EPhh  j ‹EP‹EP‹EP‹EP‹EPèSıÿÿƒÄ$ÉÃ6U‰åƒìÇEøÿÿÿÿƒ} }é  ‹E‰Eğƒ}ğ }ëF6‹EP‹EğP‹EPè£îÿÿƒÄ‰À9Euë'v ‹EP‹EP‹EğP‹EPè7çÿÿƒÄ‹Eğ‰EøÿMğë³ƒ}øÿué¥  ‹E‰Eô‹MA‰Mğ‹E‹Uğ9PëF6‹EP‹EğP‹EPè7îÿÿƒÄ‰À9Euë'v ‹EP‹EP‹EğP‹EPèËæÿÿƒÄ‹Eğ‰EôÿEğë®ƒ} –   ÇEü   ‹Eø‰Eğ‹Eğ9Eô}ëv ‹EHP‹EğP‹EPèÎíÿÿƒÄ‰À‰Eìƒ}ü t8‹Eì9Et,‹Eì9Et$‹EP‹EP‹EHP‹EğP‹EPèºşÿÿƒÄÇEü    ë6‹Eì9Et‹Eì9Etë	6ÇEü   ÿEğéxÿÿÿ‹E‹PJ9U”   ÇEü   ‹Eø‰Eğ‹Eğ9Eô}ë}‹E@P‹EğP‹EPè*íÿÿƒÄ‰À‰Eìƒ}ü t8‹Eì9Et,‹Eì9Et$‹EP‹EP‹E@P‹EğP‹EPèşÿÿƒÄÇEü    ë6‹Eì9Et‹Eì9Etë	6ÇEü   ÿEğézÿÿÿÉÃ6U‰åƒì(S‹EP‹EP‹EPè¤ìÿÿƒÄ‰À‰Eøƒ}û…F  ‹Eƒ¸    ué  ‹E‹   ‰UØ‹]Øƒ»  ÿtéÿ  v ‹E‹   ‰UØ‹M‰È‹]Ø™÷{‰UØ‹UØ‰Uà‹E‹˜   ‰]Ø‹M‰È‹]Ø™÷{‰UØ‹UØ‰UÜ‹EÜP‹EàP‹E‹˜   ‰]ØÿuØèìÿÿƒÄ‰À‰Eè‹Eƒ¸8   t‹Eè‰Eäé…   v ‹E‹   ‰UØ‹]Øƒ»8   tT‹Eè%   ‰ÂÁú‰UØÿuØ¶EèP‹Eè% ÿ  ‰ÃÁû‰]ØÿuØ‹Eè%  ÿ ‰ÂÁú‰UØÿuØ‹EPèàÿÿƒÄ‰À‰Eäëv ‹E‹]è‰]Ø‹UØ‹„$  ‰Eä‹Eø9Eäuéí  ë6‹Eø9EuéÛ  v ÇEôÿÿÿÿ‹E‰Eìƒ}ì }ëGv ‹EP‹EìP‹EPèëÿÿƒÄ‰À9Eøtë'v ‹EP‹EP‹EìP‹EPè§ãÿÿƒÄ‹Eì‰EôÿMìë²ƒ}ôÿuéq  ‹E‰Eğ‹]C‰]ì‹E‹Uì‰UØ‹]Ø9XëD‹EP‹EìP‹EPè£êÿÿƒÄ‰À9Eøtë'v ‹EP‹EP‹EìP‹EPè7ãÿÿƒÄ‹Eì‰EğÿEìëªƒ} ~zÇEü   ‹Eô‰Eì‹Eì9Eğ}ëcv ‹EHP‹EìP‹EPè>êÿÿƒÄ‰À‰EÜƒ}ü t,‹EÜ9Eøu ‹EP‹EHP‹EìP‹EPèVıÿÿƒÄÇEü    ë6‹EÜ9EøtÇEü   ÿEìë“‹E‹PJ‰UØ‹]Ø9]}zÇEü   ‹Eô‰Eì‹Eì9Eğ}ëcv ‹E@P‹EìP‹EPè²éÿÿƒÄ‰À‰EÜƒ}ü t,‹EÜ9Eøu ‹EP‹E@P‹EìP‹EPèÊüÿÿƒÄÇEü    ë6‹EÜ9EøtÇEü   ÿEìë“‹]ÔÉÃv U‰åƒì,S‹E‰Eü‹E‰Eø‹E‰Eô‹E‰Eğ‹E‰Eì‹E‰Eè‹E‰Eä‹E‰Eà‹E‹4  ‰UÜƒ}Ü~X‹EÜ‰ÂÁú‰ÑÁé‰ĞÁø‰EØ‹]Ü+]Ø‰]Ô‹E9E~‹]ô+]Ø‰]ğ‹EäEÔXÿ‰]àëv ‹EôEÔXÿ‰]ğ‹]ä+]Ø‰]à‹EP‹EôP‹EìP‹EôP‹EüP‹EPèºéÿÿƒÄ‹EP‹EäP‹EìP‹EäP‹EüP‹EPèšéÿÿƒÄ‹EP‹EàP‹EøP‹EğP‹EøP‹EPèzéÿÿƒÄ‹EP‹EàP‹EèP‹EğP‹EèP‹EPèZéÿÿƒÄ‹]ĞÉÃ6U‰åƒì‹E‰Eø‹Eø9E}ë9‹E‰Eü‹Eü9E}ë ‹EP‹EøP‹EüP‹EPè¯àÿÿƒÄÿEüëÙv ÿEøëÀv ÉÃ6U‰åì  ‹Eƒ¸8   „“   ÇEô    ‹Eô9E$ëz6ÇEø    ‹Eø9E ë_v ‹EEôP‹EEøP‹EPèèÿÿƒÄ‰À‰…äûÿÿ‹E‹•äûÿÿ9  t!‹…äûÿÿP‹EEôP‹EEøP‹EPèàÿÿƒÄÿEøëšv ÿEôé|ÿÿÿéC  v ÇEè    }èÿ   ~ë6‹EèÇ„…èûÿÿÿÿÿÿÿEèëà‹E‰Eì‹E‰Eô‹EE$9Eô|éü   ‹E‰Eğ‹E‰Eø‹EE 9Eø|éÔ   ‹EôP‹EøP‹EPèÃæÿÿƒÄ‰À‰Eü‹E‹  9Uüu	ÿEğéœ   ‹Eüƒ¼…èûÿÿÿul‹E9Eu‹Eü‰…äûÿÿëI‹E‹Uü‹„8  P‹E‹Uü‹„  P‹E‹Uü‹„  P‹E‹Uü‹DP‹EPèŞÚÿÿƒÄ‰À‰…äûÿÿ‹Eü‹•äûÿÿ‰”…èûÿÿ‹Eü‹”…èûÿÿR‹EìP‹EğP‹EPèÇŞÿÿƒÄÿEğÿEøéÿÿÿÿEìÿEôéõşÿÿÉÃ6U‰åƒìxS‹E‰Eè‹E‰Eğ‹EE$9Eğ|é  ‹E‰Eì‹E‰Eô‹EE 9Eô|éd  ‹EğP‹EôP‹EPèŸåÿÿƒÄ‰À‰Eü‹E‹  9Uüu	ÿEìé+  ‹E9Eu‹Eü‰EØéü  ‹EèP‹EìP‹EPè[åÿÿƒÄ‰À‰Eø¸d   +E(PÛ$ƒÄİ]Èİ K İEÈŞñİ]ÈÛE(İ]¸İ K İE¸Şñİ]¸‹Eƒ¸8   t#‹Eü%  ÿ ‰ÂÁúRÛ$ƒÄİ]ÀİEÀÜM¸İ]Àë‹E‹UüÛDİ]ÀİEÀÜM¸İ]À‹Eƒ¸8   t:‹Eø%  ÿ ‰ÂÁúRÛ$ƒÄİEÈŞÉİEÀŞÁÙ}Ô‹]Ô·‰]ĞÙmĞƒìÛ$XÙmÔë.6‹U‹MøÛDŠİEÈŞÉİEÀŞÁÙ}Ô‹]Ô·‰]ĞÙmĞƒìÛ$XÙmÔ‰Eä¸d   +E(PÛ$ƒÄİ]°İ K İE°Şñİ]°ÛE(İ] İ K İE Şñİ] ‹Eƒ¸8   t%‹Eü% ÿ  ‰ÂÁúRÛ$ƒÄİ]¨İE¨ÜM İ]¨ëv ‹E‹UüÛ„  İ]¨İE¨ÜM İ]¨‹Eƒ¸8   t;‹Eø% ÿ  ‰ÂÁúRÛ$ƒÄİE°ŞÉİE¨ŞÁÙ}Ô‹]Ô·‰]ĞÙmĞƒìÛ$XÙmÔë2v ‹U‹MøÛ„Š  İE°ŞÉİE¨ŞÁÙ}Ô‹]Ô·‰]ĞÙmĞƒìÛ$XÙmÔ‰Eà¸d   +E(PÛ$ƒÄİ]˜İ K İE˜Şñİ]˜ÛE(İ]ˆİ K İEˆŞñİ]ˆ‹Eƒ¸8   t¶EüPÛ$ƒÄİ]İEÜMˆİ]ë‹E‹UüÛ„  İ]İEÜMˆİ]‹Eƒ¸8   t/¶EøPÛ$ƒÄİE˜ŞÉİEŞÁÙ}Ô‹]Ô·‰]ĞÙmĞƒìÛ$XÙmÔë/‹U‹MøÛ„Š  İE˜ŞÉİEŞÁÙ}Ô‹]Ô·‰]ĞÙmĞƒìÛ$XÙmÔ‰EÜ‹EÜP‹EàP‹EäP‹EPèéÖÿÿƒÄ‰À‰EØ‹EØP‹EèP‹EìP‹EPèÛÿÿƒÄÿEìÿEôéüÿÿ6ÿEèÿEğédüÿÿ‹]„ÉÃv U‰åƒìhS‹E‰Eè‹E‰Eğ‹EE$9Eğ|éå  ‹E‰Eì‹E‰Eô‹EE 9Eô|é¼  ‹EğP‹EôP‹EPèçáÿÿƒÄ‰À‰Eü‹E‹  9Uüu	ÿEìé…  ‹E9Eu‹Eü‰EÔéV  ‹EèP‹EìP‹EPè£áÿÿƒÄ‰À‰Eø‹E‹UøÛDİ(K ŞÉ‹E‹UøÛ„  İ0K ŞÉŞÁ‹E‹UøÛ„  İ8K ŞÉŞÁÙ]ØÛE(İ]Àİ@K İEÀŞñİ]À‹Eƒ¸8   t‹Eø%  ÿ ‰ÂÁúRÛ$ƒÄØMØëv ‹E‹UøÛDØMØİ]¸¸d   +E(PÛ$ƒÄİ@K ŞùİE¸ŞÉİ]¸‹Eƒ¸8   t9‹Eü%  ÿ ‰ÂÁúRÛ$ƒÄİEÀŞÉİE¸ŞÁÙ}Ì‹]Ì·‰]ÈÙmÈƒìÛ$XÙmÌë-‹U‹MüÛDŠİEÀŞÉİE¸ŞÁÙ}Ì‹]Ì·‰]ÈÙmÈƒìÛ$XÙmÌ‰EäÛE(İ]°İ@K İE°Şñİ]°‹Eƒ¸8   t‹Eø% ÿ  ‰ÂÁúRÛ$ƒÄØMØë‹E‹UøÛ„  ØMØİ]¨¸d   +E(PÛ$ƒÄİ@K ŞùİE¨ŞÉİ]¨‹Eƒ¸8   t:‹Eü% ÿ  ‰ÂÁúRÛ$ƒÄİE°ŞÉİE¨ŞÁÙ}Ì‹]Ì·‰]ÈÙmÈƒìÛ$XÙmÌë16‹U‹MüÛ„Š  İE°ŞÉİE¨ŞÁÙ}Ì‹]Ì·‰]ÈÙmÈƒìÛ$XÙmÌ‰EàÛE(İ] İ@K İE Şñİ] ‹Eƒ¸8   t¶EøPÛ$ƒÄØMØë6‹E‹UøÛ„  ØMØİ]˜¸d   +E(PÛ$ƒÄİ@K ŞùİE˜ŞÉİ]˜‹Eƒ¸8   t2¶EüPÛ$ƒÄİE ŞÉİE˜ŞÁÙ}Ì‹]Ì·‰]ÈÙmÈƒìÛ$XÙmÌë2v ‹U‹MüÛ„Š  İE ŞÉİE˜ŞÁÙ}Ì‹]Ì·‰]ÈÙmÈƒìÛ$XÙmÌ‰EÜ‹EÜP‹EàP‹EäP‹EPè!ÑÿÿƒÄ‰À‰EÔƒ}Ôÿu@‹EÜP‹EàP‹EäP‹EPèâÑÿÿƒÄ‰À‰EÔƒ}Ôÿu‹EÜP‹EàP‹EäP‹EPè·ÈÿÿƒÄ‰À‰EÔ‹EÔP‹EèP‹EìP‹EPè×ÿÿƒÄÿEìÿEôé4üÿÿÿEèÿEğéüÿÿ‹]”ÉÃv U‰åì@  S‹E(‰Â•    PèüÿÿÿƒÄ‰…àûÿÿ‹E,‰Â•    PèüÿÿÿƒÄ‰…ÜûÿÿÇ…Ôûÿÿ    Ç…Øûÿÿ    ÇEä    ‹Eä9E(éˆ   ÛE ÛE(Şùİ…ÔûÿÿŞÁİÔûÿÿÿµØûÿÿÿµÔûÿÿèüÿÿÿƒÄÙ½Ìûÿÿ‹Ìûÿÿ·‰ÈûÿÿÙ­ÈûÿÿÛĞûÿÿÙ­Ìûÿÿ‹Eä‰Â•    ‹•àûÿÿ‹Ğûÿÿ‰Û…Ğûÿÿİ…ÔûÿÿŞáİÔûÿÿÿEäélÿÿÿÇ…Ôûÿÿ    Ç…Øûÿÿ    ÇEä    ‹Eä9E,éˆ   ÛE$ÛE,Şùİ…ÔûÿÿŞÁİÔûÿÿÿµØûÿÿÿµÔûÿÿèüÿÿÿƒÄÙ½Ìûÿÿ‹Ìûÿÿ·‰ÈûÿÿÙ­ÈûÿÿÛĞûÿÿÙ­Ìûÿÿ‹Eä‰Â•    ‹•Üûÿÿ‹Ğûÿÿ‰Û…Ğûÿÿİ…ÔûÿÿŞáİÔûÿÿÿEäélÿÿÿÇEä    }äÿ   ~ë6‹EäÇ„…äûÿÿÿÿÿÿÿEäëà‹E‰Eì‹E‰Eô‹EE,9Eô|é<  ÇEè    ‹Eô+E‰Â•    ‹•Üûÿÿ‹Mè9é  v ‹E‰Eğ‹E‰Eø‹EE(9Eø|éà  ‹Eø+E‰Â•    ‹•àûÿÿƒ< ué¸  ‹Eƒ¸8   t@‹EôP‹EøP‹EPèGÜÿÿƒÄ‰À‰…Äûÿÿ‹E‹  9•ÄûÿÿuÿEğéw  v é"  v ‹EôP‹EøP‹EPèÛÿÿƒÄ‰À‰Eü‹E‹  9Uüu!‹Eø+E‰Â•    ‹•àûÿÿ‹]ğé%  ‹Eƒ¸8   tH‹Eü%   ‰ÂÁúR¶EüP‹Eü% ÿ  ‰ÂÁúR‹Eü%  ÿ ‰ÂÁúR‹EPèœÏÿÿƒÄ‰À‰…Äûÿÿéƒ   ‹Eüƒ¼…äûÿÿÿuf‹E9Eu‹Eü‰…ĞûÿÿëC‹Eü%   ‰ÂÁúR¶EüP‹Eü% ÿ  ‰ÂÁúR‹Eü%  ÿ ‰ÂÁúR‹EPè4ÏÿÿƒÄ‰À‰…Äûÿÿ‹Eü‹•Ğûÿÿ‰”…äûÿÿ‹Eü‹”…äûÿÿ‰•ÄûÿÿÇEä    ‹Eø+E‰Â•    ‹•àûÿÿ‹Mä9ë'v ‹…ÄûÿÿP‹EìP‹EğP‹EPèèÒÿÿƒÄÿEğÿEäë»ÿEøéşÿÿÿEìÿEèéÔıÿÿÿEôé´ıÿÿ‹…àûÿÿPèüÿÿÿƒÄ‹…ÜûÿÿPèüÿÿÿƒÄ‹¼ûÿÿÉÃ6U‰åì€   ‹E‰E€‹E€ƒ¸8   ui‹E,‰E€ÿu€‹E(‰E€ÿu€‹E$‰E€ÿu€‹E ‰E€ÿu€‹E‰E€ÿu€‹E‰E€ÿu€‹E‰E€ÿu€‹E‰E€ÿu€‹E‰E€ÿu€‹E‰E€ÿu€è>ûÿÿƒÄ(éR  6‹E‰E€‹E€‰Eø‹EE$‰E€‹E€9Eø|é.  6‹E‰E€‹E€‰Eü‹EE ‰E€‹E€9Eü|é  6‹Eø‰E€ÿu€‹Eü‰E€ÿu€‹E‰E€ÿu€èôØÿÿƒÄ‰E€‹E€‰EìÇEĞ    ÇEÌ    ÇEÈ    ÇEÄ    ÇEÀ    ÛEøÛEŞéÛE,ŞÉÛE$ŞùÙ]è‹Eø@‰E€ÛE€ÛEŞéÛE,ŞÉÛE$ŞùÙ]ä‹Eè‰EÔÙEÔƒìİ$èüÿÿÿƒÄİ]œÙEèƒìİ$èüÿÿÿƒÄİEœÚéfßà€äD€ô@uQÙEÔƒìİ$èüÿÿÿƒÄÙEÔŞáÙèŞáÙ]¼ÙEäØeèÙE¼ŞÙfßà€äEu	ÙEäØeèÙ]¼ÙEÔƒìİ$èüÿÿÿƒÄÙ]ÔëM6ÙEÔİ]”ÙEäƒìİ$èüÿÿÿƒÄİE”Úéfßà€äD€ô@uÙEäƒìİ$èüÿÿÿƒÄÙEäŞáÙ]¼ë	6ÇE¼  €?ÛEüÛEŞéÛE(ŞÉÛE ŞùÙ]à‹Eü@‰E€ÛE€ÛEŞéÛE(ŞÉÛE ŞùÙ]Ü‹Eà‰EØÙEØƒìİ$èüÿÿÿƒÄİ]ŒÙEàƒìİ$èüÿÿÿƒÄİEŒÚéfßà€äD€ô@uQÙEØƒìİ$èüÿÿÿƒÄÙEØŞáÙèŞáÙ]´ÙEÜØeàÙE´ŞÙfßà€äEu	ÙEÜØeàÙ]´ÙEØƒìİ$èüÿÿÿƒÄÙ]ØëM6ÙEØİ]„ÙEÜƒìİ$èüÿÿÿƒÄİE„Úéfßà€äD€ô@uÙEÜƒìİ$èüÿÿÿƒÄÙEÜŞáÙ]´ë	6ÇE´  €?ÙE´ØM¼Ù]°ÙEÔÙ}¨‹E¨´‰E¤Ùm¤Û]€Ùm¨ÿu€ÙEØÙ}¨‹E¨´‰E¤Ùm¤Û]€Ùm¨ÿu€‹E‰E€ÿu€èòÖÿÿƒÄ‰E€‹E€‰E¬‹E¬%  ÿ ‰E€‹U€ÁúRÛ$ƒÄØM°ÙEÌŞÁÙ]Ì‹E¬% ÿ  ‰E€‹U€ÁúRÛ$ƒÄØM°ÙEÈŞÁÙ]È¶E¬‰E€ÛE€ØM°ÙEÄŞÁÙ]Ä‹E¬%   ‰E€‹U€ÁúRÛ$ƒÄØM°ÙEÀŞÁÙ]ÀÙE´ØM¼ÙEĞŞÁÙ]ĞÙEØÙèŞÁÙ]ØÙEØØ]Üfßà€äE€ütë	é)şÿÿv ÙEÔÙèŞÁÙ]ÔÙEÔØ]äfßà€äE€ütëv éùüÿÿv ÙEĞÙîÚéfßà€äE€ü@t$ÙEÌØuĞÙ]ÌÙEÈØuĞÙ]ÈÙEÄØuĞÙ]ÄÙEÀØuĞÙ]ÀÙEÌİHK ŞÙfßà€äE€üuÇEÌ  CÙEÈİHK ŞÙfßà€äE€üuÇEÈ  CÙEÄİHK ŞÙfßà€äE€üuÇEÄ  CÙEÀÙPK ŞÙfßà€äE€üuÇEÀ  şBÙEÀÙ}¨‹E¨´‰E¤Ùm¤ƒìÛ$ZÙm¨‰ĞÁà‰E€ÙEÌÙ}¨‹E¨´‰E¤Ùm¤ƒìÛ$ZÙm¨‰ÑÁá‹E€È‰E€ÙEÈÙ}¨‹E¨´‰E¤Ùm¤ƒìÛ$ZÙm¨‰ÑÁá‹E€È‰E€ÙEÄÙ}¨‹E¨´‰E¤Ùm¤ƒìÛ$ZÙm¨‹E€Ğ‰E€ÿu€‹Eø‰E€ÿu€‹Eü‰E€ÿu€‹E‰E€ÿu€èÙÌÿÿƒÄÿEüéêúÿÿ6ÿEøé¼úÿÿÉÃ6U‰åìÔ   S‹EPh    …4ÿÿÿPèüÿÿÿƒÄ‰À…Àu1ÀéM  4ÿÿÿ‰]Øj ‹EØPèüÿÿÿƒÄ‰À‰EØƒ}Ø u
+-1Àé#  v ÿEØj ‹EØPèüÿÿÿƒÄ‰À‰EØƒ}Ø u1Àéı  ‹EØ@PèüÿÿÿƒÄ‰À‰Eôƒ}ô u1Àéİ  ‹EPh    …4ÿÿÿPèüÿÿÿƒÄ‰À…Àu
+-1Àé·  v 4ÿÿÿ‰]Øj ‹EØPèüÿÿÿƒÄ‰À‰EØƒ}Ø u
+-1Àé‹  v ÿEØj ‹EØPèüÿÿÿƒÄ‰À‰EØƒ}Ø u1Àée  ‹EØ@PèüÿÿÿƒÄ‰À‰Eğƒ}ğ u1ÀéE  ‹EPh    …4ÿÿÿPèüÿÿÿƒÄ‰À…Àu
+-1Àé  v ‹Uô¯Uğ‰Ğ…À}ƒÀÁøX‰]ì‹EğP‹EôPè¹ÿÿƒÄ‰À‰Eühÿ   hÿ   hÿ   ‹EüPèºÅÿÿƒÄj j j ‹EüPè¨ÅÿÿƒÄÇEà    ÇEÜ    ÇEä    ‹Eä9Eìéw  v ë6ëJ6‹E‹U‹@9Bw‹EPèüÿÿÿƒÄ‰Àë6‹U‹J¶ÿB‰Eèƒ}èÿuéJ  6ƒ}èxuëë²6‹E‹U‹@9Bw‹EPèüÿÿÿƒÄ‰Àë6‹U‹J¶ÿB‰Eèƒ}èÿué  6ŠEèˆ…0ÿÿÿ‹E‹U‹@9Bw‹EPèüÿÿÿƒÄ‰Àë‹U‹J¶ÿB‰Eèƒ}èÿué¾   6ŠEèˆ…1ÿÿÿÆ…2ÿÿÿ …,ÿÿÿPhTK …0ÿÿÿPèüÿÿÿƒÄÇEø   }ø€   ~ë_v ‹…,ÿÿÿ#Eø…À•Â¶ÂP‹EÜP‹EàPÿEà‹EüPèªÉÿÿƒÄ‹Eü‹Uà9Pu ÇEà    ÿEÜ‹Eü‹UÜ9Pu‹Eüë>6ë
+-6Áeøë˜6ÿEäé|şÿÿhWK h    èüÿÿÿƒÄ1Àë6‹EüPèç¹ÿÿƒÄ1Àë ‹(ÿÿÿÉÃU‰åƒìƒ} ué¯   v ‹E‹‰Uø‹E‹P‰Uô‹EP‹E‰ÂÕ    ‰ÂUBø‹PR‹E‰ÂÕ    ‰ÂUBø‹R‹EôP‹EøP‹EPè7ÑÿÿƒÄÇEü   ‹Eü9EëCv ƒE‹EP‹E‹PR‹E‹R‹EôP‹EøP‹EPèúĞÿÿƒÄ‹E‹‰Uø‹E‹P‰UôÿEüë´ÉÃ6U‰åƒì4WVSƒ} ué(  ‹E‰EĞ‹UĞƒº   uM‹}‰}Ğ‹EĞ‰EÌ‹UÌÁâ‰UĞÿuĞèüÿÿÿƒÄ‰EĞ‹}‰}Ì‹UĞ‹EÌ‰  ‹}‰}Ğ‹E‰EÌ‹}Ì‹UĞ‰º  ‹E‰EĞ‹UĞ‹’  ‰UÌ‹}Ì9}   ‹E‰EĞ‹UĞ‹’  ‰UÌ‹}Ì9}ë+v ‹E‰EĞ‹U‰UÌ‹}Ì‹  ‰MÌ‹UÌÊ‹EĞ‰  ë¹‹}‰}Ğ‹EĞ‹€  ‰EÌ‹UÌ‰UĞ‹}ĞÁç‰}ÌÿuÌ‹E‰EĞ‹UĞ‹’  ‰UÌÿuÌèüÿÿÿƒÄ‰EĞ‹}‰}Ì‹UĞ‹EÌ‰  ‹}‰}Ğ‹EĞ‹@‰EÌ‹UÌ‰Uô‹}‰}Ğ‹EĞ‹@‰EÌ‹UÌ‰UğÇEü   ‹}ü‰}Ğ‹EĞ9EéÆ   6‹Uü‰UĞ‹}Ğ‰}Ì‹EÌÁà‰EĞ‹U‰UÌ‹}Ğ‹EÌ‹|8‰}Ğ‹EĞ9Eô~.‹Uü‰UĞ‹}Ğ‰}Ì‹EÌÁà‰EĞ‹U‰UÌ‹}Ğ‹EÌ‹|8‰}Ğ‹EĞ‰Eô‹Uü‰UĞ‹}Ğ‰}Ì‹EÌÁà‰EĞ‹U‰UÌ‹}Ğ‹EÌ‹|8‰}Ğ‹EĞ9Eğ}.‹Uü‰UĞ‹}Ğ‰}Ì‹EÌÁà‰EĞ‹U‰UÌ‹}Ğ‹EÌ‹|8‰}Ğ‹EĞ‰EğÿEüé'ÿÿÿ‹Uô‰UĞ‹}Ğ‰}ø‹Eø‰EĞ‹UĞ9Uğ}éå  ÇEÔ    ÇEü    ‹}ü‰}Ğ‹EĞ9EéË  v ƒ}ü u‹UJ‰UÜÇEØ    ë6‹}üO‰}Ü‹Eü‰EĞ‹UĞ‰UØ‹}Ü‰}Ğ‹EĞ‰EÌ‹UÌÁâ‰UĞ‹}‰}Ì‹EĞ‹UÌ‹D‰EĞ‹UĞ‰Uè‹}Ø‰}Ğ‹EĞ‰EÌ‹UÌÁâ‰UĞ‹}‰}Ì‹EĞ‹UÌ‹D‰EĞ‹UĞ‰Uà‹}è‰}Ğ‹EĞ9Eà~_‹UÜ‰UĞ‹}Ğ‰}Ì‹EÌÁà‰EĞ‹U‰UÌ‹}Ğ‹EÌ‹<8‰}Ğ‹EĞ‰Eì‹UØ‰UĞ‹}Ğ‰}Ì‹EÌÁà‰EĞ‹U‰UÌ‹}Ğ‹EÌ‹<8‰}Ğ‹EĞ‰EäéÔ   ‹Uè‰UĞ‹}Ğ9}àº   ‹EÜ‰EĞ‹UĞ‰UÌ‹}ÌÁç‰}Ğ‹E‰EÌ‹UĞ‹}Ì‹T‰UĞ‹}Ğ‰}à‹EØ‰EĞ‹UĞ‰UÌ‹}ÌÁç‰}Ğ‹E‰EÌ‹UĞ‹}Ì‹T‰UĞ‹}Ğ‰}è‹EÜ‰EĞ‹UĞ‰UÌ‹}ÌÁç‰}Ğ‹E‰EÌ‹UĞ‹}Ì‹‰UĞ‹}Ğ‰}ä‹EØ‰EĞ‹UĞ‰UÌ‹}ÌÁç‰}Ğ‹E‰EÌ‹UĞ‹}Ì‹‰UĞ‹}Ğ‰}ìë
+-6éù   v ‹Eø‰EĞ‹UĞ9Uèj‹}ø‰}Ğ‹EĞ9Eà~\‹U‰UÌ‹}Ô‰}Ğ‹MĞ    ‰EĞ‹UÌ‹’  ‰UÌ‹Mø+Mè‹]ä+]ì¯Ë‹uà+uè‰È™÷ş‰Ñ‰Ã‹UìÚ‹}Ğ‹EÌ‰8ÿEÔé   v ‹}ø‰}Ğ‹EĞ9Eğup‹Uø‰UĞ‹}Ğ9}è}b‹Eø‰EĞ‹UĞ9Uà|T‹}‰}Ì‹EÔ‰EĞ‹MĞ    ‰UĞ‹}Ì‹¿  ‰}Ì‹Mø+Mè‹]ä+]ì¯Ë‹uà+uè‰È™÷ş‰Ñ‰Ã‹UìÚ‹}Ğ‹EÌ‰8ÿEÔÿEüé$ıÿÿ6h    j‹}Ô‰}ĞÿuĞ‹E‰EĞ‹UĞ‹’  ‰UÌÿuÌèüÿÿÿƒÄÇEü    ‹}ü‰}Ğ‹EĞ9EÔé©   ‹U‰UĞÿuĞ‹}ø‰}ĞÿuĞ‹E‰EĞ‹Uü‰UÌ‹MÌ<    ‰}Ì‹UÌ‹EĞ  ‰UĞ‹}ĞƒÇ‰}Ì‹EÌ‹ ‰EĞÿuĞ‹Uø‰UĞÿuĞ‹}‰}Ğ‹Eü‰EÌ‹MÌ    ‰UÌ‹}Ğ‹¿  ‰}Ğ‹EÌ‹UĞ‹‰EÌÿuÌ‹U‰UĞÿuĞè·ÊÿÿƒÄƒEüéGÿÿÿv ÿEøéüÿÿeÀ[^_ÉÃU‰å‹E‹U‹+
+-‰Èëv ÉÃ6U‰å‹Eƒ¸,   t‹E‹,  RèüÿÿÿƒÄ‹E‰Â•    PèüÿÿÿƒÄ‰À‹U‰‚,  ‹E‰Â•    P‹EP‹E‹,  RèüÿÿÿƒÄ‹E‹U‰$  ‹EÇ€(      ÉÃU‰å‹E‹U‰4  ÉÃv U‰åƒì‹E‹U‰  ‹Eƒ¸8   …î   ‹E‹  ƒº8   …Ø   ÇEü    ‹E‹Uü9PéÁ   ‹Eƒ¸8   t‹Eü%   Áøëv ‹U‹Mü‹„Š8  P‹Eƒ¸8   t¶Eüë‹U‹Mü‹„Š  P‹Eƒ¸8   t‹Eü% ÿ  Áøë‹U‹Mü‹„Š  P‹Eƒ¸8   t‹Eü%  ÿ Áøë‹U‹Mü‹DŠP‹EPèx¼ÿÿƒÄ‰À‰Eø‹E‹Uü‹Mø‰Œ$  ÿEüé/ÿÿÿÉÃ6U‰åƒì‹E‹U‰   ‹Eƒ¸8   …î   ‹E‹   ƒº8   …Ø   ÇEü    ‹E‹Uü9PéÁ   ‹Eƒ¸8   t‹Eü%   Áøëv ‹U‹Mü‹„Š8  P‹Eƒ¸8   t¶Eüë‹U‹Mü‹„Š  P‹Eƒ¸8   t‹Eü% ÿ  Áøë‹U‹Mü‹„Š  P‹Eƒ¸8   t‹Eü%  ÿ Áøë‹U‹Mü‹DŠP‹EPèd»ÿÿƒÄ‰À‰Eø‹E‹Uü‹Mø‰Œ$  ÿEüé/ÿÿÿÉÃ6U‰å‹E‹U‰0  ÉÃv U‰åƒì WVSÇEì    ‹E‹u‹€0  9†0  t€Mì€‹E‹u‹€  9†  t€Mì ‹E‹u‹€8  9†8  tMì   ‹E‹p‰uè‹E‹u‹@9Ft€Mì	‹E‹u‹@9F~	‹E‹p‰uè‹E‹p‰uä‹E‹u‹@9Ft€Mì‹E‹u‹@9F~	‹E‹p‰uä‹E‹u‹@9Ft€MìÇEø    ‹Eø9Eäé  v ÇEü    ‹Eü9Eèéd  ‹E‹uø‰uà‹}à4½    ‹ ‹40uü¶>‰}ô‹E‹uø‰uà‹}à4½    ‹ ‹40uü¶>‰}ğ‹Eƒ¸8   t‹Uôâ  ÿ Áúë
+-‹E‹uô‹T°‹Eƒ¸8   t‹Eğ%  ÿ ‰ÆÁş9òuëv ‹E‹uğ9T°uë6€MìéÃ   v ‹Eƒ¸8   t‹Môá ÿ  Áùë6‹E‹uô‹Œ°  ‹Eƒ¸8   t‹Eğ% ÿ  ‰ÆÁş9ñuë‹E‹uğ9Œ°  uëv €Mìë^6‹Eƒ¸8   t¶]ôë6‹E‹uô‹œ°  ‹Eƒ¸8   t¶Eğ9Ãuë‹E‹uğ9œ°  uëv €Mìë
+-6ÿEüéşÿÿ‹Eìƒà…ÀtëÿEøédşÿÿ‹Eìëv eÔ[^_ÉÃU‰åƒìWVS‹E%   ‰Eü‹UüÁú‰Uø¿   +}ø‰}ü‹E%  ÿ ‰Eø‹MøÁù‹]ü¯Ù‰Ø¿   ™÷ÿ‰Uø‰Eü‹Má   ‰ÈÁø‰Eø‹Má  ÿ ‰ËÁû‹uø¯ó‰ğ¿   ™÷ÿ‰Uø‰Á‹]üË‰ØÁà‰Eü‹Uâ   ‰Uø‹MøÁù¿   )Ï‰}ø‹Má ÿ  ‰ËÁû‹uø¯ó‰ğ¿   ™÷ÿ‰Ñ‰Eø‹]ã   ‰ÙÁù‹]ã ÿ  ‰ŞÁş‰È¯Æ‰Eô‹Eô¿   ™÷ÿ‰Ñ‰Ã‹EøØ‰Eø‹MøÁá‹UüÊ‰Uü‹}ç   ‰}ø‹MøÁù¸   )È‰Eø¶M‹]ø¯Ù‰Ø¿   ™÷ÿ‰Ñ‰Eø‹]ã   ‰ÙÁù¶]‰Î¯ó‰ğ¿   ™÷ÿ‰Ñ‰Ã‹EøØ‰Eø‹MüMø‰Èë eè[^_ÉÃU‰å‹E‹U‰@  ÉÃv U‰å‹E‹U‰D  ÉÃU‰åƒìƒ} tp‹EP‹E8  PèüÿÿÿƒÄ‰À…Àué¼  ‹Eƒ¸8   u ‹EP‹EƒÀPèüÿÿÿƒÄ‰À…Àué’  6‹EP‹E  PèüÿÿÿƒÄ‰À…Àuép  ë^6‹EP‹EƒÀPèüÿÿÿƒÄ‰À…ÀuéN  6‹EP‹E  PèüÿÿÿƒÄ‰À…Àué,  ‹E¸    u‹EÇ€  ÿÿÿÿÇEü    }üÿ   ~éÇ   v ‹EP‹Eü‰Â•    P‰ĞEPèüÿÿÿƒÄ‰À…ÀuéÌ   ‹EP‹Eü‰Â•      ‰ĞEPèüÿÿÿƒÄ‰À…Àué   ‹EP‹Eü‰Â•      ‰ĞEPèüÿÿÿƒÄ‰À…Àuëpƒ} t.‹EP‹Eü‰Â•    8  ‰ĞEPèüÿÿÿƒÄ‰À…Àuë>6ÿEüé+ÿÿÿÇEü    ‹E‹Uü9Pë‹E‹UüÇ„      ÿEüëİ6¸   ë1Àë ÉÃ6U‰åƒìÇEø    ‹EP‹EPèüÿÿÿƒÄ‰À…Àué   ‹E8ÿÿ  u!ÇEø   ‹EP‹EPèüÿÿÿƒÄ‰À…Àuëf6‹EP‹EPèüÿÿÿƒÄ‰À…ÀuëL‹E‹R‹E‹RèüÿÿÿƒÄ‰À‰Eü‹EøP‹EüP‹EPèzıÿÿƒÄ‰À…Àuëv ‹Eüëv ‹EüPèüÿÿÿƒÄ1Àë ÉÃ6U‰åƒìS‹EPèüÿÿÿƒÄ‰À‰Eø‹EøPè'   ƒÄ‰À‰Eü‹Eø‹UøR‹XÿÓƒÄ‹Eüëv ‹]ôÉÃv U‰åƒìEøPEüP‹EPèáşÿÿƒÄ‰À‰Eìƒ}ì ué†   6ÇEğ    ‹Eğ9Eøë_v ÇEô    ‹Eô9EüëCv ‹EPèüÿÿÿƒÄ‰À‰Eèƒ}èÿuë7v ‹Eì‹Uğ‰Ñ    ‹ ‹UôŠEèˆÿEôë¶v ÿEğëšv ‹Eìëv ‹EìPèüÿÿÿƒÄ1Àë ÉÃ6U‰åƒì‹EP‹E¶8  RèüÿÿÿƒÄ‹Eƒ¸8   u‹EP‹E‹PRèüÿÿÿƒÄ‹EP‹E‹  RèüÿÿÿƒÄ‹Eƒ¸8   …‚   ÇEü    }üÿ   ~ëp‹EP‹E‹Uü¶DPèüÿÿÿƒÄ‹EP‹E‹Uü¶„  PèüÿÿÿƒÄ‹EP‹E‹Uü¶„  PèüÿÿÿƒÄ‹EP‹E‹Uü¶„8  PèüÿÿÿƒÄÿEüë‡6ÉÃ6U‰å‹EPhÿÿ  èüÿÿÿƒÄ‹EP‹E‹PRèüÿÿÿƒÄ‹EP‹E‹PRèüÿÿÿƒÄ‹EP‹EPèÑşÿÿƒÄÉÃU‰åƒìS‹EP‹EPè ÿÿÿƒÄÇEø    ‹E‹Uø9Pé   6ÇEü    ‹E‹Uü9Pëp‹Eƒ¸8   t8‹EP‹U‹Eø‰Á    ‹’<  ‹Mü‰Ë    ‹‹RèüÿÿÿƒÄë)6‹EP‹E‹Uø‰Ñ    ‹ ‹Uü¶PèüÿÿÿƒÄÿEüëƒÿEøébÿÿÿ‹]ôÉÃv U‰åƒìS‹EPèüÿÿÿƒÄ‰À‰Eü‹EüP‹EPèÿÿÿƒÄ‹Eü‹UüR‹XÿÓƒÄ‹]øÉÃU‰åƒìSj h   èüÿÿÿƒÄ‰À‰Eø‹EøP‹EPèØşÿÿƒÄ‹EP‹EøPèüÿÿÿƒÄ‰À‰Eü‹Eø‹UøR‹XÿÓƒÄ‹Eüë ‹]ôÉÃU‰åƒìÇEü    ƒ}ü~ë26‹EPèüÿÿÿƒÄ‰À‰Eøƒ}øÿué   Eğ‰ÂUüŠEøˆÿEüëÈ6ÆEô h|K EğPèüÿÿÿƒÄ‰À…ÀtéÌ  ‹EP‹EPèüÿÿÿƒÄ‰Àƒøté°  ‹Eƒ8t‹Eƒ8té›  v ‹EP‹EPèüÿÿÿƒÄ‰À…Àué}  ‹EP‹EPèüÿÿÿƒÄ‰À…Àuéa  ‹EP‹EPèüÿÿÿƒÄ‰ÀƒøtéD  ‹Eƒ8?~‹E8   ëv é'  v ‹EP‹EPèüÿÿÿƒÄ‰Àƒøté  ‹Eƒ8t‹Eƒ8téó   v ‹EP‹E PèüÿÿÿƒÄ‰ÀƒøtéÔ   ‹EP‹E$PèüÿÿÿƒÄ‰Àƒøté¸   ‹Eƒ8…¤   ‹E ‹U$‹¯
+-‰Mä‹Eä‰ÂÕ    ‰Eèj‹EèPèüÿÿÿƒÄ‰EìÇEü    ‹Eü9Eäë]‹EP‹Eü‰ÂÕ    ‰ÂUìRèüÿÿÿƒÄ‰ÀƒøtëE‹EP‹Eü‰ÂÕ    ‰ÂUìBPèüÿÿÿƒÄ‰Àƒøtë6ÿEüëœv ‹E(‹Uì‰¸   ë1Àë ÉÃ6U‰åƒì‹E(P‹E$P‹E P‹EP‹EP‹EP‹EP‹EP‹EPè•ıÿÿƒÄ$‰Àƒøtëe‹E‹R‹E‹RèüÿÿÿƒÄ‰À‰Eüƒ}ü uëCv ‹Eƒ8”Â¶ÂP‹EüP‹EPèüÿÿÿƒÄ‰À…Àuëv ‹Eüëv ‹EüPèüÿÿÿƒÄ1Àë1Àë ÉÃ6U‰åƒì‹EPèüÿÿÿƒÄ‰À9Et‹EP‹EPèüÿÿÿƒÄë‹EP‹EP‹EPèüÿÿÿƒÄ‰À9Et1Àë1‹EP‹EP‹EP‹EPèüÿÿÿƒÄ‰À‰Eüƒ}ü t1Àë	¸   ëÉÃ6U‰åƒìS‹EPèüÿÿÿƒÄ‰À‰Eü‹EüPè'   ƒÄ‰À‰Eø‹Eü‹UüR‹XÿÓƒÄ‹Eøëv ‹]ôÉÃv U‰åì„   SÇE´    ÇE°    ÇE¬    ÇE”    E´PEìPEğPE¸PE¼PEäPEøPEüP‹EPèAşÿÿƒÄ$‰À‰Eƒ} u1ÀéĞ  ‹Eƒ¸8   t¸   ë¸   ‰E˜‹]ğ¯]ì‰]èƒ}¸…   ÇEœ    ÇEô    ‹Eô9Eèë4‹Eô‰ÂÕ    ‹U´‹D9Eœ}‹Eô‰ÂÕ    ‹U´‹D‰EœÿEôëÃÿEœ‹Eä¯E˜‰Ã¯]ä‰]¨j‹E¨PèüÿÿÿƒÄ‰E°j‹EœPèüÿÿÿƒÄ‰E”ÇEÜ    ‹EÜ9Eìé«  v ÇEà    ‹Eà9EğéŒ  ‹]Ü¯]ä‰]Ğ‹]Ğ]ä‰]Ì‹E‹UÌ9P}	‹E‹P‰UÌƒ}¸uZ‹E¨‰E¤‹EPE¤P‹E°P‹E¬‰ÂÕ    ‹U´‹DP‹E”P‹E¬‰ÂÕ    ‹U´‹Pè‰ıÿÿƒÄ‰À…ÀuéC  v ÇE     ‹EĞ‰EÔ‹EÔ9EÌéæ  6‹]à¯]ä‰]È‹]È]ä‰]Ä‹E‹UÄ9P}	‹E‹P‰UÄƒ}¸…ç   ‹EÈ‰EØ‹EØ9EÄéÌ   ‹Eƒ¸8   t|‹EP‹U‹EÔ‰Á    ‹’<  ‹MØ‰|ÿÿÿ‹|ÿÿÿ    ‹PèüÿÿÿƒÄ‰À…Àu5‹U‹EÔ‰Á    ‹’<  ‹MØ‰|ÿÿÿ‹|ÿÿÿ    ‹Ç    ë:‹EPEŒPèüÿÿÿƒÄ‰À…ÀuÇEŒ    ‹E‹UÔ‰Ñ    ‹ ‹UØŠEŒˆÿEØé*ÿÿÿv éÇ   v ‹EÈ‰EØ‹EØ9EÄé±   ‹Eƒ¸8   tx‹E°E ¶‰ÓÁã‰]ŒÿE ‹E°E ¶‰ÓÁã‰]ˆÿE ‹E°E ¶‰ÓÁã‰]„ÿE ‹E°E ¶‰]€ÿE ‹E‹UÔ‰Ñ    ‹‹EØŠUŒUˆˆÑM„Š]€ Ëˆë&6‹E‹UÔ‰Ñ    ‹‹EØ‹U°U Š
+-ˆÿE ÿEØéBÿÿÿÿEÔéşÿÿÿE¬ÿEàéhıÿÿÿEÜéHıÿÿ‹E°PèüÿÿÿƒÄ‹E”PèüÿÿÿƒÄ‹E´PèüÿÿÿƒÄ‹Eë7v ‹EPèüÿÿÿƒÄ‹E°PèüÿÿÿƒÄ‹E”PèüÿÿÿƒÄ‹E´PèüÿÿÿƒÄ1Àë ‹xÿÿÿÉÃU‰åƒìS‹EPèüÿÿÿƒÄ‰À‰Eø‹EP‹EP‹EP‹EP‹EøPè'   ƒÄ‰À‰Eü‹Eø‹UøR‹XÿÓƒÄ‹Eüëv ‹]ôÉÃv U‰åìˆ   SÇEœ    ÇE˜    ÇE€    EœPEÜPEàPE PE¤PEØPEèPEìP‹EPèx÷ÿÿƒÄ$‰ÀƒøtéH  ‹EP‹EPèüÿÿÿƒÄ‰À‰…|ÿÿÿƒ½|ÿÿÿ ué!  6ƒ}¤”Â¶ÂP‹…|ÿÿÿP‹EPèüÿÿÿƒÄ‰À…Àuéç  v ‹Mà¯MÜ‰Mäƒ} …    ÇE„    ÇE¬    ‹E¬9Eäë4‹E¬‰ÂÕ    ‹Uœ‹D9E„}‹E¬‰ÂÕ    ‹Uœ‹D‰E„ÿE¬ëÃÿE„‹…|ÿÿÿƒ¸8   t‹EØ¯EØ‰Â•    ‰Eë‹]Ø¯]Ø‰]j‹EPèüÿÿÿƒÄ‰E˜j‹E„PèüÿÿÿƒÄ‰E€‹M‰xÿÿÿ‹…xÿÿÿ™÷}Ø‰Eü‹]‰xÿÿÿ‹…xÿÿÿ™÷}Ø‰Eøƒ}ü }ÇEü    ƒ}ø }ÇEø    ‹MM‰xÿÿÿ‹…xÿÿÿ™÷}Ø‰Eô‹]]‰xÿÿÿ‹…xÿÿÿ™÷}Ø‰Eğ‹Eô9Eà‹MàI‰Mô‹Eğ9EÜ‹]ÜK‰]ğ‹EPèüÿÿÿƒÄ‰E´‹Eø‰EĞ‹EĞ9Eğ}éL  ‹MĞ¯MØ‰MÄ‹]Ä]Ø‰]À‹EÀ9Eè}‹Eè‰EÀ‹Eü‰EÔ‹EÔ9Eô}é  ‹MÔ¯MØ‰M¼‹]¼]Ø‰]¸‹E¸9Eì}‹Eì‰E¸ƒ} …¹   ‹…|ÿÿÿƒ¸8   tF‹UØ¯Uì‰Ğ¯EĞ‹UÔ¯UØ‹MÀ+MÄ‰xÿÿÿ¯•xÿÿÿ‰•xÿÿÿ‹xÿÿÿ    Ğ‹M´Á‰M°ë1‹UØ¯Uì‰Ğ¯EĞ‹UÔ¯UØ‹]À+]Ä‰xÿÿÿ¯•xÿÿÿĞ‹M´Á‰M°‹E°P‹EPèüÿÿÿƒÄ‰À…Àt¡    Ph€K èüÿÿÿƒÄée  ëu6‹EĞ¯Eà‹]ÔÃ‰]”‹E‰EŒ‹EPEŒP‹E˜P‹E”‰ÂÕ    ‹Uœ‹DP‹E€P‹E”‰ÂÕ    ‹Uœ‹Pè#÷ÿÿƒÄ‰À…Àuh•K èüÿÿÿƒÄéô  ÇEˆ    ‹EÄ‰EÈ‹EÈ9EÀé  6‹E¼‰EÌ‹EÌ9E¸é  ƒ} uR‹…|ÿÿÿƒ¸8   t‹EPE¨PèüÿÿÿƒÄ‰À…ÀuÇE¨    ë‹EPèüÿÿÿƒÄ‰À‰E¨ƒ}¨ÿuÇE¨    é   ‹…|ÿÿÿƒ¸8   tq‹U˜Uˆ¾‹U˜Uˆ¾
+-‰xÿÿÿ‹•xÿÿÿƒÂ‰ÑÓà‹U˜Uˆ¾‰xÿÿÿ‹•xÿÿÿƒÂ‰ÑÓà‹U˜Uˆ¾‰xÿÿÿ‹•xÿÿÿƒÂ‰Ã‰ÑÓã‰]¨ÿEˆÿEˆÿEˆÿEˆë‹E˜Eˆ¾‰M¨ÿEˆ‹EÌ9E‚   ‹EE9EÌ}w‹EÌ9Eì~oƒ}Ì |i‹EÈ9Ea‹EE9EÈ}V‹EÈ9Eè~Nƒ}È |H‹…|ÿÿÿ‹UÈ+U‰•xÿÿÿ‹xÿÿÿ    ‹‰xÿÿÿ‹EÌ+E‹xÿÿÿ‹ŠM¨ˆxÿÿÿŠxÿÿÿˆÿEÌéuşÿÿv ÿEÈéUşÿÿÿEÔéãüÿÿÿEĞé§üÿÿ‹E˜PèüÿÿÿƒÄ‹E€PèüÿÿÿƒÄ‹EœPèüÿÿÿƒÄ‹…|ÿÿÿë8‹…|ÿÿÿPèüÿÿÿƒÄ‹E˜PèüÿÿÿƒÄ‹E€PèüÿÿÿƒÄ‹EœPèüÿÿÿƒÄ1Àë‹tÿÿÿÉÃU‰åƒìÇEü    ƒ}ü~ë"6‹EP‹Eü|K ¶RèüÿÿÿƒÄÿEüëÙv ‹EPjèüÿÿÿƒÄ‹EP‹E‹PRèüÿÿÿƒÄ‹EP‹E‹PRèüÿÿÿƒÄ‹EP‹EPèüÿÿÿƒÄ‹EP‹EPèüÿÿÿƒÄ‹EP‹EPèüÿÿÿƒÄ‹EP‹EPèüÿÿÿƒÄÉÃ6U‰åƒìdSÇEĞ    ÇEÌ    ÇEÈ    ÇE¸    ‹Eƒ¸8   t	¸   ë6¸   ‰E°ƒ} tƒ}tƒ}uëÇE   ƒ} uÇE€   ë"6ƒ}?
+-ÇE@   ë}   ~ÇE   ‹E‹H‰È™÷}X‰]ü‹E‹H‰È™÷}X‰]ø‹EøP‹EüP‹EP‹EP‹EP‹EPèƒşÿÿƒÄƒ}…³   ‹E¯E°‰Â¯URÛ$ƒÄİäK ŞÉİìK ŞÁÙ}¨‹]¨·‰]¤Ùm¤Û]¬Ùm¨j‹E¯E°‰Â¯URèüÿÿÿƒÄ‰EÌj‹E¬PèüÿÿÿƒÄ‰EÈ‹EPèüÿÿÿƒÄ‰EÀ‹Eü¯Eø‰ÂÕ    ‰E¼‹EÀE¼P‹EPèüÿÿÿƒÄj‹E¼‰ÂÕ    PèüÿÿÿƒÄ‰E¸‹EP‹EPèüÿÿÿƒÄÇEğ    ‹Eğ9Eøé‡  v ÇEô    ‹Eô9Eüéh  ‹]ğ¯]‰]ä‹]ä]‰]à‹E‹Uà9P}	‹E‹P‰UàÇEÔ    ‹Eä‰Eè‹Eè9Eàéw  v ‹]ô¯]‰]Ü‹]Ü]‰]Ø‹E‹UØ9P}	‹E‹P‰UØƒ}…·   ‹EÜ‰Eì‹Eì9EØéœ   ‹E‹Uè‰Ñ    ‹ ‹Uì¶‰] ‹Eƒ¸8   t[‹EÌEÔ‹U â   ‰ÑÁùˆÿEÔ‹EÌEÔ‹U â  ÿ ‰ÑÁùˆÿEÔ‹EÌEÔ‹U â ÿ  ‰ÑÁùˆÿEÔ‹EÌEÔŠU ˆÿEÔë‹EÌEÔŠU ˆÿEÔÿEìéYÿÿÿ6é‡   v ‹EÜ‰Eì‹Eì9EØët‹Eƒ¸8   t<‹EP‹U‹Eè‰Á    ‹’<  ‹Mì‰Mœ‹]œ    ‹‹RèüÿÿÿƒÄë)6‹EP‹E‹Uè‰Ñ    ‹ ‹Uì¶PèüÿÿÿƒÄÿEìë‚ÿEèé|şÿÿƒ}…œ   ‹E¬‰EÄ‹EÔP‹EÌPEÄP‹EÈPèüÿÿÿƒÄ‰À…Àth¶K èüÿÿÿƒÄëiv ‹EPèüÿÿÿƒÄ‰À‹UĞ‰ÑÍ    ‹M¸‰‹EĞ‰ÂÕ    ‹U¸‹MÄ‰LÿEĞ‹EP‹EÄP‹EÈPèüÿÿÿƒÄ‰À…À¡    PhÎK èüÿÿÿƒÄÿEôéıÿÿ6ÿEğélıÿÿƒ}…†   ‹EPèüÿÿÿƒÄ‰E´‹EÀP‹EPèüÿÿÿƒÄÇEì    ‹Eì9EĞëF6‹EP‹Eì‰ÂÕ    ‹U¸‹PèüÿÿÿƒÄ‹EP‹Eì‰ÂÕ    ‹U¸‹DPèüÿÿÿƒÄÿEìë°‹E´P‹EPèüÿÿÿƒÄ‹EÌPèüÿÿÿƒÄ‹EÈPèüÿÿÿƒÄ‹E¸PèüÿÿÿƒÄ‹]˜ÉÃv U‰åƒìS‹EPèüÿÿÿƒÄ‰À‰Eü‹EP‹EP‹EüP‹EPèßúÿÿƒÄ‹Eü‹UüR‹XÿÓƒÄ‹]øÉÃU‰åƒìSj h   èüÿÿÿƒÄ‰À‰Eø‹EP‹EP‹EøP‹EPè˜úÿÿƒÄ‹EP‹EøPèüÿÿÿƒÄ‰À‰Eü‹Eø‹UøR‹XÿÓƒÄ‹Eüë ‹]ôÉÃU‰åƒìSŠEˆEş‹U‰Ğ…À}ÿ   ÁøˆEÿ‹EjUşR‹UR‹XÿÓƒÄ‹]øÉÃU‰åS‹E¶UR‹UR‹XÿÓƒÄ‹]üÉÃv U‰åƒìVS‹]ˆ]ÿ‹E¶UÿR‹UR‹pÿÖƒÄeô[^ÉÃv U‰åS‹E‹UÁú¶ÊQ‹UR‹XÿÓƒÄ‹E¶UR‹UR‹XÿÓƒÄ‹]üÉÃ6U‰åS‹E‹UÁú¶ÊQ‹UR‹XÿÓƒÄ‹E‹UÁú¶ÊQ‹UR‹XÿÓƒÄ‹E‹UÁú¶ÊQ‹UR‹XÿÓƒÄ‹E¶UR‹UR‹XÿÓƒÄ‹]üÉÃU‰åS‹E‹UR‹ÿÓƒÄ‰Â‰Ğë ‹]üÉÃv U‰åƒìS‹E‹UR‹ÿÓƒÄ‰À‰Eüƒ}üÿu1Àë‹E‹Uü‰¸   ë‹]øÉÃv U‰åƒìS‹E‹UR‹ÿÓƒÄ‰À‰Eüƒ}üÿu1Àë<‹E‹MüÁá‰‹E‹UR‹ÿÓƒÄ‰À‰Eüƒ}üÿu1Àë‹E‹U‹
+-Mü‰¸   ë ‹]øÉÃv U‰åƒìVS‹E‹UR‹ÿÓƒÄ‰À‰Eüƒ}üÿu1Àéœ   ‹E‹uüÁæ‰0‹E‹UR‹ÿÓƒÄ‰À‰Eüƒ}üÿu1Àët‹E‹U‹MüÁá‹2Î‰0‹E‹UR‹ÿÓƒÄ‰À‰Eüƒ}üÿu1ÀëE‹E‹U‹MüÁá‹2Î‰0‹E‹UR‹ÿÓƒÄ‰À‰Eüƒ}üÿu1Àë‹E‹U‹2uü‰0¸   ë eô[^ÉÃU‰åS‹E‹UR‹UR‹UR‹XÿÓƒÄ‰Â‰Ğëv ‹]üÉÃv U‰åS‹E‹UR‹UR‹UR‹XÿÓƒÄ‰Â‰Ğëv ‹]üÉÃv U‰åS‹E‹UR‹UR‹XÿÓƒÄ‰Â‰Ğëv ‹]üÉÃv U‰åS‹E‹UR‹XÿÓƒÄ‰Â‰Ğëv ‹]üÉÃU‰åƒìj èüÿÿÿƒÄ‰Eüƒ}ü u1Àé€   ‹EP‹EPè  ƒÄ‰À‰Eøƒ}ø u‹EüPèüÿÿÿƒÄ1ÀëU‹Eü‹Uø‰P‹EüÇ ü»  ‹EüÇ@P»  ‹EüÇ@|»  ‹EüÇ@»  ‹EüÇ@0º  ‹EüÇ@º  ‹EüÇ@°¹  ‹EüëÉÃ6U‰åƒì‹E‰Eø‹Eø‹P‰Uü‹Eüƒx t"‹EüPèİ  ƒÄ‹E‹Uü‹J‰‹Eü‹‰Uôë'‹EÇ     ÇEô    ‹Eüƒ8 t‹Eü‹RèüÿÿÿƒÄ‹EüÇ     ‹EüÇ@    ‹EüÇ@    ‹Eôë ÉÃ6U‰åƒì‹E‰Eø‹Eø‹P‰Uü‹EPèüÿÿÿƒÄ‹Eüƒ8 t‹Eü‹RèüÿÿÿƒÄ‹EüÇ     ‹EüÇ@    ‹EüÇ@    ‹EüPèüÿÿÿƒÄÉÃ6U‰åƒì‹E‰Eü‹Eü‹P‹BëÉÃ6U‰åƒì‹E‰Eô‹Eô‹P‰Uø‹Eøƒx u1Àëb6‹E‰Eü‹Eø‹Uü9P}+‹Eø‹P‰ĞÂR‹EøPè  ƒÄ‰À…Àu‹EøÇ@    1Àë$‹Eø‹U9P}	‹Eø‹U‰P‹Eø‹U‰P¸   ë ÉÃ6U‰åƒìjèüÿÿÿƒÄ‰Eüƒ}ü u1Àë3v ‹EP‹EP‹EüPèO  ƒÄ‰À…Àu1Àë6‹EüÇ@    ‹EüëÉÃ6U‰åƒì‹E‰Eü‹EP‹EP‹Eü‹PRè   ƒÄ‹Eü‹Pƒz t	‹Eëë
+-6¸ÿÿÿÿëÉÃ6U‰åƒìŠEˆEÿ‹E‰EøjEÿP‹Eø‹PRèX  ƒÄÉÃv U‰åƒì‹E‰Eô‹Eô‹P‰Uğ‹Eğ‹Uğ‹H+J‰Mø‹Eø9E‹E‰Eüëƒ}ø u
+-¸ÿÿÿÿë;v ‹Eø‰Eü‹EüP‹Eğ‹Uğ‹ BP‹EPèüÿÿÿƒÄ‹Eğ‹Uğ‹JMü‰H‹Eüë6ÉÃ6U‰åƒìjEÿP‹EPèkÿÿÿƒÄ‰À‰Eøƒ}øt¸ÿÿÿÿë6ë
+-6¶Uÿ‰Ğë ÉÃ6U‰åƒ} u+‹EÇ@    ‹EÇ@    ‹EPèüÿÿÿƒÄ‰À‹U‰ë6‹E‹U‰P‹EÇ@   ‹E‹U‰‹Eƒ8 t)‹E‹U‰P‹EÇ@   ‹EÇ@    ¸   ëë6‹EÇ@    1Àë6ÉÃ6U‰åƒìS‹Eƒx u1Àé•   ‹E‹X]‰]ü‹E‹Uü9P})‹Uü‰ĞÂR‹EPèt   ƒÄ‰À…Àu‹EÇ@    1ÀëU‹E‹‰Uø‹EP‹EP‹E‹UøPRèüÿÿÿƒÄ‹E‹U‹Z]‰X‹E‹U‹@9B}‹E‹U‹J‰H¸   ë6‹]ôÉÃv U‰åƒì‹EP‹E‹RèüÿÿÿƒÄ‰À‰Eüƒ}ü t‹E‹U‰P‹E‹Uü‰¸   ëi‹EPèüÿÿÿƒÄ‰À‰Eüƒ}ü u‹EÇ@    1ÀëCv ‹E‹PR‹E‹R‹EüPèüÿÿÿƒÄ‹E‹RèüÿÿÿƒÄ‹E‹Uü‰‹E‹U‰P¸   ëÉÃ6U‰å‹E‹PR‹EPèEÿÿÿƒÄ‰Â‰Ğë ÉÃU‰åƒìj èüÿÿÿƒÄ‰Eüƒ}ü u1ÀëWv ‹Eü‹U‰P‹EüÇ „¿  ‹EüÇ@4¿  ‹EüÇ@¿  ‹EüÇ@Ô¾  ‹EüÇ@À  ‹EüÇ@Ğ¿  ‹EüÇ@À¾  ‹EüëÉÃ6U‰å‹EPèüÿÿÿƒÄÉÃv U‰åƒì‹E‰Eü‹Eü‹PR‹EPj‹EPèüÿÿÿƒÄ‰Â‰ĞëÉÃ6U‰åƒì‹E‰Eü‹Eü‹PR‹EPj‹EPèüÿÿÿƒÄ‰Â‰ĞëÉÃ6U‰åƒì‹E‰EøŠEˆEÿ‹Uø‹B‹Uø‹J‹@9Aw¶EÿP‹Eø‹PRèüÿÿÿƒÄë‹Uø‹B‹PŠMÿˆ
+-ÿ@ÉÃU‰åƒì‹E‰Eü‹Uü‹B‹Uü‹J‹@9Aw‹Eü‹PRèüÿÿÿƒÄ‰Àë‹Mü‹Q‹J¶ÿB‰ÀëÉÃ6U‰åƒì‹E‰Eüj ‹EP‹Eü‹PRèüÿÿÿƒÄ‰À…À”À¶Ğ‰ĞëÉÃ6U‰åƒì‹E‰Eü‹Eü‹PRèüÿÿÿƒÄ‰Â‰Ğëv ÉÃU‰åƒìS‹EPj èüÿÿÿƒÄ‰À‰Eü‹EüP‹EPèüÿÿÿƒÄ‹Eü‹UüR‹XÿÓƒÄ‹]øÉÃ6U‰åƒìSj ‹EPèüÿÿÿƒÄ‰À‰Eü‹EüPèüÿÿÿƒÄ‰À‰Eø‹Eü‹UüR‹XÿÓƒÄ‹Eøë‹]ôÉÃU‰åƒìj$èüÿÿÿƒÄ‰Eüƒ}ü u1Àë_v ‹Eü‹U‰P‹Eü‹U‰P ‹EüÇ ¬Á  ‹EüÇ@HÁ  ‹EüÇ@8Â  ‹EüÇ@èÁ  ‹EüÇ@    ‹EüÇ@    ‹EüÇ@4Á  ‹Eüë ÉÃ6U‰å‹EPèüÿÿÿƒÄÉÃv U‰åƒìS‹E‰Eü‹Uü‹B‹UR‹UR‹Uü‹J‹QR‹ÿÓƒÄ‰À‰Eøƒ}ø u¸ÿÿÿÿë6ë6ƒ}ø }
+-1Àë6ë
+-6‹Eøëv ‹]ôÉÃv U‰åƒìjEûP‹EPè‡ÿÿÿƒÄ‰À‰Eüƒ}üu¶Uû‰Ğëë
+-6¸ÿÿÿÿëÉÃ6U‰åƒìS‹E‰Eü‹Uü‹B ‹UR‹UR‹Uü‹J ‹QR‹ÿÓƒÄ‰À‰Eøƒ}ø 	1Àëë
+-6‹Eøëv ‹]ôÉÃv U‰åƒìŠEˆEÿjEÿP‹EPè•ÿÿÿƒÄÉÃU‰åƒì‹EPhôK h    èüÿÿÿƒÄh    èüÿÿÿƒÄ‹EPèüÿÿÿƒÄ‰Eüƒ}ü u*hL h    èüÿÿÿƒÄh    èüÿÿÿƒÄjcèüÿÿÿƒÄj‹EüPèüÿÿÿƒÄ6ÉÃ6U‰å‹EPèüÿÿÿƒÄ‰ÀP‹EP‹EPèüÿÿÿƒÄÉÃU‰å‹EPèüÿÿÿƒÄ‰ÀP‹EP‹EPèüÿÿÿƒÄÉÃU‰åÉÃv U‰åƒìS‹EPèüÿÿÿƒÄ‰À‰Eø‹EøPè'   ƒÄ‰À‰Eü‹Eø‹UøR‹XÿÓƒÄ‹Eüëv ‹]ôÉÃv U‰åìÀ   WVSÇE¼    ÇE¸    ÇE´    ÇE¤ÿÿÿÿÇE     jj ‹EPèüÿÿÿƒÄ‹EPjEøPèüÿÿÿƒÄjEøPèüÿÿÿƒÄ‰À…Àu1ÀéX  j hXÂ  hxL hYL èüÿÿÿƒÄ‰À‰Eôƒ}ô uh_L h    èüÿÿÿƒÄ1Àé  v ‹EôPèüÿÿÿƒÄ‰À‰Eğƒ}ğ u)h‘L h    èüÿÿÿƒÄj j EôPèüÿÿÿƒÄ1ÀéØ  hxL èüÿÿÿƒÄ‰À…Àt-hÃL h    èüÿÿÿƒÄj EğPEôPèüÿÿÿƒÄ1Àéš  6j‹EôPèüÿÿÿƒÄhÔÂ  ‹EP‹EôPèüÿÿÿƒÄ‹EğP‹EôPèüÿÿÿƒÄj j EØPEÜPEàPEèPEìP‹EğP‹EôPèüÿÿÿƒÄ$ƒ}Ütƒ}Ütëv ‹EèP‹EìPèüÿÿÿƒÄ‰À‰E´ë‹EèP‹EìPèüÿÿÿƒÄ‰À‰E´ƒ}´ uEhñL h    èüÿÿÿƒÄj EğPEôPèüÿÿÿƒÄ‹E¼PèüÿÿÿƒÄ‹E¸PèüÿÿÿƒÄ1Àé¶
+-  6ƒ}àu‹EôPèüÿÿÿƒÄëƒ}à‹EôPèüÿÿÿƒÄƒ}Ü‡È  ‹EÜ‰Â•    ‹ÀÅ  ÿâ¤Æ  tÉ  ÔÈ  ÜÅ  ¤Æ  tÉ  ÔÈ  EÔPEÌP‹EğP‹EôPèüÿÿÿƒÄj‹EğP‹EôPèüÿÿÿƒÄ‰À…À„Œ   ÇEœ   j EĞPEÀP‹EğP‹EôPèüÿÿÿƒÄÇE°    ‹E°9EĞëZ6‹E´‹U°‹MÀM°ŠÀëˆHÿÿÿ¶Hÿÿÿ¿   )Ï‰¼8  ‹EÀE°€8 uƒ}œ t‹E´‹U°‰  ÇEœ    ÿE°ëŸv éÓ  v h   èüÿÿÿƒÄ‰À‰Â‰UÌ…Òu,hM h    èüÿÿÿƒÄj EğPEôPèüÿÿÿƒÄ1ÀéI	  ÇE    ƒ}àÓ   ‹Mà»   Óã‰]ÔÇE°    }°ÿ   ~é©   ‹E°‰Á‰ÊÁâ)Â‹MÔI‰Ğ™÷ù‰E¬‹U°‰ĞÀĞ‹UÌ‹}°‰½Dÿÿÿ‹DÿÿÿÉDÿÿÿ‹]Ì‰DÿÿÿDÿÿÿ‹u°‰µDÿÿÿÁ¥DÿÿÿµDÿÿÿ‹uÌ‹½Dÿÿÿ÷‰½DÿÿÿŠ]¬ˆ]˜Š]˜‹½Dÿÿÿˆ_Š]˜ˆDÿÿÿŠDÿÿÿˆYŠDÿÿÿˆÿE°éKÿÿÿ6é¯   v ÇEÔ   ÇE°    }°ÿ   ~é   ‹U°‰ĞÀĞ‹UÌ‹}°‰½Dÿÿÿ‹DÿÿÿÉDÿÿÿ‹]Ì‰DÿÿÿDÿÿÿ‹u°‰µDÿÿÿÁ¥DÿÿÿµDÿÿÿ‹uÌ‹½Dÿÿÿ÷‰½DÿÿÿŠ]°ˆ]”Š]”‹½Dÿÿÿˆ_Š]”ˆDÿÿÿŠDÿÿÿˆYŠDÿÿÿˆÿE°édÿÿÿ6j‹EğP‹EôPèüÿÿÿƒÄ‰À…Àt>EÈPj j ‹EğP‹EôPèüÿÿÿƒÄƒ}àu‹EÈf‹PfÁê·Â‰E¤ëv ‹EÈ·P‰U¤é¡   j‹EğP‹EôPèüÿÿÿƒÄ‰À…À„‚   EÄPj j ‹EğP‹EôPèüÿÿÿƒÄƒ}àu>‹EÄf‹PfÁê·Ê‰ÈÁà‹UÄf‹JfÁé·Ñ‰ÑÁáÈ‹UÄf‹JfÁé·ÑĞ‰E¤ë'‹EÄ·P‰ĞÁà‹UÄ·J‰ÊÁâĞ‹UÄ·JÈ‰E¤ë ‹EğP‹EôPèüÿÿÿƒÄ‹EğP‹EôPèüÿÿÿƒÄ‰À‰Eä‹Eä¯EèPèüÿÿÿƒÄ‰À‰Â‰U¼…Òu,hKM h    èüÿÿÿƒÄj EğPEôPèüÿÿÿƒÄ1ÀéQ  ‹Eè‰Â•    PèüÿÿÿƒÄ‰À‰Â‰U¸…Òu8huM h    èüÿÿÿƒÄj EğPEôPèüÿÿÿƒÄ‹E¼PèüÿÿÿƒÄ1Àéù  ÇE¬    ‹E¬9Eèwë'v ‹E¬‰Â•    ‹U¸‹M¬¯Mä‹}¼Ï‰<ÿE¬ëĞ‹E¸P‹EôPèüÿÿÿƒÄj ‹EôPèüÿÿÿƒÄ‹E´ƒ¸8   …*  ‹E´‹UÔ‰P‹E´‹U¤‰  ‹]´Ã  ‰]¨ÇE°    ‹E°9EÔéÅ   ‹E´‹U°‹}°‰½Dÿÿÿ‹DÿÿÿÉDÿÿÿ‹]Ì‰Dÿÿÿ‹½Dÿÿÿ¶<‰|‹E´‹U°‹]°‰Dÿÿÿ‹DÿÿÿÉDÿÿÿ‹}Ì‰½Dÿÿÿ‹Dÿÿÿ¶\‰œ  ‹E´‹U°‹}°‰½Dÿÿÿ‹DÿÿÿÉDÿÿÿ‹]Ì‰Dÿÿÿ‹½Dÿÿÿ¶|‰¼  ‹E°‰Â•    ‹U¨Ç   ÿE°é0ÿÿÿ6‹EÔ‰E°}°ÿ   ~ëv ‹E°‰Â•    ‹U¨Ç   ÿE°ë×‹E´ƒ}Ø”Â¶Ú‰˜0  j EğPEôPèüÿÿÿƒÄ‹EÜƒøtƒø„v  éu  ÇE¬    ‹E¬9EèwéT  ÇEœ    ÇE°    ‹E°9Eìwé1  ‹U¬‰Ñ    ‹M¸‹UœŠÿEœ‹M¬‰Dÿÿÿ‹½Dÿÿÿ½    ‹]¸‰Dÿÿÿ‹½Dÿÿÿ‹MœŠÿEœ‹]¬‰Dÿÿÿ‹µDÿÿÿ<µ    ‰½Dÿÿÿ‹u¸‹Dÿÿÿ‹]œ‰Dÿÿÿ‹½DÿÿÿŠÿEœ‹]´‰Dÿÿÿ‹u¬‰µ@ÿÿÿ‹½@ÿÿÿ4½    ‹Dÿÿÿ‹›<  ‰@ÿÿÿ‹}°‰½Dÿÿÿ‹Dÿÿÿ‰]‹}Áç‰½Dÿÿÿ‹@ÿÿÿ‹43¶ø‰}Œ‹]ŒÁã‰@ÿÿÿ¶ú‰}ˆ‹]ˆÁã‰]„‹½@ÿÿÿ}„‰½@ÿÿÿ¶Ù‰]€‹]€@ÿÿÿ‹½Dÿÿÿ‰>ÿE°éÄşÿÿ6ÿE¬éŸşÿÿé  v ÇE¬    ‹E¬9Eèwéè  ÇEœ    ÇE°    ‹E°9EìwéÅ  ‹U¬‰Ñ    ‹M¸‹UœŠÿEœ‹M¬‰Dÿÿÿ‹½Dÿÿÿ½    ‹]¸‰Dÿÿÿ‹½Dÿÿÿ‹MœŠÿEœ‹]¬‰Dÿÿÿ‹µDÿÿÿ<µ    ‰½Dÿÿÿ‹u¸‹Dÿÿÿ‹]œ‰Dÿÿÿ‹½DÿÿÿŠÿEœ‹u¬‰µ@ÿÿÿ‹@ÿÿÿ4    ‹}¸‰½@ÿÿÿ‹@ÿÿÿ‹43uœŠÀëˆ|ÿÿÿ³*|ÿÿÿˆDÿÿÿÿEœ‹u´‹}¬‰½@ÿÿÿ‹@ÿÿÿ‰xÿÿÿ‹½xÿÿÿÁç‰½@ÿÿÿ‹<  ‰tÿÿÿ‹u°‰µpÿÿÿ‹½pÿÿÿ4½    ‹@ÿÿÿ‹½tÿÿÿ‹‰@ÿÿÿ¶Dÿÿÿ‰lÿÿÿ‹½lÿÿÿÁç‰½hÿÿÿ¶Ø‰dÿÿÿ‹½dÿÿÿÁç‰½`ÿÿÿ‹hÿÿÿ`ÿÿÿ‰\ÿÿÿ¶ú‰½Xÿÿÿ‹XÿÿÿÁã‰Tÿÿÿ‹½\ÿÿÿ½Tÿÿÿ‰½Pÿÿÿ¶Ù‰Lÿÿÿ‹PÿÿÿLÿÿÿ‹½@ÿÿÿ‰7ÿE°é1şÿÿv ÿE¬éşÿÿé‹   v ÇE¬    ‹E¬9Eèwëwv ÇE°    ‹E°9Eìwë[v ‹U¬‰Ñ    ‹M¸‹U°Š‹U´‹M¬‰Dÿÿÿ‹½Dÿÿÿ½    ‹‹
+-M°ˆ¶Ğ‰Ñ    ‹M¨Ç    ÿE°ëv ÿE¬ë‚v ‹E …Àt‹EÌPèüÿÿÿƒÄ‹E¼PèüÿÿÿƒÄ‹E¸PèüÿÿÿƒÄ‹E´ë ¥4ÿÿÿ[^_ÉÃU‰åƒìS‹EPèüÿÿÿƒÄ‰À‰Eü‹EüP‹EPès   ƒÄ‹Eü‹UüR‹XÿÓƒÄ‹]øÉÃU‰åƒìSj h   èüÿÿÿƒÄ‰À‰Eø‹EøP‹EPè4   ƒÄ‹EP‹EøPèüÿÿÿƒÄ‰À‰Eü‹Eø‹UøR‹XÿÓƒÄ‹Eüë ‹]ôÉÃv U‰åìX  VS‹E‹P‰Uì‹E‹P‰Uè‹E‹P‰Uä‹]Ã  ‰]à‹E‹  ‰•È÷ÿÿÇ…Ä÷ÿÿ    j hXÂ  hxL hYL èüÿÿÿƒÄ‰À‰…Ğ÷ÿÿƒ½Ğ÷ÿÿ uh_L h    èüÿÿÿƒÄéé  ‹…Ğ÷ÿÿPèüÿÿÿƒÄ‰À‰…Ì÷ÿÿƒ½Ì÷ÿÿ u(h‘L h    èüÿÿÿƒÄj …Ğ÷ÿÿPèüÿÿÿƒÄé¡  hxL èüÿÿÿƒÄ‰À…Àt-hÃL h    èüÿÿÿƒÄ…Ì÷ÿÿP…Ğ÷ÿÿPèüÿÿÿƒÄéa  hÃ  høÂ  ‹EP‹…Ğ÷ÿÿPèüÿÿÿƒÄ‹Eƒ¸8   u=‹E‹•È÷ÿÿ9P~%‹…È÷ÿÿ…À|%‹…È÷ÿÿ‰Â•    ‹Uàƒ< uëÇ…È÷ÿÿÿÿÿÿ‹Eƒ¸8   u&ÇEü    }üÿ   ~ë‹EüÇ„…àûÿÿÿÿÿÿÿEüëâ‹Eƒ¸8   …“   ÇEä    ÇEü    ‹E‹Uü9Pë-‹Eü‰Â•    ‹Uàƒ< u‹Eü‹Uä‰”…àûÿÿÿEäÿEüëÈ6‹E‹Uä9P~
+-Ç…Ä÷ÿÿ   ƒ}ä	ÇEô   ë'ƒ}ä
+-ÇEô   ëƒ}ä
+-ÇEô   ëÇEô   ‹Eƒ¸0   •À¶Ø‰]ğ‹Eƒ¸8   tf‹Eƒ¸D   t.j j ‹EğPjj‹EèP‹EìP‹…Ì÷ÿÿP‹…Ğ÷ÿÿPèüÿÿÿƒÄ$ë,6j j ‹EğPjj‹EèP‹EìP‹…Ì÷ÿÿP‹…Ğ÷ÿÿPèüÿÿÿƒÄ$ë,j j ‹EğPj‹EôP‹EèP‹EìP‹…Ì÷ÿÿP‹…Ğ÷ÿÿPèüÿÿÿƒÄ$‹Eƒ¸8   „€   ‹Eƒ¸D   ut‹…È÷ÿÿ…À|j‹E‹8  â  ÿ ‰ĞÁøf‰…Öúÿÿ‹E‹8  â ÿ  ‰ĞÁøf‰…Øúÿÿ‹Ef‹˜8  · f‰Úúÿÿ…ÔúÿÿPj j ‹…Ì÷ÿÿP‹…Ğ÷ÿÿPèüÿÿÿƒÄ‹Eƒ¸8   …  Ç…À÷ÿÿ    Ç…°÷ÿÿÿÿÿÿÇ…¼÷ÿÿ    ‹E‹•¼÷ÿÿ9Pë66‹E‹•¼÷ÿÿƒ¼   u‹E‹•¼÷ÿÿƒ¼8   tÿ…À÷ÿÿÿ…¼÷ÿÿëºƒ½À÷ÿÿ „  ‹…Ä÷ÿÿ…Àu
+-Ç…Ä÷ÿÿ   Ç…¸÷ÿÿ    ‹]äK‰´÷ÿÿÇ…¼÷ÿÿ    ‹E‹•¼÷ÿÿ9Pé²   6‹E‹•¼÷ÿÿƒ¼   …   ‹E‹•¼÷ÿÿƒ¼8   tb•àúÿÿ‰Ğ…¸÷ÿÿ‹U‹¼÷ÿÿŠ”Š8   Ò‹M‹¼÷ÿÿ‰¨÷ÿÿ‹¨÷ÿÿ‹Œ™8  Áù Ê³ÿ(Óˆ‹…¼÷ÿÿ‹•¸÷ÿÿ‰”…àûÿÿÿ…¸÷ÿÿë‹…¼÷ÿÿ‹•´÷ÿÿ‰”…àûÿÿÿ´÷ÿÿÿ…¼÷ÿÿé;ÿÿÿj ‹…À÷ÿÿP…àúÿÿP‹…Ì÷ÿÿP‹…Ğ÷ÿÿPèüÿÿÿƒÄ‹Eƒ¸8   …Ÿ  ‹…Ä÷ÿÿ…À„Ô   ÇEü    ‹E‹Uü9Péµ   ‹Eüƒ¼…àûÿÿ }é—   6‹Eü‹”…àûÿÿ‰ĞÀĞ•Ô÷ÿÿ‹M‹]ü‰¨÷ÿÿ‹¨÷ÿÿŠL™ˆ‹Eü‹”…àûÿÿ‰ĞÀĞ•Ô÷ÿÿ‹M‹]ü‰¨÷ÿÿ‹¨÷ÿÿŠŒ™  ˆL‹Eü‹”…àûÿÿ‰ĞÀĞ•Ô÷ÿÿ‹M‹]ü‰¨÷ÿÿ‹¨÷ÿÿŠŒ™  ˆLÿEüé>ÿÿÿv éŸ   v ÇEü    ‹Eü9Eäéˆ   ‹Uü‰ĞÀĞ•Ô÷ÿÿ‹M‹]ü‰¨÷ÿÿ‹¨÷ÿÿŠL™ˆ‹Uü‰ĞÀĞ•Ô÷ÿÿ‹M‹]ü‰¨÷ÿÿ‹¨÷ÿÿŠŒ™  ˆL‹Uü‰ĞÀĞ•Ô÷ÿÿ‹M‹]ü‰¨÷ÿÿ‹¨÷ÿÿŠŒ™  ˆLÿEüékÿÿÿ‹EäP…Ô÷ÿÿP‹…Ì÷ÿÿP‹…Ğ÷ÿÿPèüÿÿÿƒÄ‹…Ì÷ÿÿP‹…Ğ÷ÿÿPèüÿÿÿƒÄ‹…Ğ÷ÿÿPèüÿÿÿƒÄ‹Eƒ¸8   „r  ‹Eƒ¸D   t
+-¸   ëv ¸   ‰…°÷ÿÿ‹Eè‰Â•    PèüÿÿÿƒÄ‰…´÷ÿÿƒ½´÷ÿÿ uh¡M h    èüÿÿÿƒÄÇEø    ‹Eø9Eèé  v Ç…¸÷ÿÿ    ‹Eì¯…°÷ÿÿPèüÿÿÿƒÄ‰À‹Uø‰Ñ    ‹´÷ÿÿ‰À‰…ÀuRhĞM h    èüÿÿÿƒÄÇEü    ‹Eü9Eøë'v ‹Eü‰Â•    ‹•´÷ÿÿ‹PèüÿÿÿƒÄÿEüëĞél  v ÇEü    ‹Eü9Eìéä  ‹Eø‰Â•    ‹•´÷ÿÿ‹…¸÷ÿÿ‹M‹Uø‰•¨÷ÿÿ‹¨÷ÿÿ    ‹‰<  ‹]ü‰¨÷ÿÿ‹µ¨÷ÿÿµ    ‰¨÷ÿÿ‹‹¨÷ÿÿ‹á  ÿ ‰ÊÁúˆÿ…¸÷ÿÿ‹Eø‰Â•    ‹•´÷ÿÿ‹…¸÷ÿÿ‹M‹Uø‰•¨÷ÿÿ‹¨÷ÿÿ    ‹‰<  ‹]ü‰¨÷ÿÿ‹µ¨÷ÿÿµ    ‰¨÷ÿÿ‹‹¨÷ÿÿ‹á ÿ  ‰ÊÁúˆÿ…¸÷ÿÿ‹Eø‰Â•    ‹•´÷ÿÿ‹…¸÷ÿÿ‹M‹Uø‰•¨÷ÿÿ‹¨÷ÿÿ    ‹‰<  ‹]ü‰¨÷ÿÿ‹µ¨÷ÿÿµ    ‰¨÷ÿÿ‹‹¨÷ÿÿŠˆÿ…¸÷ÿÿ‹Eƒ¸D   t|‹U‹Eø‰Á    ‹’<  ‹Mü‰¨÷ÿÿ‹¨÷ÿÿ    ‹‹â   ‰ĞÁøˆ…¯÷ÿÿ‹Eø‰Â•    ‹•´÷ÿÿ‹…¸÷ÿÿŠ•¯÷ÿÿ ÒŠ¯÷ÿÿÀé Ê³ÿ(Óˆÿ…¸÷ÿÿÿEüéşÿÿÿEøédıÿÿ‹…´÷ÿÿP‹…Ğ÷ÿÿPèüÿÿÿƒÄ‹…Ì÷ÿÿP‹…Ğ÷ÿÿPèüÿÿÿƒÄÇEø    ‹Eø9Eèë'v ‹Eø‰Â•    ‹•´÷ÿÿ‹PèüÿÿÿƒÄÿEøëĞ‹…´÷ÿÿPèüÿÿÿƒÄéÛ  ‹…Ä÷ÿÿ…À„¢  ‹Eè‰Â•    PèüÿÿÿƒÄ‰…°÷ÿÿƒ½°÷ÿÿ uh¡M h    èüÿÿÿƒÄÇEø    ‹Eø9Eèéà   ‹EìPèüÿÿÿƒÄ‰À‹Uø‰Ñ    ‹°÷ÿÿ‰À‰…ÀuOhĞM h    èüÿÿÿƒÄÇEü    ‹Eü9Eøë$‹Eü‰Â•    ‹•°÷ÿÿ‹PèüÿÿÿƒÄÿEüëÓé$  v ÇEü    ‹Eü9EìëOv ‹Eø‰Â•    ‹•°÷ÿÿ‹Eü‹U‹Mø‰¨÷ÿÿ‹¨÷ÿÿ    ‹‹
+-Mü¶ŠŒ•àûÿÿˆÿEüë©6ÿEøéÿÿÿ‹…°÷ÿÿP‹…Ğ÷ÿÿPèüÿÿÿƒÄ‹…Ì÷ÿÿP‹…Ğ÷ÿÿPèüÿÿÿƒÄÇEø    ‹Eø9Eèë'v ‹Eø‰Â•    ‹•°÷ÿÿ‹PèüÿÿÿƒÄÿEøëĞ‹…°÷ÿÿPèüÿÿÿƒÄë.v ‹E‹R‹…Ğ÷ÿÿPèüÿÿÿƒÄ‹…Ì÷ÿÿP‹…Ğ÷ÿÿPèüÿÿÿƒÄ…Ì÷ÿÿP…Ğ÷ÿÿPèüÿÿÿƒÄ¥ ÷ÿÿ[^ÉÃU‰åƒìSh N h    èüÿÿÿƒÄ‹U‹‹UR‹XÿÓƒÄh    èüÿÿÿƒÄ‹E‹P‰Uü‹EPèüÿÿÿƒÄƒ}ü t"j‹EüPèüÿÿÿƒÄh4N h    èüÿÿÿƒÄëh{N h    èüÿÿÿƒÄh    èüÿÿÿƒÄjcèüÿÿÿƒÄv ‹]øÉÃv U‰åƒìS‹EPèüÿÿÿƒÄ‰À‰Eü‹EP‹EüP‹EPèw   ƒÄ‹Eü‹UüR‹XÿÓƒÄ‹]øÉÃU‰åƒìSj h   èüÿÿÿƒÄ‰À‰Eø‹EP‹EøP‹EPè4   ƒÄ‹EP‹EøPèüÿÿÿƒÄ‰À‰Eü‹Eø‹UøR‹XÿÓƒÄ‹Eüë ‹]ôÉÃv U‰åì,  VSÇ…øıÿÿ    ht  j …ŒşÿÿPèüÿÿÿƒÄh„   j …şÿÿPèüÿÿÿƒÄ…şÿÿPèüÿÿÿƒÄ‰À‰…ŒşÿÿµÜıÿÿ‰µ˜şÿÿ…ÜıÿÿPèüÿÿÿƒÄ‰À…Àt‹…øıÿÿ…Àt‹…øıÿÿPèüÿÿÿƒÄév  ‹…ŒşÿÿÇ Tİ  ht  j>…ŒşÿÿPèüÿÿÿƒÄ‹E‹P‰•¨şÿÿ‹E‹P‰•¬şÿÿÇ…°şÿÿ   Ç…´şÿÿ   …ŒşÿÿPèüÿÿÿƒÄƒ} |j‹EP…ŒşÿÿPèüÿÿÿƒÄ‹Eƒ¸0   t…ŒşÿÿPèüÿÿÿƒÄ‹EP…ŒşÿÿPèİ  ƒÄ‹…¨şÿÿ¯…°şÿÿPjèüÿÿÿƒÄ‰…øıÿÿ‹…øıÿÿ…Àu&h¾N h    èüÿÿÿƒÄ…ŒşÿÿPèüÿÿÿƒÄé  ‹…øıÿÿ‰…ôıÿÿj…ŒşÿÿPèüÿÿÿƒÄj>¡üM PhO …ØüÿÿPèüÿÿÿƒÄƒ} |1‹EPh7O Øüÿÿ…ØüÿÿPèüÿÿÿƒÄ‰ÀRèüÿÿÿƒÄë+v hFO Øüÿÿ…ØüÿÿPèüÿÿÿƒÄ‰ÀRèüÿÿÿƒÄ…ØüÿÿPèüÿÿÿƒÄ‰ÀP…ØüÿÿPhş   …ŒşÿÿPèüÿÿÿƒÄ‹Eƒ¸8   „G  Ç…şÿÿ    ‹E‹•şÿÿ9Pé"  6Ç…üıÿÿ    Ç… şÿÿ    ‹E‹• şÿÿ9Pé©   ‹U‹…şÿÿ‰Á    ‹’<  ‹ şÿÿ‰Ë    ‹‹‰•Ôüÿÿ‹•øıÿÿ‰Ğ…üıÿÿ‹•Ôüÿÿâ  ÿ ‰ÑÁùˆÿ…üıÿÿ‹•øıÿÿ‰Ğ…üıÿÿ‹•Ôüÿÿâ ÿ  ‰ÑÁùˆÿ…üıÿÿ‹•øıÿÿ‰Ğ…üıÿÿŠ•Ôüÿÿˆÿ…üıÿÿÿ… şÿÿéDÿÿÿj…ôıÿÿP…ŒşÿÿPèüÿÿÿƒÄ‰À‰…Øıÿÿƒ½Øıÿÿt‹…ØıÿÿPhXO h    èüÿÿÿƒÄÿ…şÿÿéÎşÿÿv é;  v Ç…şÿÿ    ‹E‹•şÿÿ9Pé  v Ç…üıÿÿ    Ç… şÿÿ    ‹E‹• şÿÿ9Pé¡   ‹E‹•şÿÿ‰Ñ    ‹ ‹• şÿÿ¶2‰µÔüÿÿ‹•øıÿÿ‰Ğ…üıÿÿ‹U‹ÔüÿÿŠTŠˆÿ…üıÿÿ‹•øıÿÿ‰Ğ…üıÿÿ‹U‹ÔüÿÿŠ”Š  ˆÿ…üıÿÿ‹•øıÿÿ‰Ğ…üıÿÿ‹U‹ÔüÿÿŠ”Š  ˆÿ…üıÿÿÿ… şÿÿéLÿÿÿj…ôıÿÿP…ŒşÿÿPèüÿÿÿƒÄ‰À‰…Øıÿÿƒ½Øıÿÿt‹…ØıÿÿPhXO h    èüÿÿÿƒÄÿ…şÿÿéÕşÿÿv …ŒşÿÿPèüÿÿÿƒÄ…ŒşÿÿPèüÿÿÿƒÄ‹…øıÿÿPèüÿÿÿƒÄ¥Ìüÿÿ[^ÉÃU‰åƒìS‹EPèüÿÿÿƒÄ‰À‰Eø‹EøPè'   ƒÄ‰À‰Eü‹Eø‹UøR‹XÿÓƒÄ‹Eüëv ‹]ôÉÃv U‰åìˆ  WVSÇ…ıÿÿ    Ç…Œıÿÿ    hĞ  j …0şÿÿPèüÿÿÿƒÄh„   j …¬ıÿÿPèüÿÿÿƒÄ…¬ıÿÿPèüÿÿÿƒÄ‰À‰…0şÿÿ½”ıÿÿ‰½<şÿÿ…”ıÿÿPèüÿÿÿƒÄ‰À…Àt<‹…ıÿÿ…Àt‹…ıÿÿPèüÿÿÿƒÄ‹…Œıÿÿ…Àt‹…ŒıÿÿPèüÿÿÿƒÄ1Àés  v ‹…0şÿÿÇ Tİ  hĞ  j>…0şÿÿPèüÿÿÿƒÄ‹EP…0şÿÿPèê  ƒÄj…0şÿÿPèüÿÿÿƒÄ‰À‰…|ıÿÿƒ½|ıÿÿtj‹…|ıÿÿPh™O h    èüÿÿÿƒÄ½Pşÿÿÿÿÿvhÿÿÿ‹…PşÿÿPhÕO h    èüÿÿÿƒÄ½Lşÿÿÿÿÿvhÿÿÿ‹…LşÿÿPhAP h    èüÿÿÿƒÄ‹…PşÿÿP‹…LşÿÿPèüÿÿÿƒÄ‰À‰…Œıÿÿ‹…Œıÿÿ…Àuh­P h    èüÿÿÿƒÄé#  v Ç…\şÿÿ   …0şÿÿPèüÿÿÿƒÄ‰ÀƒøthÜP h    èüÿÿÿƒÄƒ½¬şÿÿt!‹…¬şÿÿPh#Q h    èüÿÿÿƒÄéÇ  v j‹• şÿÿ‰ĞÀĞPèüÿÿÿƒÄ‰…ıÿÿ‹…ıÿÿ…Àuh…Q h    èüÿÿÿƒÄé†  6‹…ıÿÿ‰…ˆıÿÿÇ…„ıÿÿ    ‹…„ıÿÿ9…¤şÿÿwé  v j…ˆıÿÿP…0şÿÿPèüÿÿÿƒÄ‰À‰…xıÿÿƒ½xıÿÿt‹…xıÿÿPhÖQ h    èüÿÿÿƒÄé  Ç…€ıÿÿ    ‹…€ıÿÿ9… şÿÿwé—   v ‹…Œıÿÿ‹•„ıÿÿ‰Ñ    ‹ˆ<  ‹…€ıÿÿ‰Ã    ‹‹€ıÿÿ‰ÙÉÙ‹ıÿÿ¶4‰ñÁá‹µ€ıÿÿ‰óÛó‹µıÿÿós¶‰ŞÁæñ‹µ€ıÿÿ‰óÛó‹µıÿÿós¶<‰<ÿ…€ıÿÿéVÿÿÿÿ…„ıÿÿéãşÿÿ…0şÿÿPèüÿÿÿƒÄ‰ÀƒøthR h    èüÿÿÿƒÄ…0şÿÿPèüÿÿÿƒÄ‹…ıÿÿPèüÿÿÿƒÄ‹…ŒıÿÿëJ6…0şÿÿPèüÿÿÿƒÄ‹…ıÿÿ…Àt‹…ıÿÿPèüÿÿÿƒÄ‹…Œıÿÿ…Àt‹…ŒıÿÿPèüÿÿÿƒÄ1Àëv ¥lıÿÿ[^_ÉÃU‰åƒì‹E‹P‰Uü‹EüÇ@$   ÉÃU‰åƒìVS‹E‹P‰UüÇEø    h   j ‹Eü‹P RèüÿÿÿƒÄ}øÿ  vëSv ‹Eü‹PR¸   +EøP‹Eü‹P UøRèüÿÿÿƒÄ‰À‰Eôƒ}ôÿtƒ}ô uëv ƒ}ø uÇEøÿÿÿÿë	‹uôuøë¢ƒ}ø u^‹Eüƒx$ t‹E‹ÇB*   ‹U‹‹UR‹ÿÓƒÄ‹E‹ÇBx   ‹U‹jÿ‹UR‹XÿÓƒÄ‹Eü‹P Æÿ‹Eü‹P BÆÙÇEø   ‹Eü‹Uü‹J ‰‹Eü‹Uø‰P‹EüÇ@$    ¸   ëv eì[^ÉÃU‰åƒì‹E‹P‰Uüƒ} ~C‹Eü‹U9P|ë6‹Eü‹H)M‹EPèªşÿÿƒÄëÚ‹Eü‹Uü‹
+-M‰‹Eü‹Uü‹J+M‰HÉÃ6U‰åÉÃv U‰åƒìS‹Eƒx uF‹U‹Bj(j ‹UR‹ÿÓƒÄ‰À‹U‰B‹E‹P‰Uü‹U‹Bh   j ‹UR‹ÿÓƒÄ‰À‹Uü‰B ‹E‹P‰Uü‹EüÇ@    ‹EüÇ@    ‹EüÇ@    ‹EüÇ@    ‹EüÇ@    ‹Eü‹U‰P‹EüÇ@    ‹EüÇ     ‹]øÉÃ6U‰åƒìS‹E‹P‰Uü‹U‹Bh   j‹UR‹ÿÓƒÄ‰À‹Uü‰B‹Eü‹Uü‹J‰‹EüÇ@   ‹]øÉÃ6U‰åƒìS‹E‹P‰Uü‹Eü‹PRh   ‹Eü‹PRèüÿÿÿƒÄ‰À=   t‹E‹ÇB%   ‹U‹‹UR‹ÿÓƒÄ‹Eü‹Uü‹J‰‹EüÇ@   ¸   ë ‹]øÉÃv U‰åƒìS‹E‹P‰Uü‹Eü¹   +H‰Møƒ}ø t=‹Eü‹PR‹EøP‹Eü‹PRèüÿÿÿƒÄ‰À9Eøt‹E‹ÇB%   ‹U‹‹UR‹ÿÓƒÄ‹]ôÉÃ6U‰åƒìS‹Eƒx u‹U‹Bjj ‹UR‹ÿÓƒÄ‰À‹U‰B‹E‹P‰Uü‹EüÇ@    ‹EüÇ@    ‹EüÇ@    ‹Eü‹U‰P‹]øÉÃU‰åhZR h    èüÿÿÿƒÄ1Àëv ÉÃU‰å‹E0P‹E,P‹E(Pÿu$ÿu ÿuÿu‹EP‹EP‹EP‹EPè„
+-  ƒÄ,ÉÃv U‰åƒìVS‹E¶0‰uüƒ}ü&……   ÇEô    ‹E@¶0‰uüƒ}ü#unÇEø   ƒ}ø~ëCv ‹EEø¶0‰uüƒ}ü/~"ƒ}ü9‹Eô‰ÂÁâÂĞPĞ‹uüÖ‰uôëv ë
+-6ÿEøë¸v ƒ}ü;u‹E‹Uô‰ÿEø‹Eøé'  v ‹E¶0‰uü}ü¿   ‹E‹Uü‰¸   é   éë   v }üß   [‹E@¾‰Ğ%À   =€   u*‹E‹Müƒá‰ÊÁâ‹MAŠ€ã?¾Ë‰Ö	Î‰0¸   é°   ‹E‹Uü‰¸   é   6é‡   v }üï   {‹E@¾‰Ğ%À   =€   uV‹EƒÀ¾‰Ğ%À   =€   u?‹E‹Müƒá‰ÊÁâ‹MAŠ€ã?¾Ë‰ËÁã	Ú‹MƒÁŠ€ã?¾Ë‰Ö	Î‰0¸   ë#v ‹E‹Uü‰¸   ë‹E‹Uü‰¸   ëeì[^ÉÃU‰åƒì‹E‰Eü‹E‰Eø‹Eø‹R‹Eü‹RèüÿÿÿƒÄ‰À…À”À¶Ğ‰Ğë ÉÃ6U‰åƒì@S‹E‰EøÇEğ    ÇEÜ    ÇEÄ    jèüÿÿÿƒÄ‰Eü‹Eø‹RèüÿÿÿƒÄ‰À‹Uü‰‹Eü‹Uø‹J‰Hh€R èüÿÿÿƒÄ‰À‰Eèƒ}è uÇEè‹R ‹EèPèüÿÿÿƒÄ‰À‰EÔ‹Eü‹RèüÿÿÿƒÄ‰À‰EàEÌPh¥R ‹EàPèüÿÿÿƒÄ‰À‰EØƒ}Ø ué   ‹EèPèüÿÿÿƒÄ‰Ã‹EØPèüÿÿÿƒÄ‰ÀBP‹EÜPèüÿÿÿƒÄ‰EÜ‹EØ€8/u2‹EØPh§R ‹EÜPèüÿÿÿƒÄj‹EÜPèüÿÿÿƒÄ‰À…Àu	ÿEğé•   hªR ‹EÔPèüÿÿÿƒÄ‰À‰EĞƒ}Ğ uëN6‹EØP‹EĞPh¬R ‹EÜPèüÿÿÿƒÄj‹EÜPèüÿÿÿƒÄ‰À…ÀuÿEğë6hªR j èüÿÿÿƒÄ‰À‰EĞë¬6ƒ}ğ të EÌPh¥R j èüÿÿÿƒÄ‰À‰EØéøşÿÿv ‹EÔPèüÿÿÿƒÄ‹EàPèüÿÿÿƒÄƒ}ğ u‹EÇ ¶R 1Àé–  6‹EüƒÀPj ‹EÜP‹Eø‹P‹PèüÿÿÿƒÄ‰À‰EÈƒ}È t‹EÇ ÏR 1Àé[  v ‹EÜPèüÿÿÿƒÄ‹EüÆ@ ‹EüÆ@ ‹EüÆ@ ‹EüÆ@ ÇEô    ‹Eü‹P‹Eô9B$éú   6‹Uü‹B‹Uô‰Ñ    ‹@(‹‰UÀ‹EÀf‹Pf‰Uî‹EÀf‹P
+-f‰Uìfƒ}îufƒ}ìt1ëv fƒ}îu	fƒ}ì uëfƒ}îu	fƒ}ìtë fƒ}î uëv ‹EüÆ@‹EÀ‰EÄënfƒ}îufƒ}ìu‹EüÆ@‹EÀ‰EÄëPv fƒ}îufƒ}ìu‹EüÆ@‹EÀ‰EÄë0v fƒ}îu	fƒ}ì uëfƒ}îufƒ}ì uë ‹EüÆ@‹EÀ‰EÄÿEôéöşÿÿv ƒ}Ä u‹EÇ ãR 1Àë	‹Eüëv ‹]¼ÉÃv U‰åƒì‹E‰Eü‹Eü‹PRèüÿÿÿƒÄ‹Eü‹RèüÿÿÿƒÄ‹EPèüÿÿÿƒÄÉÃU‰åƒì‹E‰Eü‹E‰Eø1À‹Uü‹Mø‹9u/‹Uü‹Mø‹R9Qu!‹Uü‹Mø‹R9Qu‹Uü‹Mø‹R9Qu¸   ‰ÀëÉÃ6U‰åƒìVS‹E‰EøjèüÿÿÿƒÄ‰Eü‹Eü‹Uø‹
+-‰‰Mô‹Eü‹Uø‹J‰H‰Mì‹Eü‹Uø‹J‰H‰Mè‹Eø‹P‰Uäƒ}è }‹Eü‹uè÷Ş‰pé3  v ¾   +uô‰uğ‹Eäƒ¸8   ti‹Eü‹Uèâ   ‰ÑÁù‰Ë¯]ô‰Ú…Ò}ƒÂÁú¹   )Ñ‰ÊÁâ‹Mèá  ÿ ‰ËÁû‰ÙÁáÊ‹Mèá ÿ  ‰ËÁû‰ÙÁáÊ¶Mè4‰pé±   ‹Eä‹Uè‹uô¯´  ‰ğ‹Uä‹Mì‹uğ¯´Š  ‰ò‰È…À}ƒÀÁøP‹Eä‹Uè‹uô¯´  ‰ğ‹Uä‹Mì‹uğ¯´Š  ‰ò‰È…À}ƒÀÁøP‹Eä‹Uè‹uô¯t‰ğ‹Uä‹Mì‹uğ¯tŠ‰ò‰È…À}ƒÀÁøP‹EäPèüÿÿÿƒÄ‰À‹Uü‰B‹Eüëv eÜ[^ÉÃU‰å‹EPèüÿÿÿƒÄÉÃv U‰åƒì4Sƒ=L  u h0ô  hˆò  h0ò  j èüÿÿÿƒÄ‰À£L ‹E‰EØ‹E‰EÜÇEì    ‹Eì9EéL  ‹Mì¯M‰Mä‹M,Mì‰Mğ‹E‹Uğ9P~
+-ƒ}ğ |ë
+-6é  v ÇEè    ‹Eè9Eé   €}"uZ‹EEä¶‰UÌ‹MÌÍ    f‹U ‰ÑfÁùf‰MÌf‹]ÌfÁë‰ÑfÙf‰MÌf‹UÌfÁú¿Ê‰MÌEÌ¿U Jÿ‰MÌ™÷}Ì‰EĞëq€}"u^‹Uä‰Ğ…À}ƒÀÁø‹U¶‹Uä‰UÌƒ}Ì }ƒEÌ‹MÌÁù‰MÌ‹]Ìİ    ‰MÌ+UÌ‰ÑÓàˆÂ€â€„Òt
+-¸   ëv 1À‰EĞë¸S é>  6ƒ}Ğ   ‹M(Mè‰Mô‹E‹Uô9P~
+-ƒ}ô |ë
+-6éø   v ‹Eƒ¸8   t8‹U‹Eğ‰EÌ‹MÌ    ‹’<  ‹Mô‰MÌ‹]Ì    ‰MÌ‹MÌ‰Møë‹E‹Uğ‰UÌ‹MÌ    ‹ ‹Mô‰Müƒ}Ğu$‹Eƒ¸8   t‹Eø‹U‰ë
+-6‹EüŠUˆëk6‹Eƒ¸8   t‹Eø‹‰UÔë6‹Eü¶‰MÔEĞP¡L PèüÿÿÿƒÄ‰Eà‹Eƒ¸8   t‹Eø‹Uà‹J‰MÌ‹MÌ‰ëv ‹Eü‹UàŠJˆMÌŠMÌˆÿEèÿEäéóıÿÿÿEìé§ıÿÿ1Àë ‹]ÈÉÃv U‰åìÌ   WVÿu$ÿu èüÿÿÿƒÄİ]”ÿu$ÿu èüÿÿÿƒÄİ]ŒÇE„    Ç…|ÿÿÿ    Ç…xÿÿÿ    Ç…dÿÿÿ    Ç…8ÿÿÿ    ƒ} t,‹Uƒº8   u}ÿ   }ÿÿÿ}ë6Ç…8ÿÿÿ   ‹…8ÿÿÿ‰…`ÿÿÿƒ=”L  uTh˜L èüÿÿÿƒÄ‰…8ÿÿÿƒ½8ÿÿÿ t¸(S é[  v høñ  htî  h<î  jèüÿÿÿƒÄ‰…8ÿÿÿ‹8ÿÿÿ‰”L ‹E‰…8ÿÿÿ‹8ÿÿÿ‰lÿÿÿÇ…pÿÿÿ˜L …lÿÿÿ‰…8ÿÿÿÿµ8ÿÿÿ‹”L ‰8ÿÿÿÿµ8ÿÿÿèüÿÿÿƒÄ‰…tÿÿÿƒ½tÿÿÿ u‹”L ‹BéÅ  ‹…tÿÿÿ‰…8ÿÿÿ‹8ÿÿÿ‹Q‰U´‹E´‰…8ÿÿÿ‹8ÿÿÿ‹QT‰U¬j`j`İ˜S İEŞÉÙ½Xÿÿÿ‹…Xÿÿÿ´‰…TÿÿÿÙ­TÿÿÿÛ8ÿÿÿÙ­Xÿÿÿÿµ8ÿÿÿj ‹M´‰8ÿÿÿÿµ8ÿÿÿèüÿÿÿƒÄ‰…8ÿÿÿƒ½8ÿÿÿ t¸KS é*  6İ S İEŒŞÉÙ½Xÿÿÿ‹…Xÿÿÿ´‰…TÿÿÿÙ­TÿÿÿÛ]ĞÙ­Xÿÿÿİ S İE”ŞÉÙ½Xÿÿÿ‹Xÿÿÿµ‰TÿÿÿÙ­TÿÿÿÛ]ØÙ­Xÿÿÿ‹EØ÷Ø‰EÔ‹MĞ‰8ÿÿÿ‹…8ÿÿÿ‰EÜÇE¼    ÇE¸    ÇEÌ    ÇEÈ    ÇEü    ÇEô    ÇEø    ÇEğ    ‹M´‰8ÿÿÿ‹…8ÿÿÿŠ@$@ˆE§ÇEœ    ‹tÿÿÿ‰8ÿÿÿ‹…8ÿÿÿ€x „„   h   èüÿÿÿƒÄ‰…8ÿÿÿ‹•8ÿÿÿ‰•dÿÿÿ…ÒtIh   ‹M0‰8ÿÿÿÿµ8ÿÿÿ‹…dÿÿÿ‰…8ÿÿÿÿµ8ÿÿÿèüÿÿÿƒÄ‹dÿÿÿ‰8ÿÿÿ‹…8ÿÿÿ‰…hÿÿÿë‹M0‰8ÿÿÿ‹…8ÿÿÿ‰…hÿÿÿë‹M0‰8ÿÿÿ‹…8ÿÿÿ‰…hÿÿÿ‹hÿÿÿ‰8ÿÿÿ‹…8ÿÿÿ€8 uéW  v ‹hÿÿÿ‰8ÿÿÿ‹…8ÿÿÿ¾ ‰E€ƒ}€…²   ÇE¸    ÛE¸ÜMŒÛE¼ÜM”Şéİ¨S ŞÁİ˜S ŞùÙ½Xÿÿÿ‹Xÿÿÿµ‰TÿÿÿÙ­TÿÿÿÛ|ÿÿÿÙ­XÿÿÿÛE¸ÜM”ÛE¼ÜMŒŞÁİ¨S ŞÁİ˜S ŞùÙ½Xÿÿÿ‹…Xÿÿÿ´‰…TÿÿÿÙ­TÿÿÿÛxÿÿÿÙ­XÿÿÿÇEÌ    ÇEÈ    ÇEœ    ÿ…hÿÿÿéÿÿÿv ƒ}€
+-…  ÛE¼‹M´‰8ÿÿÿ‹…8ÿÿÿ‹PXÛB İ°S ŞÉŞéÙ½Xÿÿÿ‹Xÿÿÿµ‰TÿÿÿÙ­TÿÿÿÛ]¼Ù­Xÿÿÿ‹E¼ƒÀà‰…8ÿÿÿ‹8ÿÿÿ€áÀ‰M¼ÛE¸ÜMŒÛE¼ÜM”Şéİ¨S ŞÁİ˜S ŞùÙ½Xÿÿÿ‹…Xÿÿÿ´‰…TÿÿÿÙ­TÿÿÿÛ|ÿÿÿÙ­XÿÿÿÛE¸ÜM”ÛE¼ÜMŒŞÁİ¨S ŞÁİ˜S ŞùÙ½Xÿÿÿ‹Xÿÿÿµ‰TÿÿÿÙ­TÿÿÿÛxÿÿÿÙ­XÿÿÿÇEÌ    ÇEÈ    ÇEœ    ÿ…hÿÿÿéşıÿÿ‹…tÿÿÿ‰…8ÿÿÿ‹8ÿÿÿ€y tHE€‰…8ÿÿÿÿµ8ÿÿÿ‹hÿÿÿ‰8ÿÿÿÿµ8ÿÿÿèÆïÿÿƒÄ‰…8ÿÿÿ‹…8ÿÿÿ‰Eˆ‹Mˆhÿÿÿé  6‹…tÿÿÿ‰…8ÿÿÿ‹8ÿÿÿ€y „l  ‹…hÿÿÿ‰…8ÿÿÿ‹8ÿÿÿŠˆ•Sÿÿÿ€½Sÿÿÿ †-  €½Sÿÿÿş‡   ÿ…hÿÿÿŠ…Sÿÿÿ$ˆ…8ÿÿÿ¶•8ÿÿÿ‰•4ÿÿÿ‹4ÿÿÿÁá‰8ÿÿÿ‹•hÿÿÿŠ$ˆ…4ÿÿÿ¾•4ÿÿÿ‹8ÿÿÿÑ‰Lÿÿÿ‹…LÿÿÿÁø‰…8ÿÿÿ¶8ÿÿÿ‰M€¥Lÿÿÿÿ   ‹E€ƒà‰…8ÿÿÿƒ½8ÿÿÿ tƒ…Lÿÿÿë	6ƒ…Lÿÿÿ}ƒ½Lÿÿÿ~~ÿ…Lÿÿÿ‹M€ƒÁß‰8ÿÿÿ‹•8ÿÿÿÁú‰ĞÁè‰…4ÿÿÿ‹•8ÿÿÿ•4ÿÿÿ‰ÑÁù‰8ÿÿÿ‹…8ÿÿÿ   ‰E€}€Ÿ   ~ƒE€@‹M€Áá‰8ÿÿÿ‹…8ÿÿÿ…Lÿÿÿ‰E€ëv ¶Sÿÿÿ‰M€ÿ…hÿÿÿé…   v ‹…hÿÿÿ‰…8ÿÿÿ‹8ÿÿÿ¾¶Â‰E€ÿ…hÿÿÿ}€    ~X‹hÿÿÿ‰8ÿÿÿ‹…8ÿÿÿ€8 tA‹M€‰8ÿÿÿ‹•8ÿÿÿ‰ĞÁà‰…8ÿÿÿ‹•hÿÿÿ¾
+-‰4ÿÿÿ¶•4ÿÿÿ‹…8ÿÿÿĞ‰E€ÿ…hÿÿÿ‹M€‰8ÿÿÿÿµ8ÿÿÿ‹E´‰…8ÿÿÿÿµ8ÿÿÿèüÿÿÿƒÄ‰…8ÿÿÿ‹8ÿÿÿ‰M €}§ tXƒ}œ tRƒ}  tLEÀ‰…8ÿÿÿÿµ8ÿÿÿj ‹M ‰8ÿÿÿÿµ8ÿÿÿ‹Eœ‰…8ÿÿÿÿµ8ÿÿÿ‹M´‰8ÿÿÿÿµ8ÿÿÿèüÿÿÿƒÄ‹EÀEÈj ‹M ‰8ÿÿÿÿµ8ÿÿÿ‹E´‰…8ÿÿÿÿµ8ÿÿÿèüÿÿÿƒÄ‰…8ÿÿÿ‹8ÿÿÿ‰M¨ƒ}¨ t
+-¸hS é`  E°‰…8ÿÿÿÿµ8ÿÿÿ‹M¬‰8ÿÿÿÿµ8ÿÿÿèüÿÿÿƒÄƒ} „  Eà‰…8ÿÿÿÿµ8ÿÿÿj‹M°‰8ÿÿÿÿµ8ÿÿÿèüÿÿÿƒÄƒ}„ u%ÇEôÿÿÿ?ÇEğÿÿÿ?‹Eğ÷Ø‰…8ÿÿÿ‹•8ÿÿÿ‰Uü‰Uø‹M¸Mà‹E¼Eä‹M¸Mè‹E¼Eì‹Mğ‰8ÿÿÿ‹…8ÿÿÿ9Eà}‹Mà‰8ÿÿÿ‹…8ÿÿÿ‰Eğ‹Mô‰8ÿÿÿ‹…8ÿÿÿ9Eä}‹Mä‰8ÿÿÿ‹…8ÿÿÿ‰Eô‹Mø‰8ÿÿÿ‹…8ÿÿÿ9Eè~‹Mè‰8ÿÿÿ‹…8ÿÿÿ‰Eø‹Mü‰8ÿÿÿ‹…8ÿÿÿ9Eì~‹Mì‰8ÿÿÿ‹…8ÿÿÿ‰EüÿE„j MĞ‰8ÿÿÿÿµ8ÿÿÿ‹E°‰…8ÿÿÿÿµ8ÿÿÿèüÿÿÿƒÄƒ½`ÿÿÿ „L  ‹M°‰8ÿÿÿ‹…8ÿÿÿxstibt=jj j M°‰8ÿÿÿÿµ8ÿÿÿèüÿÿÿƒÄ‰…8ÿÿÿ‹…8ÿÿÿ‰E¨ƒ}¨ t¸~S é¡  ‹M°‰8ÿÿÿ‹…8ÿÿÿ‰…\ÿÿÿ‹M,+xÿÿÿ‰8ÿÿÿ‹UÌƒÂ‰ĞÁø‰…4ÿÿÿ‹8ÿÿÿ4ÿÿÿ‰8ÿÿÿ‹•\ÿÿÿ‹…8ÿÿÿ+B‰…8ÿÿÿÿµ8ÿÿÿ‹M(|ÿÿÿ‰8ÿÿÿ‹UÈƒÂ‰ĞÁø‰…4ÿÿÿ‹8ÿÿÿ4ÿÿÿ‰8ÿÿÿ‹•\ÿÿÿ‹…8ÿÿÿB‰…8ÿÿÿÿµ8ÿÿÿ‹\ÿÿÿ‰8ÿÿÿƒÄè‰ç‹µ8ÿÿÿƒÆü¹   ó¥‹E‰…8ÿÿÿÿµ8ÿÿÿ‹M‰8ÿÿÿÿµ8ÿÿÿèàñÿÿƒÄ(‹E ‰…8ÿÿÿ‹8ÿÿÿ‰Mœ‹E°‰…8ÿÿÿ‹8ÿÿÿ‹QÁú
+-UÈ‹E°‰…8ÿÿÿ‹8ÿÿÿ‹QÁú
+-)UÌ‹E¬‰…8ÿÿÿ‹8ÿÿÿ‹I(M¸‹E°‰…8ÿÿÿÿµ8ÿÿÿèüÿÿÿƒÄé÷ÿÿ6ƒ} „  İ¸S İE ŞÁƒìİ$èüÿÿÿƒÄİDÿÿÿİ¸S İE Şáƒìİ$èüÿÿÿƒÄİ<ÿÿÿ‹M‰8ÿÿÿÛEğÜMŒÛEôÜM”Şé‹8ÿÿÿÙ½Xÿÿÿ‹…Xÿÿÿ´‰…TÿÿÿÙ­TÿÿÿÛÙ­Xÿÿÿ‹EƒÀ‰…8ÿÿÿÛEğÜM”ÛEôÜMŒŞÁ‹…8ÿÿÿÙ½Xÿÿÿ‹Xÿÿÿµ‰TÿÿÿÙ­TÿÿÿÛÙ­Xÿÿÿ‹MƒÁ‰8ÿÿÿÛEøÜMŒÛEôÜM”Şé‹8ÿÿÿÙ½Xÿÿÿ‹…Xÿÿÿ´‰…TÿÿÿÙ­TÿÿÿÛÙ­Xÿÿÿ‹EƒÀ‰…8ÿÿÿÛEøÜM”ÛEôÜMŒŞÁ‹…8ÿÿÿÙ½Xÿÿÿ‹Xÿÿÿµ‰TÿÿÿÙ­TÿÿÿÛÙ­Xÿÿÿ‹MƒÁ‰8ÿÿÿÛEøÜMŒÛEüÜM”Şé‹8ÿÿÿÙ½Xÿÿÿ‹…Xÿÿÿ´‰…TÿÿÿÙ­TÿÿÿÛÙ­Xÿÿÿ‹EƒÀ‰…8ÿÿÿÛEøÜM”ÛEüÜMŒŞÁ‹…8ÿÿÿÙ½Xÿÿÿ‹Xÿÿÿµ‰TÿÿÿÙ­TÿÿÿÛÙ­Xÿÿÿ‹MƒÁ‰8ÿÿÿÛEğÜMŒÛEüÜM”Şé‹8ÿÿÿÙ½Xÿÿÿ‹…Xÿÿÿ´‰…TÿÿÿÙ­TÿÿÿÛÙ­Xÿÿÿ‹EƒÀ‰…8ÿÿÿÛEğÜM”ÛEüÜMŒŞÁ‹…8ÿÿÿÙ½Xÿÿÿ‹Xÿÿÿµ‰TÿÿÿÙ­TÿÿÿÛÙ­Xÿÿÿİ…<ÿÿÿÙîŞÙfßà€äE€ü”Â¶Ê‰8ÿÿÿÿµ8ÿÿÿ‹E‰…8ÿÿÿ‹8ÿÿÿ‹Rè¯  ƒÄ‰…8ÿÿÿ‹U‹…8ÿÿÿE(‰İ…DÿÿÿÙîŞÙfßà€äE”Â¶Ê‰8ÿÿÿÿµ8ÿÿÿ‹EƒÀ‰…8ÿÿÿ‹8ÿÿÿ‹Rè\  ƒÄ‰…8ÿÿÿ‹UƒÂ‹E,+…8ÿÿÿ‰İ…DÿÿÿÙîŞÙfßà€äE€ü”Â¶Ê‰8ÿÿÿÿµ8ÿÿÿ‹EƒÀ‰…8ÿÿÿ‹8ÿÿÿ‹Rè  ƒÄ‰…8ÿÿÿ‹UƒÂ‹…8ÿÿÿE(‰İ…<ÿÿÿÙîŞÙfßà€äE€ü”Â¶Ê‰8ÿÿÿÿµ8ÿÿÿ‹EƒÀ‰…8ÿÿÿ‹8ÿÿÿ‹Rèª  ƒÄ‰…8ÿÿÿ‹UƒÂ‹E,+…8ÿÿÿ‰İ…<ÿÿÿÙîŞÙfßà€äE”Â¶Ê‰8ÿÿÿÿµ8ÿÿÿ‹EƒÀ‰…8ÿÿÿ‹8ÿÿÿ‹RèT  ƒÄ‰…8ÿÿÿ‹UƒÂ‹…8ÿÿÿE(‰İ…DÿÿÿÙîŞÙfßà€äE€ü”Â¶Ê‰8ÿÿÿÿµ8ÿÿÿ‹EƒÀ‰…8ÿÿÿ‹8ÿÿÿ‹Rèû   ƒÄ‰…8ÿÿÿ‹UƒÂ‹E,+…8ÿÿÿ‰İ…DÿÿÿÙîŞÙfßà€äE”Â¶Ê‰8ÿÿÿÿµ8ÿÿÿ‹EƒÀ‰…8ÿÿÿ‹8ÿÿÿ‹Rè¥   ƒÄ‰…8ÿÿÿ‹UƒÂ‹…8ÿÿÿE(‰İ…<ÿÿÿÙîŞÙfßà€äE”Â¶Ê‰8ÿÿÿÿµ8ÿÿÿ‹EƒÀ‰…8ÿÿÿ‹8ÿÿÿ‹RèO   ƒÄ‰…8ÿÿÿ‹UƒÂ‹E,+…8ÿÿÿ‰ƒ½dÿÿÿ t‹dÿÿÿ‰8ÿÿÿÿµ8ÿÿÿèüÿÿÿƒÄ1Àë6¥,ÿÿÿ^_ÉÃ6U‰åƒ} uƒ} }‹EƒÀÁÁøë6‹EÁøëƒ} ~‹EƒÀ?Áøë	v ‹EÁø‰Àë6ÉÃU‰åƒìjèüÿÿÿƒÄ‰Eü‹EüÇ     ‹Eü‹U‰P‹Eü‹U‰P‹Eü‹U‰P‹Eü‹U‰P‹Eüëv ÉÃ6U‰åƒìS‹E‹‰Uüƒ}ü uë1‹E‹Uü‹JQ‹XÿÓƒÄ‹Eü‰Eø‹Eü‹‰Uü‹EøPèüÿÿÿƒÄëÉ6‹EPèüÿÿÿƒÄ‹]ôÉÃv U‰åƒìSÇEü    ÇEô    ÇEğ    ‹E‹‰Uøƒ}ø uëh‹E‹UR‹Uø‹JQ‹XÿÓƒÄ‰À…Àt0ƒ}ü t‹Eô‹Uø‹
+-‰‹Eø‹U‹
+-‰‹E‹Uø‰‹Uø‹Bé§   v ‹Eô‰Eğ‹Eø‰Eô‹Eø‹‰UøÿEüë“v ‹E‹UR‹UƒÂR‹XÿÓƒÄ‰À‰Eìƒ}ì u1Àëcv ‹E‹Uü9P~jèüÿÿÿƒÄ‰Eøë#6‹EğÇ     ‹Eô‰Eø‹E‹Uø‹JQ‹XÿÓƒÄ‹Eø‹U‹
+-‰‹E‹Uø‰‹Eø‹Uì‰P‹Eìëv ‹]èÉÃU‰åÉÃv U‰åƒìE‰EühÀS hÌS h    èüÿÿÿƒÄ‹EüP‹EPh    èüÿÿÿƒÄhÑS h    èüÿÿÿƒÄÉÃU‰åƒìÇEü   ÇEğ    ÇEø   ÇEô    ƒ=L tƒ=L t¡L ‰EüÇL    ƒ=L tƒ=L të
+-6ƒ}ø u
+-ë éW  v ‹EEô¶‰Ğ‰EøÿEô…À„3  ƒ}ø…   ‹EEô¶‰MøÿEôƒ}ø$u8‹EEô¶‰MøÿEôƒ}øBuÇL    ëv ƒ}ø@u
+-ÇL    ë:6ƒ}ø(u"‹EEô¶‰MøÿEôƒ}øIu
+-ÇL    ëƒ}øKu
+-ÇL    éŸ  v }ø€   ~}ø   ~ë }ø   ~}øŸ   ~ëÇL    ée  }ø   uw‹EEô¶‰MøÿEôƒ}ø?~
+-ƒ}ø~~,ë6ƒ}ø~}ø    ~ëv }øß   ~}øü   ~ëÇL    ë}ø    ~}øß   
+-ÇL    éç  v }ø    #  }øß     ‹EEô¶‰MøÿEô}øï   ~}øş   ÇL    éá   6}ø    ~}øß   ÇL    é¾   v }øß   ›   }øï      ÇL    ƒ}ø?~ƒ}ø tƒ=L tëëf6}ø€   ~G}ø   ~}ø   ~}øŸ   ~ë6ÇL    ë}øü   ~}øş   
+-ÇL    ‹EEô¶‰MøÿEôëƒv ë6}øŸ   
+-ÇL    é´   }øï   ~}øş   ÇL    é“   v }øß   ƒ   }øï   z‹EEô¶‰MøÿEôƒ}ø?~	ƒ}ø~~ëƒ}ø~}ø    ~ëv ÇL    ë<}øü   ~}øş   ÇL    ë6}ø    ~}øü   
+-ÇL    é‰üÿÿv ƒ=L uƒ}üt‹Eü£L ƒ=L …ó   hÓS èüÿÿÿƒÄ‰À…ÀthÓS èüÿÿÿƒÄ‰À‰EğëNhÚS èüÿÿÿƒÄ‰À…ÀthÚS èüÿÿÿƒÄ‰À‰Eğë&hãS èüÿÿÿƒÄ‰À…ÀthãS èüÿÿÿƒÄ‰À‰Eğƒ}ğ txhèS ‹EğPèüÿÿÿƒÄ‰À…Àt2hóS ‹EğPèüÿÿÿƒÄ‰À…Àth T ‹EğPèüÿÿÿƒÄ‰À…Àuë6ÇL    ë#jh
+-T ‹EğPèüÿÿÿƒÄ‰À…Àu
+-ÇL    ƒ=L u
+-ÇL    ¡L ëv ÉÃ6U‰åƒìWVS‹UŠˆEè‹MŠ€ú–Ã¶Ë€}èŸw»p   ë»°   …Ét€úv
+-¾    ëv ¾   ë¾~   ‹}‰}ì¶Eè‰Eü‹}ü)ß‰}ø‹EøÀ‰Eô‹Eô)È‹}ì‰‹}‰}ì‹E‰Eğ‹}ğ‹)ğ‹}ì‰eÜ[^_ÉÃU‰åì  WV‹E‹‰UüÇEø    ÇEô    …üıÿÿ½üıÿÿ¾T ü¹~   ó¥‹E8Ş   uO‹E8µ   ~‹E8Ä   ~-ëv ‹E8É   ~‹E8Î   ~ë ‹E8³   tëv ÇEø   ë+v ‹E8ß   u‹E8É   ~‹E8Î   ÇEô   ‹E‹UüÂ_ÿÿÿ‰•øıÿÿ‹øıÿÿÍ    üıÿÿ‰øıÿÿ‹øıÿÿ‹
+-‰‹E‹UüÂ_ÿÿÿ‰•øıÿÿ‹øıÿÿÍ    üıÿÿ‰øıÿÿ‹øıÿÿ‹T
+-‰ƒ}ø tQ‹Eƒ8I~‹Eƒ8g~ëv ‹Eƒ8m~‹Eƒ8z~ë
+-6‹Eÿ ë‹E8ƒ   u‹Eƒ8Eu	‹EÇ ”   ë%6ƒ}ô t‹Eƒ8m~‹Eƒ8z‹E‹U‹
+-ƒÁ‰¥ğıÿÿ^_ÉÃv U‰åƒìSÇEì    ÇEè    ÇEğ    hV ‹EPèüÿÿÿƒÄ‰À…ÀthV ‹EPèüÿÿÿƒÄ‰À…À…ş   ë ÇEô    ‹EEô€8 t}ğÿ  ~ëv éÏ   v ‹EEô€8uYÿEô‹EEô€8$uÇEì   ÇEè    ÿEôë3‹EEô€8(u(ÇEì    ÿEô‹EEô€8IuÇEè   ë
+-v ÇEè    ëbv ƒ}ì t‹EEğ‹UUôŠ€Ã€ˆÿEğëA6ƒ}è t&‹EEğÆ ÿEğ‹EEğ‹UUôŠ€Ã€ˆÿEğë6‹EEğ‹UUôŠ
+-ˆÿEğÿEôéÿÿÿéû   v hV ‹EPèüÿÿÿƒÄ‰À…À…É   ÇEô    ‹EEô€8 t}ğÿ  ~
+-ë é£   v ‹EEô¶‰]üƒ}ü~‹EEğŠUüˆÿEğës6}ü    ~'}üß   ‹EEğÆ ÿEğ‹EEğŠUüˆÿEğëC6ÿEô‹EEô¶‰]øEøPEüPè¼ûÿÿƒÄ‹EEğŠ]ü€Ã€ˆÿEğ‹EEğŠ]ø€Ã€ˆÿEğÿEôéEÿÿÿv ë6‹EPhV è6öÿÿƒÄë2}ğÿ  ~h7V èöÿÿƒÄ‹EP‹EPèüÿÿÿƒÄë	‹EEğÆ  ‹]äÉÃ6U‰åƒìSÇEì   ‹EPè-öÿÿƒÄ‰ÂBÿƒø‡x  ‹…t ÿàv ” ¼ ä  D h  ¸ h^V è’õÿÿƒÄhV ‹EPhœL èıÿÿƒÄéL  huV èjõÿÿƒÄhV ‹EPhœL èèüÿÿƒÄé$  hŒV èBõÿÿƒÄhV ‹EPhœL èÀüÿÿƒÄéü   hØV èõÿÿƒÄhñV èõÿÿƒÄ‹EPhœL èüÿÿÿƒÄÇEì    éÅ   hW èâôÿÿƒÄ‹EPhœL èüÿÿÿƒÄé¡   hW è¾ôÿÿƒÄhV ‹EPhœL è<üÿÿƒÄë{v h2W è–ôÿÿƒÄ‹EPhœL èüÿÿÿƒÄÇEì    ëQhMW ènôÿÿƒÄ‹EPhœL èüÿÿÿƒÄÇEì    ë)hcW èFôÿÿƒÄ‹EPhœL èüÿÿÿƒÄÇEì    ëƒ}ì „:  ÇEğ    ÇEô    ‹EôœL €8 t}ğÿ  ~
+-ë é×   v ‹EôœL €8…£   ÿEô‹EôœL ¶‰]ü‹EôL €8u9‹EôL ¶‰]ø}øŞ   t}øß   tëv ƒEôë	6ÇEø    ë
+-v ÇEø    EøPEüPèXùÿÿƒÄEøPEüPè°øÿÿƒÄ‹EEğŠ]ü€Ã€ˆÿEğ‹EEğŠ]ø€Ã€ˆÿEğë‹EEğ‹UôÂœL Š
+-ˆÿEğÿEôéÿÿÿ6}ğÿ  ~#h†W èóÿÿƒÄhœL ‹EPèüÿÿÿƒÄëv ‹EEğÆ  ëhœL ‹EPèüÿÿÿƒÄ‹Eìë6‹]èÉÃv U‰åƒì‹EPèüÿÿÿƒÄ‰À=ÿ  vh´W è§òÿÿƒÄ¸ÿÿÿÿé   6}   vh   hËW è€òÿÿƒÄ¸ÿÿÿÿëj6‹EPhœP ènüÿÿƒÄ‰À‰EühœP èüÿÿÿƒÄ‰À9Ew&h
+-X è@òÿÿƒÄ‹EP‹EPèüÿÿÿƒÄ¸ÿÿÿÿë6hœP ‹EPèüÿÿÿƒÄ‹Eüë6ÉÃU‰åƒìSÇEø    ‹EP‹]ÿÓƒÄ‰À‰Eüƒ}ü }¸ÿÿÿÿë,‹EøÁà‹Uüƒâ‰Á	Ñ‰MøŠEü$€„Àuë6ëÀ6‹Eøëv ‹]ôÉÃv U‰åƒìVSÇEü    ÇEô    ‹Eô9Euë$‹Eü‰ÁÉÁÉÁ¸   Óà‰Â#UUôÿEüëÕv ‹uüN‰uøƒ}ø ëA‹EP‹Eø‰ÁÉÁÉÁº   Óâ‰Ğ#E‹Uø‰ÑÉÑÉÑÓø‰Â€Ê€R‹]ÿÓƒÄÿMøë¸‹EP‹EƒàP‹]ÿÓƒÄeì[^ÉÃ6U‰åƒìS‹EP‹]ÿÓƒÄ‰À‰Eüƒ}ü }	¸ÿÿÿÿë6ŠEü$€„ÀuëëÒ61Àë ‹]øÉÃv U‰åƒìjèüÿÿÿƒÄ‰À‰Â‰Uø…Òu	1Àé   6‹E‰Â•    ‰Â¯URèüÿÿÿƒÄ‰À‹Uø‰À‰B…Àu‹EøPèüÿÿÿƒÄ1ÀëSv ‹Eø‹U‰P‹Eø‹U‰PÇEü    ‹E¯E9Eü|ë!‹Eø‹Uü‰Ñ    ‹@‹M‰ÿEüëÔv ‹Eøëv ÉÃ6U‰åƒìVSjèüÿÿÿƒÄ‰À‰Â‰Uè…Òu¸ÿÿÿÿéá  ‹EP‹]ÿÓƒÄ‰À‹Uè‰‹Eèƒ8 t‹EèPèüÿÿÿƒÄ¸ÿÿÿÿé¯  v ‹EP‹EPèŸşÿÿƒÄ‰À…Àt
+-¸ÿÿÿÿéŒ  ‹EP‹EPèoıÿÿƒÄ‰À‹Uè‰B‹Eèƒxÿu‹EèPèüÿÿÿƒÄ¸ÿÿÿÿéU  ‹EP‹EPè7ıÿÿƒÄ‰À‹Uè‰B‹Eèƒxÿu‹EèPèüÿÿÿƒÄ¸ÿÿÿÿé  ‹Eè‹Uè‹J‰Ê•    ‰Î¯p‰ğPèüÿÿÿƒÄ‰À‹Uè‰À‰B…Àu‹EèPèüÿÿÿƒÄ¸ÿÿÿÿéÕ   ÇEì    ÇEü    ‹Eè‹Uü9Péª   6ÇEø    ‹Eè‹Uø9Pé‰   ‹EP‹]ÿÓƒÄ‰À‰EôÇEğ   ƒ}ğ }ë`‹Eè‹UøÿEø9P~J‹Mğ‹EôÓø‰Âƒâ…Òt‹Eè‹Uì‰Ñ    ‹@Ç   ë6‹Eè‹Uì‰Ñ    ‹@Ç    ÿEìÿMğë›v éjÿÿÿv ÿEüéFÿÿÿ‹E‹Uè‰1Àë eà[^ÉÃU‰åƒìVS‹EPj ‹uÿÖƒÄ‹EPj ‹uÿÖƒÄ‹EP‹EP‹E‹PRèüÿÿƒÄ‹EP‹EP‹E‹PRèùûÿÿƒÄÇEü    ‹E‹Uü9PéË   v ÇEô   ÇEğ    ÇEø    ‹E‹Uø9Péƒ   v ÿMô‹]ô‹E‹U‹Mü¯J‰Mì‹UìUø‰Uì‹Mì    ‹@ƒ<uº   ‰ÙÓâ‰ĞEğë61Ò‰ÙÓâ‰ĞEğ‰Eğƒ}ô uÇEô   ‹EP‹EğP‹uÿÖƒÄÇEğ    ÿEøéoÿÿÿ6ƒ}ôt‹EP‹EğP‹uÿÖƒÄÿEüé'ÿÿÿ61Àë eä[^ÉÃU‰å‹E‹PRèüÿÿÿƒÄ‹EPèüÿÿÿƒÄÉÃU‰åƒìÇEü    ‹E‹Uü9PéŞ   6ÇEø    ‹E‹Uø9Pé   ‹E‹U‹J¯Mü‰ÊUø‰Ñ    ‹@ƒ< u0¡   9   wj#h    èüÿÿÿƒÄë6¡   Æ #ÿ   ë.¡   9   wj h    èüÿÿÿƒÄë6¡   Æ  ÿ   ÿEøéeÿÿÿ6¡   9   wj
+-h    èüÿÿÿƒÄë6¡   Æ 
+-ÿ   ÿEüéÿÿÿ6ÉÃU‰å‹EP¶EPèüÿÿÿƒÄÉÃ6U‰å‹EPèüÿÿÿƒÄ‰Â‰Ğëv ÉÃ6U‰åƒìj‹E‹PR‹E‹PRèüÿÿÿƒÄ‰À‰Eğƒ}ğ uh!X h    èüÿÿÿƒÄÇEô    ÇEø    ‹E‹Uø9PëZ6ÇEü    ‹E‹Uü9Pë<‹EøP‹EüP‹EPèüÿÿÿƒÄ‰À9Eu‹Eğ‹Uô‰Ñ    ‹@Ç    ÿEôÿEüë·ÿEøëœv ‹EPh    ‹EğPèüÿÿÿƒÄ‰À…Àth8X h    èüÿÿÿƒÄ‹EğPèüÿÿÿƒÄÉÃU‰åƒìÇEø    EüP‹EPh    èüÿÿÿƒÄ‰À…Àt1Àé  ‹Eü‹PR‹Eü‹PRèüÿÿÿƒÄ‰À‰Eøƒ}ø u‹EüPèüÿÿÿƒÄ1ÀéÜ   hÿ   hÿ   hÿ   ‹EøPèüÿÿÿƒÄ‰À‰Eğj j j ‹EøPèüÿÿÿƒÄ‰À‰EôÇEä    ÇEè    ‹Eü‹Uè9Pëv6ÇEì    ‹Eü‹Uì9PëX‹Eü‹Uä‰Ñ    ‹@ÿEäƒ<u‹EğP‹EèP‹EìP‹EøPèüÿÿÿƒÄëv ‹EôP‹EèP‹EìP‹EøPèüÿÿÿƒÄÿEìëv ÿEèë€v ‹EüPèüÿÿÿƒÄ‹Eøëv ÉÃ6U‰åƒìS‹EPèüÿÿÿƒÄ‰À‰Eø‹EøPè›şÿÿƒÄ‰À‰Eü‹Eø‹UøR‹XÿÓƒÄ‹Eüëv ‹]ôÉÃv U‰åƒìS‹EPèüÿÿÿƒÄ‰À‰Eü‹EüP‹EP‹EPè_ıÿÿƒÄ‹Eü‹UüR‹XÿÓƒÄ‹]øÉÃU‰åƒìSj h   èüÿÿÿƒÄ‰À‰Eø‹EøP‹EP‹EPèıÿÿƒÄ‹EP‹EøPèüÿÿÿƒÄ‰À‰Eü‹Eø‹UøR‹XÿÓƒÄ‹Eüë ‹]ôÉÃU‰åì  Ç…øşÿÿ    h   j … ÿÿÿPèüÿÿÿƒÄ‹E€8 uë‹E¶Æ„* ÿÿÿÿEëâƒ} u‹E‹‰U‹E‰…üşÿÿ‹E€8 u‹E‹U‰1Àé²   6‹E¶€¼* ÿÿÿ t0ÿE‹E¶€¼* ÿÿÿ uëv ëæ6‹E€8 u‹E‹U‰1Àëp‹E‰…øşÿÿ‹E€8 u‹E‹U‰‹…øşÿÿëOv ÿE‹E¶€¼* ÿÿÿ tëv ëË6‹EÆ  ÿE‹E¶€¼* ÿÿÿ uëëè6‹E‹U‰‹…øşÿÿë ÉÃ6U‰å‹EP‹EPèüÿÿÿƒÄ‰Â‰Ğëv ÉÃ6U‰å‹EPèüÿÿÿƒÄ‰Â‰Ğëv ÉÃ6U‰å‹EP‹EPèüÿÿÿƒÄ‰Â‰Ğëv ÉÃ6U‰å‹EPèüÿÿÿƒÄÉÃU‰åƒì$WVS‹M‹‹M‹Y‰]ğÇEü    ‹M‹]ü9Yéò   6‹M‹]ü‰Şµ    ‹‰<  ‹‰]ô‹Mğ‰Møƒ}ø é¼   ‹Mô‹ã  ÿ ‰ÙÁù‰ÏÁÿ‰}ì‹Mô‹ã ÿ  ‰ÙÁù‰ÏÁÿ‰}è‹Mô¶‰ßÁÿ‰}ä‹Mô‹ã   ‰ßÁÿ‰}àƒ}àu
+-‹MÇA   ƒ}à u
+-‹MÇA   Á}à‹]ì‹Mè‰Îµ    ‹š‹uä‰uÜ‹uÜÁæ‰ğ‹]à‰ÙËØfÿ fƒ8 ufÿƒEôÿMøé<ÿÿÿv ÿEüéşşÿÿeĞ[^_ÉÃU‰åƒìS1ÛÇEü    1É‹U9Më9Z$~ƒz  ~‰Uü‹Z$AƒÂ(ëâ‹Eüëv ‹]øÉÃv U‰åƒìS1ÛÇEü    1É‹U9Më9Z ~‰Uü‹Z AƒÂ(ëèv ‹Eüëv ‹]øÉÃv U‰åƒìLWVS‹E‹‰Uü‹E‹‰Uä‹E‹P‰Uà‹E‹P‰UÜ‹E‹P‰UØ‹E‹P‰UÔ‹E‹P‰UĞ‹E‹P‰UÌ‹E‹P‰UÈ‹Eà9EäÀ   ‹Eä‰Eô‹Eô9Eà}é­   ‹EÜ‰Eğ‹Eğ9EØ}é‘   ‹EÔ‰Eì‹Eì9EĞ}ëx‹Eô‰Â•    ‹Mü‹Uğ‰Ó    ‹‹Mì‰Ë‰ÙÁá‹<‹MÌ‰ÊÑ<‰}ø‹EÌ‰Eè‹Eè9EÈ}ë%‹EøƒEøfƒ8 t‹E‹Uô‰Uä‰ë#6ÿEèëÔv ÿEìëv ÿEğébÿÿÿÿEôéFÿÿÿ‹Eà9Eä¿   ‹Eà‰Eô‹Eô9Eä~é¬   ‹EÜ‰Eğ‹Eğ9EØ}é‘   ‹EÔ‰Eì‹Eì9EĞ}ëx‹Eô‰Â•    ‹Mü‹Uğ‰Ó    ‹‹Mì‰Ë‰ÙÁá‹<‹MÌ‰ÊÑ<‰}ø‹EÌ‰Eè‹Eè9EÈ}ë%‹EøƒEøfƒ8 t‹E‹Uô‰Uà‰Pë"ÿEèëÔv ÿEìëv ÿEğébÿÿÿÿMôéGÿÿÿ‹EØ9EÜ¿   ‹EÜ‰Eğ‹Eğ9EØ}é¬   ‹Eä‰Eô‹Eô9Eà}é‘   ‹EÔ‰Eì‹Eì9EĞ}ëx‹Eô‰Â•    ‹Mü‹Uğ‰Ó    ‹‹Mì‰Ë‰ÙÁá‹<‹MÌ‰ÊÑ<‰}ø‹EÌ‰Eè‹Eè9EÈ}ë%‹EøƒEøfƒ8 t‹E‹Uğ‰UÜ‰Pë"ÿEèëÔv ÿEìëv ÿEôébÿÿÿÿEğéGÿÿÿ‹EØ9EÜ¿   ‹EØ‰Eğ‹Eğ9EÜ~é¬   ‹Eä‰Eô‹Eô9Eà}é‘   ‹EÔ‰Eì‹Eì9EĞ}ëx‹Eô‰Â•    ‹Mü‹Uğ‰Ó    ‹‹Mì‰Ë‰ÙÁá‹<‹MÌ‰ÊÑ<‰}ø‹EÌ‰Eè‹Eè9EÈ}ë%‹EøƒEøfƒ8 t‹E‹Uğ‰UØ‰Pë"ÿEèëÔv ÿEìëv ÿEôébÿÿÿÿMğéGÿÿÿ‹EĞ9EÔ³   ‹EÔ‰Eì‹Eì9EĞ}é    ‹Eä‰Eô‹Eô9Eà}é…   ‹EÜ‰Eğ‹Eğ9EØ}ël‹EÌ‰Eè‹Eè9EÈ}ëT‹Eô‰Á    ‹Mü‹Eğ‰Ã    ‹‹Mì‹]è‰Şó‰É‰ÎÁæ‹<fƒ8 t‹E‹Uì‰UÔ‰Pë!ÿEèë¥v ÿEğëv ÿEôénÿÿÿÿEìéSÿÿÿ‹EĞ9EÔ³   ‹EĞ‰Eì‹Eì9EÔ~é    ‹Eä‰Eô‹Eô9Eà}é…   ‹EÜ‰Eğ‹Eğ9EØ}ël‹EÌ‰Eè‹Eè9EÈ}ëT‹Eô‰Á    ‹Mü‹Eğ‰Ã    ‹‹Mì‹]è‰Şó‰É‰ÎÁæ‹<fƒ8 t‹E‹Uì‰UĞ‰Pë!ÿEèë¥v ÿEğëv ÿEôénÿÿÿÿMìéSÿÿÿ‹EÈ9EÌ³   ‹EÌ‰Eè‹Eè9EÈ}é    ‹Eä‰Eô‹Eô9Eà}é…   ‹EÜ‰Eğ‹Eğ9EØ}ël‹EÔ‰Eì‹Eì9EĞ}ëT‹Eô‰Á    ‹Mü‹Eğ‰Ã    ‹‹Mì‹]è‰Şó‰É‰ÎÁæ‹<fƒ8 t‹E‹Uè‰UÌ‰Pë!ÿEìë¥v ÿEğëv ÿEôénÿÿÿÿEèéSÿÿÿ‹EÈ9EÌ³   ‹EÈ‰Eè‹Eè9EÌ~é    ‹Eä‰Eô‹Eô9Eà}é…   ‹EÜ‰Eğ‹Eğ9EØ}ël‹EÔ‰Eì‹Eì9EĞ}ëT‹Eô‰Á    ‹Mü‹Eğ‰Ã    ‹‹Mì‹]è‰Şó‰É‰ÎÁæ‹<fƒ8 t‹E‹Uè‰UÈ‰Pë!ÿEìë¥v ÿEğëv ÿEôénÿÿÿÿMèéSÿÿÿ‹Eà+EäÅ    ‰Ğ<‰}Ä‹UØ+UÜ•    ‰ÂÒ<‰}À‹EĞ+EÔ<Å    ‰}¼‹EÈ+EÌ‰ÂÁâ‰Ğ…    ‰U¸‹E‹UÄ¯UÄ‹MÀ¯MÀÊ‹M¼¯M¼Ê‹M¸¯M¸<‰x ÇE´    ‹Eä‰Eô‹Eô9Eà}é¡   ‹EÜ‰Eğ‹Eğ9EØ}é…   ‹EÔ‰Eì‹Eì9EĞ}ël‹Eô‰Â•    ‹Mü‹Uğ‰Ó    ‹‹Mì‰Ë‰ÙÁá‹<‹MÌ‰ÊÑ<‰}ø‹EÌ‰Eè‹Eè9EÈ}ë‹Eøfƒ8 tÿE´ÿEèƒEøëàv ÿEìëv ÿEğénÿÿÿÿEôéRÿÿÿ‹E‹U´‰P$e¨[^_ÉÃv U‰åƒìWVS‹E9Eé"  6‹U‰ĞÂ9U|‹EP‹EPèw÷ÿÿƒÄ‰Ãë‹EP‹EPè§÷ÿÿƒÄ‰Ã…Ûuéå  ‹U‰ĞÁàĞÅ    ‰Öu‹C‰F‹C‰F‹C‰F‹C‰F‹‰‹C‰F‹C‰F‹C‰F‹C+Å    ‰Ğ<‰}ô‹S+S•    ‰ÂÒ<‰}ğ‹C+C<Å    ‰}ì‹C+C‰ÂÁâ‰Ğ…    ‰Uè‹Eğ‰EäÇEü   ‹Eô9Eä}‹Eô‰EäÇEü    ‹Eì9Eä}‹Eì‰EäÇEü   ‹Eè9Eä}ÇEü   ‹EüƒøtPƒø…ÀtéÆ   6ƒøtgƒø„Š   é±   ‹C‰ÂÁú‰ÑÁéÈ‰ÇÁÿ‰}ø‹Eø‰C‹}øG‰>é†   6‹CC‰ÂÁú‰ÑÁéÈ‰ÇÁÿ‰}ø‹Eø‰C‹}øG‰~ë[v ‹CC‰ÂÁú‰ÑÁéÈ‰ÇÁÿ‰}ø‹Eø‰C‹}øG‰~ë/v ‹CC‰ÂÁú‰ÑÁéÈ‰ÇÁÿ‰}ø‹Eø‰C‹}øG‰~ëv S‹EP‹EPèöÿÿƒÄV‹EP‹EPèöÿÿƒÄÿEéÓıÿÿ6‹Eëv eØ[^_ÉÃU‰åƒìXWVS‹E‰E¬‹U¬‹‰U¨‹}¨‰}üÇEÀ    ÇE¼    ÇE¸    ÇE´    ÇE°    ‹E‰E¬‹U¬‹‰U¨‹}¨‰}ä‹E‰E¬‹U¬‹R‰U¨‹}¨‰}à‹E‰E¬‹U¬‹R‰U¨‹}¨‰}Ü‹E‰E¬‹U¬‹R‰U¨‹}¨‰}Ø‹E‰E¬‹U¬‹R‰U¨‹}¨‰}Ô‹E‰E¬‹U¬‹R‰U¨‹}¨‰}Ğ‹E‰E¬‹U¬‹R‰U¨‹}¨‰}Ì‹E‰E¬‹U¬‹R‰U¨‹}¨‰}È‹Eä‰E¬‹U¬‰Uô‹}ô‰}¬‹E¬9Eà}é–  6‹UÜ‰U¬‹}¬‰}ğ‹Eğ‰E¬‹U¬9UØ}ém  ‹}Ô‰}¬‹E¬‰Eì‹Uì‰U¬‹}¬9}Ğ}éE  ‹Eô‰E¬‹U¬‰U¨‹}¨Áç‰}¬‹Mü‹Eğ‰E¨‹]¨    ‰U¨‹}¬‹<9‰}¬‹Mì‰Ë‰ÙÁá‰Ï‹E¨‹U¬<‰}¬‹MÌ‰M¨M¨‹E¬È‰Eø‹UÌ‰U¬‹}¬‰}è‹Eè‰E¬‹U¬9UÈ}éÀ   ‹}ø‰}¬‹E¬· ‰E¨‹U¨‰U¬‹}¬‰}ÄƒEøƒ}¬ „   ‹EÄEÀ‹UôÁâ‰U¬‹}¬ƒÇ‰}¨‹E¨¯EÄ‰E¬‹U¬U¼‹}ğÁç‰}¬‹E¬ƒÀ‰E¨‹U¨¯UÄ‰U¬‹}¬}¸‹EìÁà‰E¬‹U¬ƒÂ‰U¨‹}¨¯}Ä‰}¬‹E¬E´‹UèÁâ‰U¬‹}¬ƒÇ‰}¨‹E¨¯EÄ‰E¬‹U¬U°ÿEèé.ÿÿÿÿEìé¨şÿÿÿEğé€şÿÿÿEôéWşÿÿ‹}‰}¬‹E‰E¨‹MÀÁù‰Îu¼‰ğ™÷}À‰Ñ‰Ã‹}¨‹E¬‰\¸‹U‰U¬‹}‰}¨‹MÀÁù‰Îu¸‰ğ™÷}À‰Ñ‰Ã‹}¨‹E¬‰œ¸  ‹U‰U¬‹}‰}¨‹MÀÁù‰Îu´‰ğ™÷}À‰Ñ‰Ã‹}¨‹E¬‰œ¸  ‹U‰U¬‹}‰}¨‹MÀÁù‰Îu°‰ğ™÷}À‰Ñ‰Ã‹}¨‹E¬‰œ¸8  ‹U‰U¬‹}‰}¨‹E¨‹U¬Ç„‚      ‹}‰}¬‹E¬‹@‰E¨‹U¨9U|‹}‰}¬‹UB‹E¬‰Peœ[^_ÉÃv U‰åƒì‹U‰ĞÁàĞÅ    RèüÿÿÿƒÄ‰EüÇEø   ‹EüÇ     ‹EüÇ@   ‹EüÇ@    ‹EüÇ@?   ‹EüÇ@    ‹EüÇ@   ‹EüÇ@    ‹EüÇ@   ‹EüP‹EP‹EPèºñÿÿƒÄ‹EP‹EøP‹EüP‹EP‹EPèrùÿÿƒÄ‰À‰EøÇEô    ‹Eô9Eøë1‹EôP‹Uô‰ĞÁàĞÅ    ‰ĞEüP‹EP‹EPèxûÿÿƒÄÿEôëÅ‹E‹Uø‰P‹EüPèüÿÿÿƒÄÉÃU‰åì@  S‹E‹P‰Uü‹]ƒÃ‰]ø‹EEø‰ÃÁû‰]è‹]ƒÃ‰]ô‹EEô‰ÃÁû‰]ä‹]ƒÃ‰]ğ‹EEğ‰ÃÁû‰]à‹E‰Eì‹EEì‰ÃÁû‰]ÜÇEÌÿÿÿÇEØ    ‹EØ9EüéE  ‹E‹UØ‹D‰EÔ‹EÔ9E~7‹UÔ+U‰Ğ‰]À‹]À¯]À‰]È‹UÔ+Uø‰Ğ‰]À‹]À¯]À‰]Äé‚   6‹EÔ9Eø}4‹UÔ+Uø‰Ğ‰]À‹]À¯]À‰]È‹UÔ+U‰Ğ‰]À‹]À¯]À‰]ÄëF6ÇEÈ    ‹EÔ9Eè|‹UÔ+Uø‰Ğ‰]À‹]À¯]À‰]Äëv ‹UÔ+U‰Ğ‰]À‹]À¯]À‰]Ä‹E‹UØ‹„  ‰EÔ‹EÔ9E~<‹EÔ+E‰ÂÒ‰]À‹EÀ¯EÀEÈ‹EÔ+Eô‰ÂÒ‰]À‹EÀ¯EÀEÄé   v ‹EÔ9Eô}8‹EÔ+Eô‰ÂÒ‰]À‹EÀ¯EÀEÈ‹EÔ+E‰ÂÒ‰]À‹EÀ¯EÀEÄë@6‹EÔ9Eä|‹EÔ+Eô‰ÂÒ‰]À‹EÀ¯EÀEÄë‹EÔ+E‰ÂÒ‰]À‹EÀ¯EÀEÄ‹E‹UØ‹„  ‰EÔ‹EÔ9E~*‹]Ô+]‰]À‹EÀ¯EÀEÈ‹]Ô+]ğ‰]À‹EÀ¯EÀEÄëe6‹EÔ9Eğ}(‹]Ô+]ğ‰]À‹EÀ¯EÀEÈ‹]Ô+]‰]À‹EÀ¯EÀEÄë3‹EÔ9Eà|‹]Ô+]ğ‰]À‹EÀ¯EÀEÄëv ‹]Ô+]‰]À‹EÀ¯EÀEÄ‹E‹UØ‹„8  ‰EÔ‹EÔ9E~=‹EÔ+E‰Â•    ‰EÀ‹EÀ¯EÀEÈ‹EÔ+Eì‰Â•    ‰EÀ‹EÀ¯EÀEÄéˆ   ‹EÔ9Eì}<‹EÔ+Eì‰Â•    ‰EÀ‹EÀ¯EÀEÈ‹EÔ+E‰Â•    ‰EÀ‹EÀ¯EÀEÄëF6‹EÔ9EÜ| ‹EÔ+Eì‰Â•    ‰EÀ‹EÀ¯EÀEÄë6‹EÔ+E‰Â•    ‰EÀ‹EÀ¯EÀEÄ‹EØ‹UÈ‰”…Àûÿÿ‹EÄ9EÌ~‹EÄ‰EÌÿEØé¯üÿÿÇEĞ    ÇEØ    ‹EØ9Eüë,‹EØ‹”…Àûÿÿ9UÌ|‹EĞ‰Â•    ‹U ‹MØ‰ÿEĞÿEØëÊ‹EĞëv ‹¼ûÿÿÉÃU‰åìH  WVS…¼ıÿÿÇEì   ƒ}ì }ëv Ç ÿÿÿƒÀÿMìëç6ÇEì    ‹]ì9] éØ  ‹]ì‰Şµ    ‹u$‹‰]è‹]‹uè‹}+|³‰½¸ıÿÿ‹¸ıÿÿ‹½¸ıÿÿß‰}È‹}È¯}È‰}à‹]‹uè‹}+¼³  ‰û‰Şö<3‰}Ä‹]Ä¯]Ä]à‹]‹uè‹}+¼³  ‰}À‹]À¯]À]à‹]‹uè‹}+¼³8  ‰û‰Şµ    ‰]¼‹]¼¯]¼]à‹]È‰Ş‰óÁã»   ‰}È‹uÄ‰óÛó4İ    ¾   ‰}Ä‹]À‰Ş‰óÁã{@‰}À‹]¼‰Ş‰óÁã»   ‰}¼…¼ıÿÿ‹](‰]ä‹]È‰]ÔÇEü   ƒ}ü }é¯   v ‹]à‰]Ü‹]Ä‰]ĞÇEø   ƒ}ø }ëy‹]Ü‰]Ø‹]À‰]ÌÇEô   ƒ}ô }ëIÇEğ    ƒ}ğ }ë%9~
+-‰‹]ä‹uè‰3ÊÁ    ƒÀƒEäÿMğëÕ6‹}Ì}ØEÌ€   ÿMôë±6‹}Ğ}ÜEĞ   ÿMøë6‹}Ô}àEÔ   ÿMüéIÿÿÿv ÿEìéşÿÿ¥¬ıÿÿ[^_ÉÃU‰åì,  WVS‹E‹‰UüÁ}Á}Á}‹EÁàx‰}ø‹EÁàx‰}ô‹EÁàx‰}ğ‹EÁàx‰}ì…ÜûÿÿP‹EìP‹EğP‹EôP‹EøP‹EP‹EPè@ùÿÿƒÄ‰À‰…Øûÿÿ…ØùÿÿP…ÜûÿÿP‹…ØûÿÿP‹EìP‹EğP‹EôP‹EøP‹EP‹EPè#ıÿÿƒÄ$ÁeÁeÁeØùÿÿÇEè    ƒ}è~é°   ÇEä    ƒ}ä~é–   6ÇEà    ƒ}à~ë}‹EEè‰Â•    ‹Mü‹UUä‰•Ôùÿÿ‹½Ôùÿÿ½    ‹‹MMà‰Ôùÿÿ‹ÔùÿÿÁá‰Î4‹U‰ĞÂÖÇEÜ    ƒ}Ü ~ëf‹f@f‰ƒÃƒÆÿEÜëåÿEàé{ÿÿÿÿEäé_ÿÿÿÿEèéEÿÿÿ¥Èùÿÿ[^_ÉÃU‰åƒì@WVS‹E‹‰Uü‹E‹P‰Uğ‹E‹P‰UìÇEø    ‹Eø9Eìé  ‹E‹Uø‰Ñ    ‹€<  ‹‹E‹Uø‰Ñ    ‹ ‹4‰uÀÇEô    ‹Eô9EğéÍ   ‹%  ÿ ‰ÆÁş‰uè‹% ÿ  ‰ÆÁş‰uä¶3‰uà‹%   ‰ÆÁş‰uÜƒÃ‹uèÁş‰uØ‹uäÁş‰uÔ‹uàÁş‰uĞ‹uÜÁş‰uÌ‹UØ•    ‹Mü‹uÔ‰uÈ‹uÈµ    ‹‹MĞ‰ÎÁæ‰uÄ‹}Ä<‹EÌ‹UÌÂ×fƒ? uÿuÌÿuĞÿuÔÿuØ‹EP‹EPè<ıÿÿƒÄŠşÈ‹uÀˆÿEÀÿEôé'ÿÿÿÿEøéÚşÿÿe´[^_ÉÃU‰åì„   WVS‹E‹‰Uü‹E‹P‰U¼‹E‹P‰U¸‹E‹P‰U´‹]ƒÃ‰]°‹uÆ  ‰u¬‹]Ã  ‰]¨‹uÆ8  ‰u¤ÇEÄ    ‹EÄ9E¸é°  ‹E‹UÄ‰Ñ    ‹€<  ‹‰UØ‹E‹UÄ‰Ñ    ‹ ‹‰UÔ‹Eƒx tM‹E¼‰Â•    PüUØ‹E¼HEÔÇEÌÿÿÿÿÇEÈüÿÿÿ‹E‹U¼B‰ÑÍ    ‰ÓX‰]˜‹EÇ@    ë#6ÇEÌ   ÇEÈ   ‹E‹p‰u˜‹EÇ@   ÇEœ    1ÿÇ…|ÿÿÿ    ÇE€    ÇEì    ÇEğ    ÇEô    ÇEø    ÇEÜ    ÇEà    ÇEä    ÇEè    ‹E¼‰EÀƒ}À ép  ‹EÈ‹]˜¿CU€ƒE€Á}€‹EÈ‹u˜¿TF•|ÿÿÿƒ…|ÿÿÿÁ½|ÿÿÿ‹EÈ‹]˜¿TC×ƒÇÁÿ‹EÈ‹u˜¿TFUœƒEœÁ}œ‹E€…    ‹E´‹‰]€‹…|ÿÿÿ…    ‹E´‹4‰µ|ÿÿÿ‰ø…    ‹E´‹<‹Eœ…    ‹E´‹‰]œ‹EØ‹â  ÿ ‰ĞÁøE€‹EØ‹â ÿ  ‰ĞÁø…|ÿÿÿ‹EØ¶×‹EØ‹â   ‰ÖÁş‰u ‹] ]    ‹U ÁúĞEœƒ}€ }ÇE€    }€ÿ   ~ÇE€ÿ   ƒ½|ÿÿÿ }
+-Ç…|ÿÿÿ    ½|ÿÿÿÿ   ~
+-Ç…|ÿÿÿÿ   …ÿ}1ÿÿÿ   ~¿ÿ   ƒ}œ }ÇEœ    }œÿ   ~ÇEœÿ   ‹E€Áø‰Â•    ‹Mü‹•|ÿÿÿÁú‰U”‹u”µ    ‹‰ùÁù‰M‹MÁá‹‹MœÁù‰ÊÑ4‰uĞ‹EĞfƒ8 u.‹EœÁøP‰øÁøP‹…|ÿÿÿÁøP‹E€ÁøP‹EP‹EPè›ùÿÿƒÄ‹UĞ·H‹UÔˆ‰Â•    ‹U°‹
+-)]€‰Â•    ‹U¬‹4
+-)µ|ÿÿÿ‰Â•    ‹U¨+<
+-‰Â•    ‹]¤‰]Œ‹uŒ‹4u    ‰Á    ‰]ˆ‹M¤‹uˆ‹41Áş‰u„U„)Uœ‹E€‹M€‹U€ÊU€f‹u€fuè‹]˜f‰3U€‹]€]ø‰]è‰EøU€‹…|ÿÿÿ‹|ÿÿÿ‹•|ÿÿÿÊ•|ÿÿÿf‹|ÿÿÿf]ä‹u˜f‰^•|ÿÿÿ‹µ|ÿÿÿuô‰uä‰Eô•|ÿÿÿ‰ø‰ù×f‹uàfş‹]˜f‰s×‹]ğû‰]à‰Eğ×‹Eœ‹Mœ‹UœÊUœf‹]œf]Ü‹u˜f‰^Uœ‹uœuì‰uÜ‰EìUœ‹EÌ‰Â•    EØ‹]Ì]Ô‹UÈ‰ĞÂU˜ÿMÀé…üÿÿf‹Eè‹u˜f‰f‹Eä‹]˜f‰Cf‹Eà‹u˜f‰Ff‹EÜ‹]˜f‰CÿEÄéDûÿÿ¥pÿÿÿ[^_ÉÃU‰åƒìShü  èüÿÿÿƒÄ‰À‹U‰B‹Eƒx u1Àé   ‹E‹U‹ZÃü  ‰X‹E‹P‰UüÇEô    ÇEø    ƒ}ø~ë;v ‹Eø‰Â•    ‹Uü‹Mô‰‹Eø÷Ø‰Â•    ‹Uü‹]ô÷Û‰ÿEøÿEôë¿6ƒ}ø/~ëD‹Eø‰Â•    ‹Uü‹Mô‰‹Eø÷Ø‰Â•    ‹Uü‹]ô÷Û‰ÿEø‹Eø4ƒàEô‰Eôë·v }øÿ   ~ë5‹Eø‰Â•    ‹Uü‹Mô‰‹Eø÷Ø‰Â•    ‹Uü‹]ô÷Û‰ÿEøëÁ¸   ë‹]ğÉÃv U‰åƒìSÇEü    ƒ}ü~ëQÇEø    ƒ}ø?~ë9h   j ‹Eü‰Â•    ‹U‹Mø‰Ë    ‹‹RèüÿÿÿƒÄÿEøëÁ6ÿEüëªv ‹]ôÉÃv U‰åƒìVSÇEü    ‹Eƒ¸8   uéØ  }   ~ÇE   ‹E‹PRjèüÿÿÿƒÄ‰À‹U‰‹Eƒ8 ué  v ÇEø    ‹E‹Uø9PëL‹E‹PRjèüÿÿÿƒÄ‰À‹U‹Mø‰Ë    ‹‰
+-‹E‹Uø‰Ñ    ‹ ƒ< ué´  ÿEøëªv jj èüÿÿÿƒÄ‰Eüƒ}ü ué‘  6h€   èüÿÿÿƒÄ‰À‹Uü‰ÇEø    ƒ}ø~éÂ   6jj@èüÿÿÿƒÄ‰À‹Uü‹Mø‰Ë    ‹‰
+-‹Eü‹Uø‰Ñ    ‹ ƒ< ué)  6ÇEğ    ƒ}ğ?~ëijh   èüÿÿÿƒÄ‰À‹Mü‹Uø‰Ó    ‹	‹]ğ‰Şµ    ‹‰‹Uü‹Eø‰Á    ‹‹Mğ‰Ë    ‹ƒ< ué¸  ÿEğë’v ÿEøé3ÿÿÿjèüÿÿÿƒÄ‰À‹Uü‰B‹EüP‹EPèüÿÿƒÄ‹E‹PƒÂ‰ĞÅ    ‰Uôj‹EôPèüÿÿÿƒÄ‰À‹Uü‰B‹Eüƒx uéL  ‹EüÇ@    ‹Eü‹RècıÿÿƒÄ‹EüP‹EPèKİÿÿƒÄh   ‹EüP‹EPèìÿÿƒÄhMX hPX èüÿÿÿƒÄ‰À‰Eğh   h   èüÿÿÿƒÄ‰À‰EèÇEì    }ìÿ   ~éÈ   ‹E‹Uì‹„8  Áà‹U‹Mì‹TŠÁâĞ‹U‹Mì‹”Š  ÁâĞ‹U‹Mì„Š  P‹Uì‰Ğ…À}ƒÀÁø‰Â‰ĞÁàPR‹Eì‰Â…Ò}ƒÂÁú‰Ñ‰ÊÁâ)Ğ‰Â‰ĞÁàPR‹Uì‰Ğ…À}ƒÀÁø‰Â‰ĞÁàP‹Eì‰Â…Ò}ƒÂÁú‰Ñ‰ÊÁâ)Ğ‰Â‰ĞÁàP‹EèPèüÿÿÿƒÄÿEìé+ÿÿÿ‹EğP‹EèPèüÿÿÿƒÄ‹EğPèüÿÿÿƒÄ‹EèPèüÿÿÿƒÄ‹Eü‹RèıûÿÿƒÄƒ} t‹EüP‹EPè‡õÿÿƒÄë6‹EüP‹EPèôÿÿƒÄ‹Eüƒx „   ÇEìÿÿÿÿÇEäÿÿÿÿÇEø    ‹E‹Uø9Pë1‹E‹Uø‹„8  9Eì}‹Eø‰Eä‹E‹Uø‹„8  ‰EìÿEøëÅv ÇEø    ‹E‹Uø9Pë(‹E‹Uø‹„8  9Eìu‹E‹UøÇ„8     ÿEøëË‹Eüƒx „   ÇEä€   ÇEìÿÿÿÿÇEø    ‹E‹Uø9Pë1‹E‹Uø‹„8  9Eä~‹Eø‰Eì‹E‹Uø‹„8  ‰EäÿEøëÅv ÇEø    ‹E‹Uø9Pë(‹E‹Uø‹„8  9Eäu‹E‹UøÇ„8      ÿEøëË‹EÇ€8      ÇEø    ‹E‹Uø9Pë+v ‹E‹Uø‰Ñ    ‹€<  ‹RèüÿÿÿƒÄÿEøëÊ6‹E‹<  RèüÿÿÿƒÄ‹EÇ€<      ‹Eƒ¸8   tpÇEø    ‹E‹Uø9Pë=‹E‹Uø‰Ñ    ‹ ƒ< t‹E‹Uø‰Ñ    ‹ ‹RèüÿÿÿƒÄÿEøë¹v ‹Eƒ8 t‹E‹RèüÿÿÿƒÄ‹EÇ     ÇEø    ƒ}ø~é¯   v ‹Eü‹Uø‰Ñ    ‹ ƒ< „†   ÇEä    ƒ}ä?~ëZ6‹Uü‹Eø‰Á    ‹‹Mä‰Ë    ‹ƒ< t,‹Uü‹Eø‰Á    ‹‹Mä‰Ë    ‹‹RèüÿÿÿƒÄÿEäëŸ‹Eü‹Uø‰Ñ    ‹ ‹RèüÿÿÿƒÄÿEøéIÿÿÿv ‹Eüƒ8 t‹Eü‹RèüÿÿÿƒÄ‹Eüƒx t‹Eü‹PRèüÿÿÿƒÄ‹Eüƒx t‹Eü‹PRèüÿÿÿƒÄƒ}ü t‹EüPèüÿÿÿƒÄeÜ[^ÉÃ      ào@  €¿  @@  À@  €¿      Y@‰A`åĞ"Ó?bX9´Èâ?Év¾Ÿ/½?      Y@     ào@  şB%x Error: bug in gdImageCreateFromXbm!
+- gd2 Error from seek: %d
+- Error reading comproessed chunk
+- Error from compressing
+- Error %d on write
+- v R¸…ëQğ?      (@gd-png:  fatal libpng error: %s
+- gd-png:  EXTREMELY fatal error: jmpbuf unrecoverable; terminating.
+- 1.0.3 gd-png error: cannot allocate libpng main struct
+- gd-png error: cannot allocate libpng info struct
+- gd-png error: setjmp returns error condition
+- gd-png error: cannot allocate gdImage struct
+- gd-png error: cannot allocate gray palette
+- gd-png error: cannot allocate image data
+- gd-png error: cannot allocate row pointers
+- gd-png error: unable to allocate row_pointers
+- gd-png error: unable to allocate rows
+-  1.0 øM gd-jpeg: JPEG library reports unrecoverable error:  gd-jpeg: EXTREMELY fatal error: longjmp returned control; terminating
+- gd-jpeg: EXTREMELY fatal error: jmpbuf unrecoverable; terminating
+- gd-jpeg: error: unable to allocate JPEG row structure: gdCalloc returns NULL
+- CREATOR: gd-jpeg v%s (using IJG JPEG v%d),  quality = %d
+-  default quality
+- gd_jpeg: warning: jpeg_write_scanlines returns %u -- expected 1
+- gd-jpeg: warning: jpeg_read_header returns %d, expected %d
+- gd-jpeg: warning: JPEG image height (%u) is greater than INT_MAX (%d) (and thus greater than gd can handle) gd-jpeg: warning: JPEG image width (%u) is greater than INT_MAX (%d) (and thus greater than gd can handle)
+- gd-jpeg error: cannot allocate gdImage struct
+- gd-jpeg: warning: jpeg_start_decompress reports suspended data source
+- gd-jpeg: error: JPEG color quantization request resulted in output_components == %d (expected 3)
+- gd-jpeg: error: unable to allocate row for JPEG scanline: gdCalloc returns NULL
+- gd-jpeg: error: jpeg_read_scanlines returns %u, expected 1
+- gd-jpeg: warning: jpeg_finish_decompress reports suspended data source
+- libgd was not built with xpm support
+- GDFONTPATH /usr/share/fonts/truetype   %s : %s/%s.ttf Could not find/open font Could not read font Unable to find a CharMap that I can handle Unsupported ft_pixel_mode Failure to initialize font library Could not set character size Problem loading glyph Problem rendering glyph 6      P@      ğ@      @@ÍÌÌÌÌÌğ?-DTû!é?any2eucjp() %s:  
+- LC_ALL LC_CTYPE LANG ja_JP.SJIS ja_JP.mscode ja_JP.PCK ja v    B      u      v      A      E   ƒ   ’   ƒ   @   ƒ   B   ƒ   D   ƒ   F   ƒ   H   ƒ   ƒ   ƒ   …   ƒ   ‡   ƒ   b      [   ƒ   A   ƒ   C   ƒ   E   ƒ   G   ƒ   I   ƒ   J   ƒ   L   ƒ   N   ƒ   P   ƒ   R   ƒ   T   ƒ   V   ƒ   X   ƒ   Z   ƒ   \   ƒ   ^   ƒ   `   ƒ   c   ƒ   e   ƒ   g   ƒ   i   ƒ   j   ƒ   k   ƒ   l   ƒ   m   ƒ   n   ƒ   q   ƒ   t   ƒ   w   ƒ   z   ƒ   }   ƒ   ~   ƒ   €   ƒ      ƒ   ‚   ƒ   „   ƒ   †   ƒ   ˆ   ƒ   ‰   ƒ   Š   ƒ   ‹   ƒ   Œ   ƒ      ƒ      ƒ   “      J      K   JIS7 jis SJIS invalid code specification: "%s" output buffer overflow at do_convert() Kanji code is New JIS. Kanji code is Old JIS. This string includes Hankaku-Kana (jisx0201) escape sequence [ESC] + ( + I. Kanji code is NEC Kanji. cannot convert NEC Kanji. Kanji code is EUC. Kanji code is SJIS. Kanji code is EUC or SJIS. This is ASCII string. This string includes unknown code. output buffer overflow at Hankaku --> Zenkaku input string too large invalid maximum size of destination
+-it should be less than %d. output buffer overflow Could not create WBMP
+- Could not save WBMP
+- wb palettemap.png                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              	                 ÿ  ÿ  ş  ı  ü  ú  ø  ö  ó  ğ  í  é  å  á  İ  Ø  Ó  Í  È  Â  »  µ  ®  §     ˜    ˆ    v  m  d  Z  P  F  <  1  &        ø  ì  à  Ô  Ç  º  ­  Ÿ  ’  „  v  h  Y  K  <  -         ğ  à  Ğ  À  °         n  ^  M  <  +    	  ÷   æ   Ô   Ã   ±          |   k   Y   G   5   #          ïÿÿÿİÿÿÿËÿÿÿ¹ÿÿÿ§ÿÿÿ•ÿÿÿ„ÿÿÿrÿÿÿ`ÿÿÿOÿÿÿ=ÿÿÿ,ÿÿÿÿÿÿ	ÿÿÿ÷şÿÿæşÿÿÕşÿÿÄşÿÿ³şÿÿ¢şÿÿ’şÿÿşÿÿpşÿÿ`şÿÿPşÿÿ@şÿÿ0şÿÿ şÿÿşÿÿ şÿÿñıÿÿâıÿÿÓıÿÿÄıÿÿµıÿÿ§ıÿÿ˜ıÿÿŠıÿÿ|ıÿÿnıÿÿaıÿÿSıÿÿFıÿÿ9ıÿÿ,ıÿÿ ıÿÿıÿÿıÿÿüüÿÿğüÿÿåüÿÿÚüÿÿÏüÿÿÄüÿÿºüÿÿ°üÿÿ¦üÿÿœüÿÿ“üÿÿŠüÿÿüÿÿxüÿÿpüÿÿhüÿÿ`üÿÿYüÿÿRüÿÿKüÿÿEüÿÿ>üÿÿ8üÿÿ3üÿÿ-üÿÿ(üÿÿ#üÿÿüÿÿüÿÿüÿÿüÿÿüÿÿüÿÿ
+-üÿÿüÿÿüÿÿüÿÿüÿÿüÿÿüÿÿüÿÿ üÿÿüÿÿüÿÿüÿÿüÿÿüÿÿüÿÿüÿÿ
+-üÿÿüÿÿüÿÿüÿÿüÿÿüÿÿüÿÿ#üÿÿ(üÿÿ-üÿÿ3üÿÿ8üÿÿ>üÿÿEüÿÿKüÿÿRüÿÿYüÿÿ`üÿÿhüÿÿpüÿÿxüÿÿüÿÿŠüÿÿ“üÿÿœüÿÿ¦üÿÿ°üÿÿºüÿÿÄüÿÿÏüÿÿÚüÿÿåüÿÿğüÿÿüüÿÿıÿÿıÿÿ ıÿÿ,ıÿÿ9ıÿÿFıÿÿSıÿÿaıÿÿnıÿÿ|ıÿÿŠıÿÿ˜ıÿÿ§ıÿÿµıÿÿÄıÿÿÓıÿÿâıÿÿñıÿÿ şÿÿşÿÿ şÿÿ0şÿÿ@şÿÿPşÿÿ`şÿÿpşÿÿşÿÿ’şÿÿ¢şÿÿ³şÿÿÄşÿÿÕşÿÿæşÿÿ÷şÿÿ	ÿÿÿÿÿÿ,ÿÿÿ=ÿÿÿOÿÿÿ`ÿÿÿrÿÿÿ„ÿÿÿ•ÿÿÿ§ÿÿÿ¹ÿÿÿËÿÿÿİÿÿÿïÿÿÿ       #   5   G   Y   k   |          ±   Ã   Ô   æ   ÷   	    +  <  M  ^  n         °  À  Ğ  à  ğ         -  <  K  Y  h  v  „  ’  Ÿ  ­  º  Ç  Ô  à  ì  ø        &  1  <  F  P  Z  d  m  v    ˆ    ˜     §  ®  µ  »  Â  È  Í  Ó  Ø  İ  á  å  é  í  ğ  ó  ö  ø  ú  ü  ı  ş  ÿ  ÿ         #   5   G   Y   k   |          ±   Ã   Ô   æ   ÷   	    +  <  M  ^  n         °  À  Ğ  à  ğ         -  <  K  Y  h  v  „  ’  Ÿ  ­  º  Ç  Ô  à  ì  ø        &  1  <  F  P  Z  d  m  v    ˆ    ˜     §  ®  µ  »  Â  È  Í  Ó  Ø  İ  á  å  é  í  ğ  ó  ö  ø  ú  ü  ı  ş  ÿ  ÿ     ÿ  ÿ  ş  ı  ü  ú  ø  ö  ó  ğ  í  é  å  á  İ  Ø  Ó  Í  È  Â  »  µ  ®  §     ˜    ˆ    v  m  d  Z  P  F  <  1  &        ø  ì  à  Ô  Ç  º  ­  Ÿ  ’  „  v  h  Y  K  <  -         ğ  à  Ğ  À  °         n  ^  M  <  +    	  ÷   æ   Ô   Ã   ±          |   k   Y   G   5   #          ïÿÿÿİÿÿÿËÿÿÿ¹ÿÿÿ§ÿÿÿ•ÿÿÿ„ÿÿÿrÿÿÿ`ÿÿÿOÿÿÿ=ÿÿÿ,ÿÿÿÿÿÿ	ÿÿÿ÷şÿÿæşÿÿÕşÿÿÄşÿÿ³şÿÿ¢şÿÿ’şÿÿşÿÿpşÿÿ`şÿÿPşÿÿ@şÿÿ0şÿÿ şÿÿşÿÿ şÿÿñıÿÿâıÿÿÓıÿÿÄıÿÿµıÿÿ§ıÿÿ˜ıÿÿŠıÿÿ|ıÿÿnıÿÿaıÿÿSıÿÿFıÿÿ9ıÿÿ,ıÿÿ ıÿÿıÿÿıÿÿüüÿÿğüÿÿåüÿÿÚüÿÿÏüÿÿÄüÿÿºüÿÿ°üÿÿ¦üÿÿœüÿÿ“üÿÿŠüÿÿüÿÿxüÿÿpüÿÿhüÿÿ`üÿÿYüÿÿRüÿÿKüÿÿEüÿÿ>üÿÿ8üÿÿ3üÿÿ-üÿÿ(üÿÿ#üÿÿüÿÿüÿÿüÿÿüÿÿüÿÿüÿÿ
+-üÿÿüÿÿüÿÿüÿÿüÿÿüÿÿüÿÿüÿÿ üÿÿüÿÿüÿÿüÿÿüÿÿüÿÿüÿÿüÿÿ
+-üÿÿüÿÿüÿÿüÿÿüÿÿüÿÿüÿÿ#üÿÿ(üÿÿ-üÿÿ3üÿÿ8üÿÿ>üÿÿEüÿÿKüÿÿRüÿÿYüÿÿ`üÿÿhüÿÿpüÿÿxüÿÿüÿÿŠüÿÿ“üÿÿœüÿÿ¦üÿÿ°üÿÿºüÿÿÄüÿÿÏüÿÿÚüÿÿåüÿÿğüÿÿüüÿÿıÿÿıÿÿ ıÿÿ,ıÿÿ9ıÿÿFıÿÿSıÿÿaıÿÿnıÿÿ|ıÿÿŠıÿÿ˜ıÿÿ§ıÿÿµıÿÿÄıÿÿÓıÿÿâıÿÿñıÿÿ şÿÿşÿÿ şÿÿ0şÿÿ@şÿÿPşÿÿ`şÿÿpşÿÿşÿÿ’şÿÿ¢şÿÿ³şÿÿÄşÿÿÕşÿÿæşÿÿ÷şÿÿ	ÿÿÿÿÿÿ,ÿÿÿ=ÿÿÿOÿÿÿ`ÿÿÿrÿÿÿ„ÿÿÿ•ÿÿÿ§ÿÿÿ¹ÿÿÿËÿÿÿİÿÿÿïÿÿÿ   (L            ”      D     Ô  
+-   ²           ø'     x                           d   pC     d   pC  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ¯  €       ù  €         €       W  €       “  €       Æ  €         €       8  €       a  €       ’  €       »  €       ù  €       .	  €       e	  €       •	  €       Í	  € ò     Ø	  € 3     ş	  € :     %
+-  €     >
+-  € #    R
+-  €       „
+-  €       •
+-  € ˜     
+-  € ™     ¦
+-  € š     ¯
+-  €       ¹
+-  € ¢     Â
+-  € £     Ê
+-  € ¤     Ó
+-  € ¥     İ
+-  € ¨     è
+-  € ©     ò
+-  € B     	  € C       €       X  €         €       Ù  €         €       C  € Z     P  € \     b  € |    m  €       ‘  €       Í  €       ü  €       *  €       C  €      O  €      b  €         €       Ú  €         €       _  €       ¤  €       ì  €       &  €       i  €       ¡  € „     ­  € †     À  €       í  € ”       € —     $  € È     \  € È     p  €     “  €     ¦  € f    Ú  € f    ì  $ A pC  ş    @        @    
+-  D A     
+-  D B    
+-  D D    
+-  D E    
+-  D G *   
+-  D H F   
+-  D I S   
+-  D J `   
+-  D K m   
+-  D L z   
+-  D M ‡   
+-  D P ˜   
+-  D M ¼   
+-  D S Ä   
+-  D T Í   
+-  D U Ö   
+-  D V à   
+-  D W í   
+-  D X ú   
+-  D Y   
+-  D [   
+-  D \ -  
+-  D ] ;  
+-  D ^ L  
+-  D Y ]  
+-  D ` d  
+-  D a q  
+-  D b ~  
+-  D c „  
+-  D c „    € B üÿÿÿ  € C øÿÿÿ
+-  À      
+-  à   „    $ g üD  ş    f        f    
+-  D g     
+-  D h    
+-  D j    
+-  D k    
+-  D l *   
+-  D m J   
+-  D n W   
+-  D o d   
+-  D p q   
+-  D q ~   
+-  D r ‹   
+-  D t œ   
+-  D r Ä   
+-  D w Ì   
+-  D x Õ   
+-  D y Ş   
+-  D z ë   
+-  D { ø   
+-  D |   
+-  D }   
+-  D ~   
+-  D  ,  
+-  D € 4  
+-  D € 4    € h üÿÿÿ  € i øÿÿÿ
+-  À      
+-  à   4  0  $ „ 8F  C    ƒ    
+-  D „     
+-  D …    
+-  D †    
+-  D ˆ    
+-  D Š $   
+-  D ˆ A   
+-  D Œ H   
+-  D  V   
+-  D  b   
+-  D ’ x   
+-  D  ™   
+-  D ”     
+-  D – ²   
+-  D ˜ ¾   
+-  D š Ğ   
+-  D œ Ü   
+-  D  î   
+-  D Ÿ ú   
+-  D Ÿ ú     € … üÿÿÿ
+-  À      
+-  à   ú   J  $ £ 4G  C    ¢    a    ¢    f    ¢    k    ¢    
+-  D £     
+-  D ¤    
+-  D ¥ $   p  $ © \G  C    ¨    a    ¨    f    ¨    k    ¨    Œ    ¨    
+-  D ©     
+-  D ª    
+-  D ¬    
+-  D ­    
+-  D ®    
+-  D ¯    
+-  D ± '   
+-  D ³ L   
+-  D µ d   
+-  D ¶ d   
+-  D ¸ t   
+-  D º |   
+-  D » Œ   
+-  D ¼ Ÿ   
+-  D ½ ²   
+-  D ¾ Å   
+-  D ¿ ë   
+-  D Á ü   
+-  D Â   
+-  D Ã   
+-  D Å   
+-  D ³   
+-  D Æ   
+-  D Ç    
+-  D Ç      € ª üÿÿÿ‘  € « øÿÿÿ–  € « ôÿÿÿ›  € « ğÿÿÿ   € « ìÿÿÿ¥  € ¬ èÿÿÿª  € ­ äÿÿÿ²  € ® àÿÿÿ
+-  À      ¼  € µ Üÿÿÿ
+-  À   d   
+-  à     
+-  à      Ã  €       é  € â     ö  €       é  € ç       $ ë €H  /    ê    7    ê    
+-  D ë     
+-  D ò    
+-  D õ    
+-  D ö f   
+-  D ÷ ¶   
+-  D ø ¾   
+-  D ù Ñ   
+-  D ú   
+-  D û I  
+-  D ü ‘  
+-  D ş Ğ  
+-  D ş Ğ  ?  € ò üÿÿÿD  € ò øÿÿÿI  € ò ôÿÿÿN  € ò ğÿÿÿS  € ò ìÿÿÿX  € ò èÿÿÿ]  € ò äÿÿÿ  € ó àÿÿÿ
+-  À      
+-  à   Ğ  b  $ TJ  o       u       {              ‡              
+-  D     
+-  D    
+-  D    
+-  D 0   
+-  D 
+-Z   
+-  D †   
+-  D ²   
+-  D à   
+-  D ç   
+-  D ì   
+-  D   
+-  D 2  
+-  D >  
+-  D !g  
+-  D "l  
+-  D "l  “  € ôÿÿÿ›  € èÿÿÿ£  € Üÿÿÿ«  € Ğÿÿÿ³  € Ìÿÿÿ
+-  À      
+-  à   l  »  $ +ÄK  Î    *   Ö    *   
+-  D +    
+-  D 2   
+-  D 5   
+-  D 6    
+-  D 76   
+-  D 8l   
+-  D 9‘   
+-  D :œ   
+-  D ;«   
+-  D <³   
+-  D =Ä   
+-  D A  
+-  D C<  
+-  D Ep  
+-  D G¤  
+-  D IØ  
+-  D K  
+-  D N@  
+-  D PH  
+-  D PH  Ş  € 2üÿÿÿN  € 2øÿÿÿX  € 2ôÿÿÿS  € 2ğÿÿÿã  € 2ìÿÿÿ]  € 2èÿÿÿ  € 3äÿÿÿ
+-  À      
+-  à   H  è  $ TN  C    S   a    S   f    S   k    S   
+-  D T    
+-  D U   
+-  D W   
+-  D X   
+-  D Y   
+-  D Z   
+-  D \-   
+-  D ^T   
+-  D `t   
+-  D at   
+-  D cŠ   
+-  D e   
+-  D fş   
+-  D h  
+-  D i  
+-  D j*  
+-  D l1  
+-  D ^1  
+-  D m<  
+-  D nD  
+-  D nD    € Uüÿÿÿ¥  € Wøÿÿÿª  € Xôÿÿÿ  € Yğÿÿÿ
+-  À        € `ìÿÿÿ
+-  À   t   
+-  à   1  
+-  à   D    $ rXO  C    q   a    q   f    q   k    q   
+-  D r    
+-  D s   
+-  D t$   *  $ x€O  C    w   a    w   f    w   k    w   Œ    w   
+-  D x    
+-  D y   
+-  D z   
+-  D |   
+-  D ~4   
+-  D €H   
+-  D ‚X   
+-  D „\   
+-  D ‰¡   
+-  D ~¨   
+-  D Œ°   
+-  D ¸   
+-  D ¸     € yüÿÿÿ
+-  À      
+-  à   ¸   D  $ ‘<P  C       a       f       k       
+-  D ‘    
+-  D ’   
+-  D “$   \  $ —dP  C    –   a    –   f    –   k    –   Œ    –   
+-  D —    
+-  D ˜   
+-  D ™   
+-  D š   
+-  D œ   
+-  D <   
+-  D  P   
+-  D ¢`   
+-  D £f   
+-  D h   
+-  D ¦p   
+-  D ¨v   
+-  D ©   
+-  D «ˆ   
+-  D ­   
+-  D ¯–   
+-  D °£   
+-  D ±³   
+-  D ²Ã   
+-  D ³Ó   
+-  D ´ä   
+-  D µì   
+-  D µì     € ˜üÿÿÿ¥  € ™øÿÿÿ
+-  À      
+-  à   ì   y  $ ÄTQ  C    Ã   a    Ã   f    Ã   k    Ã   
+-  D Ä    
+-  D Å   
+-  D Æ$     $ Ê|Q  C    É   a    É   f    É   k    É   Œ    É   
+-  D Ê    
+-  D Ë   
+-  D Ì   
+-  D Í   
+-  D Ï   
+-  D Ğ   
+-  D Ò(   
+-  D ÕL   
+-  D ×d   
+-  D Ùt   
+-  D Úz   
+-  D Ü€   
+-  D İ   
+-  D Ş£   
+-  D ß¶   
+-  D àÉ   
+-  D áï   
+-  D ã÷   
+-  D åı   
+-  D ç  
+-  D è  
+-  D Õ  
+-  D ì  
+-  D î"  
+-  D ï+  
+-  D ñ4  
+-  D ó<  
+-  D õB  
+-  D öO  
+-  D ÷_  
+-  D øo  
+-  D ù  
+-  D ú  
+-  D û˜  
+-  D û˜  ¬  € Ëüÿÿÿ¥  € Ìøÿÿÿ°  € Íôÿÿÿ‘  € Îğÿÿÿ–  € Îìÿÿÿ›  € Îèÿÿÿ   € Îäÿÿÿ¼  € Îàÿÿÿ²  € ÏÜÿÿÿ
+-  À      
+-  à   ˜  µ  $ ÿS  C    ş   Ğ    ş   
+-  D ÿ    
+-  D     
+-  D    
+-  D    
+-  D %   Ù  $ 
+-DS  C    	   Ğ    	   
+-  D 
+-    
+-  D    
+-  D    
+-  D    
+-  D 2   
+-  D 8   
+-  D I   
+-  D U   õ  $ œS                
+-  D     
+-  D 
+-   
+-  D 
+-   
+-  D !   
+-  D #   
+-  D %(   
+-  D (0   
+-  D *D   
+-  D (R   
+-  D -X   
+-  D /p   
+-  D 1ˆ   
+-  D 2¡   
+-  D 6®   
+-  D ;û   
+-  D /  
+-  D -$  
+-  D ?,  
+-  D B@  
+-  D CT  
+-  D Dn  
+-  D Eˆ  
+-  D F¢  
+-  D ?³  
+-  D I¼  
+-  D KÔ  
+-  D Iå  
+-  D Nì  
+-  D Pø  
+-  D Pø    € üÿÿÿ  € øÿÿÿ   € ôÿÿÿ$  € ğÿÿÿ(  € ğûÿÿ
+-  À   
+-   
+-  à   ø  1  $ TœU  C    S   E    S   J    S   Ğ    S   
+-  D T    
+-  D U	   
+-  D V	   
+-  D YH   
+-  D \Z   
+-  D ]`   
+-  D `d   
+-  D b    
+-  D d¦   
+-  D fÒ   
+-  D g  
+-  D i  
+-  D l  
+-  D n   
+-  D o\  
+-  D qh  
+-  D s  
+-  D t¼  
+-  D vÄ  
+-  D wç  
+-  D yì  
+-  D z  
+-  D |  
+-  D ~D  
+-  D €Z  
+-  D ‚p  
+-  D …  
+-  D ˆ  
+-  D ŠX  
+-  D \  
+-  D š  
+-  D ’œ  
+-  D ’œ  $  € Uüÿÿÿ
+-  À   	   
+-  à   œ  O  $ –@Y  C    •   E    •   J    •   
+-  D –    
+-  D —   
+-  D œ   
+-  D    
+-  D     
+-  D ¡9   
+-  D ¢B   
+-  D £T   
+-  D ¤u   
+-  D ¥~   
+-  D ¦   
+-  D §—   
+-  D ©£   
+-  D «´   
+-  D ¬»   
+-  D ®Ì   
+-  D ¯Ì   
+-  D ±ë   
+-  D ³  
+-  D ´  
+-  D ¬  
+-  D µ  
+-  D ©  
+-  D ·  
+-  D º  
+-  D ¼0  
+-  D ½7  
+-  D ¿L  
+-  D ÀL  
+-  D Âk  
+-  D Æƒ  
+-  D È•  
+-  D Ïç  
+-  D Òì  
+-  D Ö  
+-  D ×  
+-  D ½  
+-  D Ø  
+-  D º  
+-  D Û(  
+-  D Û(  e  € —üÿÿÿj  € —øÿÿÿo  € ˜ôÿÿÿt  € ™ğÿÿÿy  € šìÿÿÿ~  € šèÿÿÿƒ  € šäÿÿÿˆ  € šàÿÿÿ  € ›Üÿÿÿ”  € ›Øÿÿÿ
+-  À      $  € ®Ôÿÿÿ
+-  À   Ì   
+-  à     $  € ¿Ôÿÿÿ
+-  À   L  
+-  à     
+-  à   (  ›  $ ßp[  C    Ş   E    Ş   J    Ş   
+-  D ß    
+-  D à   
+-  D â   
+-  D ä   
+-  D æ   
+-  D ç9   
+-  D èZ   
+-  D êf   
+-  D ëŠ   
+-  D ì¢   
+-  D ğ¨   
+-  D òÆ   
+-  D öŞ   
+-  D ı?  
+-  D  D  
+-  D l  
+-  D l    € àüÿÿÿ”  € àøÿÿÿ$  € áôÿÿÿ
+-  À      
+-  À   f   
+-  à   ¢   
+-  à   l  °  $ 	ä\  C       E       J       
+-  D 	    
+-  D 
+-   
+-  D    
+-  D *   
+-  D T   
+-  D X   
+-  D x   
+-  D |   
+-  D €   Ã  $ l]  C       E       J       
+-  D     
+-  D 	   
+-  D "   
+-  D !.   
+-  D $€   
+-  D '„   
+-  D )Œ   
+-  D )Œ   $  € üÿÿÿ
+-  À   	   
+-  à   Œ   ß  $ . ^  C    -   ï    -   õ    -   û    -       -   Ğ    -   
+-  D .    
+-  D /   
+-  D 2   
+-  D 3   
+-  D 4$   
+-  D 55   
+-  D 8A   
+-  D 9Š   
+-  D :   
+-  D <—   
+-  D =¦   
+-  D >±   
+-  D ?¿   
+-  D AÇ   
+-  D BÍ   
+-  D CÓ   
+-  D DÚ   
+-  D Eà   
+-  D Hä   
+-  D Iê   
+-  D Jğ   
+-  D K÷   
+-  D Oı   
+-  D P  
+-  D Q0  
+-  D PH  
+-  D SP  
+-  D Ud  
+-  D Wp  
+-  D Xs  
+-  D Zy  
+-  D [  
+-  D ^„  
+-  D _‡  
+-  D a  
+-  D bª  
+-  D cÀ  
+-  D bØ  
+-  D dà  
+-  D eä  
+-  D hì  
+-  D jø  
+-  D kû  
+-  D m  
+-  D n  
+-  D q  
+-  D r  
+-  D t  
+-  D u2  
+-  D vH  
+-  D u`  
+-  D wh  
+-  D yl  
+-  D }t  
+-  D ~½  
+-  D Ã  
+-  D Ê  
+-  D ‚Ù  
+-  D ƒä  
+-  D „ò  
+-  D †ú  
+-  D ‡   
+-  D ˆ  
+-  D ‰  
+-  D Š  
+-  D   
+-  D   
+-  D $  
+-  D *  
+-  D ”1  
+-  D •N  
+-  D –d  
+-  D •|  
+-  D ˜„  
+-  D š˜  
+-  D œ¤  
+-  D §  
+-  D Ÿ­  
+-  D  ³  
+-  D £¸  
+-  D ¤»  
+-  D ¦Á  
+-  D §Ş  
+-  D ¨ô  
+-  D §  
+-  D ©  
+-  D ª  
+-  D ­   
+-  D ¯,  
+-  D °/  
+-  D ²5  
+-  D ³;  
+-  D ¶@  
+-  D ·C  
+-  D ¹I  
+-  D ºf  
+-  D »|  
+-  D º”  
+-  D ¼œ  
+-  D ¿   
+-  D ¿     € /üÿÿÿ  € /øÿÿÿ  € /ôÿÿÿ  € /ğÿÿÿ!  € /ìÿÿÿ  € /èÿÿÿ   € /äÿÿÿ%  € /àÿÿÿ,  € /Üÿÿÿ3  € /Øÿÿÿ>  € /ÔÿÿÿI  € 0ĞÿÿÿO  € 1ÌÿÿÿS  € 1Èÿÿÿ\  € 2Äÿÿÿ
+-  À      
+-  à      d  $ Å¨b  C    Ä   ï    Ä   õ    Ä   û    Ä       Ä   Ğ    Ä   
+-  D Å    
+-  D Æ   
+-  D Ç   
+-  D È   
+-  D Ë   
+-  D Í    
+-  D Î1   
+-  D ÏB   
+-  D ÒN   
+-  D Ó—   
+-  D Õ   
+-  D Ö­   
+-  D ×¸   
+-  D ØÆ   
+-  D ÚÎ   
+-  D ÛÔ   
+-  D ÜÚ   
+-  D İá   
+-  D Şç   
+-  D áì   
+-  D âò   
+-  D ãø   
+-  D äÿ   
+-  D æ  
+-  D ç-  
+-  D é=  
+-  D ëH  
+-  D ìK  
+-  D îQ  
+-  D ïW  
+-  D ò\  
+-  D ó_  
+-  D õe  
+-  D ö  
+-  D ÷  
+-  D ú”  
+-  D ü   
+-  D ı£  
+-  D ÿ©  
+-  D  ¯  
+-  D ´  
+-  D ·  
+-  D ½  
+-  D å  
+-  D 	è  
+-  D ğ  
+-  D 9  
+-  D @  
+-  D O  
+-  D Z  
+-  D h  
+-  D p  
+-  D v  
+-  D |  
+-  D ‚  
+-  D ‰  
+-  D Œ  
+-  D ’  
+-  D ˜  
+-  D   
+-  D !¥  
+-  D "Í  
+-  D $İ  
+-  D &è  
+-  D 'ë  
+-  D )ñ  
+-  D *÷  
+-  D -ü  
+-  D .ÿ  
+-  D 0  
+-  D 1-  
+-  D 20  
+-  D 54  
+-  D 7@  
+-  D 8C  
+-  D :I  
+-  D ;O  
+-  D >T  
+-  D ?W  
+-  D A]  
+-  D B…  
+-  D Eˆ  
+-  D Eˆ    € Æüÿÿÿ  € Æøÿÿÿ  € Æôÿÿÿ  € Æğÿÿÿ!  € Æìÿÿÿ  € Æèÿÿÿ   € Æäÿÿÿ%  € Æàÿÿÿ,  € ÆÜÿÿÿ3  € ÆØÿÿÿ>  € ÆÔÿÿÿz  € ÇĞÿÿÿ…  € ÈÌÿÿÿI  € ÉÈÿÿÿO  € ÊÄÿÿÿS  € ÊÀÿÿÿŠ  € Ê¼ÿÿÿ\  € Ë¸ÿÿÿ
+-  À      
+-  à   ˆ  ‘  $ J4f  C    H   E    H   J    H   Ğ    H   Ÿ    I   §    I   µ    I    ¼    I$   
+-  D J    
+-  D K   
+-  D L   
+-  D O   
+-  D P   
+-  D R    
+-  D S'   
+-  D U4   
+-  D W>   
+-  D YD   
+-  D Za   
+-  D [t   
+-  D ZŒ   
+-  D \”   
+-  D _˜   
+-  D `µ   
+-  D aÈ   
+-  D `à   
+-  D dè   
+-  D eğ   
+-  D fø   
+-  D fø   z  € Küÿÿÿ…  € LøÿÿÿO  € MôÿÿÿS  € Mğÿÿÿ
+-  À      
+-  à   ø   Ä  $ j4g  C    i   E    i   J    i   
+-  D j    
+-  D k   
+-  D m0   Ù  $ rhg  C    p   é    p   E    p   J    p   ï    q   Ğ    q   
+-  D r    
+-  D s   
+-  D v   
+-  D w   
+-  D {   
+-  D }4   
+-  D <   
+-  D €X   
+-  D ‚p   
+-  D „ˆ   
+-  D †ª   
+-  D ˆÂ   
+-  D ‚Å   
+-  D ŠÌ   
+-  D ‹Ó   
+-  D €Ö   
+-  D Ü   
+-  D Ü   ô  € süÿÿÿù  € søÿÿÿş  € tôÿÿÿ  € tğÿÿÿ  € uìÿÿÿ
+-  À      
+-  à   Ü     $ ’Lh  C       é       E    ‘   J    ‘   ï    ‘   Ğ    ‘   
+-  D ’    
+-  D “   
+-  D –   
+-  D —   
+-  D ›   
+-  D 4   
+-  D Ÿ<   
+-  D  X   
+-  D ¢p   
+-  D ¤ˆ   
+-  D ¦ª   
+-  D ¨Â   
+-  D ¢Å   
+-  D ªÌ   
+-  D «Ó   
+-  D  Ö   
+-  D ­Ü   
+-  D ­Ü   ô  € “üÿÿÿù  € “øÿÿÿş  € ”ôÿÿÿ  € ”ğÿÿÿ  € •ìÿÿÿ
+-  À      
+-  à   Ü   "  $ ²0i  C    °   é    °   E    ±   J    ±   4    ±   Ğ    ±   
+-  D ²    
+-  D ³   
+-  D µ   
+-  D ¶   
+-  D ¸(   
+-  D ¹N   
+-  D ¶W   
+-  D »\   
+-  D »\     € ³üÿÿÿ:  € ´øÿÿÿ
+-  À      
+-  à   \   >  $ Ài  C    ¾   é    ¾   E    ¿   J    ¿   4    ¿   Ğ    ¿   
+-  D À    
+-  D Á   
+-  D Ã   
+-  D Ä   
+-  D Æ(   
+-  D ÇN   
+-  D ÄW   
+-  D É\   
+-  D É\     € Áüÿÿÿ:  € Âøÿÿÿ
+-  À      
+-  à   \   R  $ Ğği  C    Î   é    Î   E    Ï   J    Ï   f    Ï   Ğ    Ï   
+-  D Ğ    
+-  D Ñ   
+-  D Ó   
+-  D Ô   
+-  D Ö(   
+-  D ×S   
+-  D Ô\   
+-  D Ùd   
+-  D Ùd     € Ñüÿÿÿ:  € Òøÿÿÿ
+-  À      
+-  à   d   o  $ ŞXj  C    Ü   é    Ü   E    İ   J    İ   …    İ   Ğ    İ   
+-  D Ş    
+-  D ß   
+-  D á   
+-  D â   
+-  D ä(   
+-  D åS   
+-  D â\   
+-  D çd   
+-  D çd     € ßüÿÿÿ:  € àøÿÿÿ
+-  À      
+-  à   d   ‹  $ ëÀj  …    ê   
+-  D ë    
+-  D ì   
+-  D í   
+-  D ï   
+-  D ğ   
+-  D ñ   
+-  D ò$   
+-  D ó,   
+-  D ó,   —  € ìüÿÿÿ
+-  À      
+-  à   ,     $ ûğj  ¦    ú   
+-  D û    
+-  D ü   
+-  D ı+   
+-  D ş0   
+-  D ş0   «  € üüÿÿÿ
+-  À      
+-  à   0   ´  $ 	$k  C       Ã       É       Ï       Ô       Ù       Ş        Ğ    $   
+-  D 	    
+-  D 
+-   
+-  D -   ã  $ Tk  C       Ã       É       Ï       Ô       Ù       Ş        Ğ    $   ø    (   
+-  D     
+-  D    
+-  D    
+-  D    
+-  D -   
+-  D E   
+-  D P   
+-  D W   
+-  D \   
+-  D p   
+-  D p   
+-  D    
+-  D Ì   
+-  D Ô   
+-  D Ş   
+-  D  è   
+-  D !  
+-  D #  
+-  D $  
+-  D %  
+-  D &  
+-  D '$  
+-  D (*  
+-  D )0  
+-  D ,F  
+-  D -H  
+-  D .N  
+-  D 0T  
+-  D 1Z  
+-  D 2`  
+-  D `  
+-  D 3h  
+-  D 4v  
+-  D 5€  
+-  D 6Š  
+-  D 7ª  
+-  D 9Ê  
+-  D :ê  
+-  D ;ì  
+-  D <ò  
+-  D =ø  
+-  D >ş  
+-  D ?  
+-  D @
+-  
+-  D A  
+-  D C&  
+-  D D(  
+-  D E2  
+-  D F<  
+-  D G\  
+-  D K|  
+-  D K|    € èÿÿÿ  € äÿÿÿe  € àÿÿÿj  € Üÿÿÿ  € Øÿÿÿ  € Ôÿÿÿ  € Ğÿÿÿ"  € Ìÿÿÿ
+-  À        € Èÿÿÿ   € Äÿÿÿ
+-  À   p   
+-  à   `  
+-  à   |  '  $ NØm  C    M   Ã    M   É    M   Ï    M   Ô    M   Ğ    M   
+-  D N    
+-  D O   
+-  D P,   @  $ Tn  C    S   E    S   J    S   X    S   Ğ    S   
+-  D T    
+-  D U   
+-  D Y   
+-  D Z   
+-  D ]   
+-  D _   
+-  D a(   
+-  D cC   
+-  D eH   
+-  D f`   
+-  D _f   
+-  D hl   
+-  D jr   
+-  D mx   
+-  D n~   
+-  D p”   
+-  D r¯   
+-  D t´   
+-  D uÌ   
+-  D nÒ   
+-  D yØ   
+-  D {â   
+-  D |é   
+-  D ~ü   
+-  D ü   
+-  D €  
+-  D ‚  
+-  D „,  
+-  D †I  
+-  D ˆP  
+-  D ‰T  
+-  D ‹h  
+-  D o  
+-  D |o  
+-  D x  
+-  D ’ˆ  
+-  D “  
+-  D •   
+-  D –   
+-  D —º  
+-  D ™À  
+-  D ›Ğ  
+-  D í  
+-  D Ÿô  
+-  D  ø  
+-  D ¢  
+-  D ¤  
+-  D “  
+-  D ¦  
+-  D ¦  b  € Uüÿÿÿo  € Wøÿÿÿ{  € Wôÿÿÿ  € Xğÿÿÿ
+-  À      ¬  € ~ìÿÿÿ
+-  À   ü   
+-  à   o  ¬  € •ìÿÿÿ
+-  À      
+-  à     
+-  à     ˆ  $ ª(p  C    ©   E    ©   J    ©   Ğ    ©   
+-  D ª    
+-  D «   
+-  D ¯   
+-  D °    
+-  D ³*   
+-  D µ*   
+-  D ·6   
+-  D »<   
+-  D ½T   
+-  D ¿\   
+-  D À}   
+-  D Á   
+-  D ÂÂ   
+-  D ÄÎ   
+-  D ÅÔ   
+-  D ÈÜ   
+-  D Êô   
+-  D ÏC  
+-  D ÒH  
+-  D Õ^  
+-  D Øf  
+-  D Úl  
+-  D İp  
+-  D àx  
+-  D ä€  
+-  D å‡  
+-  D ç˜  
+-  D é³  
+-  D ë¸  
+-  D ìĞ  
+-  D åÖ  
+-  D îÜ  
+-  D ğâ  
+-  D óè  
+-  D ôî  
+-  D ö  
+-  D ø#  
+-  D ú(  
+-  D û@  
+-  D ôF  
+-  D ÿL  
+-  D R  
+-  D Y  
+-  D l  
+-  D l  
+-  D †  
+-  D Œ  
+-  D 
+-”  
+-  D ­  
+-  D ´  
+-  D ¸  
+-  D À  
+-  D Ç  
+-  D Ç  
+-  D Ì  
+-  D Ş  
+-  D å  
+-  D ø  
+-  D ø  
+-  D   
+-  D   
+-  D     
+-  D !9  
+-  D #@  
+-  D $D  
+-  D &L  
+-  D (S  
+-  D S  
+-  D *X  
+-  D *X  b  € «üÿÿÿ˜  € ¬øÿÿÿo  € ­ôÿÿÿ{  € ­ğÿÿÿ  € ®ìÿÿÿ
+-  À      $  € ³èÿÿÿ  € ³äÿÿÿ  € ´àÿÿÿ”  € ´Üÿÿÿ
+-  À   *   
+-  à   l  ¬  € Üÿÿÿ
+-  À   l  
+-  à   Ç  ¬  € Üÿÿÿ
+-  À   ø  
+-  à   S  
+-  à   X  ª  $ .ˆs  C    -   ï    -   õ    -   û    -       -   Ğ    -   
+-  D .    
+-  D /   
+-  D 01   
+-  D 17   
+-  D 2C   
+-  D 4I   
+-  D 5a   
+-  D 7j   
+-  D 9r   
+-  D :{   
+-  D ;‡   
+-  D >Œ   
+-  D ?˜   
+-  D A¡   
+-  D C¡   
+-  D DÁ   
+-  D Eá   
+-  D F  
+-  D G!  
+-  D G!  ¿  € /üÿÿÿÅ  € /øÿÿÿË  € /ôÿÿÿÑ  € /ğÿÿÿ×  € /ìÿÿÿİ  € /èÿÿÿã  € /äÿÿÿé  € 0àÿÿÿ\  € 1Üÿÿÿ
+-  À      ï  € 4Øÿÿÿö  € 5Ôÿÿÿ
+-  À   I   
+-  à   ¡   
+-  à   !  ş  $ K°t  C    J   ï    J   õ    J   û    J       J   Ğ    J   
+-  D K    
+-  D L   
+-  D M   
+-  D O   
+-  D Q(   
+-  D O@   
+-  D MH   
+-  D TP   
+-  D TP     € Lüÿÿÿ   € Løÿÿÿ
+-  À      
+-  à   P     $ Xu  )    W   1    W   9    W   A    W   I    W   Q    W   Ï    W    Ô    W$   
+-  D X    
+-  D Y	   
+-  D ^	   
+-  D a   
+-  D c,   
+-  D e@   
+-  D gb   
+-  D is   
+-  D n”   
+-  D c”   
+-  D aœ   
+-  D p¤   
+-  D r¬   
+-  D tÀ   
+-  D rÎ   
+-  D vÔ   
+-  D wÚ   
+-  D yğ   
+-  D zö   
+-  D |  
+-  D }  
+-  D %  
+-  D 3  
+-  D ‚6  
+-  D …<  
+-  D ˆI  
+-  D ŠQ  
+-  D ‹Z  
+-  D \  
+-  D •¥  
+-  D —µ  
+-  D ˜Ô  
+-  D ™×  
+-  D z×  
+-  D šà  
+-  D wã  
+-  D œì  
+-  D œì  ¬  € Yüÿÿÿ  € Zøÿÿÿ   € ZôÿÿÿY  € [ğÿÿÿ_  € [ìÿÿÿ  € \èÿÿÿe  € ]èûÿÿ
+-  À   	   ¬  € eäûÿÿ
+-  À   @   
+-  à   ”   q  € |äûÿÿ
+-  À     
+-  à   ×  
+-  à   ì  v  $ ¢ôv  )    ¡   1    ¡   9    ¡   A    ¡   I    ¡   Q    ¡   Ï    ¡    Ô    ¡$   ‹    ¡(   
+-  D ¢    
+-  D ¤   
+-  D ¨   
+-  D ©   
+-  D «$   
+-  D ¬*   
+-  D ®@   
+-  D ¯@   
+-  D ±Y   
+-  D ³g   
+-  D ´j   
+-  D ·p   
+-  D ¹x   
+-  D º~   
+-  D ½„   
+-  D ¿   
+-  D Á‹  
+-  D Ã‚  
+-  D Çb  
+-  D É  
+-  D Ê—  
+-  D Ëš  
+-  D ¬š  
+-  D Ì¤  
+-  D ©§  
+-  D Î°  
+-  D Î°  ¬  € ¤üÿÿÿ’  € ¤øÿÿÿ  € ¥ôÿÿÿ   € ¥ğÿÿÿY  € ¦ìÿÿÿ_  € ¦èÿÿÿ—  € §äÿÿÿ  € §àÿÿÿ£  € §Üÿÿÿ
+-  À      q  € ®Øÿÿÿ
+-  À   @   
+-  à   š  
+-  à   °  ©  $ Ô¬z  )    Ó   1    Ó   9    Ó   A    Ó   I    Ó   Q    Ó   Ï    Ó    Ô    Ó$   ‹    Ó(   
+-  D Ô    
+-  D Ö   
+-  D Û   
+-  D Ü   
+-  D Ş$   
+-  D ß*   
+-  D á@   
+-  D â@   
+-  D äY   
+-  D æg   
+-  D çj   
+-  D êp   
+-  D ìx   
+-  D í~   
+-  D ğ„   
+-  D ñ   
+-  D õà   
+-  D ø¿  
+-  D û¢  
+-  D  v  
+-  D “  
+-  D ™  
+-  D ¶  
+-  D 	¼  
+-  D Ù  
+-  D ñ  
+-  D ô  
+-  D ßô  
+-  D ü  
+-  D Üÿ  
+-  D   
+-  D   ¬  € Öüÿÿÿ’  € Öøÿÿÿ  € ×ôÿÿÿ   € ×ğÿÿÿY  € Øìÿÿÿ_  € Øèÿÿÿ—  € Ùäÿÿÿ  € Ùàÿÿÿ£  € ÙÜÿÿÿÂ  € ÚØÿÿÿ
+-  À      q  € áÔÿÿÿ
+-  À   @   
+-  à   ô  
+-  à     Ç  $ ¼~  )       1       9       A       I       Q       Ş        æ    $   î    (   ö    ,   
+-  D     
+-  D 
+-   
+-  D #
+-   
+-  D $%   
+-  D %@   
+-  D &T   
+-  D (h   
+-  D )h   
+-  D *~   
+-  D +¸   
+-  D ,Ó   
+-  D -ç   
+-  D &ç   
+-  D .ğ   
+-  D /  
+-  D 1  
+-  D 2  
+-  D 3.  
+-  D 4h  
+-  D 5ƒ  
+-  D 6—  
+-  D /—  
+-  D 7   
+-  D 9´  
+-  D 7Â  
+-  D ;È  
+-  D <Î  
+-  D >ä  
+-  D @  
+-  D A  
+-  D C,  
+-  D E,  
+-  D GG  
+-  D IL  
+-  D KX  
+-  D LX  
+-  D Nt  
+-  D P…  
+-  D Qˆ  
+-  D S  
+-  D V˜  
+-  D X±  
+-  D Z¿  
+-  D [Ú  
+-  D ]à  
+-  D bì  
+-  D g/  
+-  D k4  
+-  D nA  
+-  D pI  
+-  D qR  
+-  D uT  
+-  D {—  
+-  D }§  
+-  D €·  
+-  D ‚à  
+-  D ƒû  
+-  D €ş  
+-  D …  
+-  D A  
+-  D †  
+-  D >  
+-  D <  
+-  D ‰   
+-  D Š/  
+-  D ‹>  
+-  D ‹>  ¬  € üÿÿÿ  € øÿÿÿ   € ôÿÿÿY  € ğÿÿÿ_  € ìÿÿÿş  € èÿÿÿ  € äÿÿÿe  € äûÿÿ  € àûÿÿ  € Üûÿÿ  € "Ôûÿÿ
+-  À   
+-     € (Ğûÿÿ
+-  À   h   
+-  à   ç     € 1Ğûÿÿ
+-  À     
+-  à   —  q  € CĞûÿÿ#  € DÄûÿÿ
+-  À   ,  !  € KÀûÿÿ
+-  À   X  
+-  à     
+-  à     
+-  à   >  +  $ ™ƒ  )    “   1    ”   9    •   A    •   I    –   Q    –   Ş    —    æ    —$   î    ˜(   ö    ˜,   
+-  D ™    
+-  D š	   
+-  D œ	   
+-  D    
+-  D ¡}   
+-  D £„   
+-  D ¥¨   
+-  D §Ì   
+-  D ªø   
+-  D «ÿ   
+-  D ¬  
+-  D ®0  
+-  D °L  
+-  D ³R  
+-  D ´R  
+-  D ¶‡  
+-  D ·¤  
+-  D ¹·  
+-  D »À  
+-  D ¼Ô  
+-  D ½Ø  
+-  D ¿ÿ  
+-  D À  
+-  D Ã  
+-  D Å#  
+-  D Ç8  
+-  D ÉT  
+-  D ÌZ  
+-  D ÏZ  
+-  D Ñ  
+-  D Ò¬  
+-  D Ô¿  
+-  D ÖÈ  
+-  D ×Ü  
+-  D Øà  
+-  D Ú  
+-  D Û   
+-  D Ş$  
+-  D à+  
+-  D á4  
+-  D å‚  
+-  D æ¥  
+-  D çÈ  
+-  D èİ  
+-  D é   
+-  D ê  
+-  D ë  
+-  D ì  
+-  D í4  
+-  D î>  
+-  D ï>  
+-  D ğ\  
+-  D òn  
+-  D ów  
+-  D ô€  
+-  D õ‰  
+-  D ø’  
+-  D ú¨  
+-  D ü¯  
+-  D şÅ  
+-  D  Ì  
+-  D â  
+-  D é  
+-  D ÿ  
+-  D   
+-  D Â  
+-  D ¥Â  
+-  D £Ì  
+-  D Ô  
+-  D Ô    € šüÿÿÿ   € šøÿÿÿD  € ›ôÿÿÿJ  € ›ğÿÿÿ
+-  À   	   P  € §ìÿÿÿU  € ¨èÿÿÿ\  € ¨äÿÿÿc  € ¨àÿÿÿj  € ¨ÜÿÿÿD  € ©ØÿÿÿJ  € ©Ôÿÿÿq  € ªĞÿÿÿ|  € «Ìÿÿÿƒ  € «ÈÿÿÿŒ  € «Äÿÿÿ”  € «Àÿÿÿ
+-  À   Ì     € ³¼ÿÿÿ
+-  À   R  ©  € Ì´ÿÿÿµ  € Í°ÿÿÿ$  € Î¬ÿÿÿ
+-  À   Z  
+-  à     
+-  à   >  
+-  à   Â  
+-  à   Ô  Æ  $ Üˆ  ß       
+-  D     
+-  D 
+-   
+-  D 
+-   
+-  D (   
+-  D !0   
+-  D #9   
+-  D $L   
+-  D &R   
+-  D )\   
+-  D *_   
+-  D +r   
+-  D -x   
+-  D 0€   
+-  D 1’   
+-  D 3˜   
+-  D 5    
+-  D 7¾   
+-  D 9È   
+-  D ;Ñ   
+-  D <ä   
+-  D >ê   
+-  D Aô   
+-  D B÷   
+-  D C
+-  
+-  D E  
+-  D H  
+-  D I*  
+-  D K0  
+-  D N8  
+-  D PV  
+-  D R`  
+-  D Sy  
+-  D T  
+-  D U©  
+-  D V»  
+-  D WÂ  
+-  D XÉ  
+-  D Zà  
+-  D ]à  
+-  D _è  
+-  D `  
+-  D b  
+-  D d$  
+-  D f*  
+-  D h,  
+-  D j0  
+-  D k_  
+-  D me  
+-  D ol  
+-  D pu  
+-  D q£  
+-  D s©  
+-  D u°  
+-  D v¹  
+-  D wÀ  
+-  D xÛ  
+-  D zğ  
+-  D {  
+-  D }$  
+-  D ~+  
+-  D .  
+-  D 9  
+-  D „@  
+-  D xD  
+-  D ‡L  
+-  D XL  
+-  D ‰T  
+-  D Šf  
+-  D Œl  
+-  D x  
+-  D |  
+-  D |    € üÿÿÿê  € øÿÿÿO  € ôÿÿÿğ  € ğÿÿÿô  € ìÿÿÿü  € èÿÿÿ  € äÿÿÿ  € àÿÿÿ   € Üÿÿÿ  € Øÿÿÿ  € 4ÿÿÿ
+-  À   
+-     € Z0ÿÿÿ'  € [,ÿÿÿ
+-  À   à  
+-  à   L  
+-  à   |  +  $ ’`Œ  C    ‘   >    ‘   D    ‘   ï    ‘   
+-  D ’    
+-  D “   
+-  D •   
+-  D —   
+-  D ™   
+-  D š   
+-  D ›%   
+-  D œl   
+-  D €   
+-  D Ÿ„   
+-  D  ©   
+-  D ¡±   
+-  D œº   
+-  D £À   
+-  D £À     € “üÿÿÿe  € ”øÿÿÿj  € ”ôÿÿÿ
+-  À      
+-  à   À   I  $ °$  C    ¯   >    ¯   D    ¯   ï    ¯   
+-  D °    
+-  D ±	   
+-  D ¸	   
+-  D º   
+-  D ¼   
+-  D ¾&   
+-  D ¿[   
+-  D Ás   
+-  D Ã‘   
+-  D Å°   
+-  D ÆÖ   
+-  D ÇØ   
+-  D Ê.  
+-  D ËC  
+-  D ÌX  
+-  D Ît  
+-  D Ğ¤  
+-  D ÒÒ  
+-  D Ô  
+-  D Ì0  
+-  D Ø8  
+-  D İX  
+-  D Ş_  
+-  D à|  
+-  D â‚  
+-  D ã‰  
+-  D ä  
+-  D ç”  
+-  D è›  
+-  D ê§  
+-  D ëÕ  
+-  D ì  
+-  D î  
+-  D ï>  
+-  D ğk  
+-  D ñp  
+-  D ó‚  
+-  D ô°  
+-  D õŞ  
+-  D ö  
+-  D ÷8  
+-  D ú<  
+-  D üD  
+-  D ş`  
+-  D ÿ´  
+-  D  	¼  
+-  D 	æ  
+-  D Ş:  
+-  D 	D  
+-  D 	q  
+-  D 		Œ  
+-  D 	(  
+-  D Ø4  
+-  D 	<  
+-  D 	<    € ±üÿÿÿ   € ²øÿÿÿb  € ³ôÿÿÿi  € ³ğÿÿÿy  € ´ìÿÿÿ~  € ´èÿÿÿƒ  € µäÿÿÿˆ  € µàÿÿÿp  € ¶Üÿÿÿw  € ¶Øÿÿÿ~  € ·Ôÿÿÿ
+-  À   	   
+-  à   <  …  $ 	h“  •    	   Ÿ    	   
+-  D 	    
+-  D 	   
+-  D 	   ¥  $ 	€“  C    	   ¹    	   Ã    	   
+-  D 	    
+-  D 	   
+-  D 	   
+-  D 	!   
+-  D 	A   
+-  D 	d   
+-  D  	p   
+-  D !	}   Ñ  $ %	 ”  C    $	   é    $	   
+-  D %	    
+-  D &	   
+-  D '	   ö  $ +	”  C    *	   
+-    *	   
+-  D +	    
+-  D ,	   
+-  D -	   
+-  D .	   
+-  D 0	8   
+-  D 2	P   
+-  D 3	P   
+-  D 8	ø   
+-  D 9	  
+-  D 0	  
+-  D ;	  
+-  D ;	    € ,	üÿÿÿ
+-  À        € 2	øÿÿÿ
+-  À   P   
+-  à     
+-  à       $ ?	(•  C    >	   /    >	   
+-  D ?	    
+-  D @	   
+-  D A	   
+-  D B	   
+-  D D	8   
+-  D F	P   
+-  D G	P   
+-  D L	ø   
+-  D M	  
+-  D D	  
+-  D O	  
+-  D O	    € @	üÿÿÿ
+-  À        € F	øÿÿÿ
+-  À   P   
+-  à     
+-  à     8  $ S	<–  C    R	   M    R	   
+-  D S	    
+-  D T	   
+-  D U	   ]  $ Y	P–  o    X	   w    X	   
+-  D Y	    
+-  D Z		   
+-  D \		   
+-  D _	   
+-  D a	$   
+-  D d	(   
+-  D f	<   
+-  D i	@   
+-  D k	T   
+-  D n	[   
+-  D o	d   
+-  D q	r   
+-  D r	v   
+-  D t	„   
+-  D x	   
+-  D y	–   
+-  D {	¤   
+-  D |	¨   
+-  D ~	¶   
+-  D ‚	¿   
+-  D „	Í   
+-  D ‡	Ñ   
+-  D ‰	è   
+-  D ‹	ü   
+-  D Œ	  
+-  D 	>  
+-  D 	”  
+-  D 	˜  
+-  D ’	   
+-  D ”	ü  
+-  D •	   
+-  D —	  
+-  D ™	P  
+-  D š	T  
+-  D ‰	X  
+-  D ¥	`  
+-  D §	j  
+-  D ‡	l  
+-  D «	t  
+-  D ¬	|  
+-  D ¬	|    € Z	üÿÿÿ   € Z	øÿÿÿ  € [	ôÿÿÿ„  € [	ğÿÿÿ‰  € \	ìÿÿÿ•  € ]	èÿÿÿš  € ]	äÿÿÿ
+-  À   	   
+-  à   |  Ÿ  $ °	Ô˜  ¯    ¯	   ¶    ¯	   
+-  D °	    
+-  D ±		   
+-  D ½	„  ½  $ Á	`š  C    À	   Ö    À	   
+-  D Á	    
+-  D Â	   
+-  D Ã	   ê  $ Ç	tš  C    Æ	   ÿ    Æ	   
+-  D Ç	    
+-  D È	   
+-  D É	   
+-  d   …š      d   ˆš    d   ˆš  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ¯  €       ù  €         €       W  €       “  €       Æ  €         €       8  €       a  €       ’  €       »  €       ù  €       .	  €       e	  €       •	  €       Í	  € ò     Ø	  € 3     ş	  € :     %
+-  €     >
+-  € #    R
+-  €       „
+-  €         €       S  €       ‚  €       °  €       É  €      Õ  €      è  €       #  €       `  €       ›  €       å  €       *  €       r  €       ¬  €       i  €       ï  € „     û  € †       €       í  € ”     ;  € —     M  € È     …  € È     ™  €     ¼  €     Ï  € f       € f       $  ˆš  %         0         7         
+-  D      
+-  D     
+-  D     
+-  D     
+-  D  '   
+-  D ! ,   
+-  D # 8   
+-  D % Q   
+-  D ) X   
+-  D + s   
+-  D - x   
+-  D 0 |   
+-  D 2 •   
+-  D 4 œ   
+-  D 6 ·   
+-  D 8 ¼   
+-  D : Ë   
+-  D ? Ø   
+-  D A ğ   
+-  D C   
+-  D E   
+-  D G F  
+-  D I L  
+-  D K v  
+-  D M x  
+-  D O ~  
+-  D Q ¨  
+-  D ? ¬  
+-  D V ´  
+-  D X È  
+-  D V Ù  
+-  D [ à  
+-  D ] è  
+-  D ^ ì  
+-  D ^ ì    €  üÿÿÿ
+-  À      
+-  à   ì  C   $ g xœ  Y     f    `     f    g     f    
+-  D g     
+-  D h    
+-  D i    
+-  D j    
+-  D l #   
+-  D n (   
+-  D q 3   
+-  D r :   
+-  D t P   
+-  D w T   
+-  D y j   
+-  D ~ l   
+-  D € …   
+-  D ‚ Ÿ   
+-  D … ¤   
+-  D ‡ ¬   
+-  D ‰ ¸   
+-  D Š ¼   
+-  D Š ¼   n   € h üÿÿÿt   € i øÿÿÿ
+-  À      
+-  à   ¼      $  8  —         
+-  D      
+-  D     
+-  D ’    
+-  D “    
+-  D • )   
+-  D — 8   
+-  D ˜ @   
+-  D ˜ @   n   €  üÿÿÿ¦   €  øÿÿÿ
+-  À      
+-  à   @   ¬   $ œ €  Ç     ›    
+-  D œ     
+-  D     
+-  D ¢    
+-  D ¤    
+-  D ¦ %   
+-  D ª ,   
+-  D ¬ @   
+-  D ® T   
+-  D ¯ T   
+-  D ° e   
+-  D ² k   
+-  D µ p   
+-  D ¶ Œ   
+-  D ¬ Œ   
+-  D ª ”   
+-  D ¹ œ   
+-  D ¼ ¤   
+-  D ¾ °   
+-  D ¿ ´   
+-  D ¿ ´   •  €  üÿÿÿš  €  øÿÿÿ  €  ôÿÿÿ   €  ğÿÿÿn   € Ÿ ìÿÿÿ
+-  À      ü  € ® èÿÿÿ
+-  À   T   
+-  à   Œ   
+-  à   ´   Î   $ Ã 8  0     Â    ß     Â    
+-  D Ã     
+-  D Ä    
+-  D Ç    
+-  D È    
+-  D Ê )   
+-  D Ì <   
+-  D Í R   
+-  D Ï b   
+-  D Ñ t   
+-  D Ò Œ   
+-  D Ó §   
+-  D Ô Â   
+-  D Ï İ   
+-  D × ä   
+-  D × ä     € Ä üÿÿÿç   € Å øÿÿÿ
+-  À      
+-  à   ä   ï   $ Ü  Ÿ  0     Û    ß     Û    
+-  D Ü     
+-  D Ş    
+-  D ß    
+-  D à '   
+-  D â :   
+-  D ä J    !  $ è lŸ  0     ç    ß     ç    
+-  D è     
+-  D é    
+-  D ë    
+-  D í    
+-  D ï 0   
+-  D ò D   
+-  D ô P   
+-  D õ „   
+-  D ø ˆ   
+-  D ï ¯   
+-  D í ´   
+-  D ü ¼   
+-  D ü ¼     € é üÿÿÿ   € é øÿÿÿ
+-  À      
+-  à   ¼   !  $  0   0     ÿ    !    ÿ    
+-  D      
+-  D    
+-  D    
+-  D (   
+-  D 7   
+-  D 7   )!  € üÿÿÿ
+-  À      
+-  à   7   0!  $ l   0        A!       
+-  D     
+-  D 	   
+-  D 
+-   
+-  D    
+-  D +   
+-  D @   
+-  D O   
+-  D T   
+-  D T   J!  € 	üÿÿÿ)!  € 
+-øÿÿÿ
+-  À      
+-  à   T   
+-  d   Å       d   È   P!  d   È   #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ¯  €       ù  €         €       W  €       “  €       Æ  €         €       8  €       a  €       ’  €       »  €       ù  €       .	  €       e	  €       •	  €       Í	  € ò     Ø	  € 3     ş	  € :     %
+-  €     >
+-  € #    R
+-  €       „
+-  €       •
+-  € ˜     
+-  € ™     ¦
+-  € š     ¯
+-  €       ¹
+-  € ¢     Â
+-  € £     Ê
+-  € ¤     Ó
+-  € ¥     İ
+-  € ¨     è
+-  € ©     ò
+-  € B     	  € C       €       X  €         €       Ù  €         €       C  € Z     P  € \     b  € |    m  €       ‘  €       Í  €       ü  €       *  €       C  €      O  €      b  €         €       Ú  €         €       _  €       ¤  €       ì  €       &  €       i  €       ¡  € „     ­  € †     À  €       í  € ”       € —     $  € È     \  € È     p  €     “  €     ¦  € f    Ú  € f    Y!  € #     ‰!  $ / È   š!    -    ¡!    -    ¨!    -    ¯!    .    ¶!    .    ¿!    .    Ç!    .     Ï!    . $   ×!    . (   
+-  D /     
+-  D 0    
+-  D 9    
+-  D ;    
+-  D < )   
+-  D > /   
+-  D @ 4   
+-  D 9 A   
+-  D B H   
+-  D G L   
+-  D J c   
+-  D N h   
+-  D P    
+-  D T „   
+-  D W ”   
+-  D [ œ   
+-  D ^ ²   
+-  D ` ¸   
+-  D c Î   
+-  D h Ô   
+-  D j ë   
+-  D n ğ   
+-  D q   
+-  D u   
+-  D w '  
+-  D { ,  
+-  D ~ <  
+-  D ƒ D  
+-  D … [  
+-  D Š `  
+-  D Œ w  
+-  D  |  
+-  D ’ ˆ  
+-  D ” –  
+-  D • ¥  
+-  D – ¶  
+-  D ˜ È  
+-  D š í  
+-  D œ ğ  
+-  D    
+-  D –   
+-  D ¡ $  
+-  D ¦ ,  
+-  D © 4  
+-  D ª 8  
+-  D ª 8    € 0 üÿÿÿü  € 1 øÿÿÿì!  € 2 ğÿÿÿü!  € 3 ìÿÿÿ"  € 4 èÿÿÿq  € 5 äÿÿÿ
+-  À      
+-  à   8  "  $ ± £  š!    ®    ¡!    ®    ¨!    ®    ¯!    ¯    ¶!    ¯    ¿!    ¯    Ç!    °     Ï!    ° $   ""    ° (   
+-  D ±     
+-  D ²    
+-  D ´    
+-  D · 9   
+-  D º <   
+-  D » U   
+-  D ¾ [   
+-  D Á `   
+-  D Ä ƒ   
+-  D È ˆ   
+-  D Ë    
+-  D Ì œ   
+-  D Ï     
+-  D Ñ ¤   
+-  D Ñ ¤     € ² üÿÿÿ
+-  À      
+-  à   ¤   +"  $ Ö ¬£  <"    Õ    F"    Õ    R"    Õ    ^"    Õ    k"    Õ    {"    Õ    
+-  D Ö     
+-  D ×    
+-  D Ù    
+-  D Ü    
+-  D İ )   
+-  D å ,   
+-  D ç G   
+-  D ê L   
+-  D ì i   
+-  D ï o   
+-  D ò t   
+-  D ó |   
+-  D ó |   †"  € × üÿÿÿ
+-  À      
+-  à   |   "  $ ÷ ,¤  ¦"    ö    
+-  D ÷     
+-  D ø    
+-  D û    
+-  D ı )   
+-  D ÿ 8   
+-  D  @   
+-  D  @   µ"  € ø üÿÿÿ  € ù øÿÿÿ
+-  À      
+-  à   @   »"  $ t¤  š!       
+-  D     
+-  D 
+-   
+-  D 
+-
+-   
+-  D    
+-  D    
+-  D    
+-  D &   
+-  D W   
+-  D ]   
+-  D d   
+-  D €   
+-  D  Š   
+-  D #”   
+-  D $›   
+-  D &¬   
+-  D (Ä   
+-  D $Ú   
+-  D +à   
+-  D .ã   
+-  D /ó   
+-  D 0  
+-  D 9  
+-  D ;,  
+-  D >@  
+-  D ?J  
+-  D @S  
+-  D B^  
+-  D Gg  
+-  D Jm  
+-  D Ls  
+-  D R¸  
+-  D UÀ  
+-  D XÇ  
+-  D [Ü  
+-  D \æ  
+-  D ]ï  
+-  D _ú  
+-  D b  
+-  D d  
+-  D g   
+-  D i,  
+-  D np  
+-  D p¥  
+-  D s¨  
+-  D t¨  
+-  D y¾  
+-  D {Å  
+-  D |á  
+-  D dá  
+-  D ~ì  
+-  D ô  
+-  D ƒ  
+-  D ‡  
+-  D ˆ(  
+-  D ‰<  
+-  D ŠP  
+-  D ‹_  
+-  D Œˆ  
+-  D Œ  
+-  D °  
+-  D X¸  
+-  D •À  
+-  D ;Ã  
+-  D 9Ì  
+-  D ›Ô  
+-  D œà  
+-  D ì  
+-  D ¡ø  
+-  D ¤   
+-  D ¥  
+-  D ¦  
+-  D §$  
+-  D ¨0  
+-  D ª4  
+-  D ª4  •  € üÿÿÿš  € øÿÿÿ  € ôÿÿÿ×"  € ğÿÿÿİ"  € ìÿÿÿq  € èÿÿÿã"  € äÿÿÿô  € àÿÿÿù  € Üÿÿÿ  € Øÿÿÿ   € Ôÿÿÿè"  € Ğÿÿÿî"  € Ìÿÿÿô"  € Èÿÿÿú"  € Äÿÿÿü  € 	Àÿÿÿ #  € 	¼ÿÿÿ#  € 	¸ÿÿÿ#  € 
+-´ÿÿÿ#  € °ÿÿÿ%#  € ¬ÿÿÿ0#  € ¨ÿÿÿ;#  € ¤ÿÿÿF#  €  ÿÿÿQ#  € œÿÿÿ[#  € ˜ÿÿÿk#  € ”ÿÿÿ  € ÿÿÿ
+-  À   
+-   ü  € sŒÿÿÿ
+-  À   ¨  
+-  à   á  v#  € ‡Œÿÿÿz#  € ˆˆÿÿÿ~#  € ‰„ÿÿÿ'  € Š€ÿÿÿ
+-  À     
+-  à   ˆ  
+-  à   4  ‚#  $ ®°¨  Ÿ#    ­   ª#    ­   ²#    ­   Ï    ­   Ô    ­   
+-  D ®    
+-  D ¯   
+-  D °   
+-  D ²   
+-  D ´9   
+-  D ¶H   
+-  D ·P   
+-  D ·P     € ¯üÿÿÿµ"  € °øÿÿÿ
+-  À      
+-  à   P   º#  $ »©  Ú#    º   ª#    º   ²#    º   Ï    º   Ô    º   
+-  D »    
+-  D ¼
+-   
+-  D Â
+-   
+-  D Ã   
+-  D É   
+-  D Ò   
+-  D ÔR   
+-  D ÚX   
+-  D Ûp   
+-  D İy   
+-  D à€   
+-  D â¤   
+-  D ç¬   
+-  D é¶   
+-  D ìÀ   
+-  D íÇ   
+-  D ïØ   
+-  D ñğ   
+-  D í  
+-  D ô  
+-  D ö  
+-  D ø  
+-  D ù1  
+-  D ü4  
+-  D ş>  
+-  D ÿO  
+-  D 	`  
+-  D 
+-v  
+-  D Œ  
+-  D ’  
+-  D ™  
+-  D Ÿ  
+-  D ¦  
+-  D ¿  
+-  D Ø  
+-  D à  
+-  D ç  
+-  D ï  
+-  D  ö  
+-  D $  
+-  D '  
+-  D ("  
+-  D )+  
+-  D +3  
+-  D .9  
+-  D 1L  
+-  D 2V  
+-  D 3_  
+-  D 5g  
+-  D :m  
+-  D =w  
+-  D ?†  
+-  D @Ê  
+-  D CÌ  
+-  D Fı  
+-  D H  
+-  D I&  
+-  D L,  
+-  D O0  
+-  D Q?  
+-  D RE  
+-  D WŠ  
+-  D X—  
+-  D Zœ  
+-  D _£  
+-  D b¸  
+-  D dÌ  
+-  D fÒ  
+-  D há  
+-  D j÷  
+-  D nş  
+-  D q   
+-  D r  
+-  D t  
+-  D y  
+-  D |$  
+-  D ~3  
+-  D ‚¡  
+-  D …¤  
+-  D Š³  
+-  D ù  
+-  D bA  
+-  D _L  
+-  D .T  
+-  D $\  
+-  D •d  
+-  D –p  
+-  D —|  
+-  D ™ˆ  
+-  D œ  
+-  D Ÿ  
+-  D Ÿ«  
+-  D  ·  
+-  D ¢Ã  
+-  D ¤È  
+-  D ¤È  á#  € ¼üÿÿÿç#  € ¼øÿÿÿí#  € ¼ôÿÿÿó#  € ¼ğÿÿÿù#  € ¼ìÿÿÿÿ#  € ¼èÿÿÿq  € ½äÿÿÿ×"  € ½àÿÿÿİ"  € ½Üÿÿÿã"  € ½Øÿÿÿô  € ½Ôÿÿÿù  € ½Ğÿÿÿ  € ¾Ìÿÿÿ   € ¾Èÿÿÿè"  € ¾Äÿÿÿî"  € ¾Àÿÿÿô"  € ¾¼ÿÿÿú"  € ¾¸ÿÿÿ$  € ¿´ÿÿÿ$  € ¿°ÿÿÿ  € À¬ÿÿÿü  € Á¨ÿÿÿ #  € Á¤ÿÿÿ#  € Á ÿÿÿ#  € Âœÿÿÿ$  € Ã˜ÿÿÿ%#  € Ä”ÿÿÿ0#  € Åÿÿÿ;#  € ÆŒÿÿÿF#  € ÇˆÿÿÿQ#  € È„ÿÿÿk#  € É€ÿÿÿ  € Ë|ÿÿÿ
+-  À   
+-   
+-  à   È  !$  $ ©Ø®  C    ¨   3$    ¨   ;$    ¨   A$    ¨   Ã    ¨   É    ¨   
+-  D ©    
+-  D ª   
+-  D ­   
+-  D ¯   
+-  D ­0   
+-  D µ8   
+-  D ¶F   
+-  D ·Y   
+-  D ¸l   
+-  D ¹|   
+-  D ºŒ   
+-  D »œ   
+-  D ½¬   
+-  D ½¬     € ªüÿÿÿ
+-  À      
+-  à   ¬   H$  $ Áˆ¯  C    À   3$    À   ;$    À   A$    À   
+-  D Á    
+-  D Â   
+-  D Å   
+-  D Æ   
+-  D Ç   
+-  D Ë   
+-  D Í#   
+-  D Õ@   
+-  D ×T   
+-  D à[   
+-  D âa   
+-  D ãh   
+-  D äl   
+-  D ær   
+-  D çy   
+-  D è|   
+-  D ê…   
+-  D îŒ   
+-  D ï   
+-  D ò°   
+-  D ôĞ   
+-  D ıÚ   
+-  D   
+-  D -  
+-  D 	>  
+-  D 
+-M  
+-  D `  
+-  D s  
+-  D   
+-  D   
+-  D ´  
+-  D È  
+-  D Ò  
+-  D Û  
+-  D æ  
+-  D #ï  
+-  D $ö  
+-  D )  
+-  D *  
+-  D +  
+-  D -*  
+-  D 03  
+-  D 2=  
+-  D 4P  
+-  D 6m  
+-  D 8y  
+-  D 9’  
+-  D :«  
+-  D ;Ä  
+-  D <Ò  
+-  D ?Ô  
+-  D Aâ  
+-  D 2â  
+-  D Bì  
+-  D Eô  
+-  D I  
+-  D K  
+-  D LH  
+-  D OL  
+-  D Es  
+-  D $x  
+-  D U€  
+-  D WŠ  
+-  D X  
+-  D ]®  
+-  D ^»  
+-  D aÀ  
+-  D bà  
+-  D eù  
+-  D h  
+-  D &  
+-  D 0  
+-  D n8  
+-  D rB  
+-  D sQ  
+-  D ua  
+-  D xt  
+-  D y“  
+-  D u³  
+-  D }¸  
+-  D È  
+-  D ‚Ô  
+-  D ƒà  
+-  D ˆì  
+-  D ˆì  ×"  € Âüÿÿÿİ"  € Âøÿÿÿô  € Âôÿÿÿù  € Âğÿÿÿ  € Ãìÿÿÿ   € Ãèÿÿÿè"  € Ãäÿÿÿî"  € Ãàÿÿÿô"  € ÃÜÿÿÿú"  € ÃØÿÿÿX$  € ÄÔÿÿÿ%#  € ÅĞÿÿÿc$  € ÆÌÿÿÿp$  € ÇÈÿÿÿ|$  € ÈÄÿÿÿ†$  € ÉÀÿÿÿ$  € Ê¼ÿÿÿ#  € Ë¸ÿÿÿ™$  € Ì´ÿÿÿ[#  € Í°ÿÿÿQ#  € Î¬ÿÿÿ
+-  À      $  € 4 ÿÿÿ
+-  À   P  
+-  à   â  
+-  à   ì  £$  $ Œ|´  C    ‹   ²$    ‹   ;$    ‹   A$    ‹   
+-  D Œ    
+-  D    
+-  D    
+-  D 0   
+-  D ?   
+-  D ?   ¾$  € üÿÿÿ
+-  À      
+-  à   ?   Å$  $ ”À´  C    “   ;$    “   A$    “   ×$    “   
+-  D ”    
+-  D •   
+-  D –   
+-  D —   
+-  D ˜3   
+-  D ™H   
+-  D šW   
+-  D ›\   
+-  D ›\   J!  € •üÿÿÿ¾$  € –øÿÿÿ
+-  À      
+-  à   \   
+-  d   !µ      d   $µ  à$  d   $µ  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     è$  €       ù  €       2%  €       W  €       n%  €       Æ  €       ¡%  €       8  €       Ø%  €       ’  €       	&  €       ù  €       G&  €       e	  €       •	  €       ’  € §     Í	  € ò     ~&  € 3     ¤&  € :     Ë&  €     ä&  € #    ø&  €       *'  €       ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     E'  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9     X'  €       >  €       †'  €       ”  €       Ë'  €       (  €       3(  €       f(  €       —(  €       á(  €       ö  €       )  €       X)  €       m)  € á     z)  € L     ¥  € M       €       S  €       ‚  €       °  €       É  €      Õ  €      è  €       #  €       `  €       ›  €       å  €       *  €       r  €       ¬  €       i  €       ï  € „     û  € †       €       ƒ)  € ”     ;  € —     ¨)  € È     …  € È     ™  €     ¼  €     à)  € f       € f    *  $  $µ  Ï         *        
+-  D      
+-  D      
+-  D !    
+-  D "    
+-  D # !   
+-  D $ 6   
+-  D $ 6   ,*  €   şÿÿÿ
+-  À      
+-  à   6   >*  $ ( `µ  ï    '    J*    '    
+-  D (     
+-  D )    
+-  D *    R*  $ . €µ  ï    -    J*    -    
+-  D .     
+-  D /    
+-  D 0 "   
+-  D 0 "   ]*  € - ÿÿÿÿb*  $ 4 ¬µ  Ï    3    J*    3    
+-  D 4     
+-  D 6    
+-  D 7    
+-  D 9 1   p*  $ = äµ  Ï    <    J*    <    
+-  D =     
+-  D ?    
+-  D @    
+-  D A 6   
+-  D B O   
+-  D D c   }*  $ H L¶  J*    G    
+-  D H     
+-  D I    
+-  D J    ‡*  $ P l¶  ”*    O    J*    O    
+-  D P     
+-  D Q    
+-  D R    
+-  D S    
+-  D U     
+-  D W $   
+-  D X ,   
+-  D Y 4   
+-  D Y 4   z#  € Q üÿÿÿ
+-  À      
+-  à   4   Ÿ*  $ ] ¨¶  ”*    \    J*    \    
+-  D ]     
+-  D ^    
+-  D _    
+-  D `    
+-  D b     
+-  D d $   
+-  D e /   
+-  D f B   
+-  D h H   
+-  D j L   
+-  D k Y   
+-  D l `   
+-  D l `   z#  € ^ üÿÿÿ
+-  À      
+-  à   `   ¬*  $ q ·  ”*    p    J*    p    
+-  D q     
+-  D r    
+-  D s    
+-  D t    
+-  D v !   
+-  D x (   
+-  D z 3   
+-  D { F   
+-  D } L   
+-  D  P   
+-  D  b   
+-  D ‚ u   
+-  D „ {   
+-  D † €   
+-  D ˆ ’   
+-  D ‰ ¥   
+-  D ‹ «   
+-  D  °   
+-  D  ½   
+-  D  Ä   
+-  D  Ä   z#  € r üÿÿÿ
+-  À      
+-  à   Ä   ¸*  $ ” Ü·  Ä*    “    Ğ*    “    J*    “    
+-  D ”     
+-  D –    
+-  D ˜ $   Ø*  $ œ ¸  ä*    ›    Ğ*    ›    J*    ›    
+-  D œ     
+-  D     
+-  D  $   ì*  $ £ 4¸  J*    ¢    ö*    ¢    
+-  D £     
+-  D ¥    
+-  D §     ı*  $ « \¸  J*    ª    
+-  D «     
+-  D ­    
+-  D ¯    
+-  d   }¸      d   €¸  +  d   €¸  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     è$  €       ù  €       2%  €       W  €       n%  €       Æ  €       ¡%  €       8  €       Ø%  €       ’  €       	&  €       ù  €       G&  €       e	  €       •	  €       ’  € §     Í	  € ò     ~&  € 3     ¤&  € :     Ë&  €     ä&  € #    ø&  €       *'  €       ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     E'  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9     X'  €       >  €       †'  €       ”  €       Ë'  €       (  €       3(  €       f(  €       —(  €       á(  €       ö  €       )  €       X)  €       m)  € á     z)  € L     ¥  € M       €       S  €       ‚  €       °  €       É  €      Õ  €      è  €       #  €       `  €       ›  €       å  €       *  €       r  €       ¬  €       i  €       ï  € „     û  € †       €       ƒ)  € ”     ;  € —     ¨)  € È     …  € È     ™  €     ¼  €     à)  € f       € f    +  €       E+  €       v+  € &     …+  €       ´+  € -     À+  € /     Ó+  $ F €¸  ë+    E    ú+    E    
+-  D F     
+-  D G    
+-  D J    
+-  D K    
+-  D M    
+-  D P     
+-  D Q 5   
+-  D S ;   
+-  D T G   
+-  D W L   
+-  D Y U   
+-  D Z ^   
+-  D \ h   
+-  D ] r   
+-  D _ |   
+-  D ` †   
+-  D b    
+-  D d š   
+-  D e     
+-  D e     ,  € G üÿÿÿ,  € H øÿÿÿ
+-  À      
+-  à       ,  $ i $¹  (,    h    A!    h    
+-  D i     
+-  D j    
+-  D n    
+-  D o    
+-  D r    
+-  D t    
+-  D u *   
+-  D v 5   
+-  D w =   
+-  D z @   
+-  D { I   
+-  D | P   
+-  D ~ X   
+-  D ‚ f   
+-  D ƒ o   
+-  D „ y   
+-  D † ƒ   
+-  D ‡ ˆ   
+-  D ‡ ˆ   ,  € j üÿÿÿ0,  € k øÿÿÿ8,  € l ôÿÿÿ
+-  À      
+-  à   ˆ   @,  $ Œ °¹  (,    ‹    
+-  D Œ     
+-  D     
+-  D     
+-  D ‘    
+-  D “    
+-  D – !   
+-  D ˜ )   
+-  D ™ 7   
+-  D œ @   
+-  D  J   
+-  D Ÿ T   
+-  D ¡ `   
+-  D ¡ `   ,  €  üÿÿÿ0,  €  øÿÿÿ
+-  À      
+-  à   `   U,  $ ¥ º  (,    ¤    
+-  D ¥     
+-  D ¦    
+-  D ¨    
+-  D ©    
+-  D ª    
+-  D ª    0,  € ¦ üÿÿÿ
+-  À      
+-  à      d,  $ ® 0º  (,    ­    ö*    ­    
+-  D ®     
+-  D ¯    
+-  D ³    
+-  D ´    
+-  D ¶    
+-  D ·    
+-  D ¹ $   
+-  D º *   
+-  D ¼ 5   
+-  D ¾ R   
+-  D ¿ \   
+-  D Ç `   
+-  D É k   
+-  D Ì t   
+-  D Î }   
+-  D Ï „   
+-  D Ï „   s,  € ¯ üÿÿÿ,  € ° øÿÿÿ0,  € ± ôÿÿÿ
+-  À      
+-  à   „   ,  $ Ô ¸º  ë+    Ó    ú+    Ó    
+-  D Ô     
+-  D Õ    
+-  D Ö    
+-  D ×    
+-  D Ù    
+-  D Ü     
+-  D İ :   
+-  D ß @   
+-  D á J   
+-  D â P   
+-  D â P   ,  € Õ üÿÿÿ
+-  À      
+-  à   P   ,  $ æ »  (,    å    ¡,    å    Ğ*    å    
+-  D æ     
+-  D ç    
+-  D è    
+-  D ê    
+-  D ì #   
+-  D î /   
+-  D ï 4   
+-  D ò 8   
+-  D õ @   
+-  D õ @   0,  € ç üÿÿÿ
+-  À      
+-  à   @   ­,  $ ù P»  (,    ø    Œ    ø    
+-  D ù     
+-  D ú    
+-  D ı    
+-  D ş    
+-  D     
+-  D '   
+-  D '   À,  € ú ÿÿÿÿÅ,  € û øÿÿÿ
+-  À      
+-  à   '   Í,  $ |»  (,       ä*       Ş,       
+-  D     
+-  D    
+-  D 
+-   
+-  D    
+-  D    
+-  D $   
+-  D ,   
+-  D 2   
+-  D 4   
+-  D :   
+-  D D   
+-  D J   
+-  D f   
+-  D u   
+-  D |   
+-  D |   å,  € üÿÿÿì,  € øÿÿÿÅ,  € ôÿÿÿ,  € ğÿÿÿ
+-  À      
+-  à   |   õ,  $ #ü»  (,    "   
+-  D #    
+-  D $   
+-  D '   
+-  D )   
+-  D +#   
+-  D ,,   
+-  D /0   
+-  D 18   
+-  D 18   À,  € $ÿÿÿÿ-  € %øÿÿÿ
+-  À      
+-  à   8   -  $ ;8¼  -    :   ë+    :   ú+    :   
+-  D ;    
+-  D =   
+-  D ?	   
+-  D @   
+-  D A   
+-  D B0   
+-  D E4   
+-  D F=   
+-  D GG   
+-  D JO   
+-  D LW   
+-  D M`   
+-  D Nj   
+-  D Ot   
+-  D P|   
+-  D S€   
+-  D TŠ   
+-  D V   #-  $ [Ì¼  -    Z   4-    Z   Ğ*    Z   
+-  D [    
+-  D \   
+-  D _   
+-  D `   
+-  D c   
+-  D e$   
+-  D g/   
+-  D iI   
+-  D jS   
+-  D rX   
+-  D s`   
+-  D tz   
+-  D v‰   
+-  D x—   
+-  D {£   
+-  D |¬   
+-  D |¬   s,  € \üÿÿÿ<-  € ]øÿÿÿ
+-  À      
+-  à   ¬   C-  $ €½  -    €   W-    €   
+-  D     
+-  D ‚   
+-  D †   
+-  D ˆ#   
+-  D ‰,   
+-  D Š4   
+-  D <   
+-  D M   
+-  D ‘S   
+-  D ’]   
+-  D –d   
+-  D —}   
+-  D ˜‹   
+-  D š“   
+-  D ›œ   
+-  D œ¤   
+-  D œ¤   c-  € ‚üÿÿÿ
+-  À      
+-  à   ¤   m-  $ ¡(¾  -        
+-  D ¡    
+-  D ¢   
+-  D £   
+-  d   F¾      d   H¾  |-  d   H¾  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     è$  €       ù  €       2%  €       W  €       n%  €       Æ  €       ¡%  €       8  €       Ø%  €       ’  €       	&  €       ù  €       G&  €       e	  €       •	  €       ’  € §     Í	  € ò     ~&  € 3     ¤&  € :     Ë&  €     ä&  € #    ø&  €       *'  €       ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     E'  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9     X'  €       >  €       †'  €       ”  €       Ë'  €       (  €       3(  €       f(  €       —(  €       á(  €       ö  €       )  €       X)  €       m)  € á     z)  € L     ¥  € M       €       S  €       ‚  €       °  €       É  €      Õ  €      è  €       #  €       `  €       ›  €       å  €       *  €       r  €       ¬  €       i  €       ï  € „     û  € †       €       ƒ)  € ”     ;  € —     ¨)  € È     …  € È     ™  €     ¼  €     à)  € f       € f    ‰-  €       ¹-  € $     Ç-  $ 6 H¾  Ü-    5    
+-  D 6     
+-  D 7    
+-  D 9    
+-  D :    
+-  D <    
+-  D ?     
+-  D A )   
+-  D B 2   
+-  D D <   
+-  D E F   
+-  D G P   
+-  D H Z   
+-  D J d   
+-  D L n   
+-  D M t   
+-  D M t   â-  € 7 üÿÿÿ
+-  À      
+-  à   t   í-  $ R À¾  ÿ-    Q    
+-  D R     
+-  D S    
+-  D T    .  $ Y Ô¾  ÿ-    X    .    X    Ğ*    X    
+-  D Y     
+-  D Z    
+-  D [    
+-  D ]    
+-  D _ ,   
+-  D _ ,   !.  € Z üÿÿÿ
+-  À      
+-  à   ,   ).  $ c ¿  ÿ-    b    ä*    b    Ğ*    b    
+-  D c     
+-  D d    
+-  D e    
+-  D g    
+-  D i ,   
+-  D i ,   !.  € d üÿÿÿ
+-  À      
+-  à   ,   7.  $ m 4¿  ÿ-    l    Œ    l    
+-  D m     
+-  D n    
+-  D p    
+-  D r    
+-  D t    
+-  D u M   
+-  D u M   À,  € n ÿÿÿÿ!.  € o øÿÿÿ
+-  À      
+-  à   M   G.  $ y „¿  ÿ-    x    
+-  D y     
+-  D z    
+-  D {    
+-  D }    
+-  D ~ H   
+-  D ~ H   !.  € z üÿÿÿ
+-  À      
+-  à   H   V.  $ ƒ Ğ¿  (,    ‚    ö*    ‚    
+-  D ƒ     
+-  D „    
+-  D …    
+-  D ‡    
+-  D ˆ 0   
+-  D ˆ 0   !.  € „ üÿÿÿ
+-  À      
+-  à   0   b.  $ Œ À  (,    ‹    
+-  D Œ     
+-  D     
+-  D     
+-  D     
+-  D ‘ $   
+-  D ‘ $   !.  €  üÿÿÿ
+-  À      
+-  à   $   n.    &     
+-  d   *À      d   ,À  ƒ.  d   ,À  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ¯  €       ù  €         €       W  €       “  €       Æ  €         €       8  €       a  €       ’  €       »  €       ù  €       .	  €       e	  €       •	  €       Í	  € ò     Ø	  € 3     ş	  € :     %
+-  €     >
+-  € #    R
+-  €       „
+-  €         €       S  €       ‚  €       °  €       É  €      Õ  €      è  €       #  €       `  €       ›  €       å  €       *  €       r  €       ¬  €       i  €       ï  € „     û  € †       €       í  € ”     ;  € —     M  € È     …  € È     ™  €     ¼  €     Ï  € f       € f    ‹.  $  ,À  0          .        
+-  D      
+-  D     
+-  D     
+-  D  *   
+-  D  9   
+-  D  9   ¬.  €  üÿÿÿ
+-  À      
+-  à   9   ·.  $  lÀ  Ö.        
+-  D      
+-  D     
+-  D !    
+-  D # +   
+-  D % :   
+-  D & @   
+-  D & @   ¦   €  üÿÿÿn   €  øÿÿÿ
+-  À      
+-  à   @   
+-  d   ±À      d   ´À  ã.  d   ´À  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     è$  €       ù  €       2%  €       W  €       n%  €       Æ  €       ¡%  €       8  €       Ø%  €       ’  €       	&  €       ù  €       G&  €       e	  €       •	  €       ’  € §     Í	  € ò     ~&  € 3     ¤&  € :     Ë&  €     ä&  € #    ø&  €       *'  €       ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     E'  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9     X'  €       >  €       †'  €       ”  €       Ë'  €       (  €       3(  €       f(  €       —(  €       á(  €       ö  €       )  €       X)  €       m)  € á     z)  € L     ¥  € M       €       S  €       ‚  €       °  €       É  €      Õ  €      è  €       #  €       `  €       ›  €       å  €       *  €       r  €       ¬  €       i  €       ï  € „     û  € †       €       ƒ)  € ”     ;  € —     ¨)  € È     …  € È     ™  €     ¼  €     à)  € f       € f    î.  €       /  €       */  € &     6/  € (     I/  $ 5 ´À  \/    4    d/    4    
+-  D 5     
+-  D 6    
+-  D 8    
+-  D 9    
+-  D ;    
+-  D >     
+-  D ? )   
+-  D A 2   
+-  D B ;   
+-  D D E   
+-  D E O   
+-  D G Y   
+-  D H c   
+-  D J m   
+-  D L w   
+-  D M |   
+-  D M |   l/  € 6 üÿÿÿ
+-  À      
+-  à   |   s/  $ R 4Á  ÿ-    Q    
+-  D R     
+-  D S    
+-  D T    ƒ/  $ Y HÁ  ÿ-    X    ä*    X    Ğ*    X    
+-  D Y     
+-  D Z    
+-  D ]    
+-  D _    
+-  D f 1   
+-  D h 7   
+-  D i @   
+-  D j D   
+-  D l J   
+-  D m P   
+-  D p T   
+-  D s \   
+-  D s \   “/  € Z üÿÿÿŸ/  € [ øÿÿÿ
+-  À      
+-  à   \   ¥/  $ w ¬Á  ÿ-    v    
+-  D w     
+-  D x    
+-  D {    
+-  D }    
+-  D  #   
+-  D € ,   
+-  D ƒ 0   
+-  D † 8   
+-  D † 8   Ÿ/  € x üÿÿÿ¶/  € y ûÿÿÿ
+-  À      
+-  à   8   ½/  $ Š èÁ  ÿ-    ‰    .    ‰    Ğ*    ‰    
+-  D Š     
+-  D ‹    
+-  D     
+-  D     
+-  D ’ 1   
+-  D ” 7   
+-  D • <   
+-  D ˜ @   
+-  D › H   
+-  D › H   Ë/  € ‹ üÿÿÿŸ/  € Œ øÿÿÿ
+-  À      
+-  à   H   Ó/  $ Ÿ 8Â  ÿ-        Œ        
+-  D Ÿ     
+-  D      
+-  D ¢    
+-  D £    
+-  D ¥    
+-  D ¥    À,  €   ÿÿÿÿ
+-  À      
+-  à      
+-  d   XÂ      d   XÂ  ã/  d   XÂ  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ¯  €       ù  €         €       W  €       “  €       Æ  €         €       8  €       a  €       ’  €       »  €       ù  €       .	  €       e	  €       •	  €       Í	  € ò     Ø	  € 3     ş	  € :     %
+-  €     >
+-  € #    R
+-  €       „
+-  €         €       S  €       ‚  €       °  €       É  €      Õ  €      è  €       #  €       `  €       ›  €       å  €       *  €       r  €       ¬  €       i  €       ï  € „     û  € †       €       í  € ”     ;  € —     M  € È     …  € È     ™  €     ¼  €     Ï  € f       € f    •
+-  € ˜     
+-  € ™     ¦
+-  € š     ¯
+-  €       ¹
+-  € ¢     Â
+-  € £     Ê
+-  € ¤     Ó
+-  € ¥     İ
+-  € ¨     è
+-  € ©     ì/  € B     0  € C     0  €       R0  €       Š0  €       Ó0  €         €       1  € Z     1  € \     b  € |    &1  €       J1  € &     ‚1  € )     ¤1  € ,     ¶1  € 
+-     È1  €      Ú1  €      í1  €      2  €      2  €      %2  €      ;2  €      M2  €      _2  €      r2  €      †2  €      œ2  €      ¯2  €      Ç2  €      Û2  €      ï2  €      3  €      3  € &     G3  €      R3  €      [3  €      d3  €      m3  €      v3  €      3  €      ˆ3  €      ‘3  €      š3  € 	     ¥3  € 
+-     ®3  €      ·3  €      Á3  €      Ì3  €      Õ3  €      Ş3  €      ç3  €      ğ3  €      û3  €      4  €      4  €      4  € %     (4  € *     54  € /     ?4  € 4     J4  € 9     V4  € =     a4  € >     l4  € ?     u4  € @     4  € C     Š4  € D     ”4  € E     œ4  € F     ¥4  € K     ²4  € L     ½4  € M     Ê4  € N     Õ4  € O     â4  € P     í4  € T     ù4  € U     5  € V     5  € Y     5  € Z     *5  € [     55  €       d5  €       “5  €      5  €       Ï5  €       û5  €       6  €      %6  €      16  € €     D6  €       u6  €       ®6  €       à6  €       7  €       '7  € ®     47  €       g7  €      u7  €       ©7  €       ç7  €       8  €       J8  €       p8  €       §8  €       Õ8  €       9  €       N9  € ?     ]9  €       ™9  €       Û9  €       1:  € À     A:  € ,     Q:  € .     c:  €       «:  €       Ã:  € /     ß:  € S     ë:  €       ;  €       J;  €       …;  €       Â;  €       ş;  €       (<  €       Z<  €       <  €       Ô<  € #    ã<  € $    ñ<  € %     =  € &    =  € '    =  € +    )=  € k    7=  € l    J=  € m    _=  € n    s=  € o    ˆ=  € p    œ=  € q    ±=  € r    ¿=  € s    Ô=  € v    é=  € w    >  € x    >  € y    0>  € z    G>  € {    b>  € |    v>  € }    >  € €    £>  € †    ¶>  € ‡    Ì>  € ˆ    İ>  €       ?  €       ?  € Ö     -?  € ×     B?  € Ø     X?  €       ?  €       ¹?  € á     Ë?  € â     ã?  € ã     ü?  €       0@  €       Z@  € ì     k@  € í     ‚@  € î     š@  €       Ô@  €       ø@  € ø     A  € ù     A  € ú     /A  €       bA  €       ŒA  €       A  €     «A  €     ¿A  €     ÔA  €       B  €       ?B  €       |B  €       ¬B  €       ÛB  €       C  €       JC  €       …C  €       ¾C  €       ÿC  €       ?D  €       wD  €       ´D  €       ëD  €       %E  €       cE  €       ¥E  €       ÒE  € Ë    àE  € Ì    ôE  € Í    	F  €       EF  €       }F  €       “F  € !    ¥F  € #    ½F  € $    ÖF  € ,    øF  € -    G  € /    *G  € 0    CG  € 1    _G  € 2    G  € 3    ›G  € 5    ÂG  € 6    ßG  € 8    H  € >    *H  € A    GH  € B    bH  €        H  €       åH  €       !I  €       WI  €       I  €       ÈI  €       J  €       CJ  €       yJ  €       ¶J  €       óJ  €       0K  €       qK  €       ©K  €       ÷K  €       5L  €       oL  €       ³L  €       óL  €       &M  €       [M  €       ’M  €       ÔM  €       N  €       dN  €       œN  €       ÖN  €       "O  €       ^O  €       ”O  €       ĞO  €       P  €       KP  €       ‚P  €       ¶P  €       ìP  €       %Q  €       lQ  €       ¢Q  €       ŞQ  €       R  €       LR  €       R  €       ³R  € ô    ÊR  €       ôR  € +     S  $ 1 XÂ  S    0    +S    0    
+-  D 1     
+-  D 2    
+-  D =    
+-  D >    
+-  D @ )   
+-  D A 8   
+-  D C >   
+-  D E P   
+-  D F ]   
+-  D I h   
+-  D J x   
+-  D J x   4S  € 2 üÿÿÿ
+-  À      
+-  à   x   HS  $ P ÔÂ  S    N    ZS    O    dS    O    
+-  D P     
+-  D Q    
+-  D S "   nS  $ X øÂ  S    V    ZS    W    dS    W    
+-  D X     
+-  D Y    
+-  D [ "   S  $ _ Ã  S    ^    
+-  D _     
+-  D `    ”S  $ d $Ã  ­S    c    
+-  D d     
+-  D e    
+-  D f    
+-  D g    
+-  D h )   
+-  D i 8   
+-  D j @   
+-  D j @   n   € e üÿÿÿ½S  € f øÿÿÿ
+-  À      
+-  à   @   ÈS  $ r lÃ  äS    q    
+-  D r     
+-  D s    
+-  D }    
+-  D ~    
+-  D     
+-  D  !   
+-  D ‚ (   
+-  D † /   
+-  D Š ?   
+-  D ‹ Q   
+-  D Œ e   
+-  D  l   
+-  D ” Š   
+-  D –    
+-  D — ¢   
+-  D š ¬   
+-  D › ½   
+-  D  Ã   
+-  D  Õ   
+-  D Ÿ å   
+-  D © ì   
+-  D « ÿ   
+-  D ¬   
+-  D ­ #  
+-  D ± ,  
+-  D ³ :  
+-  D ´ O  
+-  D ¶ _  
+-  D ¸ ‡  
+-  D » ˜  
+-  D ¼ ­  
+-  D ¿ °  
+-  D Á Å  
+-  D Ã Ë  
+-  D Ä İ  
+-  D Å ï  
+-  D Æ û  
+-  D Ç   
+-  D Ê   
+-  D Ë   
+-  D Ì $  
+-  D Í *  
+-  D Î 6  
+-  D Ñ p  
+-  D Ö ˆ  
+-  D İ ¤  
+-  D Ş «  
+-  D ß Å  
+-  D á Ø  
+-  D â   
+-  D ä   
+-  D å !  
+-  D ß (  
+-  D è 0  
+-  D é 0  
+-  D î 8  
+-  D ğ P  
+-  D ñ b  
+-  D ò t  
+-  D ô |  
+-  D õ ƒ  
+-  D ÷   
+-  D ø š  
+-  D ú °  
+-  D û È  
+-  D ø N  
+-  D ı X  
+-  D  `  
+-  D g  
+-  D |  
+-  D   
+-  D   
+-  D $  
+-  D 	<  
+-  D 
+-B  
+-  D X  
+-  D b  
+-  D h  
+-  D !„  
+-  D "œ  
+-  D #¢  
+-  D 'à  
+-  D +  
+-  D .  
+-  D 1  
+-  D 2-  
+-  D 4H  
+-  D 5Z  
+-  D 6l  
+-  D 8t  
+-  D :”  
+-  D ;¦  
+-  D <¸  
+-  D =Ä  
+-  D AÌ  
+-  D Cà  
+-  D Aş  
+-  D F  
+-  D G  
+-  D I"  
+-  D K2  
+-  D L;  
+-  D NG  
+-  D OS  
+-  D Qh  
+-  D Rœ  
+-  D SÔ  
+-  D T  
+-  D O"  
+-  D V,  
+-  D X@  
+-  D VV  
+-  D [\  
+-  D ^o  
+-  D _  
+-  D b˜  
+-  D d¬  
+-  D e³  
+-  D gÈ  
+-  D hâ  
+-  D i	  
+-  D jN	  
+-  D kî	  
+-  D eî	  
+-  D lø	  
+-  D bø	  
+-  D m 
+-  
+-  D o
+-  
+-  D q
+-  
+-  D r#
+-  
+-  D t8
+-  
+-  D uR
+-  
+-  D v‚
+-  
+-  D z¾
+-  
+-  D |  
+-  D }ñ  
+-  D rñ  
+-  D ~ü  
+-  D oü  
+-  D   
+-  D ‚  
+-  D „   
+-  D †4  
+-  D ‡K  
+-  D ˆn  
+-  D ‰„  
+-  D „„  
+-  D ‚Œ  
+-  D š”  
+-  D ››  
+-  D œ§  
+-  D ³  
+-  D Ÿ¿  
+-  D  Ä  
+-  D  Ä  ğS  € s øÿÿÿøS  € t ôÿÿÿT  € u ğÿÿÿT  € v ìÿÿÿT  € v èÿÿÿ"T  € v äÿÿÿ-T  € w àÿÿÿ9T  € w ÜÿÿÿFT  € w ØÿÿÿWT  € x ÔÿÿÿeT  € x ĞÿÿÿqT  € y Ìÿÿÿ}T  € z ÈÿÿÿT  € { Äÿÿÿ¤T  € | Àÿÿÿ®T  € } ¼ÿÿÿ½T  € ~ ¸ÿÿÿn   €  ´ÿÿÿ  € € °ÿÿÿÎT  € € ¬ÿÿÿÒT  € € ¨ÿÿÿÚT  €  ¤ÿÿÿèT  € ‚  ÿÿÿ
+-  À      üT  € İ œÿÿÿ
+-  À   ¤  
+-  à   0  U  € dœÿÿÿ
+-  À   ¬  U  @ g    U  @ h   U  @ i   
+-  À   È  
+-  à   î	  
+-  à   ø	  U  € qœÿÿÿ
+-  À   
+-  U  @ t    U  @ u   U  @ v   $U  € zDÿÿÿ
+-  À   8
+-  
+-  à   ñ  
+-  à   ü  )U  @ †    
+-  À   4  
+-  à   „  
+-  à   Ä  1U  $ ¥<Ğ  0     ¤   @U    ¤   
+-  D ¥    
+-  D ¦   
+-  D §   
+-  D ¨(   
+-  D ©7   
+-  D ©7   MU  € ¦üÿÿÿ
+-  À      
+-  à   7   UU  $ ­xĞ  0     ¬   A!    ¬   
+-  D ­    
+-  D ®   
+-  D ¯   
+-  D °   
+-  D ±+   
+-  D ²@   
+-  D ³O   
+-  D ´T   
+-  D ´T   J!  € ®üÿÿÿMU  € ¯øÿÿÿ
+-  À      
+-  à   T   gU  $ ¼ÔĞ  0     »   yU    »   
+-  D ¼    
+-  D ½   
+-  D ¾   
+-  D ¿   
+-  D À   
+-  D Á&   
+-  D È2   
+-  D ÉA   
+-  D ÍK   
+-  D Òl   
+-  D Ôu   
+-  D Õ‡   
+-  D ØŒ   
+-  D Ù£   
+-  D Û¬   
+-  D Ü¾   
+-  D İÏ   
+-  D áÔ   
+-  D ãç   
+-  D äù   
+-  D å  
+-  D é  
+-  D ù1  
+-  D û=  
+-  D ıp  
+-  D ÿz  
+-  D †  
+-  D ˜  
+-  D ¦  
+-  D ¬  
+-  D ¼  
+-  D Ã  
+-  D 
+-Ø  
+-  D í  
+-  D ú  
+-  D ı  
+-  D   
+-  D   
+-  D   
+-  D   
+-  D (  
+-  D .  
+-  D 8  
+-  D >  
+-  D H  
+-  D O  
+-  D b  
+-  D !n  
+-  D #z  
+-  D &¤  
+-  D )¨  
+-  D -Ò  
+-  D 0Ô  
+-  D 4   
+-  D 6&  
+-  D 7A  
+-  D 8\  
+-  D 9o  
+-  D ;  
+-  D B   
+-  D Fª  
+-  D G´  
+-  D IĞ  
+-  D Lö  
+-  D Gü  
+-  D O  
+-  D Z  
+-  D \  
+-  D a%  
+-  D b/  
+-  D c9  
+-  D eX  
+-  D go  
+-  D i‚  
+-  D lÉ  
+-  D mâ  
+-  D pä  
+-  D cı  
+-  D t  
+-  D v.  
+-  D y.  
+-  D {>  
+-  D |L  
+-  D ~d  
+-  D q  
+-  D €x  
+-  D §  
+-  D ‚Ú  
+-  D |  
+-  D …   
+-  D ‡4  
+-  D ˆ\  
+-  D ‰ˆ  
+-  D …´  
+-  D ‹¼  
+-  D İ  
+-  D ’ó  
+-  D š  
+-  D œ  
+-  D Ÿ3  
+-  D  N  
+-  D ¢W  
+-  D ¤i  
+-  D ¦€  
+-  D §Š  
+-  D ©º  
+-  D ªÌ  
+-  D «à  
+-  D ªş  
+-  D ¬  
+-  D ®  
+-  D °   
+-  D ±   
+-  D ²•  
+-  D ³
+-	  
+-  D ´t	  
+-  D »€	  
+-  D ¼Â	  
+-  D ¾ü	  
+-  D ®ü	  
+-  D ¿
+-  
+-  D ¤
+-  
+-  D Á
+-  
+-  D Â"
+-  
+-  D Ä8
+-  
+-  D ÅL
+-  
+-  D Äj
+-  
+-  D Æp
+-  
+-  D Ç
+-  
+-  D Ê„
+-  
+-  D Ì’
+-  
+-  D Í’
+-  
+-  D Î­
+-  
+-  D Ğ¶
+-  
+-  D ÒÈ
+-  
+-  D ÔÜ
+-  
+-  D Ö  
+-  D ×  
+-  D Ø(  
+-  D ×F  
+-  D ÙL  
+-  D ÛT  
+-  D Üh  
+-  D Û­  
+-  D Ò´  
+-  D ß¼  
+-  D àÒ  
+-  D âè  
+-  D ãü  
+-  D â  
+-  D ä   
+-  D å/  
+-  D è4  
+-  D éI  
+-  D í_  
+-  D îu  
+-  D îu    € ½üÿÿÿÎT  € ½øÿÿÿ-T  € ½ôÿÿÿFT  € ½ğÿÿÿ†U  € ¾ìÿÿÿU  € ¿èÿÿÿ—U  € ÀäÿÿÿÒT  € Áàÿÿÿ U  € Âàûÿÿ«U  € ÃàúÿÿÉU  € ÄÔúÿÿİU  € ÅÔ÷ÿÿøS  € ÆĞ÷ÿÿT  € ÇÌ÷ÿÿÚT  € ÈÈ÷ÿÿ÷U  € ÉÄ÷ÿÿ
+-  À      ÿU  € BÀ÷ÿÿ  € C¼÷ÿÿÎT  € D¸÷ÿÿV  € E´÷ÿÿV  € F°÷ÿÿ
+-  À      
+-  à   .  V  € œ°÷ÿÿV  € ´÷ÿÿ
+-  À     5V  € ¦¸÷ÿÿ
+-  À   €  $U  € °¯÷ÿÿ
+-  À      
+-  à   ü	  
+-  à   
+-  
+-  à   
+-  :V  € Ì°÷ÿÿ
+-  À   ’
+-  
+-  à   /  
+-  à   u  KV  ( - xL 
+-  d   Sİ      d   Tİ  bV  d   Tİ  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     Í	  € ò     lV  € 3     ’V  € :     ¹V  €     ÒV  € #    æV  €       „
+-  €       W  €       Ï5  €       û5  €       IW  €      bW  € &     šW  € )     ¤1  € ,     ¶1  € 
+-     È1  €      Ú1  €      í1  €      2  €      2  €      %2  €      ;2  €      M2  €      _2  €      r2  €      †2  €      œ2  €      ¯2  €      Ç2  €      Û2  €      ï2  €      3  €      ¼W  € &     G3  €      R3  €      [3  €      d3  €      m3  €      v3  €      3  €      ˆ3  €      ‘3  €      ìW  € 	     ¥3  € 
+-     ®3  €      ·3  €      Á3  €      Ì3  €      Õ3  €      Ş3  €      ç3  €      ğ3  €      û3  €      4  €      4  €      4  € %     (4  € *     54  € /     ?4  € 4     J4  € 9     V4  € =     a4  € >     l4  € ?     u4  € @     4  € C     Š4  € D     ”4  € E     œ4  € F     ¥4  € K     ²4  € L     ½4  € M     Ê4  € N     Õ4  € O     â4  € P     í4  € T     ù4  € U     5  € V     5  € Y     5  € Z     *5  € [     ÷W  €       &X  €       “5  €      %6  €      UX  € €     hX  €       —X  €       ÎX  €       şX  €       7  €       2Y  € ®     >Y  €       pY  €      }Y  €       °Y  €       ìY  €       Z  €       MZ  €       rZ  €       §8  €       §Z  €       åZ  €       [  € ?     ,[  €       f[  €       ¦[  €       ù[  € À     A:  € ,     \  € .     \  €       «:  €       a\  € /     {\  € S     ‡\  € ;     “\  € c     œ\  € n     §\  € ‡     ±\  € “     »\  € ›     Ä\  € ¡     Í\  € «     Û\  € ã     æ\  € B     ÷\  € C     
+-]  € D     ]  € F     3]  € G     E]  € H     Y]  € I     m]  € K     }]  €       °]  € _     Ç]  €       ^  € o     -^  €       v^  €       ¤^  €       â^  €       _  €       M_  €       …_  €       Â_  €       ö_  €       +`  € ³     A`  €       ’`  €       ¸`  € ½     Æ`  € Á     ú`  €       2a  €       `a  €       ua  €       ¦a  €       Êa  € Õ     Üa  €       b  € İ     b  €       Tb  € ì     fb  €       ¤b  €       õb  €       %c  €       =c  €     Rc  €     ƒc  €     ¸c  €       ñc  €       3d  €       xd  €       ¿d  €       ğd  €       "e  €       Xe  €       ­e  €       ïe  €       5f  €       gf  €       ˜f  €       Ğf  €       g  €       ;g  €       wg  €       ¸g  €       ïg  €       (h  €       `h  €       ¡h  €       Õh  €       i  €       >i  €       yi  €       Ûi  €       ;j  €       Ÿj  €       üj  €       7k  €       ñc  €       rk  €       ±k  €       ök  €       -l  €       nl  €       l  €       Òl  €       	m  €       <m  €       |m  €       ¹m  €       èm  €       #n  €       cn  €       ¯n  €       çn  €       )o  €       eo  €       o  €       Ño  €       p  €       Mp  €       †p  €       ¼p  €       q  €       8q  €       mq  €       ©q  €       ãq  €       r  €       Lr  €       ‚r  €       «r  €        s  €       bs  €       Çs  €       (t  €       €t  €       ét  €       ?u  €       |u  €       Ñu  €       	v  €       Gv  €       ƒv  €       ¿v  €       	w  €       7w  €       Ow  €       ‡w  €       Äw  €       x  €       Wx  €       œx  €       çx  €        y  € ğ    3y  € ñ    fy  €       y  €       Õy  €        z  €       jz  €       ºz  €       {  €        {  € )    ?{  €       …{  €       Í{  €       |  €       @|  €       ‚|  €       Æ|  €       }  €       T}  €       —}  €       Ì}  €       ~  €       =~  €       x~  €       Å~  €         €       >  €       y  €       ¿  €       ø  €       B€  €       ‡€  €       Ê€  €         €       L  €       Š  €       À  €       ò  €       ‚  €       F‚  €       v‚  €       º‚  €       ÿ‚  €       Aƒ  €       ~ƒ  €       »ƒ  €       îƒ  €       -„  €       m„  €       ©„  €       ô„  €       5…  €       v…  €       ¤…  € ½     ¸…  €       ù…  €       ,†  €       ^†  €       y†  €      ††  €      ›†  €       Ù†  €       ‡  €       U‡  €        ‡  €       é‡  €       2ˆ  €       mˆ  €       i  €       ³ˆ  € „     Àˆ  € †     Õˆ  €       í  € ”     ‰  € —     ‰  € È     R‰  € È     h‰  €     Œ‰  €     ¡‰  € f    Ø‰  € f    ì‰  & & üM Š  €       +Š  € ,     ?Š  $ 1 Tİ  TŠ    0    
+-  D 1     
+-  D 2    
+-  D 4    
+-  D 5    
+-  D 6 *   
+-  D 8 7   
+-  D 9 @   
+-  D ; L   
+-  D = R   
+-  D > `   
+-  D @ r   
+-  D C t   
+-  D G †   
+-  D H “   
+-  D I     
+-  D I     ^Š  € 2 üÿÿÿ
+-  À      
+-  à       oŠ  $ U üİ  Š    T    ‡Š    T    ˜Š    T    
+-  D U     
+-  D V    
+-  D W    
+-  D X ,   
+-  D Y ;   
+-  D Y ;   £Š  € V üÿÿÿ
+-  À      
+-  à   ;   °Š  $ ] <Ş  Š    \    ÃŠ    \    ˜Š    \    
+-  D ]     
+-  D ^    
+-  D _    
+-  D `    
+-  D a /   
+-  D b D   
+-  D c S   
+-  D d X   
+-  D d X   J!  € ^ üÿÿÿÍŠ  € _ øÿÿÿ
+-  À      
+-  à   X   ÕŠ  $ j œŞ  Š    i    èŠ    i    ˜Š    i    
+-  D j     
+-  D k    
+-  D o    
+-  D „    
+-  D … +   
+-  D ‡ A   
+-  D ˆ X   
+-  D ‰ d   
+-  D Œ y   
+-  D  ƒ   
+-  D  ’   
+-  D ‘ ˜   
+-  D “ ¤   
+-  D • º   
+-  D – Æ   
+-  D — Ò   
+-  D ˜ Ü   
+-  D ™ æ   
+-  D š õ   
+-  D › û   
+-  D    
+-  D ¤   
+-  D § +  
+-  D © >  
+-  D « \  
+-  D ­ f  
+-  D ¯ x  
+-  D ° ‡  
+-  D ³ Œ  
+-  D µ ˜  
+-  D · ©  
+-  D ¹ Å  
+-  D º Ë  
+-  D ½ ü  
+-  D ¾ $  
+-  D À Q  
+-  D Ë a  
+-  D Í €  
+-  D Ï ¨  
+-  D Ğ Û  
+-  D Ñ   
+-  D Ò )  
+-  D Ó E  
+-  D Í E  
+-  D Õ P  
+-  D Ö p  
+-  D × y  
+-  D Ë ’  
+-  D Ú    
+-  D İ ¨  
+-  D ß È  
+-  D á ğ  
+-  D é   
+-  D ê 9  
+-  D ë _  
+-  D ó …  
+-  D ß …  
+-  D õ   
+-  D ö °  
+-  D ÷ ¹  
+-  D İ Ò  
+-  D û à  
+-  D ı ï  
+-  D ş ş  
+-  D ÿ   
+-  D ÿ   õŠ  € k ŒşÿÿÿŠ  € l şÿÿ  € m şÿÿÎT  € m  şÿÿ‹  € m üıÿÿ‹  € o øıÿÿ‹  € p ôıÿÿ+‹  € q Üıÿÿ7‹  € r Øıÿÿ@‹  € s Øüÿÿ
+-  À      X‹  € Ï Ôüÿÿ
+-  À   ¨  
+-  à   E  ^‹  € á Ôüÿÿ
+-  À   ğ  
+-  à   …  
+-  à     d‹  $ ´ã  ‹       
+-  D     
+-  D    
+-  D    
+-  D    
+-  D )   
+-  D 8   
+-  D 	@   
+-  D 	@   ‹‹  € üÿÿÿ’‹  € øÿÿÿ
+-  À      
+-  à   @   ™‹  $ üã  ·‹       
+-  D     
+-  D    
+-  D    
+-  D    
+-  D &    
+-  D '6   
+-  D )L   
+-  D *c   
+-  D +o   
+-  D .„   
+-  D /   
+-  D 0   
+-  D 1§   
+-  D 2¶   
+-  D 5À   
+-  D 7Ì   
+-  D 9â   
+-  D ;õ   
+-  D <  
+-  D =  
+-  D @2  
+-  D A>  
+-  D F\  
+-  D Gh  
+-  D K†  
+-  D M¤  
+-  D O®  
+-  D QÀ  
+-  D XÈ  
+-  D ZÒ  
+-  D [è  
+-  D šú  
+-  D œ  
+-  D Ÿ  
+-  D ¬$  
+-  D ­A  
+-  D ¯K  
+-  D ±]  
+-  D ³d  
+-  D µp  
+-  D ·  
+-  D ¸°  
+-  D º¹  
+-  D ¼Ò  
+-  D ¿Ø  
+-  D Àø  
+-  D ¿  
+-  D µŒ  
+-  D Ä˜  
+-  D Å®  
+-  D ÉÀ  
+-  D ÊÏ  
+-  D ËŞ  
+-  D Îè  
+-  D Ï÷  
+-  D Ğ  
+-  D Ñ  
+-  D Ò  
+-  D Ó)  
+-  D Ô0  
+-  D Ô0  Ã‹  € 0şÿÿÿŠ  € ¬ıÿÿ+‹  € ”ıÿÿ‹  € ıÿÿ‹‹  € ŒıÿÿÍ‹  € ˆıÿÿ  € „ıÿÿÎT  € €ıÿÿã‹  € |ıÿÿì‹  € xıÿÿ
+-  À      
+-  à   0  ô‹  € ç    Œ  €       ;Œ  € õ    fŒ  € ÷    {Œ  $ 8è  ‹Œ       
+-  D     
+-  D    
+-  D 	   
+-  D 
+-   
+-  D 
+-   –Œ  € üÿÿÿ
+-  À      
+-  à      Œ  $ 2Tè  ‹Œ    1   
+-  D 2    
+-  D 3   
+-  D 4   
+-  D 8   
+-  D :.   
+-  D =<   
+-  D Ac   
+-  D Ft   
+-  D Iz   
+-  D M   
+-  D Q„   
+-  D SŠ   
+-  D UŒ   
+-  D W’   
+-  D X›   
+-  D Y·   
+-  D [Ö   
+-  D \ß   
+-  D ]é   
+-  D `ğ   
+-  D aû   
+-  D b  
+-  D d  
+-  D e  
+-  D e  –Œ  € 3üÿÿÿ³Œ  € 4øÿÿÿ
+-  À        € =ôÿÿÿ
+-  À   <   
+-  à   Š   
+-  à     ¼Œ  $ vté  ‹Œ    u   ĞŒ    u   
+-  D v    
+-  D w   
+-  D |   
+-  D ~   
+-  D €$   
+-  D -   
+-  D …9   
+-  D †<   
+-  D ‡I   
+-  D ‰X   
+-  D ‰X   –Œ  € wüÿÿÿ
+-  À      
+-  à   X   İŒ  $  Ğé  ‹Œ    Ÿ   
+-  D      
+-  D §   íŒ  $ ³Øé  ‹Œ    ±   ·‹    ²   
+-  D ³    
+-  D ´   
+-  D ½   
+-  D ¿   
+-  D Â-   
+-  D Ã6   
+-  D ÉV   
+-  D Ê_   
+-  D Ëi   
+-  D Ìs   
+-  D Í}   
+-  D Î‡   
+-  D Ï‘   
+-  D Ğš   
+-  D Ñ¤   
+-  D Ò­   
+-  D Ò­   –Œ  € ´üÿÿÿ
+-  À      
+-  à   ­     €       @  € Ü    T  € Ş    j  $ éŒê      è   
+-  D é    
+-  D ê   
+-  D í   
+-  D ñ0   
+-  D ò;   
+-  D óE   
+-  D óE   Š  € êüÿÿÿ
+-  À      
+-  à   E   “  $ Øê         
+-  D     
+-  D    
+-  D    
+-  D 4   
+-  D P   
+-  D [   
+-  D e   
+-  D l   
+-  D l   Š  € üÿÿÿ
+-  À      
+-  à   l   ª  $ (Lë      '   
+-  D (    
+-  D )   
+-  D *   
+-  D -   
+-  D /$   
+-  D 0E   
+-  D 2a   
+-  D 2a   Š  € )üÿÿÿ¿  € *øÿÿÿ
+-  À      
+-  à   a   Ë  $ =´ë      <   èŠ    <   
+-  D =    
+-  D >   
+-  D F   
+-  D H   
+-  D M-   
+-  D N6   
+-  D O@   
+-  D PJ   
+-  D QT   
+-  D R]   
+-  D R]   Š  € >üÿÿÿ
+-  À      
+-  à   ]   
+-  d   ì      d   ì  á  d   ì  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     Í	  € ò     lV  € 3     ’V  € :     ¹V  €     ÒV  € #    æV  €       „
+-  €       é  €       %  €       T  €       ‚  €       ›  €      §  €      º  €       õ  €       2  €       m  €       ·  €       ü  €       D  €       ~  €       i  €       Á  € „     Í  € †     à  €       í  € ”     ‘  € —     ‘  € È     W‘  € È     k‘  €     ‘  €     ¡‘  € f    Õ‘  € f    ç‘  $  ì   ’        
+-  D      
+-  D     
+-  D     
+-  D     
+-  d   6ì      d   8ì  ’  d   8ì  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ’  €       S’  €       ‚’  €       °’  €       É’  €      Õ’  €      è’  €       #“  €       `“  €       ›“  €       å“  €       *”  €       r”  €       ¬”  €       i  €       ï”  € „     û”  € †     •  €       í  € ”     ;•  € —     M•  € È     …•  € È     ™•  €     ¼•  €     Ï•  € f    –  € f    –         3–    
+-    E–    
+-    
+-  d   8ì      d   8ì  T–  d   8ì  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ’  €       S’  €       ‚’  €       °’  €       É’  €      Õ’  €      è’  €       #“  €       `“  €       ›“  €       å“  €       *”  €       r”  €       ¬”  €       i  €       ï”  € „     û”  € †     •  €       í  € ”     ;•  € —     M•  € È     …•  € È     ™•  €     ¼•  €     Ï•  € f    –  € f    ^–         }–        –        
+-  d   8ì      d   8ì   –  d   8ì  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ’  €       S’  €       ‚’  €       °’  €       É’  €      Õ’  €      è’  €       #“  €       `“  €       ›“  €       å“  €       *”  €       r”  €       ¬”  €       i  €       ï”  € „     û”  € †     •  €       í  € ”     ;•  € —     M•  € È     …•  € È     ™•  €     ¼•  €     Ï•  € f    –  € f    «–         Ï–        ç–        
+-  d   8ì      d   8ì  ü–  d   8ì  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ’  €       S’  €       ‚’  €       °’  €       É’  €      Õ’  €      è’  €       #“  €       `“  €       ›“  €       å“  €       *”  €       r”  €       ¬”  €       i  €       ï”  € „     û”  € †     •  €       í  € ”     ;•  € —     M•  € È     …•  € È     ™•  €     ¼•  €     Ï•  € f    –  € f    —         %—        8—        
+-  d   8ì      d   8ì  H—  d   8ì  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ’  €       S’  €       ‚’  €       °’  €       É’  €      Õ’  €      è’  €       #“  €       `“  €       ›“  €       å“  €       *”  €       r”  €       ¬”  €       i  €       ï”  € „     û”  € †     •  €       í  € ”     ;•  € —     M•  € È     …•  € È     ™•  €     ¼•  €     Ï•  € f    –  € f    R—         q—        „—        
+-  d   8ì      d   8ì  ”—  d   8ì  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       Ÿ—         µ—    n    
+-  d   8ì      d   8ì  Ë—  d   8ì  #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     Í	  € ò     lV  € 3     ’V  € :     ¹V  €     ÒV  € #    æV  €       „
+-  €       Ò—  €       ù  €       ˜  €       W  €       X˜  €       Æ  €       ‹˜  €       8  €       Â˜  €       ’  €       ó˜  €       ù  €       1™  €       e	  €       •	  €         €       S  €       ‚  €       °  €       É  €      Õ  €      è  €       #  €       `  €       ›  €       å  €       *  €       r  €       ¬  €       i  €       ï  € „     û  € †       €       í  € ”     ;  € —     M  € È     …  € È     ™  €     ¼  €     Ï  € f       € f    h™  €      u™  €      ‚™  €      ™  €      ™™  €       ¾™  € $     å™  € '     ğ™  € (     û™  € )     š  € *     š  € +     š  € ,     *š  € -     6š  € .     Aš  € /     Nš  € 0     Zš  € =     eš  € >     rš  € ?     š  € B     š  € C     šš  €       Èš  € P     Õš  €       ›  €       <›  €       s›  €       ¢›  €       ×›  €       œ  €       @œ  €       sœ  €       °œ  €       öœ  €       +  €       ^  €       •  €       Ö  €         €       Q  €         €       Á  €       Ÿ  €       ;Ÿ  €       „Ÿ  €       «Ÿ  €       J1  € &     ‚1  € )     ¤1  € ,     ¶1  € 
+-     È1  €      Ú1  €      í1  €      2  €      2  €      %2  €      ;2  €      M2  €      _2  €      r2  €      †2  €      œ2  €      ¯2  €      Ç2  €      Û2  €      ï2  €      3  €      3  € &     G3  €      R3  €      [3  €      d3  €      m3  €      v3  €      3  €      ˆ3  €      ‘3  €      š3  € 	     ¥3  € 
+-     ®3  €      ·3  €      Á3  €      Ì3  €      Õ3  €      Ş3  €      ç3  €      ğ3  €      û3  €      4  €      4  €      (4  € *     54  € /     ?4  € 4     J4  € 9     V4  € =     a4  € >     l4  € ?     u4  € @     4  € C     Š4  € D     ”4  € E     œ4  € F     ¥4  € K     ²4  € L     ½4  € M     Ê4  € N     Õ4  € O     â4  € P     í4  € T     ù4  € U     5  € V     5  € Y     5  € Z     *5  € [     55  €       d5  €       “5  €      ¿Ÿ  $  8ì  0         ÔŸ        ŞŸ        äŸ        ñŸ        üŸ         E     (   J     ,         0   
+-  D      
+-  D     
+-  D  3      € 
+-       €       R   €          €       ¾   €       í   €       #¡  €       I¡  € 1     f¡  € 2     …¡  € 3     ¦¡  € 6     Ò¡  €       ¢  € =     8¢  €       k¢  €       ª¢  €       Æ¢  € t     Ò¢  € u     ß¢  € y     ë¢  € z     ø¢  €       ,£  €       h£  €       ¡£  €       Ü£  €       ¤  €       \¤  €       ”¤  €       Ì¤  €       ¥  €       H¥  €       †¥  €       È¥  €       ¦  €       =¦  €       v¦  €       ´¦  €       ÷¦  €       9§  €       w§  €       ®§  €       ì§  €       ı§  € #     "¨  € '     >¨  € *     Y¨  € /     w¨  €       ¬¨  €       Ï¨  €       ©  € G     ©  € J     <©  € P     V©  € R     t©  €       ¦©  €       İ©  €       ª  €       5ª  € 2     ?ª  €       fª  € G     uª  €       ¶ª  €       øª  €       ;«  €       ~«  € …     ‘«  €       ×«  €       ğ«  € £     ¬  €       4¬  €       g¬  €       £¬  € ä     ²¬  €       ë¬  €       '­  €       8­  €     H­  €       ‡­  €       ¾­  €       û­  €       ®  € ]    .®  € ‚    R®  € š    n®  € ·    “®  € Õ    ¸®  €       ÷®  €       .¯  €       ?¯  €     U¯  €       ª¯  €       ñ¯  €       °  € >    +°  € a    P°  €       w°  €       Š°  € „    —°  € ®    ¹°  € È    İ°  € á    ±  €       8±  €       R±  €     f±  €       §±  €       ã±  €       ²  € =    1²  € Y    Q²  € g    s²  € ‡    –²  €     »²  € Ä    Ş²  €       $³  €       W³  €       ‰³  € ã    ³  € )     ª³  € 5     ¶³  € A     Ã³  € L     Ï³  € W     Û³  € b     è³  € m     ô³  € x     ´  € ƒ     ´  €      ´  € ™     !´  € ¤     -´  € ¯     ;´  € »     I´  € Ç     U´  € Ó     a´  € Ş     p´  €       ›´  € ô     ®´  €       Ø´  €       ğ´  €     ÿ´  €       +µ  €       Gµ  € .    Tµ  € T    }µ  € _    µ  €       Õµ  €       åµ  € w    ùµ  €       +¶  €     ;¶  €       s¶  €       ´¶  €       ÷¶  € e     ·  € v     '·  €       ]·  € š     m·  €       ¢·  € ²     ¶·  € Í     İ·  € Ú     ¸  € ê     '¸  € ø     P¸  €     q¸  €     ’¸  € (    ½¸  € 9    ä¸  €       *¹  €       †¹  €       á¹  €       &º  €       pº  €       •º  € ]    ¦º  €       àº  €       
+-»  € ‚    »  € š    P»  €       ‹»  €       È»  €       ú»  €       5¼  €       f¼  €       ¢¼  €       Ù¼  €       ½  €       M½  €       ƒ½  €       »½  €       ü½  €       ¾  € {    #¾  € R    V¾  €       ¾  €       Á¾  €       û¾  € ˜    ¿  €       F¿  €       o¿  € ·    ¿  € Ç     ¿  € Ó    Ó¿  €       À  €       AÀ  €       À  €       ÇÀ  €       Á  €       ;Á  €       |Á  €       “Á  € t    ¨Á  €       çÁ  €       Â  € À    Â  €       OÂ  € Ù    aÂ  €       ¢Â  €       İÂ  €       Ã  €     .Ã  €       tÃ  € °    ˆÃ  €       ÌÃ  €       äÃ  € æ    ùÃ  € -      Ä  €       ]Ä  €       ‚Ä  € I     “Ä  € I     ¦Ä  €       àÄ  €       Å  € q     Å  € q     2Å  €       sÅ  € “     ‹Å  € “     ¥Å  €       âÅ  €       Æ  €       .Æ  €       gÆ  €       –Æ  €       ĞÆ  € ^     Ç  € e     FÇ  €       zÇ  € o     ¬Ç  €       ãÇ  € x     È  $ ® pì  È    «    È    «    
+-  D ®     
+-  D ¯    
+-  D ²    
+-  D ³    
+-  D µ    
+-  D · "   
+-  D ¸ ,   
+-  D º 2   
+-  D ¼ D   
+-  D ½ P   
+-  D ¿ \   
+-  D À s   
+-  D Â x   
+-  D º |   
+-  D Ä „   
+-  D Æ Š   
+-  D Ç ’   
+-  D Ê     
+-  D Ğ     
+-  D ã ©   
+-  D ì ²   
+-  D í º   
+-  D î Ä   
+-  D ï Ì   
+-  D ñ Õ   
+-  D ø ê   
+-  D ú 
+-  
+-  D   
+-  D   
+-  D (  
+-  D 0  
+-  D 9  
+-  D e  
+-  D š  
+-  D ¤  
+-  D ¬  
+-  D 6´  
+-  D 7¼  
+-  D 8Ä  
+-  D 8Ä  )È  € ¯ üÿÿÿ
+-  À        € µ øÿÿÿ0È  € µ ôÿÿÿ
+-  À      
+-  à       
+-  à   Ä  4È  $ ?<î  @È    >   LÈ    >   
+-  D ?    
+-  D @   
+-  D A   
+-  D C   
+-  D D4   
+-  D D4   TÈ  € @üÿÿÿ_È  € Aøÿÿÿ
+-  À      
+-  à   4   jÈ  $ Htî  xÈ    G   LÈ    G   
+-  D H    
+-  D I   
+-  D J   
+-  D L   
+-  D O   
+-  D S   
+-  D V"   
+-  D W/   
+-  D XD   
+-  D ]P   
+-  D ^b   
+-  D _h   
+-  D `o   
+-  D a€   
+-  D f“   
+-  D n¸   
+-  D qê   
+-  D sò   
+-  D t  
+-  D v  
+-  D w  
+-  D z$  
+-  D }D  
+-  D ~]  
+-  D €q  
+-  D t  
+-  D {x  
+-  D „  
+-  D …–  
+-  D g˜  
+-  D ‡¸  
+-  D ˆÄ  
+-  D ‰Ğ  
+-  D ‹Ö  
+-  D Œß  
+-  D è  
+-  D   
+-  D ’  
+-  D “  
+-  D •$  
+-  D ™0  
+-  D š7  
+-  D ›>  
+-  D œE  
+-  D L  
+-  D Ÿh  
+-  D  ƒ  
+-  D ¡  
+-  D ¢™  
+-  D §Ø  
+-  D ¨ß  
+-  D ©å  
+-  D ªè  
+-  D ¬ö  
+-  D ­ı  
+-  D ®  
+-  D ¯  
+-  D ±  
+-  D ²  
+-  D ³#  
+-  D ´(  
+-  D ·H  
+-  D ¸O  
+-  D U  
+-  D »`  
+-  D ½f  
+-  D ¾o  
+-  D Át  
+-  D Â|  
+-  D Â|  ‡È  € IüÿÿÿÈ  € Jøÿÿÿ0È  € Kôÿÿÿ“È  € Lğÿÿÿ È  € Mîÿÿÿ«È  € Mìÿÿÿ¶È  € NèÿÿÿÈÈ  € NäÿÿÿÔÈ  € NàÿÿÿàÈ  € OÜÿÿÿìÈ  € PØÿÿÿôÈ  € PÔÿÿÿüÈ  € PĞÿÿÿÉ  € QÌÿÿÿÉ  € RÈÿÿÿÉ  € SÄÿÿÿ!É  € TÀÿÿÿ
+-  À      
+-  à   |  -É  $ Æøñ  @È    Å   
+-  D Æ    
+-  D Ç   
+-  D É   
+-  D Ê   
+-  D Ë)   
+-  D Ì5   
+-  D Ì5   ‡È  € Çüÿÿÿ
+-  À      
+-  à   5   =É  $ Ó0ò  @È    Ò   LÈ    Ò   
+-  D Ó    
+-  D Ô   
+-  D Õ   
+-  D ×   
+-  D ÛT   
+-  D ÛT   OÉ  € ÔüÿÿÿZÉ  € Õøÿÿÿ
+-  À      
+-  à   T   eÉ  $ åˆò  yÉ    ä   LÈ    ä   
+-  D å    
+-  D æ   
+-  D ç   
+-  D ë   
+-  D ì   
+-  D í(   
+-  D î7   
+-  D ïF   
+-  D òO   
+-  D ôU   
+-  D õ`   
+-  D øh   
+-  D ùs   
+-  D     
+-  D â   
+-  D è   
+-  D ˜  
+-  D    
+-  D    „É  € æüÿÿÿŠÉ  € çøÿÿÿÉ  € èôÿÿÿ˜É  € èğÿÿÿ¡É  € èìÿÿÿ¦É  € èèÿÿÿn   € éäÿÿÿ
+-  À      
+-  à      «É  $ 0ô  @È       
+-  D     
+-  D    
+-  D    ÁÉ  $ Dô  0        ŞŸ       ÖÉ       âÉ    (   ëÉ    ,   
+-  D     
+-  D    
+-  D %   
+-  D '   
+-  D ,0   
+-  D -6   
+-  D .<   
+-  D 0P   
+-  D 1Z   
+-  D 4c   
+-  D 5x   
+-  D 7€   
+-  D 9”   
+-  D @š   
+-  D Cñ   
+-  D Dô   
+-  D Fú   
+-  D HU  
+-  D KX  
+-  D Nd  
+-  D Pn  
+-  D Sw  
+-  D TŒ  
+-  D V”  
+-  D X   
+-  D YÕ  
+-  D \Ø  
+-  D ^ö  
+-  D aü  
+-  D c  
+-  D d  
+-  D g  
+-  D i  
+-  D m   
+-  D o,  
+-  D p4  
+-  D s8  
+-  D uA  
+-  D wV  
+-  D yb  
+-  D zs  
+-  D }x  
+-  D 7‰  
+-  D .”  
+-  D ƒœ  
+-  D „   
+-  D „   ôÉ  € üÿÿÿıÉ  € øÿÿÿ  € ôÿÿÿ   € ğÿÿÿÊ  € ìÿÿÿÊ  € èÿÿÿÊ  € äÿÿÿÊ  € àÿÿÿ$Ê  €  Ğÿÿÿ/Ê  ( #L 
+-  À      
+-  à      =Ê  $ ìö  0     Œ   ÔŸ    Œ   ŞŸ    Œ   äŸ    Œ   ñŸ       üŸ        E    (   J    ,        0   
+-  D     
+-  D    
+-  D ˜   
+-  D ™   
+-  D š-   
+-  D ›4   
+-  D ŸH   
+-  D  R   
+-  D §š   
+-  D ©£   
+-  D «¿   
+-  D ­Ì   
+-  D ³÷   
+-  D ´  
+-  D µ  
+-  D ¶H  
+-  D ¸Q  
+-  D º`  
+-  D »x  
+-  D ½  
+-  D Àğ  
+-  D Ãü  
+-  D Ä*  
+-  D ÅX  
+-  D Æ`  
+-  D Èr  
+-  D É€  
+-  D Ê  
+-  D Ìª  
+-  D ÍÁ  
+-  D ĞÈ  
+-  D Óä  
+-  D Õ  
+-  D Ö5  
+-  D ×M  
+-  D ÚP  
+-  D İe  
+-  D àh  
+-  D ã}  
+-  D åœ  
+-  D è´  
+-  D ê¾  
+-  D ëÅ  
+-  D ì	  
+-  D íM  
+-  D î[  
+-  D ïb  
+-  D ğh  
+-  D óp  
+-  D õz  
+-  D ö¿  
+-  D ÷×  
+-  D ø  
+-  D ù_  
+-  D úm  
+-  D ût  
+-  D üz  
+-  D ÿ€  
+-  D ˜  
+-  D Ğ  
+-  D Ù  
+-  D à  
+-  D ü  
+-  D 
+-ü  
+-  D   
+-  D 0  
+-  D 6  
+-  D …  
+-  D   
+-  D ¨  
+-  D ½  
+-  D È  
+-  D Ï  
+-  D Ø  
+-  D Ş  
+-  D #  
+-  D ,  
+-  D 0  
+-  D K  
+-  D "P  
+-  D $Z  
+-  D %`  
+-  D -h  
+-  D .ƒ  
+-  D /‰  
+-  D 3©  
+-  D 4ä  
+-  D 9ê  
+-  D <  
+-  D >1  
+-  D @w  
+-  D D}  
+-  D E´  
+-  D Fº  
+-  D IÄ  
+-  D Jê  
+-  D Lô  
+-  D M	  
+-  D O"	  
+-  D P0	  
+-  D RG	  
+-  D SM	  
+-  D TS	  
+-  D UY	  
+-  D V_	  
+-  D Ws	  
+-  D X…	  
+-  D Y™	  
+-  D Z«	  
+-  D [¿	  
+-  D \Ñ	  
+-  D ]å	  
+-  D ^÷	  
+-  D bú	  
+-  D d"
+-  
+-  D f/
+-  
+-  D hG
+-  
+-  D is
+-  
+-  D jy
+-  
+-  D n„
+-  
+-  D o™
+-  
+-  D u{  
+-  D x  
+-  D y¥  
+-  D {½  
+-  D }Ò  
+-  D ~é  
+-  D €ğ  
+-  D ƒú  
+-  D „  
+-  D ‡8  
+-  D ˆw  
+-  D ‰¹  
+-  D Šû  
+-  D ‹=  
+-  D Œ  
+-  D Á  
+-  D   
+-  D ‘E  
+-  D ’˜  
+-  D “î  
+-  D ”G  
+-  D •   
+-  D –ö  
+-  D —O  
+-  D ˜¥  
+-  D ™û  
+-  D ›û  
+-  D œ  
+-  D   
+-  D $  
+-  D $  QÊ  € ğÿÿÿZÊ  € àÿÿÿiÊ  € ĞÿÿÿtÊ  € ‘Èÿÿÿ|Ê  € ‘Àÿÿÿ†Ê  € ‘¸ÿÿÿÊ  € ’´ÿÿÿ˜Ê  € “°ÿÿÿ¢Ê  € ”¬ÿÿÿÉ  € •¨ÿÿÿ«Ê  € –§ÿÿÿºÊ  € — ÿÿÿÈÊ  € —œÿÿÿÓÊ  € ˜”ÿÿÿÜÊ  € ™Œÿÿÿ—  € šˆÿÿÿ  € š„ÿÿÿü  € š€ÿÿÿy  € ›|ÿÿÿ~  € ›xÿÿÿåÊ  € œtÿÿÿîÊ  € lÿÿÿúÊ  € hÿÿÿË  € ŸdÿÿÿË  €  `ÿÿÿË  € ¡\ÿÿÿË  ( ¤”L +Ë  ( ¥˜L 
+-  À      ]*  € Sÿÿÿ8Ë  € Lÿÿÿ
+-  À   ü  
+-  à   `  BË  € ƒDÿÿÿHË  € „<ÿÿÿ
+-  À   ú  
+-  à   û  
+-  à   $  NË  $ ¢ _Ë    ¡   eË    ¡   
+-  D ¢    
+-  D £   
+-  D ¦D   
+-  d   b     d   d oË  d   d #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ’  €       S’  €       ‚’  €       °’  €       É’  €      Õ’  €      è’  €       #“  €       `“  €       ›“  €       å“  €       *”  €       r”  €       ¬”  €       i  €       ï”  € „     û”  € †     •  €       í  € ”     ;•  € —     M•  € È     …•  € È     ™•  €     ¼•  €     Ï•  € f    –  € f    (4  € u     Í	  € ò        € 
+-    yË  €       R   €       °Ë  €       ¾   €       í   €       #¡  €       ßË  € 1     úË  € 2     Ì  € 3     6Ì  € 6     aÌ  €       Ì  € =     ÃÌ  €       ôÌ  €       1Í  €       LÍ  $ B d Ğ*    >    bÍ    ?    rÍ    @    ƒÍ    A    
+-  D B     
+-  D C    
+-  D E    
+-  D F    
+-  D G    
+-  D H %   
+-  D I .   
+-  D J 7   
+-  D K @   
+-  D L H   
+-  D L H   –Í  € C üÿÿÿ
+-  À      
+-  à   H   Í  $ P ° °Í    O    
+-  D P     
+-  D Q    
+-  D S    
+-  D T    
+-  D V    
+-  D W *   
+-  D X 0   
+-  D Y 8   
+-  D Z D   
+-  D [ H   
+-  D \ T   
+-  D \ T   ¹Í  € Q üÿÿÿÁÍ  € Q øÿÿÿ
+-  À      
+-  à   T   ÉÍ  $ ` 	 °Í    _    ØÍ    _    
+-  D `     
+-  D a    
+-  D b    
+-  D e    
+-  D f $   
+-  D h ,   
+-  D j H   
+-  D m N   
+-  D n X   
+-  D o b   
+-  D q j   
+-  D s x   
+-  D t ~   
+-  D u „   
+-  D v Œ   
+-  D w    
+-  D x ”   
+-  D y ¯   
+-  D | µ   
+-  D ~ ¼   
+-  D € Ç   
+-  D  Ô   
+-  D … Ø   
+-  D † á   
+-  D ‡ ç   
+-  D Š ù   
+-  D ‹   
+-  D Œ   
+-  D    
+-  D    
+-  D      € a üÿÿÿ¹Í  € b øÿÿÿÁÍ  € b ôÿÿÿäÍ  € b ğÿÿÿğÍ  € c ìÿÿÿ
+-  À      
+-  à     
+-  d   -
+-     d   0
+- üÍ  d   0
+- #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     Í	  € ò     lV  € 3     ’V  € :     ¹V  €     ÒV  € #    æV  €       „
+-  €       é  €       %  €       T  €       ‚  €       ›  €      §  €      º  €       õ  €       2  €       m  €       ·  €       ü  €       D  €       ~  €       i  €       Á  € „     Í  € †     à  €       í  € ”     ‘  € —     ‘  € È     W‘  € È     k‘  €     ‘  €     ¡‘  € f    Õ‘  € f    Î  € 4     Î  € –     %Î  $ < 0
+- /Î    ;    
+-  D <     
+-  D F    =Î  $ J 8
+- GÎ    I    
+-  D J     
+-  D K    
+-  D M    
+-  D N    
+-  D O #   
+-  D P 8   
+-  D R J   
+-  D R J   RÎ  € K üÿÿÿ
+-  À      
+-  à   J   ZÎ  $ X „
+- mÎ    W    
+-  D X     
+-  D Y    
+-  D Z    
+-  D \    
+-  D ^    
+-  D _    
+-  D a "   
+-  D c 4   
+-  D d <   
+-  D g F   
+-  D i l   
+-  D k …   
+-  D m    
+-  D n    
+-  D p ¤   
+-  D q ³   
+-  D r ¹   
+-  D s È   
+-  D t Î   
+-  D u Ø   
+-  D v Ü   
+-  D x â   
+-  D y ñ   
+-  D z ÷   
+-  D {   
+-  D |   
+-  D } 
+-  
+-  D ~   
+-  D    
+-  D € D  
+-  D  T  
+-  D ƒ ]  
+-  D „ l  
+-  D … ¤  
+-  D † °  
+-  D ‡ Â  
+-  D ˆ Ì  
+-  D ‰ Ô  
+-  D ‹ î  
+-  D Œ ı  
+-  D    
+-  D     
+-  D  2  
+-  D  D  
+-  D ’ ^  
+-  D “ h  
+-  D • „  
+-  D —   
+-  D ˜ ¬  
+-  D ™ ¸  
+-  D š Ê  
+-  D œ Ô  
+-  D  ã  
+-  D  è  
+-  D Ÿ ì  
+-  D   õ  
+-  D ¡ ÿ  
+-  D ¢   
+-  D £   
+-  D ¤ (  
+-  D ¦ >  
+-  D § M  
+-  D ¨ p  
+-  D © |  
+-  D ª   
+-  D « œ  
+-  D ¬ ®  
+-  D ¯ ¸  
+-  D º À  
+-  D » Ï  
+-  D ½ ×  
+-  D ¿ ä  
+-  D À ÷  
+-  D Á   
+-  D Â   
+-  D Ã 4  
+-  D Ä G  
+-  D Æ Y  
+-  D È _  
+-  D Î ¨  
+-  D Ï ´  
+-  D Ó Í  
+-  D Ø ×  
+-  D Ü à  
+-  D ß ê  
+-  D à ô  
+-  D à ô  uÎ  & Y L Î  € Z üÿÿÿ¬  € [ øÿÿÿ  € [ ôÿÿÿ‹Î  € \ ğÿÿÿ
+-  À      
+-  à   ô  “Î  $ æ | ¡Î    å    ¨Î    å    
+-  D æ     
+-  D ç 	   
+-  D è    
+-  D é    
+-  D ê    
+-  D ë 1   
+-  D í Q   
+-  D î x   
+-  D ï    
+-  D ï    ¯Î  € ç èÿÿÿµÎ  @ è    ¼Î  @ é    ÆÎ  @ ê    ÓÎ  @ ë    
+-  À   	   
+-  à      áÎ  $ ø  ¡Î    ÷    ¨Î    ÷    
+-  D ø     
+-  D ù    
+-  D ú    
+-  D û    
+-  D ü '   
+-  D ?:   
+-  D @ˆ   
+-  D A”   
+-  D Bµ   
+-  D D¼   
+-  D Eò   
+-  D G)  
+-  D I/  
+-  D JX  
+-  D K`  
+-  D Ls  
+-  D M|  
+-  D N€  
+-  D O–  
+-  D P£  
+-  D P£  ¬  € ù üÿÿÿíÎ  € ú øÿÿÿôÎ  € û ôÿÿÿşÎ  € ü üıÿÿ
+-  À      
+-  à   £  Ï  $ WÄ -Ï    V   4Ï    V   =Ï    V   
+-  D W    
+-  D    
+-  D ‚   
+-  D ƒ   
+-  D …   
+-  D †   
+-  D ˆP   
+-  D Šx   
+-  D Œƒ   
+-  D †   
+-  D ‘   
+-  D ˜   
+-  D ‘Ÿ   
+-  D ’¢   
+-  D “¤   
+-  D •¯   
+-  D –¶   
+-  D —¹   
+-  D ˜Ä   
+-  D šĞ   
+-  D œ×   
+-  D ŸÜ   
+-  D  â   
+-  D ¡ü   
+-  D £  
+-  D ¤  
+-  D ¥$  
+-  D §(  
+-  D ˆ;  
+-  D ªD  
+-  D «L  
+-  D ­g  
+-  D ¯Œ  
+-  D °˜  
+-  D ±  
+-  D ²°  
+-  D ´Â  
+-  D µÎ  
+-  D ¶Ü  
+-  D ¹à  
+-  D ºï  
+-  D »ÿ  
+-  D ¼  
+-  D ­!  
+-  D ¿,  
+-  D Â0  
+-  D ÃA  
+-  D ÆD  
+-  D ÈM  
+-  D ÉZ  
+-  D Êj  
+-  D Ìl  
+-  D Îu  
+-  D Îu    € üÿÿÿ„  € øÿÿÿ  € ôÿÿÿÎT  € ğÿÿÿFÏ  € ‚ìÿÿÿQÏ  € ƒèÿÿÿ
+-  À      
+-  à   u  [Ï  $ Ò@ -Ï    Ñ   4Ï    Ñ   
+-  D Ò    
+-  D Ó   
+-  D Õ   
+-  D ×   
+-  D ÚT   
+-  D Ûa   
+-  D Üw   
+-  D Ş|   
+-  D ß‰   
+-  D àŸ   
+-  D â¤   
+-  D ã±   
+-  D äÇ   
+-  D æÌ   
+-  D çÙ   
+-  D èæ   
+-  D é÷   
+-  D êş   
+-  D ì  
+-  D í  
+-  D î"  
+-  D ğ(  
+-  D ñ5  
+-  D òK  
+-  D ôP  
+-  D õ]  
+-  D ön  
+-  D ÷u  
+-  D ùx  
+-  D ú…  
+-  D û–  
+-  D ü  
+-  D ş   
+-  D ÿ­  
+-  D  ¾  
+-  D Å  
+-  D È  
+-  D Ò  
+-  D Ù  
+-  D 
+-   
+-  D   
+-  D "  
+-  D /  
+-  D =  
+-  D T  
+-  D \  
+-  D c  
+-  D h  
+-  D o  
+-  D   
+-  D   
+-  D    
+-  D ±  
+-  D ´  
+-  D Ê  
+-  D  Ô  
+-  D "İ  
+-  D #ê  
+-  D $û  
+-  D &   
+-  D '	  
+-  D )  
+-  D +  
+-  D ,$  
+-  D ,$  pÏ  ( ÓœL   € Ôüÿÿÿ„  € Ôøÿÿÿ  € ÔôÿÿÿÎT  € Ôğÿÿÿ†Ï  € Õìÿÿÿ
+-  À      
+-  à   $  Ï  $ 0l ›Ï    /   ¤Ï    /   ¬Ï    /   
+-  D 0    
+-  D 1   
+-  D 4   
+-  D 6   
+-  D 7(   
+-  D 94   
+-  D ;=   
+-  D <O   
+-  D >X   
+-  D ?n   
+-  D A‚   
+-  D B   
+-  D CŸ   
+-  D E¨   
+-  D F¹   
+-  D GÀ   
+-  D GÀ   ¸Ï  ( 1œP ÓÏ  € 2üÿÿÿ
+-  À      
+-  à   À   
+-  d   .     d   0 ÙÏ  d   0 #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     (4  € u     Í	  € ò        € 
+-    lV  € 3     ’V  € :     ¹V  €     ÒV  € #    æV  €       „
+-  €       àÏ  €       	Ğ  €       -Ğ  €      6Ğ  €       rĞ  €       ¡Ğ  €       ÏĞ  €       èĞ  €      ôĞ  €      Ñ  €       BÑ  €       Ñ  €       ºÑ  €       Ò  €       FÒ  €       Ò  €       ÈÒ  €       i  €       Ó  € „     Ó  € †     *Ó  €       í  € ”     WÓ  € —     iÓ  € È     ¡Ó  € È     µÓ  €     ØÓ  €     ëÓ  € f    Ô  € f    1Ô  $ ' 0 ;Ô    &    LÔ    &    
+-  D '     
+-  D (    
+-  D ,    
+-  D -    
+-  D . %   
+-  D / ,   
+-  D 1 ?   
+-  D 3 P   
+-  D 4 X   
+-  D 4 X     € ( üÿÿÿSÔ  € ( øÿÿÿ
+-  À      
+-  à   X   YÔ  $ A  dÔ    @    iÔ    @    |Ô    @    
+-  D A     
+-  D B    
+-  D E    
+-  D F    
+-  D G    
+-  D H     
+-  D K D   
+-  D L T   
+-  D K    
+-  D N ”   
+-  D P §   
+-  D P §   „Ô  € B üÿÿÿ:  € B øÿÿÿŠÔ  € B ôÿÿÿ
+-  À      
+-  à   §   ‘Ô  $ [ @ ŸÔ    Z    LÔ    Z    
+-  D [     
+-  D \    
+-  D ^    
+-  D `    
+-  D a    
+-  D b    
+-  D d (   
+-  D f 8   
+-  D g <   
+-  D g <     € \ üÿÿÿ
+-  À      
+-  à   <   ©Ô  $ p „ ¼Ô    o    ÅÔ    o    Ğ    o    
+-  D p     
+-  D q    
+-  D t    
+-  D u    
+-  D w $   
+-  D y M   
+-  D z Y   
+-  D } `   
+-  D ~ i   
+-  D € r   
+-  D ‚ ¨   
+-  D ƒ °   
+-  D ƒ °     € q üÿÿÿÏÔ  € s øÿÿÿ
+-  À      
+-  à   °   ×Ô  $  8 ŸÔ        LÔ        ãÔ        
+-  D      
+-  D     
+-  D “    
+-  D ”    
+-  D – (   
+-  D — ;   
+-  D ™ C   
+-  D š O   
+-  D  \   
+-  D  r   
+-  D ¡ |   
+-  D ¢ ”   
+-  D ¤    
+-  D ¥ ©   
+-  D ¨ ´   
+-  D © Ì   
+-  D « Õ   
+-  D ¬ á   
+-  D ³ ì   
+-  D µ   
+-  D ¶ )  
+-  D ½ 4  
+-  D ¾ ;  
+-  D À T  
+-  D Â l  
+-  D Ä }  
+-  D Æ Œ  
+-  D È š  
+-  D Ê «  
+-  D Ë Ä  
+-  D Î È  
+-  D Ğ á  
+-  D Ä ä  
+-  D À ì  
+-  D ¾ ô  
+-  D Ö ü  
+-  D Ø   
+-  D Ù   
+-  D Ù   Ê  €  üÿÿÿÊ  €  øÿÿÿ)È  €  ôÿÿÿ÷Ô  €  ğÿÿÿıÔ  €  ìÿÿÿÏÔ  € ‘ èÿÿÿ
+-  À      
+-  à     Õ  $ é H Õ    è    Õ    è    |Ô    è    
+-  D é     
+-  D ê    
+-  D î    
+-  D ï    
+-  D ô $   
+-  D õ ;   
+-  D ù R   
+-  D û l   
+-  D ü s   
+-  D ı z   
+-  D ÿ ”   
+-  D  æ   
+-  D ì   
+-  D ó   
+-  D   
+-  D ı 
+-  
+-  D   
+-  D   
+-  D ù *  
+-  D 4  
+-  D 8  
+-  D 8  Ê  € ê üÿÿÿÊ  € ê øÿÿÿ$Õ  € ë ôÿÿÿ-Õ  € ë ğÿÿÿ
+-  À      
+-  à   8  5Õ  $ ˆ Õ       
+-  D     
+-  D    
+-  D    
+-  D    BÕ  $ $¨ Õ    #   
+-  D $    
+-  D %   
+-  D &   
+-  D (    
+-  D *8   
+-  D ,\   
+-  D -Š   
+-  D 0Œ   
+-  D (º   
+-  D 3Ä   
+-  D &ò   
+-  D 5ü   
+-  D 5ü   Ê  € %üÿÿÿÊ  € %øÿÿÿ
+-  À      
+-  à   ü   
+-  d   ¦     d   ¨ PÕ  d   ¨ #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ’  €       S’  €       ‚’  €       °’  €       É’  €      Õ’  €      è’  €       #“  €       `“  €       ›“  €       å“  €       *”  €       r”  €       ¬”  €       i  €       ï”  € „     û”  € †     •  €       í  € ”     ;•  € —     M•  € È     …•  € È     ™•  €     ¼•  €     Ï•  € f    –  € f    Í	  € ò     ZÕ  € 3     €Õ  € :     §Õ  €     ÀÕ  € #    ÔÕ  €       „
+-  €       Ö  €       /Ö  €       PÖ  €      YÖ  $ H ¨ dÔ    G    |Ô    G    
+-  D H     
+-  D I    
+-  D J    gÖ  $ T À LÔ    S    
+-  D T     
+-  D U    
+-  D V    sÖ  $ d Ü †Ö    c    ŞŸ    c    Ö    c    
+-  D d     
+-  D f    
+-  D k    
+-  D l )   
+-  D o ;   
+-  D p B   
+-  D r X   
+-  D t l   
+-  D v ‡   
+-  D x     
+-  D r £   
+-  D p ¨   
+-  D } °   
+-  D ~ Ë   
+-  D € İ   
+-  D  é   
+-  D  é     € f üÿÿÿ   € f øÿÿÿıÔ  € f ôÿÿÿœÖ  € g ğÿÿÿ
+-  À      
+-  à   é   ¨Ö  $ Š È ÅÖ    ‰    
+-  D Š     
+-  D Œ    
+-  D     
+-  D ‘    
+-  D ’ (   
+-  D ” 0   
+-  D – Q   
+-  D — ]   
+-  D › d   
+-  D  „   
+-  D   ›   
+-  D ¡ ¢   
+-  D £ ¸   
+-  D ¥ Ì   
+-  D § ç   
+-  D ¨ ÿ   
+-  D «   
+-  D £   
+-  D ¡ $  
+-  D ° ,  
+-  D ² 8  
+-  D ³ @  
+-  D ³ @  ĞÖ  € Œ üÿÿÿØÖ  €  øÿÿÿŞÖ  €  ôÿÿÿæÖ  €  ğÿÿÿÊ  €  ìÿÿÿÊ  €  èÿÿÿıÔ  €  äÿÿÿ
+-  À      
+-  à   @  îÖ  $ » ! ×    º    
+-  D »     
+-  D ¼    
+-  D ½    
+-  D ¾    
+-  D ¿ )   
+-  D À 8   
+-  D Á @   
+-  D Á @   ØÖ  € ¼ üÿÿÿ×  € ½ øÿÿÿ
+-  À      
+-  à   @   ×  $ È T! -×    Ç    ŞŸ    Ç    4×    Ç    
+-  D È     
+-  D É    
+-  D Ê    
+-  D Ë ,   
+-  D Ì ;   
+-  D Ì ;   @×  € É üÿÿÿ
+-  À      
+-  à   ;   G×  $ Ó ”! -×    Ò    Z×    Ò    ŞŸ    Ò    
+-  D Ó     
+-  D Ô    
+-  D Õ    
+-  D Ö    
+-  D × /   
+-  D Ø D   
+-  D Ù S   
+-  D Ú X   
+-  D Ú X   J!  € Ô üÿÿÿ@×  € Õ øÿÿÿ
+-  À      
+-  à   X   
+-  d   ñ!     d   ô! c×  d   ô! #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ’  €       S’  €       ‚’  €       °’  €       É’  €      Õ’  €      è’  €       #“  €       `“  €       ›“  €       å“  €       *”  €       r”  €       ¬”  €       i  €       ï”  € „     û”  € †     •  €       í  € ”     ;•  € —     M•  € È     …•  € È     ™•  €     ¼•  €     Ï•  € f    –  € f    Í	  € ò     ZÕ  € 3     €Õ  € :     §Õ  €     ÀÕ  € #    ÔÕ  €       „
+-  €       o×  $  ô! ×    
+-    …×    
+-    ×    
+-    
+-  D      
+-  D  	   
+-  D  	   
+-  D     
+-  D  )   
+-  D  4   
+-  D  B   
+-  D  E   
+-  D  H   
+-  D  N   
+-  D  V   
+-  D  _   
+-  D  g   
+-  D  o   
+-  D " x   
+-  D & ˆ   
+-  D ( ‹   
+-  D * ¤   
+-  D , ¬   
+-  D - ´   
+-  D 1 ¸   
+-  D 5 Á   
+-  D 7 É   
+-  D 8 Ñ   
+-  D : Ü   
+-  D < ß   
+-  D > ø   
+-  D A ş   
+-  D C   
+-  D E   
+-  D F    
+-  D G (  
+-  D G (  ›×  €   ÿÿÿµ×  €  üşÿÿ¾×  €  øşÿÿ
+-  À   	   
+-  à   (  È×  $ K  # Õ×    J    Ş×    J    
+-  D K     
+-  D L    
+-  D M    æ×  $ Q @# Ş×    P    
+-  D Q     
+-  D R    
+-  D S    ó×  $ W \# Ø    V    Ş×    V    
+-  D W     
+-  D X    
+-  D Y    	Ø  $ ] |# Ø    \    
+-  D ]     
+-  D ^    
+-  D _    
+-  d   #     d   # Ø  d   # #   <       2   €       T   €       f   €          €       ¦   €       Ä   €         €       L  €       j  €       Œ  €       ©  €       Å  €       ×  €       ê  €         €       0  €       K  €       g  €       ‰  €       •  € v     ©  €      ·  €      Ã  €      Ğ  €      Ü  €      è  €      õ  €        €        €        € "     +  € #     :  € '     G  € (     T  € )     `  € *     n  € +     |  € ,     ‰  € -     œ  € 2     ª  € 3     ¹  € 4     Ç  € 5     Ö  € 6     ä  € 7     ó  € 8       € 9       €       >  €       O  €       ”  €       £  €       Ü  €         €       >  €       o  €       ¹  €       ö  €       ,  €       p  €       …  € á     ’  € G     œ  € L     ¥  € M     ’  €       S’  €       ‚’  €       °’  €       É’  €      Õ’  €      è’  €       #“  €       `“  €       ›“  €       å“  €       *”  €       r”  €       ¬”  €       i  €       ï”  € „     û”  € †     •  €       í  € ”     ;•  € —     M•  € È     …•  € È     ™•  €     ¼•  €     Ï•  € f    –  € f    Ø  € ‘     +Ø  € “     :Ø  € •     OØ  € –     ^Ø  € —     mØ  € ˜     |Ø  € ±     ‡Ø  € ²     •Ø  € ´     ¥Ø  €       ãØ  €       "Ù  €       bÙ  € Å     }Ù  € Ç     –Ù  $ Ó # -×    Ò    «Ù    Ò    
+-  D Ó     
+-  D Ô 	   
+-  D Õ 	   
+-  D Ù    
+-  D Û    
+-  D İ 0   
+-  D Ş K   
+-  D á \   
+-  D â \   
+-  D ã t   
+-  D ä Œ   
+-  D å š   
+-  D ñ ­   
+-  D ó ³   
+-  D õ ½   
+-  D ÷ Ã   
+-  D ù Í   
+-  D ú Ñ   
+-  D ü ı   
+-  D ı   
+-  D ş 	  
+-  D ÿ   
+-  D Ş   
+-  D Û   
+-  D    
+-  D    ¹Ù  @ Ô     ÃÙ  @ Õ    Ê  € Ö üÿÿÿÊ  € × øÿÿÿÑÙ  € Ø ôÿÿÿ†U  € Ù ğÿÿÿ
+-  À   	   z#  € á ìÿÿÿ~#  € á èÿÿÿ'  € á äÿÿÿv#  € á àÿÿÿ
+-  À   \   
+-  à     
+-  à      ØÙ  €        Ú  €       -Ú  €       \Ú  €     ‚Ú  €     ‘Ú  $ ¸$ ¬Ú       ¸Ú       
+-  D     
+-  D     
+-  D "   
+-  D #	   
+-  D %   
+-  D '   
+-  D )'   
+-  D **   
+-  D %-   
+-  D -4   
+-  D .<   
+-  D .<   ÄÚ  @     ÍÚ  @ !   ÒÚ  @ "   ÚÚ  € #üÿÿÿ
+-  À      
+-  à   <   ãÚ  $ 5ü$ ¬Ú    2   ¸Ú    2   
+-  D 5    
+-  D 6   
+-  D 8   
+-  D 9	   
+-  D ;   
+-  D =   
+-  D ?!   
+-  D @$   
+-  D ;'   
+-  D C0   
+-  D D8   
+-  D D8   ÄÚ  @ 6   ÍÚ  @ 7   ûÚ  @ 8   ÚÚ  € 9üÿÿÿ
+-  À      
+-  à   8   Û  $ K<% -×    H   «Ù    H   Û    H   
+-  D K    
+-  D L	   
+-  D S   
+-  D T   
+-  D U"   
+-  D V+   
+-  D W4   
+-  D X=   
+-  D YF   
+-  D ZO   
+-  D \X   
+-  D ^d   
+-  D `x   
+-  D bŒ   
+-  D dœ   
+-  D e×   
+-  D gè   
+-  D iõ   
+-  D j   
+-  D e  
+-  D b  
+-  D `  
+-  D ^  
+-  D p$  
+-  D r%  
+-  D t1  
+-  D vD  
+-  D xX  
+-  D zh  
+-  D {£  
+-  D }´  
+-  D Á  
+-  D €Í  
+-  D {Ğ  
+-  D xØ  
+-  D và  
+-  D tè  
+-  D †ğ  
+-  D ˆñ  
+-  D ‰ı  
+-  D Š  
+-  D Œ$  
+-  D 4  
+-  D o  
+-  D €  
+-  D ’  
+-  D “™  
+-  D œ  
+-  D Œ¤  
+-  D Š¬  
+-  D ‰´  
+-  D ˜½  
+-  D ™É  
+-  D šÜ  
+-  D œğ  
+-  D    
+-  D Ÿ;  
+-  D  L  
+-  D ¢Y  
+-  D £e  
+-  D Ÿh  
+-  D œp  
+-  D šx  
+-  D ™€  
+-  D ª‰  
+-  D «•  
+-  D ¬¨  
+-  D ­¼  
+-  D ®Ì  
+-  D ¯Ü  
+-  D ±  
+-  D ²&  
+-  D ®(  
+-  D ­0  
+-  D ¬8  
+-  D «@  
+-  D µI  
+-  D ¶U  
+-  D ·h  
+-  D ¸|  
+-  D ¹Œ  
+-  D ºœ  
+-  D ¼Ú  
+-  D ½æ  
+-  D ¹è  
+-  D ¸ğ  
+-  D ·ø  
+-  D ¶   
+-  D À	  
+-  D Á  
+-  D Â(  
+-  D Ã<  
+-  D ÄL  
+-  D Å\  
+-  D Çš  
+-  D È¦  
+-  D Ä¨  
+-  D Ã°  
+-  D Â¸  
+-  D ÁÀ  
+-  D ËÉ  
+-  D ÌÕ  
+-  D Íè  
+-  D Îü  
+-  D Ï  
+-  D Ğ  
+-  D ÒZ  
+-  D Óf  
+-  D Ïh  
+-  D Îp  
+-  D Íx  
+-  D Ì€  
+-  D à‰  
+-  D á  
+-  D âµ  
+-  D ãÅ  
+-  D äÜ  
+-  D ç  
+-  D è  
+-  D é   
+-  D ê4  
+-  D ìD  
+-  D í  
+-  D î  
+-  D ğ™  
+-  D íœ  
+-  D ê¨  
+-  D é°  
+-  D è¸  
+-  D óÀ  
+-  D ôÉ  
+-  D ôÉ  Û  € Lüÿÿÿ(Û  € Møÿÿÿ1Û  € Nôÿÿÿ6Û  € Nğÿÿÿ;Û  € Nìÿÿÿ@Û  € NèÿÿÿEÛ  € OäÿÿÿMÛ  € OàÿÿÿUÛ  € OÜÿÿÿ]Û  € OØÿÿÿeÛ  € OÔÿÿÿmÛ  € OĞÿÿÿuÛ  € OÌÿÿÿ}Û  € OÈÿÿÿ…Û  € PÄÿÿÿÛ  € PÀÿÿÿ•Û  € P¼ÿÿÿÛ  € P¸ÿÿÿ¥Û  € Q´ÿÿÿ
+-  À   	   
+-  à   É  ®Û  $ ü- -×    ø   «Ù    ø   ¬Ú    ù   ¸Ú    ù   ¼Û    ú   
+-  D ü    
+-  D ı	   
+-  D 	   
+-  D    
+-  D $   
+-  D 	6   
+-  D 8   
+-  D J   
+-  D N   
+-  D T   
+-  D j   
+-  D p   
+-  D v   
+-  D |   
+-  D ‚   
+-  D †   
+-  D Œ   
+-  D ’   
+-  D ˜   
+-  D ¬   
+-  D  Ã   
+-  D !Ó   
+-  D $ê   
+-  D %ğ   
+-  D &÷   
+-  D (ÿ   
+-  D )  
+-  D +  
+-  D -  
+-  D .  
+-  D 0!  
+-  D 2)  
+-  D :0  
+-  D =\  
+-  D >u  
+-  D ?{  
+-  D @  
+-  D Bˆ  
+-  D C¢  
+-  D D¨  
+-  D E¯  
+-  D G´  
+-  D HÎ  
+-  D IÔ  
+-  D JÛ  
+-  D Là  
+-  D Mú  
+-  D N   
+-  D O  
+-  D R  
+-  D S  
+-  D T.  
+-  D U1  
+-  D V8  
+-  D W@  
+-  D W@  0È  € ıüÿÿÿÎÛ  € ıøÿÿÿ1Û  € şôÿÿÿ6Û  € şğÿÿÿ;Û  € şìÿÿÿ@Û  € şèÿÿÿÓÛ  € şäÿÿÿÚÛ  @ ÿ   áÛ  @ ÿ   
+-  À   	   
+-  à   @  èÛ  $ `X/ -×    [   «Ù    [   Û    \   úÛ    \   
+-  D `    
+-  D c	   
+-  D h   
+-  D i$   
+-  D j+   
+-  D k2   
+-  D l9   
+-  D n@   
+-  D oT   
+-  D pi   
+-  D q~   
+-  D r“   
+-  D s¨   
+-  D t½   
+-  D uÒ   
+-  D wç   
+-  D y  
+-  D {(  
+-  D }H  
+-  D ~¥  
+-  D €Ä  
+-  D ‚í  
+-  D ƒó  
+-  D „  
+-  D …7  
+-  D †Y  
+-  D ~{  
+-  D {„  
+-  D yŒ  
+-  D w”  
+-  D Œœ  
+-  D Ç  
+-  D õ  
+-  D #  
+-  D Q  
+-  D ‘n  
+-  D “…  
+-  D ••  
+-  D ••  Û  € cüÿÿÿ(Û  € døÿÿÿ1Û  € eôÿÿÿ6Û  € eğÿÿÿ;Û  € eìÿÿÿ@Û  € eèÿÿÿEÛ  € fäÿÿÿMÛ  € fàÿÿÿUÛ  € fÜÿÿÿ]Û  € fØÿÿÿeÛ  € fÔÿÿÿmÛ  € fĞÿÿÿuÛ  € fÌÿÿÿ}Û  € fÈÿÿÿÜ  € gÄÿÿÿÜ  € hÀÿÿÿÜ  € i¼ÿÿÿÜ  € j¸ÿÿÿ(Ü  € k´ÿÿÿ2Ü  € l°ÿÿÿ
+-  À   	   
+-  à   •  <Ü  $ šø2 -×    ˜   «Ù    ˜   ¼Û    ˜   
+-  D š    
+-  D ›   
+-  D     
+-  D ¢#   
+-  D ¤*   
+-  D ¥3   
+-  D ¦=   
+-  D §G   
+-  D ¨Q   
+-  D ©[   
+-  D ªe   
+-  D «o   
+-  D ­y   
+-  D ¯   
+-  D ±®   
+-  D ²À   
+-  D ±ë   
+-  D ¹ğ   
+-  D ºù   
+-  D »  
+-  D »  NÜ  € ›üÿÿÿYÜ  € œøÿÿÿ  € ôÿÿÿ
+-  À      
+-  à     dÜ  $  4 -×       «Ù       zÜ       ƒÜ       ŒÜ       •Ü       Ü        
+-  D     
+-  D 
+-   
+-  D &   
+-  D '   
+-  D (*   
+-  D )3   
+-  D *A   
+-  D +J   
+-  D ,X   
+-  D -^   
+-  D 7l   
+-  D 9s   
+-  D <ˆ   
+-  D =•   
+-  D ?   
+-  D @«   
+-  D Aµ   
+-  D BÃ   
+-  D CÍ   
+-  D DÔ   
+-  D FÜ   
+-  D Gê   
+-  D Hô   
+-  D I  
+-  D J  
+-  D N  
+-  D O  
+-  D Q  
+-  D R-  
+-  D S7  
+-  D V<  
+-  D WJ  
+-  D [T  
+-  D \d  
+-  D ^l  
+-  D _|  
+-  D `†  
+-  D a–  
+-  D b   
+-  D c¨  
+-  D e°  
+-  D fÀ  
+-  D gÊ  
+-  D hÚ  
+-  D iä  
+-  D mè  
+-  D oğ  
+-  D p   
+-  D q
+-  
+-  D t  
+-  D u  
+-  D y&  
+-  D z6  
+-  D |>  
+-  D }G  
+-  D ~Q  
+-  D Z  
+-  D €d  
+-  D h  
+-  D ƒp  
+-  D „y  
+-  D …ƒ  
+-  D †Œ  
+-  D ‡–  
+-  D ‹˜  
+-  D    
+-  D ©  
+-  D ³  
+-  D ’¸  
+-  D “Á  
+-  D —Ë  
+-  D ˜Û  
+-  D šã  
+-  D ›õ  
+-  D œÿ  
+-  D   
+-  D   
+-  D Ÿ   
+-  D ¡(  
+-  D ¢:  
+-  D £D  
+-  D ¤V  
+-  D ¥`  
+-  D ©d  
+-  D «l  
+-  D ¬~  
+-  D ­ˆ  
+-  D °Œ  
+-  D ±  
+-  D µ¨  
+-  D ¶µ  
+-  D ·½  
+-  D 9Ã  
+-  D ¾Ì  
+-  D ¿Ó  
+-  D Áä  
+-  D Âó  
+-  D ¿  
+-  D Ä  
+-  D Å  
+-  D Å  ¬Ü  € üÿÿÿ¸Ü  € øÿÿÿÀÜ  € ôÿÿÿÈÜ  € ğÿÿÿĞÜ  € ìÿÿÿØÜ  € èÿÿÿãÜ  € äÿÿÿîÜ  € àÿÿÿùÜ  € Üÿÿÿ  € Øÿÿÿ  € Ôÿÿÿİ  € Ğÿÿÿİ  € Ìÿÿÿİ  € Èÿÿÿ&İ  € Äÿÿÿ1İ  € Àÿÿÿ9İ  € Àûÿÿ
+-  À   
+-   
+-  à     Dİ  $ Ò 8 -×    É   «Ù    É   zÜ    Ê   ƒÜ    Ê   ŒÜ    Ê   •Ü    Ê   Yİ    Ë    Ü    Ë$   fİ    Ë(   
+-  D Ò    
+-  D Ó   
+-  D à   
+-  D á   
+-  D â$   
+-  D á-   
+-  D ï4   
+-  D ñH   
+-  D ó]   
+-  D ô   
+-  D õ‹   
+-  D ö§   
+-  D ÷±   
+-  D øÄ   
+-  D ùÎ   
+-  D úì   
+-  D üö   
+-  D ı	  
+-  D ş"  
+-  D ÿ2  
+-  D E  
+-  D K  
+-  D Q  
+-  D W  
+-  D l  
+-  D r  
+-  D x  
+-  D 
+-ˆ  
+-  D   
+-  D ”  
+-  D ¤  
+-  D ´  
+-  D ¸  
+-  D º  
+-  D Â  
+-  D Ä  
+-  D Ê  
+-  D Í  
+-  D Ñ  
+-  D Ø  
+-  D Ş  
+-  D å  
+-  D ì  
+-  D ò  
+-  D ù  
+-  D     
+-  D !  
+-  D   
+-  D ï  
+-  D $   
+-  D $   tİ  € Óüÿÿÿzİ  € Óøÿÿÿ€İ  € Óôÿÿÿ†İ  € Óğÿÿÿ  € ÔìÿÿÿŒİ  € Ôèÿÿÿ•İ  @ Õ    İ  € Öäÿÿÿ…Û  € ×àÿÿÿÛ  € ×Üÿÿÿ•Û  € ×Øÿÿÿ¦İ  @ Ø   ¯İ  € ÙÔÿÿÿµİ  € ÙĞÿÿÿ»İ  € ÙÌÿÿÿÁİ  @ Ú   Èİ  € ÛÈÿÿÿÏİ  € ÛÄÿÿÿÖİ  € ÛÀÿÿÿİİ  € Û¼ÿÿÿäİ  € İ¼ıÿÿ
+-  À      
+-  à      üİ  $ -L: -×    (   «Ù    (   Ş    )   Ş    )   Ş    )   $Ş    )   
+-  D -    
+-  D .   
+-  D :   
+-  D ;   
+-  D <   
+-  D C    
+-  D D,   
+-  D E8   
+-  D FD   
+-  D JP   
+-  D M   
+-  D Q´   
+-  D R¸   
+-  D S¼   
+-  D UÀ   
+-  D VÆ   
+-  D XØ   
+-  D Zì   
+-  D \ü   
+-  D ]M  
+-  D _\  
+-  D ]j  
+-  D Zp  
+-  D Xx  
+-  D V€  
+-  D dˆ  
+-  D dˆ  Û  € .üÿÿÿ*Ş  € /øÿÿÿ2Ş  € /ôÿÿÿ:Ş  € /ğÿÿÿBŞ  € /ìÿÿÿtİ  € 0èÿÿÿzİ  € 0äÿÿÿ€İ  € 0àÿÿÿ†İ  € 0ÜÿÿÿJŞ  @ 1   SŞ  @ 2   ^Ş  € 4Üûÿÿ¬Ü  € 5ØûÿÿkŞ  € 7Øùÿÿ
+-  À      
+-  à   ˆ  „Ş  $ nà; -×    l   «Ù    l   
+-  D n    
+-  D o	   
+-  D v   
+-  D w   
+-  D x#   
+-  D z8   
+-  D {P   
+-  D |g   
+-  D ~|   
+-  D €|   
+-  D ‹   
+-  D ‚š   
+-  D ƒ    
+-  D „²   
+-  D …»   
+-  D †Ä   
+-  D ‡Í   
+-  D ˆÖ   
+-  D ‹  
+-  D ¥  
+-  D ¨3  
+-  D ©?  
+-  D |?  
+-  D xH  
+-  D «P  
+-  D «P  Û  € oüÿÿÿ˜Ş  @ p   ¢Ş  € qÀÿÿÿSŞ  @ r   1Û  € sØÿÿÿ6Û  € sÔÿÿÿ;Û  € sĞÿÿÿ@Û  € sÌÿÿÿÊ  € tøÿÿÿÊ  € uôÿÿÿ†U  € vğÿÿÿ¬Ş  € wìÿÿÿ
+-  À   	   z#  € ~èÿÿÿ~#  € ~äÿÿÿ'  € ~àÿÿÿv#  € ~Üÿÿÿ
+-  À   |   
+-  à   ?  
+-  à   P  ·Ş  $ Ç8= -×    Ä   «Ù    Ä   
+-  D Ç    
+-  D È   
+-  D Ô   
+-  D Õ   
+-  D Ö&   
+-  D ×/   
+-  D Ø8   
+-  D ÙD   
+-  D ÚP   
+-  D İ\   
+-  D ßp   
+-  D à‹   
+-  D á¢   
+-  D ä«   
+-  D å½   
+-  D æÄ   
+-  D çË   
+-  D èÒ   
+-  D éê   
+-  D êô   
+-  D îø   
+-  D ïÿ   
+-  D ğ  
+-  D ñ  
+-  D ô  
+-  D ö3  
+-  D ÷O  
+-  D ùk  
+-  D û|  
+-  D |  
+-  D ‘  
+-  D °  
+-  D Ã  
+-  D Ù  
+-  D ì  
+-  D   
+-  D   
+-  D '  
+-  D :  
+-  D P  
+-  D X  
+-  D k  
+-  D €  
+-  D †  
+-  D   
+-  D –  
+-  D !  
+-  D #¦  
+-  D %°  
+-  D '¼  
+-  D )Æ  
+-  D +Ê  
+-  D -Ì  
+-  D /Ô  
+-  D 1Ù  
+-  D 3ß  
+-  D 5æ  
+-  D 7ï  
+-  D :ö  
+-  D AE  
+-  D BN  
+-  D G|  
+-  D Hƒ  
+-  D Jˆ  
+-  D Kš  
+-  D L¯  
+-  D M¾  
+-  D Nû  
+-  D Tû  
+-  D Vû  
+-  D Wş  
+-  D X  
+-  D Y	  
+-  D Z  
+-  D [  
+-  D \#  
+-  D ]&  
+-  D ^)  
+-  D _/  
+-  D `=  
+-  D aC  
+-  D bU  
+-  D c[  
+-  D dg  
+-  D ej  
+-  D fp  
+-  D gr  
+-  D hw  
+-  D iy  
+-  D j‡  
+-  D k‰  
+-  D l‘  
+-  D m”  
+-  D n–  
+-  D o™  
+-  D p¡  
+-  D q¤  
+-  D r³  
+-  D s¶  
+-  D t¿  
+-  D uÂ  
+-  D vÅ  
+-  D {Å  
+-  D |Ô  
+-  D }Ú  
+-  D ~ä  
+-  D ùä  
+-  D ƒì  
+-  D „ö  
+-  D …  
+-  D †  
+-  D İ  
+-  D ˆ   
+-  D ˆ   Û  € ÈüÿÿÿËŞ  € É€ÿÿÿÒŞ  € É|ÿÿÿÙŞ  @ É   áŞ  € ÉœÿÿÿèŞ  € ÊøÿÿÿôŞ  € Êôÿÿÿ ß  € Êğÿÿÿß  € Êìÿÿÿß  € Ëèÿÿÿ$ß  € Ëäÿÿÿ0ß  € Ëàÿÿÿ<ß  € ËÜÿÿÿHß  € Ì˜ÿÿÿTß  € ÍØÿÿÿ¢Ş  € ÎÔÿÿÿ]ß  € ÏĞÿÿÿgß  € ĞÌÿÿÿmß  € ÑÈÿÿÿÊ  € ÒÄÿÿÿÊ  € ÓÀÿÿÿ†U  € Ô¼ÿÿÿ¬Ş  € Õ¸ÿÿÿtß  € Ö´ÿÿÿƒß  € ×°ÿÿÿß  € Ø¬ÿÿÿß  € Ù¨ÿÿÿªß  € Ú¤ÿÿÿ
+-  À      v#  € û ÿÿÿ
+-  À   |  ·ß  @ G    
+-  À   |  
+-  à   û  Âß  @ T    Îß  @ T   
+-  À   û  
+-  à   Å  
+-  à   ä  
+-  à      ×ß  $ ŸdB -×       «Ù       
+-  D Ÿ    
+-  D     
+-  D £   
+-  D ¤   
+-  D ¦%   
+-  D ©,   
+-  D ª>   
+-  D ­G   
+-  D ®N   
+-  D °`   
+-  D ±u   
+-  D ®   
+-  D ´˜   
+-  D ¶    
+-  D ·µ   
+-  D ´Î   
+-  D ºä   
+-  D ¼ğ   
+-  D ½  
+-  D º  
+-  D À$  
+-  D Á,  
+-  D Á,  ëß  €  üÿÿÿôß  € ¡øÿÿÿùß  € ¡ôÿÿÿ
+-  À      
+-  à   ,  ÿß  $ Å˜C à    Ä   
+-  D Å    
+-  D Æ   
+-  D É   
+-  D Ë   
+-  D Í(   
+-  D ĞY   
+-  D ËY   
+-  D É`   
+-  D Òh   
+-  D Òh     € ÆüÿÿÿÎT  € Çøÿÿÿ
+-  À      
+-  À   (   
+-  à   Y   
+-  à   h   à  $ ×D -×    Ö   =à    Ö   Gà    Ö   
+-  D ×    
+-  D Ø   
+-  D Û   
+-  D Ş   
+-  D à    
+-  D â)   
+-  D ä0   
+-  D åH   
+-  D èP   
+-  D êX   
+-  D ìl   
+-  D í“   
+-  D ïª   
+-  D ê°   
+-  D ò¸   
+-  D óÇ   
+-  D öÍ   
+-  D ùÔ   
+-  D úè   
+-  D üü   
+-  D ıü   
+-  D ÿ  
+-  D 5  
+-  D <  
+-  D L  
+-  D €  
+-  D 	¦  
+-  D ¬  
+-  D ´  
+-  D ú´  
+-  D ¼  
+-  D Î  
+-  D Ş  
+-  D ó  
+-  D 	  
+-  D   
+-  D   
+-  D "  
+-  D 0  
+-  D @  
+-  D U  
+-  D !l  
+-  D "ƒ  
+-  D $˜  
+-  D "W  
+-  D )`  
+-  D *p  
+-  D +|  
+-  D ,ˆ  
+-  D -ˆ  
+-  D .–  
+-  D 0œ  
+-  D 1¬  
+-  D 4°  
+-  D 6À  
+-  D 8Í  
+-  D 9Ô  
+-  D :Û  
+-  D <ğ  
+-  D >  
+-  D ?  
+-  D :  
+-  D B   
+-  D D4  
+-  D FF  
+-  D BW  
+-  D I\  
+-  D J\  
+-  D Li  
+-  D Mp  
+-  D Nw  
+-  D PŒ  
+-  D R  
+-  D S¤  
+-  D N´  
+-  D V¼  
+-  D XĞ  
+-  D Zâ  
+-  D Vó  
+-  D ]ø  
+-  D _ø  
+-  D a  
+-  D c  
+-  D a=  
+-  D eD  
+-  D fV  
+-  D ic  
+-  D lo  
+-  D n„  
+-  D p›  
+-  D l¸  
+-  D sÀ  
+-  D uÈ  
+-  D wÖ  
+-  D yß  
+-  D {ô  
+-  D }  
+-  D ~  
+-  D €   
+-  D ‚F  
+-  D ~r  
+-  D …x  
+-  D †•  
+-  D y•  
+-  D ˆ   
+-  D Š¨  
+-  D Œ¶  
+-  D ¿  
+-  D Î  
+-  D ’×  
+-  D ”æ  
+-  D –ì  
+-  D ˜ø  
+-  D ˜ø  Wà  € Øüÿÿÿ  € Ùøÿÿÿdà  € Úôÿÿÿ
+-  À      ÎT  € üğÿÿÿ
+-  À   ü   
+-  à   ´  pà  € ğÿÿÿ  €  ìÿÿÿ{à  € !èÿÿÿ
+-  À   U  
+-  à   ˆ  ‚à  € 8ìÿÿÿ‡à  € 9äÿÿÿ
+-  À   Í  
+-  à   \  ‘à  € Läÿÿÿ–à  € Mìÿÿÿ
+-  À   i  
+-  à   ø  ÎT  € }äÿÿÿ
+-  À     
+-  à   •  
+-  à   ø  
+-  d   K /home/boutell/gd-development/ gd.c gcc2_compiled. int:t1=r1;-2147483648;2147483647; char:t2=r2;0;127; long int:t3=r1;-2147483648;2147483647; unsigned int:t4=r1;0;-1; long unsigned int:t5=r1;0;-1; long long int:t6=r1;01000000000000000000000;0777777777777777777777; long long unsigned int:t7=r1;0000000000000;01777777777777777777777; short int:t8=r1;-32768;32767; short unsigned int:t9=r1;0;65535; signed char:t10=r1;-128;127; unsigned char:t11=r1;0;255; float:t12=r1;4;0; double:t13=r1;8;0; long double:t14=r1;12;0; complex int:t15=s8real:1,0,32;imag:1,32,32;; complex float:t16=r16;4;0; complex double:t17=r17;8;0; complex long double:t18=r18;12;0; void:t19=19 __long_double_t:t14 _G_clock_t:t3 _G_dev_t:t9 _G_fpos_t:t3 _G_gid_t:t9 _G_ino_t:t5 _G_mode_t:t9 _G_nlink_t:t9 _G_off_t:t3 _G_pid_t:t1 _G_ptrdiff_t:t1 _G_sigset_t:t5 _G_size_t:t4 _G_time_t:t3 _G_uid_t:t9 _G_wchar_t:t3 _G_ssize_t:t1 _G_wint_t:t1 _G_va_list:t20=*19 _G_int8_t:t10 _G_uint8_t:t11 _G_int16_t:t8 _G_uint16_t:t9 _G_int32_t:t1 _G_uint32_t:t4 _G_int64_t:t6 _G_uint64_t:t7 _IO_lock_t:T21=s8ptr:20,0,32;field1:8,32,16;\ field2:8,48,16;; _IO_marker:T22=s12_next:23=*22,0,32;_sbuf:24=*25=xs_IO_FILE:,32,32;\ _pos:1,64,32;; _IO_FILE:T25=s80_flags:1,0,32;_IO_read_ptr:26=*2,32,32;\ _IO_read_end:26,64,32;_IO_read_base:26,96,32;\ _IO_write_base:26,128,32;_IO_write_ptr:26,160,32;\ _IO_write_end:26,192,32;_IO_buf_base:26,224,32;\ _IO_buf_end:26,256,32;_IO_save_base:26,288,32;_IO_backup_base:26,320,32;\ _IO_save_end:26,352,32;_markers:23,384,32;_chain:24,416,32;\ _fileno:1,448,32;_blksize:1,480,32;_offset:3,512,32;\ _cur_column:9,544,16;_unused:2,560,8;_shortbuf:27=ar1;0;0;2,568,8;\ _IO_lock:21,576,64;; _IO_FILE:t25 size_t:t4 FILE:t25 fpos_t:t3 __convert_long_double:T28=u16__convert_long_double_i:29=ar1;0;3;4,0,128;\ __convert_long_double_d:14,0,96;; ieee754_double:T30=u8d:13,0,64;ieee:31=s8mantissa1:4,0,32;\ mantissa0:4,32,20;exponent:4,52,11;negative:4,63,1;;,0,64;\ ieee_nan:32=s8mantissa1:4,0,32;mantissa0:4,32,19;\ quiet_nan:4,51,1;exponent:4,52,11;negative:4,63,1;;,0,64;; i387_float:T33=u4f:12,0,32;i387:34=s4mantissa:4,0,23;\ exponent:4,23,8;negative:4,31,1;;,0,32;\ i387_nan:35=s4mantissa:4,0,22;quiet_nan:4,22,1;\ exponent:4,23,8;negative:4,31,1;;,0,32;; ieee854_double:T36=u12d:14,0,96;ieee:37=s12mantissa1:4,0,32;\ mantissa0:4,32,32;exponent:4,64,15;negative:4,79,1;\ empty:4,80,16;;,0,96;ieee_nan:38=s12mantissa1:4,0,32;\ mantissa0:4,32,30;quiet_nan:4,62,1;one:4,63,1;\ exponent:4,64,15;negative:4,79,1;empty:4,80,16;;,0,96;; wchar_t:t3 div_t:t39=s8quot:1,0,32;rem:1,32,32;; ldiv_t:t40=s8quot:3,0,32;rem:3,32,32;; __compar_fn_t:t41=*42=f1 comparison_fn_t:t41 qelem:T43=s12q_forw:44=*43,0,32;q_back:44,32,32;\ q_data:27,64,8;; Byte:t11 uInt:t4 uLong:t5 Bytef:t11 charf:t2 intf:t1 uIntf:t4 uLongf:t5 voidpf:t20 voidp:t20 alloc_func:t45=*46=f20 free_func:t47=*48=f19 z_stream_s:T49=s56next_in:50=*11,0,32;avail_in:4,32,32;\ total_in:5,64,32;next_out:50,96,32;avail_out:4,128,32;\ total_out:5,160,32;msg:26,192,32;state:51=*52=xsinternal_state:,224,32;\ zalloc:45,256,32;zfree:47,288,32;opaque:20,320,32;\ data_type:1,352,32;adler:5,384,32;reserved:5,416,32;; z_stream:t49 z_streamp:t53=*49 gzFile:t20 internal_state:T52=s4dummy:1,0,32;; gdIOCtx:T54=s28getC:55=*56=f1,0,32;getBuf:57=*58=f1,32,32;\ putC:59=*60=f19,64,32;putBuf:61=*62=f1,96,32;\ seek:63=*64=f1,128,32;tell:65=*66=f3,160,32;\ free:67=*68=f19,192,32;; gdIOCtx:t54 gdIOCtxPtr:t69=*54 gdImageStruct:T70=s7240pixels:71=*72=*11,0,32;sx:1,32,32;\ sy:1,64,32;colorsTotal:1,96,32;red:73=ar1;0;255;1,128,8192;\ green:73,8320,8192;blue:73,16512,8192;open:73,24704,8192;\ transparent:1,32896,32;polyInts:74=*1,32928,32;polyAllocated:1,32960,32;\ brush:75=*70,32992,32;tile:75,33024,32;brushColorMap:73,33056,8192;\ tileColorMap:73,41248,8192;styleLength:1,49440,32;stylePos:1,49472,32;\ style:74,49504,32;interlace:1,49536,32;thick:1,49568,32;\ alpha:73,49600,8192;trueColor:1,57792,32;tpixels:76=*74,57824,32;\ alphaBlendingFlag:1,57856,32;saveAlphaFlag:1,57888,32;; gdImage:t70 gdImagePtr:t77=*70 gdFont:t78=s20nchars:1,0,32;offset:1,32,32;\ w:1,64,32;h:1,96,32;data:26,128,32;; gdFontPtr:t79=*78 gdSource:t80=s8source:81=*82=f1,0,32;context:20,32,32;; gdSourcePtr:t83=*80 gdPoint:t84=s8x:1,0,32;y:1,32,32;; gdPointPtr:t85=*84 gdSink:t86=s8sink:87=*88=f1,0,32;context:20,32,32;; gdSinkPtr:t89=*86 gdImageCreate:F77 sx:p1 sy:p1  i:1 im:77 gdImageCreateTrueColor:F77 gdImageDestroy:F19 im:p77 gdImageColorClosest:F1 r:p1 g:p1 b:p1 gdImageColorClosestAlpha:F1 a:p1 rd:3 gd:3 bd:3 ad:3 ct:1 first:1 mindist:3 dist:3 RGBType:t90=s12R:12,0,32;G:12,32,32;\ B:12,64,32;; HWBType:t91=s12H:12,0,32;W:12,32,32;\ RGB_to_HWB:f92=*91 RGB:p90 HWB:p92 R:12 G:12 B:12 w:12 v:12 b:12 f:12 HWB_Diff:f12 r1:p1 g1:p1 b1:p1 r2:p1 g2:p1 b2:p1 RGB1:90 RGB2:90 HWB1:91 HWB2:91 diff:12 HWB_to_RGB:f93=*90 HWB:p91 RGB:p93 h:12 n:12 gdImageColorClosestHWB:F1 mindist:12 dist:12 gdImageColorExact:F1 gdImageColorExactAlpha:F1 gdImageColorAllocate:F1 gdImageColorAllocateAlpha:F1 gdImageColorResolve:F1 gdImageColorResolveAlpha:F1 c:1 op:1 gdImageColorDeallocate:F19 color:p1 gdImageColorTransparent:F19 gdImagePaletteCopy:F19 to:p77 from:p77 x:1 y:1 p:1 xlate:73 gdImageSetPixel:F19 x:p1 y:p1 gdImageBrushApply:f19 lx:1 ly:1 hy:1 hx:1 x1:1 y1:1 x2:1 y2:1 srcx:1 srcy:1 gdImageTileApply:f19 gdImageGetPixel:F1 gdImageGetTrueColorPixel:F1 gdImageLine:F19 x1:p1 y1:p1 x2:p1 y2:p1 dx:1 dy:1 incr1:1 incr2:1 d:1 xend:1 yend:1 xdirflag:1 ydirflag:1 wid:1 w:1 wstart:1 thick:1 gdImageDashedLine:F19 dashStep:1 on:1 vert:1 dashedSet:f19 onP:p74 dashStepP:p74 wid:p1 vert:p1 gdImageBoundsSafe:F1 gdImageChar:F19 f:p79 c:p1 cx:1 cy:1 px:1 py:1 fline:1 gdImageCharUp:F19 gdImageString:F19 s:p72 l:1 gdImageStringUp:F19 gdImageString16:F19 s:p94=*9 gdImageStringUp16:F19 s:p94 strlen16:f1 len:1 lsqrt:F3 n:p3 result:3 gdImageArc:F19 cx:p1 cy:p1 w:p1 h:p1 s:p1 e:p1 gdImageFilledArc:F19 style:p1 pts:95=ar1;0;2;84 fx:1 fy:1 w2:1 h2:1 gdImageFilledEllipse:F19 gdImageFillToBorder:F19 border:p1 lastBorder:1 leftLimit:1 rightLimit:1 gdImageFill:F19 old:1 tileColor:1 gdImageRectangle:F19 x1h:1 x1v:1 y1h:1 y1v:1 x2h:1 x2v:1 y2h:1 y2v:1 half:1 half1:1 gdImageFilledRectangle:F19 gdImageCopy:F19 dst:p77 src:p77 dstX:p1 dstY:p1 srcX:p1 srcY:p1 tox:1 toy:1 colorMap:73 nc:1 gdImageCopyMerge:F19 pct:p1 dc:1 ncR:1 ncG:1 ncB:1 gdImageCopyMergeGray:F19 g:12 gdImageCopyResized:F19 dstW:p1 dstH:p1 srcW:p1 srcH:p1 ydest:1 stx:74 sty:74 accum:13 got:1 mapTo:1 gdImageCopyResampled:F19 sx:12 sy:12 pd:1 sy1:12 sy2:12 sx1:12 sx2:12 spixels:12 red:12 green:12 blue:12 alpha:12 yportion:12 xportion:12 pcontribution:12 gdImageCreateFromXbm:F77 fd:p96=*25 bit:1 h:1 bytes:1 ch:1 sp:26 s:97=ar1;0;160;2 h:98=ar1;0;2;2 b:1 gdImagePolygon:F19 p:p85 n:p1 gdImageFilledPolygon:F19 miny:1 maxy:1 ind1:1 ind2:1 ints:1 gdCompareInt:F1 a:p99=*19 b:p99 gdImageSetStyle:F19 style:p74 noOfPixels:p1 gdImageSetThickness:F19 thickness:p1 gdImageSetBrush:F19 brush:p77 index:1 gdImageSetTile:F19 tile:p77 gdImageInterlace:F19 interlaceArg:p1 gdImageCompare:F1 im1:p77 im2:p77 p1:1 p2:1 cmpStatus:1 sx:1 sy:1 gdAlphaBlend:F1 dst:p1 src:p1 gdImageAlphaBlending:F19 alphaBlendingArg:p1 gdImageSaveAlpha:F19 saveAlphaArg:p1 gd_gd.c gdIOCtx:T45=s28getC:46=*47=f1,0,32;getBuf:48=*49=f1,32,32;\ putC:50=*51=f19,64,32;putBuf:52=*53=f1,96,32;\ seek:54=*55=f1,128,32;tell:56=*57=f3,160,32;\ free:58=*59=f19,192,32;; gdIOCtx:t45 gdIOCtxPtr:t60=*45 gdImageStruct:T61=s7240pixels:62=*63=*11,0,32;sx:1,32,32;\ sy:1,64,32;colorsTotal:1,96,32;red:64=ar1;0;255;1,128,8192;\ green:64,8320,8192;blue:64,16512,8192;open:64,24704,8192;\ transparent:1,32896,32;polyInts:65=*1,32928,32;polyAllocated:1,32960,32;\ brush:66=*61,32992,32;tile:66,33024,32;brushColorMap:64,33056,8192;\ tileColorMap:64,41248,8192;styleLength:1,49440,32;stylePos:1,49472,32;\ style:65,49504,32;interlace:1,49536,32;thick:1,49568,32;\ alpha:64,49600,8192;trueColor:1,57792,32;tpixels:67=*65,57824,32;\ gdImage:t61 gdImagePtr:t68=*61 gdFont:t69=s20nchars:1,0,32;offset:1,32,32;\ gdFontPtr:t70=*69 gdSource:t71=s8source:72=*73=f1,0,32;context:20,32,32;; gdSourcePtr:t74=*71 gdPoint:t75=s8x:1,0,32;y:1,32,32;; gdPointPtr:t76=*75 gdSink:t77=s8sink:78=*79=f1,0,32;context:20,32,32;; gdSinkPtr:t80=*77 _gdGetColors:F1 in:p81=*45 im:p68 gd2xFlag:p1 _gdCreateFromFile:f68 in:p81 sx:p65 sy:p65 im:68 gd2xFlag:1 gdImageCreateFromGd:F68 inFile:p82=*25 in:81 gdImageCreateFromGdCtx:F68 in:p60 _gdPutColors:F19 out:p81 trans:1 _gdPutHeader:f19 _gdImageGd:f19 gdImageGd:F19 outFile:p82 out:81 gdImageGdPtr:F20 size:p65 rv:20 gd_gd2.c t_chunk_info:t90=s8offset:1,0,32;size:1,32,32;; _gd2GetHeader:f1 in:p69 sx:p74 sy:p74 cs:p74 vers:p74 fmt:p74 ncx:p74 ncy:p74 chunkIdx:p91=*92=*90 id:93=ar1;0;4;2 cidx:92 sidx:1 _gd2CreateFromFile:f77 cidx:p91 _gd2ReadChunk:f1 offset:p1 compBuf:p26 compSize:p1 chunkBuf:p26 chunkLen:p94=*5 in:p95=*54 zerr:1 gdImageCreateFromGd2:F77 inFile:p96=*25 in:95 gdImageCreateFromGd2Ctx:F77 ncx:1 ncy:1 cs:1 ylo:1 yhi:1 xlo:1 xhi:1 vers:1 fmt:1 chunkIdx:92 chunkBuf:72 chunkNum:1 chunkMax:1 chunkLen:5 chunkPos:1 compMax:1 bytesPerPixel:1 compBuf:26 a:1 r:1 g:1 gdImageCreateFromGd2Part:F77 inFile:p96 srcx:p1 srcy:p1 gdImageCreateFromGd2PartCtx:F77 in:p95 scx:1 scy:1 ecx:1 ecy:1 fsx:1 fsy:1 dstart:1 dpos:1 chunkBuf:26 _gd2PutHeader:f19 out:p95 cs:p1 fmt:p1 _gdImageGd2:f19 chunkLen:1 chunkData:26 compData:26 compLen:5 idxPos:1 idxSize:1 posSave:1 gdImageGd2:F19 outFile:p96 out:95 gdImageGd2Ptr:F20 size:p74 gd_io.c __convert_long_double:T20=u16__convert_long_double_i:21=ar1;0;3;4,0,128;\ ieee754_double:T22=u8d:13,0,64;ieee:23=s8mantissa1:4,0,32;\ ieee_nan:24=s8mantissa1:4,0,32;mantissa0:4,32,19;\ i387_float:T25=u4f:12,0,32;i387:26=s4mantissa:4,0,23;\ i387_nan:27=s4mantissa:4,0,22;quiet_nan:4,22,1;\ ieee854_double:T28=u12d:14,0,96;ieee:29=s12mantissa1:4,0,32;\ empty:4,80,16;;,0,96;ieee_nan:30=s12mantissa1:4,0,32;\ div_t:t31=s8quot:1,0,32;rem:1,32,32;; ldiv_t:t32=s8quot:3,0,32;rem:3,32,32;; __compar_fn_t:t33=*34=f1 comparison_fn_t:t33 qelem:T35=s12q_forw:36=*35,0,32;q_back:36,32,32;\ q_data:37=ar1;0;0;2,64,8;; _G_va_list:t38=*19 _IO_lock_t:T39=s8ptr:38,0,32;field1:8,32,16;\ _IO_marker:T40=s12_next:41=*40,0,32;_sbuf:42=*43=xs_IO_FILE:,32,32;\ _IO_FILE:T43=s80_flags:1,0,32;_IO_read_ptr:44=*2,32,32;\ _IO_read_end:44,64,32;_IO_read_base:44,96,32;\ _IO_write_base:44,128,32;_IO_write_ptr:44,160,32;\ _IO_write_end:44,192,32;_IO_buf_base:44,224,32;\ _IO_buf_end:44,256,32;_IO_save_base:44,288,32;_IO_backup_base:44,320,32;\ _IO_save_end:44,352,32;_markers:41,384,32;_chain:42,416,32;\ _cur_column:9,544,16;_unused:2,560,8;_shortbuf:37,568,8;\ _IO_lock:39,576,64;; _IO_FILE:t43 FILE:t43 w:1,64,32;h:1,96,32;data:44,128,32;; gdSource:t71=s8source:72=*73=f1,0,32;context:38,32,32;; gdSink:t77=s8sink:78=*79=f1,0,32;context:38,32,32;; Putword:F19 ctx:p81=*45 buf:82=ar1;0;1;11 Putchar:F19 ctx:p81 gdPutC:F19 c:11 gdPutWord:F19 gdPutInt:F19 gdGetC:F1 gdGetByte:F1 result:p65 gdGetWord:F1 gdGetInt:F1 gdPutBuf:F1 buf:p83=*19 size:p1 gdGetBuf:F1 buf:p38 gdSeek:F1 pos:p1 gdTell:F3 gd_io_dp.c dpStruct:T81=s20data:38,0,32;logicalSize:1,32,32;\ realSize:1,64,32;dataGood:1,96,32;pos:1,128,32;; dynamicPtr:t81 dpIOCtx:T82=s32ctx:45,0,224;dp:83=*81,224,32;; dpIOCtx:t82 dpIOCtxPtr:t84=*82 gdNewDynamicCtx:F85=*45 initialSize:p1 data:p38 ctx:86=*82 dp:83 gdDPExtractData:F38 ctx:p60 dctx:86 data:38 gdFreeDynamicCtx:f19 dynamicTell:f3 dynamicSeek:f1 bytesNeeded:1 newDynamic:f83 dynamicPutbuf:f1 buf:p87=*19 dynamicPutchar:f19 b:11 dctx:84 dynamicGetbuf:f1 len:p1 rlen:1 remain:1 dynamicGetchar:f1 rv:1 allocDynamic:f1 dp:p83 appendDynamic:f1 src:p87 tmp:44 gdReallocDynamic:f1 required:p1 newPtr:38 trimDynamic:f1 gd_io_file.c fileIOCtx:T81=s32ctx:45,0,224;f:82=*43,224,32;; fileIOCtx:t81 gdNewFileCtx:F83=*45 f:p82 ctx:84=*81 gdFreeFileCtx:f19 ctx:p83 filePutbuf:f1 buf:p85=*19 fctx:84 fileGetbuf:f1 filePutchar:f19 fileGetchar:f1 fileSeek:f1 fileTell:f3 fileIOCtxPtr:G86=*81 gd_ss.c gdImagePngToSink:F19 outSink:p80 out:81=*45 gdImageCreateFromPngSource:F68 inSource:p74 gd_io_ss.c ssIOCtx:T81=s36ctx:45,0,224;src:74,224,32;\ snk:80,256,32;; ssIOCtx:t81 ssIOCtxPtr:t82=*81 gdNewSSCtx:F83=*45 src:p74 snk:p80 ctx:82 gdFreeSsCtx:f19 sourceGetbuf:f1 lctx:84=*81 res:1 sourceGetchar:f1 buf:11 sinkPutbuf:f1 lctx:82 sinkPutchar:f19 gd_png.c alloc_func:t81=*82=f20 free_func:t83=*84=f19 z_stream_s:T85=s56next_in:86=*11,0,32;avail_in:4,32,32;\ total_in:5,64,32;next_out:86,96,32;avail_out:4,128,32;\ total_out:5,160,32;msg:26,192,32;state:87=*88=xsinternal_state:,224,32;\ zalloc:81,256,32;zfree:83,288,32;opaque:20,320,32;\ z_stream:t85 z_streamp:t89=*85 internal_state:T88=s4dummy:1,0,32;; __kernel_fd_set:t90=s128fds_bits:91=ar1;0;31;5,0,1024;; __kernel_sighandler_t:t92=*93=f19 __kernel_key_t:t1 __kernel_dev_t:t9 __kernel_ino_t:t5 __kernel_mode_t:t9 __kernel_nlink_t:t9 __kernel_off_t:t3 __kernel_pid_t:t1 __kernel_ipc_pid_t:t9 __kernel_uid_t:t9 __kernel_gid_t:t9 __kernel_size_t:t4 __kernel_ssize_t:t1 __kernel_ptrdiff_t:t1 __kernel_time_t:t3 __kernel_suseconds_t:t3 __kernel_clock_t:t3 __kernel_daddr_t:t1 __kernel_caddr_t:t26 __kernel_loff_t:t6 __kernel_fsid_t:t94=s8__val:95=ar1;0;1;1,0,64;; umode_t:t9 __s8:t10 __u8:t11 __s16:t8 __u16:t9 __s32:t1 __u32:t4 __s64:t6 __u64:t7 fd_set:t90 dev_t:t9 ino_t:t5 mode_t:t9 nlink_t:t9 off_t:t3 pid_t:t1 uid_t:t9 gid_t:t9 daddr_t:t1 key_t:t1 suseconds_t:t3 loff_t:t6 ssize_t:t1 ptrdiff_t:t1 time_t:t3 clock_t:t3 caddr_t:t26 u_char:t11 u_short:t9 u_int:t4 u_long:t5 unchar:t11 ushort:t9 uint:t4 ulong:t5 u_int8_t:t11 int8_t:t10 u_int16_t:t9 int16_t:t8 u_int32_t:t4 int32_t:t1 uint8_t:t11 uint16_t:t9 uint32_t:t4 uint64_t:t7 u_int64_t:t7 int64_t:t6 ustat:T96=s20f_tfree:1,0,32;f_tinode:5,32,32;\ f_fname:97=ar1;0;5;2,64,48;f_fpack:97,112,48;; fd_mask:t5 __jmp_buf_base:T98=s24__bx:3,0,32;__si:3,32,32;\ __di:3,64,32;__bp:20,96,32;__sp:20,128,32;\ __pc:20,160,32;; __jmp_buf:t99=ar1;0;0;98 sigset_t:t5 __sighandler_t:t92 sigaction:T100=s16_u:101=u4_sa_handler:92,0,32;\ _sa_sigaction:102=*103=f19,0,32;;,0,32;sa_mask:5,32,32;\ sa_flags:5,64,32;sa_restorer:104=*105=f19,96,32;; sigaltstack:T106=s12ss_sp:20,0,32;ss_flags:1,32,32;\ ss_size:4,64,32;; stack_t:t106 sigval:T107=u4sival_int:1,0,32;sival_ptr:20,0,32;; sigval_t:t107 siginfo:T108=s128si_signo:1,0,32;si_errno:1,32,32;\ si_code:1,64,32;_sifields:109=u116_pad:110=ar1;0;28;1,0,928;\ _kill:111=s8_pid:1,0,32;_uid:9,32,16;;,0,64;\ _timer:112=s8_timer1:4,0,32;_timer2:4,32,32;;,0,64;\ _rt:113=s12_pid:1,0,32;_uid:9,32,16;\ _sigval:107,64,32;;,0,96;_sigchld:114=s20_pid:1,0,32;\ _uid:9,32,16;_status:1,64,32;_utime:3,96,32;\ _stime:3,128,32;;,0,160;_sigfault:115=s4_addr:20,0,32;;,0,32;\ _sigpoll:116=s8_band:1,0,32;_fd:1,32,32;;,0,64;;,96,928;; siginfo_t:t108 sigevent:T117=s64sigev_value:107,0,32;sigev_signo:1,32,32;\ sigev_notify:1,64,32;_sigev_un:118=u52_pad:119=ar1;0;12;1,0,416;\ _sigev_thread:120=s8_function:121=*122=f19,0,32;_attribute:20,32,32;;,0,64;;,96,416;; sigevent_t:t117 sig_atomic_t:t1 SignalHandler:t92 __sigjmp_buf_base:T123=s32__jmpbuf:99,0,192;__mask_was_saved:1,192,32;\ __saved_mask:5,224,32;; sigjmp_buf:t124=ar1;0;0;123 jmp_buf:t99 timespec:T125=s8tv_sec:3,0,32;tv_nsec:3,32,32;; timeval:T126=s8tv_sec:3,0,32;tv_usec:3,32,32;; timezone:T127=s8tz_minuteswest:1,0,32;tz_dsttime:1,32,32;; itimerspec:T128=s16it_interval:125,0,64;it_value:125,64,64;; itimerval:T129=s16it_interval:126,0,64;it_value:126,64,64;; tm:T130=s44tm_sec:1,0,32;tm_min:1,32,32;\ tm_hour:1,64,32;tm_mday:1,96,32;tm_mon:1,128,32;\ tm_year:1,160,32;tm_wday:1,192,32;tm_yday:1,224,32;\ tm_isdst:1,256,32;__tm_gmtoff__:3,288,32;__tm_zone__:131=*2,320,32;; png_uint_32:t5 png_int_32:t3 png_uint_16:t9 png_int_16:t8 png_byte:t11 png_size_t:t4 png_voidp:t20 png_bytep:t132=*11 png_uint_32p:t133=*5 png_int_32p:t134=*3 png_uint_16p:t135=*9 png_int_16p:t136=*8 png_const_charp:t131 png_charp:t26 png_doublep:t137=*13 png_bytepp:t138=*132 png_uint_32pp:t139=*133 png_int_32pp:t140=*134 png_uint_16pp:t141=*135 png_int_16pp:t142=*136 png_const_charpp:t143=*131 png_charpp:t144=*26 png_doublepp:t145=*137 png_charppp:t146=*144 png_zcharp:t147=*2 png_zcharpp:t148=*147 png_zstreamp:t89 png_color_struct:T149=s3red:11,0,8;green:11,8,8;\ blue:11,16,8;; png_color:t149 png_colorp:t150=*149 png_colorpp:t151=*150 png_color_16_struct:T152=s10index:11,0,8;red:9,16,16;\ green:9,32,16;blue:9,48,16;gray:9,64,16;; png_color_16:t152 png_color_16p:t153=*152 png_color_16pp:t154=*153 png_color_8_struct:T155=s5red:11,0,8;green:11,8,8;\ blue:11,16,8;gray:11,24,8;alpha:11,32,8;; png_color_8:t155 png_color_8p:t156=*155 png_color_8pp:t157=*156 png_text_struct:T158=s16compression:1,0,32;key:26,32,32;\ text:26,64,32;text_length:4,96,32;; png_text:t158 png_textp:t159=*158 png_textpp:t160=*159 png_time_struct:T161=s8year:9,0,16;month:11,16,8;\ day:11,24,8;hour:11,32,8;minute:11,40,8;\ second:11,48,8;; png_time:t161 png_timep:t162=*161 png_timepp:t163=*162 png_info_struct:T164=s184width:5,0,32;height:5,32,32;\ valid:5,64,32;rowbytes:5,96,32;palette:150,128,32;\ num_palette:9,160,16;num_trans:9,176,16;bit_depth:11,192,8;\ color_type:11,200,8;compression_type:11,208,8;\ filter_type:11,216,8;interlace_type:11,224,8;\ channels:11,232,8;pixel_depth:11,240,8;spare_byte:11,248,8;\ signature:165=ar1;0;7;11,256,64;gamma:12,320,32;\ srgb_intent:11,352,8;num_text:1,384,32;max_text:1,416,32;\ text:159,448,32;mod_time:161,480,64;sig_bit:155,544,40;\ trans:132,608,32;trans_values:152,640,80;background:152,720,80;\ x_offset:5,800,32;y_offset:5,832,32;offset_unit_type:11,864,8;\ x_pixels_per_unit:5,896,32;y_pixels_per_unit:5,928,32;\ phys_unit_type:11,960,8;hist:135,992,32;x_white:12,1024,32;\ y_white:12,1056,32;x_red:12,1088,32;y_red:12,1120,32;\ x_green:12,1152,32;y_green:12,1184,32;x_blue:12,1216,32;\ y_blue:12,1248,32;pcal_purpose:26,1280,32;pcal_X0:3,1312,32;\ pcal_X1:3,1344,32;pcal_units:26,1376,32;pcal_params:144,1408,32;\ pcal_type:11,1440,8;pcal_nparams:11,1448,8;; png_info:t164 png_infop:t166=*164 png_infopp:t167=*166 png_row_info_struct:T168=s12width:5,0,32;rowbytes:5,32,32;\ color_type:11,64,8;bit_depth:11,72,8;channels:11,80,8;\ pixel_depth:11,88,8;; png_row_info:t168 png_row_infop:t169=*168 png_row_infopp:t170=*169 png_struct:t171=xspng_struct_def: png_structp:t172=*171 png_error_ptr:t173=*174=f19 png_rw_ptr:t175=*176=f19 png_flush_ptr:t177=*178=f19 png_read_status_ptr:t179=*180=f19 png_write_status_ptr:t179 png_progressive_info_ptr:t181=*182=f19 png_progressive_end_ptr:t181 png_progressive_row_ptr:t183=*184=f19 png_user_transform_ptr:t185=*186=f19 png_malloc_ptr:t187=*188=f20 png_free_ptr:t189=*190=f19 png_struct_def:T171=s488jmpbuf:99,0,192;error_fn:173,192,32;\ warning_fn:173,224,32;error_ptr:20,256,32;write_data_fn:175,288,32;\ read_data_fn:175,320,32;read_user_transform_fn:185,352,32;\ write_user_transform_fn:185,384,32;io_ptr:20,416,32;\ mode:5,448,32;flags:5,480,32;transformations:5,512,32;\ zstream:85,544,448;zbuf:132,992,32;zbuf_size:4,1024,32;\ zlib_level:1,1056,32;zlib_method:1,1088,32;zlib_window_bits:1,1120,32;\ zlib_mem_level:1,1152,32;zlib_strategy:1,1184,32;\ width:5,1216,32;height:5,1248,32;num_rows:5,1280,32;\ usr_width:5,1312,32;rowbytes:5,1344,32;irowbytes:5,1376,32;\ iwidth:5,1408,32;row_number:5,1440,32;prev_row:132,1472,32;\ row_buf:132,1504,32;sub_row:132,1536,32;up_row:132,1568,32;\ avg_row:132,1600,32;paeth_row:132,1632,32;row_info:168,1664,96;\ idat_size:5,1760,32;crc:5,1792,32;palette:150,1824,32;\ num_palette:9,1856,16;num_trans:9,1872,16;chunk_name:191=ar1;0;4;11,1888,40;\ compression:11,1928,8;filter:11,1936,8;interlaced:11,1944,8;\ pass:11,1952,8;do_filter:11,1960,8;color_type:11,1968,8;\ bit_depth:11,1976,8;usr_bit_depth:11,1984,8;pixel_depth:11,1992,8;\ channels:11,2000,8;usr_channels:11,2008,8;sig_bytes:11,2016,8;\ filler:9,2032,16;background_gamma_type:11,2048,8;\ background_gamma:12,2080,32;background:152,2112,80;\ background_1:152,2192,80;output_flush_fn:177,2272,32;\ flush_dist:5,2304,32;flush_rows:5,2336,32;gamma_shift:1,2368,32;\ gamma:12,2400,32;screen_gamma:12,2432,32;gamma_table:132,2464,32;\ gamma_from_1:132,2496,32;gamma_to_1:132,2528,32;gamma_16_table:141,2560,32;\ gamma_16_from_1:141,2592,32;gamma_16_to_1:141,2624,32;\ sig_bit:155,2656,40;shift:155,2696,40;trans:132,2752,32;\ trans_values:152,2784,80;read_row_fn:179,2880,32;write_row_fn:179,2912,32;\ info_fn:181,2944,32;row_fn:183,2976,32;end_fn:181,3008,32;\ save_buffer_ptr:132,3040,32;save_buffer:132,3072,32;\ current_buffer_ptr:132,3104,32;current_buffer:132,3136,32;\ push_length:5,3168,32;skip_length:5,3200,32;save_buffer_size:4,3232,32;\ save_buffer_max:4,3264,32;buffer_size:4,3296,32;\ current_buffer_size:4,3328,32;process_mode:1,3360,32;\ cur_palette:1,3392,32;current_text_size:4,3424,32;\ current_text_left:4,3456,32;current_text:26,3488,32;\ current_text_ptr:26,3520,32;palette_lookup:132,3552,32;\ dither_index:132,3584,32;hist:135,3616,32;heuristic_method:11,3648,8;\ num_prev_filters:11,3656,8;prev_filters:132,3680,32;\ filter_weights:135,3712,32;inv_filter_weights:135,3744,32;\ filter_costs:135,3776,32;inv_filter_costs:135,3808,32;\ time_buffer:26,3840,32;rgb_to_gray_status:11,3872,8;\ rgb_to_gray_red_coeff:11,3880,8;rgb_to_gray_green_coeff:11,3888,8;\ rgb_to_gray_blue_coeff:11,3896,8;; png_structpp:t192=*172 _jmpbuf_wrapper:T193=s24jmpbuf:99,0,192;; jmpbuf_wrapper:t193 gdPngErrorHandler:f19 png_ptr:p172 msg:p131 jmpbuf_ptr:194=*193 gdPngReadData:f19 data:p132 length:p4 gdPngWriteData:f19 gdPngFlushData:f19 gdImageCreateFromPng:F68 inFile:p195=*25 in:196=*45 gdImageCreateFromPngCtx:F68 infile:p196 sig:165 png_ptr:172 info_ptr:166 width:5 height:5 rowbytes:5 bit_depth:1 color_type:1 interlace_type:1 num_palette:1 num_trans:1 palette:150 trans_gray_rgb:153 trans_color_rgb:153 trans:132 image_data:132 row_pointers:138 j:1 open:65 transparent:1 palette_allocated:1 firstZero:1 boffset:1 r:r11 g:r11 b:r11 a:11 idx:r11 gdImagePng:F19 outFile:p195 out:196 gdImagePngPtr:F20 gdImagePngCtx:F19 outfile:p196 width:1 height:1 colors:1 mapping:64 trans_values:197=ar1;0;255;11 trans_rgb_value:152 palette:198=ar1;0;255;149 remap:1 tc:1 k:1 highTrans:1 channels:1 row_pointers:199=*132 bo:1 row_pointers:199 gdPngJmpbufStruct:S193 gd_jpeg.c div_t:t28=s8quot:1,0,32;rem:1,32,32;; ldiv_t:t29=s8quot:3,0,32;rem:3,32,32;; __compar_fn_t:t30=*31=f1 comparison_fn_t:t30 qelem:T32=s12q_forw:33=*32,0,32;q_back:33,32,32;\ __jmp_buf_base:T34=s24__bx:3,0,32;__si:3,32,32;\ __jmp_buf:t35=ar1;0;0;34 __kernel_fd_set:t36=s128fds_bits:37=ar1;0;31;5,0,1024;; __kernel_sighandler_t:t38=*39=f19 __kernel_fsid_t:t40=s8__val:41=ar1;0;1;1,0,64;; fd_set:t36 ustat:T42=s20f_tfree:1,0,32;f_tinode:5,32,32;\ f_fname:43=ar1;0;5;2,64,48;f_fpack:43,112,48;; __sighandler_t:t38 sigaction:T44=s16_u:45=u4_sa_handler:38,0,32;\ _sa_sigaction:46=*47=f19,0,32;;,0,32;sa_mask:5,32,32;\ sa_flags:5,64,32;sa_restorer:48=*49=f19,96,32;; sigaltstack:T50=s12ss_sp:20,0,32;ss_flags:1,32,32;\ stack_t:t50 sigval:T51=u4sival_int:1,0,32;sival_ptr:20,0,32;; sigval_t:t51 siginfo:T52=s128si_signo:1,0,32;si_errno:1,32,32;\ si_code:1,64,32;_sifields:53=u116_pad:54=ar1;0;28;1,0,928;\ _kill:55=s8_pid:1,0,32;_uid:9,32,16;;,0,64;\ _timer:56=s8_timer1:4,0,32;_timer2:4,32,32;;,0,64;\ _rt:57=s12_pid:1,0,32;_uid:9,32,16;\ _sigval:51,64,32;;,0,96;_sigchld:58=s20_pid:1,0,32;\ _stime:3,128,32;;,0,160;_sigfault:59=s4_addr:20,0,32;;,0,32;\ _sigpoll:60=s8_band:1,0,32;_fd:1,32,32;;,0,64;;,96,928;; siginfo_t:t52 sigevent:T61=s64sigev_value:51,0,32;sigev_signo:1,32,32;\ sigev_notify:1,64,32;_sigev_un:62=u52_pad:63=ar1;0;12;1,0,416;\ _sigev_thread:64=s8_function:65=*66=f19,0,32;_attribute:20,32,32;;,0,64;;,96,416;; sigevent_t:t61 SignalHandler:t38 __sigjmp_buf_base:T67=s32__jmpbuf:35,0,192;__mask_was_saved:1,192,32;\ sigjmp_buf:t68=ar1;0;0;67 jmp_buf:t35 JSAMPLE:t11 JCOEF:t8 JOCTET:t11 UINT8:t11 UINT16:t9 INT16:t8 INT32:t3 JDIMENSION:t4 boolean:t1 JSAMPROW:t69=*11 JSAMPARRAY:t70=*69 JSAMPIMAGE:t71=*70 JBLOCK:t72=ar1;0;63;8 JBLOCKROW:t73=*72 JBLOCKARRAY:t74=*73 JBLOCKIMAGE:t75=*74 JCOEFPTR:t76=*8 JQUANT_TBL:t77=s132quantval:78=ar1;0;63;9,0,1024;\ sent_table:1,1024,32;; JHUFF_TBL:t79=s280bits:80=ar1;0;16;11,0,136;huffval:81=ar1;0;255;11,136,2048;\ sent_table:1,2208,32;; jpeg_component_info:t82=s84component_id:1,0,32;component_index:1,32,32;\ h_samp_factor:1,64,32;v_samp_factor:1,96,32;\ quant_tbl_no:1,128,32;dc_tbl_no:1,160,32;ac_tbl_no:1,192,32;\ width_in_blocks:4,224,32;height_in_blocks:4,256,32;\ DCT_scaled_size:1,288,32;downsampled_width:4,320,32;\ downsampled_height:4,352,32;component_needed:1,384,32;\ MCU_width:1,416,32;MCU_height:1,448,32;MCU_blocks:1,480,32;\ MCU_sample_width:1,512,32;last_col_width:1,544,32;\ last_row_height:1,576,32;quant_table:83=*77,608,32;\ dct_table:20,640,32;; jpeg_scan_info:t84=s36comps_in_scan:1,0,32;component_index:85=ar1;0;3;1,32,128;\ Ss:1,160,32;Se:1,192,32;Ah:1,224,32;\ Al:1,256,32;; jpeg_saved_marker_ptr:t86=*87=xsjpeg_marker_struct: jpeg_marker_struct:T87=s20next:86,0,32;marker:11,32,8;\ original_length:4,64,32;data_length:4,96,32;\ data:88=*11,128,32;;  :T89=eJCS_UNKNOWN:0,JCS_GRAYSCALE:1,JCS_RGB:2,\ JCS_YCbCr:3,JCS_CMYK:4,JCS_YCCK:5,; J_COLOR_SPACE:t89  :T90=eJDCT_ISLOW:0,JDCT_IFAST:1,JDCT_FLOAT:2,; J_DCT_METHOD:t90  :T91=eJDITHER_NONE:0,JDITHER_ORDERED:1,JDITHER_FS:2,; J_DITHER_MODE:t91 jpeg_common_struct:T92=s24err:93=*94=xsjpeg_error_mgr:,0,32;\ mem:95=*96=xsjpeg_memory_mgr:,32,32;progress:97=*98=xsjpeg_progress_mgr:,64,32;\ client_data:20,96,32;is_decompressor:1,128,32;\ global_state:1,160,32;; j_common_ptr:t99=*92 j_compress_ptr:t100=*101=xsjpeg_compress_struct: j_decompress_ptr:t102=*103=xsjpeg_decompress_struct: jpeg_compress_struct:T101=s372err:93,0,32;mem:95,32,32;\ progress:97,64,32;client_data:20,96,32;is_decompressor:1,128,32;\ global_state:1,160,32;dest:104=*105=xsjpeg_destination_mgr:,192,32;\ image_width:4,224,32;image_height:4,256,32;input_components:1,288,32;\ in_color_space:89,320,32;input_gamma:13,352,64;\ data_precision:1,416,32;num_components:1,448,32;\ jpeg_color_space:89,480,32;comp_info:106=*82,512,32;\ quant_tbl_ptrs:107=ar1;0;3;83,544,128;dc_huff_tbl_ptrs:108=ar1;0;3;109=*79,672,128;\ ac_huff_tbl_ptrs:108,800,128;arith_dc_L:110=ar1;0;15;11,928,128;\ arith_dc_U:110,1056,128;arith_ac_K:110,1184,128;num_scans:1,1312,32;\ scan_info:111=*84,1344,32;raw_data_in:1,1376,32;\ arith_code:1,1408,32;optimize_coding:1,1440,32;\ CCIR601_sampling:1,1472,32;smoothing_factor:1,1504,32;\ dct_method:90,1536,32;restart_interval:4,1568,32;\ restart_in_rows:1,1600,32;write_JFIF_header:1,1632,32;\ JFIF_major_version:11,1664,8;JFIF_minor_version:11,1672,8;\ density_unit:11,1680,8;X_density:9,1696,16;Y_density:9,1712,16;\ write_Adobe_marker:1,1728,32;next_scanline:4,1760,32;\ progressive_mode:1,1792,32;max_h_samp_factor:1,1824,32;\ max_v_samp_factor:1,1856,32;total_iMCU_rows:4,1888,32;\ comps_in_scan:1,1920,32;cur_comp_info:112=ar1;0;3;106,1952,128;\ MCUs_per_row:4,2080,32;MCU_rows_in_scan:4,2112,32;\ blocks_in_MCU:1,2144,32;MCU_membership:113=ar1;0;9;1,2176,320;\ Ss:1,2496,32;Se:1,2528,32;Ah:1,2560,32;\ Al:1,2592,32;master:114=*115=xsjpeg_comp_master:,2624,32;\ main:116=*117=xsjpeg_c_main_controller:,2656,32;prep:118=*119=xsjpeg_c_prep_controller:,2688,32;\ coef:120=*121=xsjpeg_c_coef_controller:,2720,32;marker:122=*123=xsjpeg_marker_writer:,2752,32;\ cconvert:124=*125=xsjpeg_color_converter:,2784,32;downsample:126=*127=xsjpeg_downsampler:,2816,32;\ fdct:128=*129=xsjpeg_forward_dct:,2848,32;entropy:130=*131=xsjpeg_entropy_encoder:,2880,32;\ script_space:132=*84,2912,32;script_space_size:1,2944,32;; jpeg_decompress_struct:T103=s464err:93,0,32;mem:95,32,32;\ global_state:1,160,32;src:133=*134=xsjpeg_source_mgr:,192,32;\ image_width:4,224,32;image_height:4,256,32;num_components:1,288,32;\ jpeg_color_space:89,320,32;out_color_space:89,352,32;\ scale_num:4,384,32;scale_denom:4,416,32;output_gamma:13,448,64;\ buffered_image:1,512,32;raw_data_out:1,544,32;\ dct_method:90,576,32;do_fancy_upsampling:1,608,32;\ do_block_smoothing:1,640,32;quantize_colors:1,672,32;\ dither_mode:91,704,32;two_pass_quantize:1,736,32;\ desired_number_of_colors:1,768,32;enable_1pass_quant:1,800,32;\ enable_external_quant:1,832,32;enable_2pass_quant:1,864,32;\ output_width:4,896,32;output_height:4,928,32;\ out_color_components:1,960,32;output_components:1,992,32;\ rec_outbuf_height:1,1024,32;actual_number_of_colors:1,1056,32;\ colormap:70,1088,32;output_scanline:4,1120,32;input_scan_number:1,1152,32;\ input_iMCU_row:4,1184,32;output_scan_number:1,1216,32;\ output_iMCU_row:4,1248,32;coef_bits:135=*136=ar1;0;63;1,1280,32;\ quant_tbl_ptrs:107,1312,128;dc_huff_tbl_ptrs:108,1440,128;\ ac_huff_tbl_ptrs:108,1568,128;data_precision:1,1696,32;\ comp_info:106,1728,32;progressive_mode:1,1760,32;\ arith_code:1,1792,32;arith_dc_L:110,1824,128;arith_dc_U:110,1952,128;\ arith_ac_K:110,2080,128;restart_interval:4,2208,32;\ saw_JFIF_marker:1,2240,32;JFIF_major_version:11,2272,8;\ JFIF_minor_version:11,2280,8;density_unit:11,2288,8;\ X_density:9,2304,16;Y_density:9,2320,16;saw_Adobe_marker:1,2336,32;\ Adobe_transform:11,2368,8;CCIR601_sampling:1,2400,32;\ marker_list:86,2432,32;max_h_samp_factor:1,2464,32;\ max_v_samp_factor:1,2496,32;min_DCT_scaled_size:1,2528,32;\ total_iMCU_rows:4,2560,32;sample_range_limit:69,2592,32;\ comps_in_scan:1,2624,32;cur_comp_info:112,2656,128;\ MCUs_per_row:4,2784,32;MCU_rows_in_scan:4,2816,32;\ blocks_in_MCU:1,2848,32;MCU_membership:113,2880,320;\ Ss:1,3200,32;Se:1,3232,32;Ah:1,3264,32;\ Al:1,3296,32;unread_marker:1,3328,32;master:137=*138=xsjpeg_decomp_master:,3360,32;\ main:139=*140=xsjpeg_d_main_controller:,3392,32;coef:141=*142=xsjpeg_d_coef_controller:,3424,32;\ post:143=*144=xsjpeg_d_post_controller:,3456,32;inputctl:145=*146=xsjpeg_input_controller:,3488,32;\ marker:147=*148=xsjpeg_marker_reader:,3520,32;entropy:149=*150=xsjpeg_entropy_decoder:,3552,32;\ idct:151=*152=xsjpeg_inverse_dct:,3584,32;upsample:153=*154=xsjpeg_upsampler:,3616,32;\ cconvert:155=*156=xsjpeg_color_deconverter:,3648,32;cquantize:157=*158=xsjpeg_color_quantizer:,3680,32;; jpeg_error_mgr:T94=s132error_exit:159=*160=f19,0,32;emit_message:161=*162=f19,32,32;\ output_message:159,64,32;format_message:163=*164=f19,96,32;\ reset_error_mgr:159,128,32;msg_code:1,160,32;msg_parm:165=u80i:166=ar1;0;7;1,0,256;\ s:167=ar1;0;79;2,0,640;;,192,640;trace_level:1,832,32;\ num_warnings:3,864,32;jpeg_message_table:168=*169=*2,896,32;\ last_jpeg_message:1,928,32;addon_message_table:168,960,32;\ first_addon_message:1,992,32;last_addon_message:1,1024,32;; jpeg_progress_mgr:T98=s20progress_monitor:159,0,32;pass_counter:3,32,32;\ pass_limit:3,64,32;completed_passes:1,96,32;\ total_passes:1,128,32;; jpeg_destination_mgr:T105=s20next_output_byte:88,0,32;\ free_in_buffer:4,32,32;init_destination:170=*171=f19,64,32;\ empty_output_buffer:172=*173=f1,96,32;term_destination:170,128,32;; jpeg_source_mgr:T134=s28next_input_byte:174=*11,0,32;bytes_in_buffer:4,32,32;\ init_source:175=*176=f19,64,32;fill_input_buffer:177=*178=f1,96,32;\ skip_input_data:179=*180=f19,128,32;resync_to_restart:181=*182=f1,160,32;\ term_source:175,192,32;; jvirt_sarray_ptr:t183=*184=xsjvirt_sarray_control: jvirt_barray_ptr:t185=*186=xsjvirt_barray_control: jpeg_memory_mgr:T96=s52alloc_small:187=*188=f20,0,32;\ alloc_large:187,32,32;alloc_sarray:189=*190=f70,64,32;\ alloc_barray:191=*192=f74,96,32;request_virt_sarray:193=*194=f183,128,32;\ request_virt_barray:195=*196=f185,160,32;realize_virt_arrays:159,192,32;\ access_virt_sarray:197=*198=f70,224,32;access_virt_barray:199=*200=f74,256,32;\ free_pool:161,288,32;self_destruct:159,320,32;max_memory_to_use:3,352,32;\ max_alloc_chunk:3,384,32;; jpeg_marker_parser_method:t177  :T201=eJMSG_NOMESSAGE:0,JERR_ARITH_NOTIMPL:1,JERR_BAD_ALIGN_TYPE:2,\ JERR_BAD_ALLOC_CHUNK:3,JERR_BAD_BUFFER_MODE:4,JERR_BAD_COMPONENT_ID:5,\ JERR_BAD_DCT_COEF:6,JERR_BAD_DCTSIZE:7,JERR_BAD_HUFF_TABLE:8,\ JERR_BAD_IN_COLORSPACE:9,JERR_BAD_J_COLORSPACE:10,\ JERR_BAD_LENGTH:11,JERR_BAD_LIB_VERSION:12,JERR_BAD_MCU_SIZE:13,\ JERR_BAD_POOL_ID:14,JERR_BAD_PRECISION:15,JERR_BAD_PROGRESSION:16,\ JERR_BAD_PROG_SCRIPT:17,JERR_BAD_SAMPLING:18,JERR_BAD_SCAN_SCRIPT:19,\ JERR_BAD_STATE:20,JERR_BAD_STRUCT_SIZE:21,JERR_BAD_VIRTUAL_ACCESS:22,\ JERR_BUFFER_SIZE:23,JERR_CANT_SUSPEND:24,JERR_CCIR601_NOTIMPL:25,\ JERR_COMPONENT_COUNT:26,JERR_CONVERSION_NOTIMPL:27,\ JERR_DAC_INDEX:28,JERR_DAC_VALUE:29,JERR_DHT_INDEX:30,\ JERR_DQT_INDEX:31,JERR_EMPTY_IMAGE:32,JERR_EMS_READ:33,\ JERR_EMS_WRITE:34,JERR_EOI_EXPECTED:35,JERR_FILE_READ:36,\ JERR_FILE_WRITE:37,JERR_FRACT_SAMPLE_NOTIMPL:38,JERR_HUFF_CLEN_OVERFLOW:39,\ JERR_HUFF_MISSING_CODE:40,JERR_IMAGE_TOO_BIG:41,JERR_INPUT_EMPTY:42,\ JERR_INPUT_EOF:43,JERR_MISMATCHED_QUANT_TABLE:44,\ JERR_MISSING_DATA:45,JERR_MODE_CHANGE:46,JERR_NOTIMPL:47,\ JERR_NOT_COMPILED:48,JERR_NO_BACKING_STORE:49,JERR_NO_HUFF_TABLE:50,\ JERR_NO_IMAGE:51,JERR_NO_QUANT_TABLE:52,JERR_NO_SOI:53,\ JERR_OUT_OF_MEMORY:54,JERR_QUANT_COMPONENTS:55,JERR_QUANT_FEW_COLORS:56,\ JERR_QUANT_MANY_COLORS:57,JERR_SOF_DUPLICATE:58,JERR_SOF_NO_SOS:59,\ JERR_SOF_UNSUPPORTED:60,JERR_SOI_DUPLICATE:61,JERR_SOS_NO_SOF:62,\ JERR_TFILE_CREATE:63,JERR_TFILE_READ:64,JERR_TFILE_SEEK:65,\ JERR_TFILE_WRITE:66,JERR_TOO_LITTLE_DATA:67,JERR_UNKNOWN_MARKER:68,\ JERR_VIRTUAL_BUG:69,JERR_WIDTH_OVERFLOW:70,JERR_XMS_READ:71,\ JERR_XMS_WRITE:72,JMSG_COPYRIGHT:73,JMSG_VERSION:74,\ JTRC_16BIT_TABLES:75,JTRC_ADOBE:76,JTRC_APP0:77,\ JTRC_APP14:78,JTRC_DAC:79,JTRC_DHT:80,\ JTRC_DQT:81,JTRC_DRI:82,JTRC_EMS_CLOSE:83,\ JTRC_EMS_OPEN:84,JTRC_EOI:85,JTRC_HUFFBITS:86,\ JTRC_JFIF:87,JTRC_JFIF_BADTHUMBNAILSIZE:88,JTRC_JFIF_EXTENSION:89,\ JTRC_JFIF_THUMBNAIL:90,JTRC_MISC_MARKER:91,JTRC_PARMLESS_MARKER:92,\ JTRC_QUANTVALS:93,JTRC_QUANT_3_NCOLORS:94,JTRC_QUANT_NCOLORS:95,\ JTRC_QUANT_SELECTED:96,JTRC_RECOVERY_ACTION:97,JTRC_RST:98,\ JTRC_SMOOTH_NOTIMPL:99,JTRC_SOF:100,JTRC_SOF_COMPONENT:101,\ JTRC_SOI:102,JTRC_SOS:103,JTRC_SOS_COMPONENT:104,\ JTRC_SOS_PARAMS:105,JTRC_TFILE_CLOSE:106,JTRC_TFILE_OPEN:107,\ JTRC_THUMB_JPEG:108,JTRC_THUMB_PALETTE:109,JTRC_THUMB_RGB:110,\ JTRC_UNKNOWN_IDS:111,JTRC_XMS_CLOSE:112,JTRC_XMS_OPEN:113,\ JWRN_ADOBE_XFORM:114,JWRN_BOGUS_PROGRESSION:115,JWRN_EXTRANEOUS_DATA:116,\ JWRN_HIT_MARKER:117,JWRN_HUFF_BAD_CODE:118,JWRN_JFIF_MAJOR:119,\ JWRN_JPEG_EOF:120,JWRN_MUST_RESYNC:121,JWRN_NOT_SEQUENTIAL:122,\ JWRN_TOO_MUCH_DATA:123,JMSG_LASTMSGCODE:124,; J_MESSAGE_CODE:t201 gdIOCtx:T202=s28getC:203=*204=f1,0,32;getBuf:205=*206=f1,32,32;\ putC:207=*208=f19,64,32;putBuf:209=*210=f1,96,32;\ seek:211=*212=f1,128,32;tell:213=*214=f3,160,32;\ free:215=*216=f19,192,32;; gdIOCtx:t202 gdIOCtxPtr:t217=*202 gdImageStruct:T218=s7240pixels:219=*220=*11,0,32;sx:1,32,32;\ sy:1,64,32;colorsTotal:1,96,32;red:221=ar1;0;255;1,128,8192;\ green:221,8320,8192;blue:221,16512,8192;open:221,24704,8192;\ transparent:1,32896,32;polyInts:222=*1,32928,32;polyAllocated:1,32960,32;\ brush:223=*218,32992,32;tile:223,33024,32;brushColorMap:221,33056,8192;\ tileColorMap:221,41248,8192;styleLength:1,49440,32;stylePos:1,49472,32;\ style:222,49504,32;interlace:1,49536,32;thick:1,49568,32;\ alpha:221,49600,8192;trueColor:1,57792,32;tpixels:224=*222,57824,32;\ gdImage:t218 gdImagePtr:t225=*218 gdFont:t226=s20nchars:1,0,32;offset:1,32,32;\ gdFontPtr:t227=*226 gdSource:t228=s8source:229=*230=f1,0,32;context:20,32,32;; gdSourcePtr:t231=*228 gdPoint:t232=s8x:1,0,32;y:1,32,32;; gdPointPtr:t233=*232 gdSink:t234=s8sink:235=*236=f1,0,32;context:20,32,32;; gdSinkPtr:t237=*234 GD_JPEG_VERSION:S169 _jmpbuf_wrapper:T238=s24jmpbuf:35,0,192;; jmpbuf_wrapper:t238 fatal_jpeg_error:f19 cinfo:p99 jmpbufw:239=*238 gdImageJpeg:F19 im:p225 outFile:p240=*25 quality:p1 out:241=*202 gdImageJpegPtr:F20 size:p222 out:241 gdImageJpegCtx:F19 outfile:p241 cinfo:101 jerr:94 jidx:1 row:69 rowptr:242=ar1;0;0;69 jmpbufw:238 nlines:4 comment:243=ar1;0;254;2 val:1 idx:1 gdImageCreateFromJpeg:F225 inFile:p240 im:225 in:241 gdImageCreateFromJpegCtx:F225 infile:p241 cinfo:103 rowptr:244=ar1;0;0;69 retval:1 nrows:4 safeboolean:t1 my_source_mgr:t245=s40pub:134,0,224;infile:241,224,32;\ buffer:220,256,32;start_of_file:1,288,32;; my_src_ptr:t246=*245 init_source:F19 cinfo:p102 src:246 fill_input_buffer:F1 nbytes:4 skip_input_data:F19 num_bytes:p3 term_source:F19 jpeg_gdIOCtx_src:F19 my_destination_mgr:t247=s28pub:105,0,160;outfile:241,160,32;\ buffer:220,192,32;; my_dest_ptr:t248=*247 init_destination:F19 cinfo:p100 dest:248 empty_output_buffer:F1 term_destination:F19 datacount:4 jpeg_gdIOCtx_dest:F19 gdxpm.c gdIOCtx:T34=s28getC:35=*36=f1,0,32;getBuf:37=*38=f1,32,32;\ putC:39=*40=f19,64,32;putBuf:41=*42=f1,96,32;\ seek:43=*44=f1,128,32;tell:45=*46=f3,160,32;\ free:47=*48=f19,192,32;; gdIOCtx:t34 gdIOCtxPtr:t49=*34 gdImageStruct:T50=s7240pixels:51=*52=*11,0,32;sx:1,32,32;\ sy:1,64,32;colorsTotal:1,96,32;red:53=ar1;0;255;1,128,8192;\ green:53,8320,8192;blue:53,16512,8192;open:53,24704,8192;\ transparent:1,32896,32;polyInts:54=*1,32928,32;polyAllocated:1,32960,32;\ brush:55=*50,32992,32;tile:55,33024,32;brushColorMap:53,33056,8192;\ tileColorMap:53,41248,8192;styleLength:1,49440,32;stylePos:1,49472,32;\ style:54,49504,32;interlace:1,49536,32;thick:1,49568,32;\ alpha:53,49600,8192;trueColor:1,57792,32;tpixels:56=*54,57824,32;\ gdImage:t50 gdImagePtr:t57=*50 gdFont:t58=s20nchars:1,0,32;offset:1,32,32;\ gdFontPtr:t59=*58 gdSource:t60=s8source:61=*62=f1,0,32;context:20,32,32;; gdSourcePtr:t63=*60 gdPoint:t64=s8x:1,0,32;y:1,32,32;; gdPointPtr:t65=*64 gdSink:t66=s8sink:67=*68=f1,0,32;context:20,32,32;; gdSinkPtr:t69=*66 gdImageCreateFromXpm:F57 filename:p26 gdfontt.c gdIOCtx:T28=s28getC:29=*30=f1,0,32;getBuf:31=*32=f1,32,32;\ putC:33=*34=f19,64,32;putBuf:35=*36=f1,96,32;\ seek:37=*38=f1,128,32;tell:39=*40=f3,160,32;\ free:41=*42=f19,192,32;; gdIOCtx:t28 gdIOCtxPtr:t43=*28 gdImageStruct:T44=s7240pixels:45=*46=*11,0,32;sx:1,32,32;\ sy:1,64,32;colorsTotal:1,96,32;red:47=ar1;0;255;1,128,8192;\ green:47,8320,8192;blue:47,16512,8192;open:47,24704,8192;\ transparent:1,32896,32;polyInts:48=*1,32928,32;polyAllocated:1,32960,32;\ brush:49=*44,32992,32;tile:49,33024,32;brushColorMap:47,33056,8192;\ tileColorMap:47,41248,8192;styleLength:1,49440,32;stylePos:1,49472,32;\ style:48,49504,32;interlace:1,49536,32;thick:1,49568,32;\ alpha:47,49600,8192;trueColor:1,57792,32;tpixels:50=*48,57824,32;\ gdImage:t44 gdImagePtr:t51=*44 gdFont:t52=s20nchars:1,0,32;offset:1,32,32;\ gdFontPtr:t53=*52 gdSource:t54=s8source:55=*56=f1,0,32;context:20,32,32;; gdSourcePtr:t57=*54 gdPoint:t58=s8x:1,0,32;y:1,32,32;; gdPointPtr:t59=*58 gdSink:t60=s8sink:61=*62=f1,0,32;context:20,32,32;; gdSinkPtr:t63=*60 gdFontTinyData:G64=ar1;0;-1;2 gdFontTinyRep:G52 gdFontTiny:G53 gdfonts.c gdFontSmallData:G64=ar1;0;-1;2 gdFontSmallRep:G52 gdFontSmall:G53 gdfontmb.c gdFontMediumBoldData:G64=ar1;0;-1;2 gdFontMediumBoldRep:G52 gdFontMediumBold:G53 gdfontl.c gdFontLargeData:G64=ar1;0;-1;2 gdFontLargeRep:G52 gdFontLarge:G53 gdfontg.c gdFontGiantData:G64=ar1;0;-1;2 gdFontGiantRep:G52 gdFontGiant:G53 gdtables.c gdCosT:G20=ar1;0;-1;1 gdSinT:G21=ar1;0;-1;1 gdft.c __convert_long_double:T34=u16__convert_long_double_i:35=ar1;0;3;4,0,128;\ ieee754_double:T36=u8d:13,0,64;ieee:37=s8mantissa1:4,0,32;\ ieee_nan:38=s8mantissa1:4,0,32;mantissa0:4,32,19;\ i387_float:T39=u4f:12,0,32;i387:40=s4mantissa:4,0,23;\ i387_nan:41=s4mantissa:4,0,22;quiet_nan:4,22,1;\ ieee854_double:T42=u12d:14,0,96;ieee:43=s12mantissa1:4,0,32;\ empty:4,80,16;;,0,96;ieee_nan:44=s12mantissa1:4,0,32;\ __u_char:t11 __u_short:t9 __u_int:t4 __u_long:t5 __quad:t81=s8val:82=ar1;0;1;3,0,64;; __u_quad:t83=s8val:84=ar1;0;1;5,0,64;; __dev_t:t9 __gid_t:t9 __uid_t:t9 __mode_t:t9 __daddr_t:t3 __off_t:t3 __loff_t:t6 __ino_t:t5 __nlink_t:t9 __time_t:t3 __pid_t:t1 __ssize_t:t1 __fsid_t:t81 __caddr_t:t26 __swblk_t:t3 __fd_set:T85=s32fds_bits:86=ar1;0;7;5,0,256;; __fd_set:t85  :T87=e_PC_LINK_MAX:0,_PC_MAX_CANON:1,_PC_MAX_INPUT:2,\ _PC_NAME_MAX:3,_PC_PATH_MAX:4,_PC_PIPE_BUF:5,\ _PC_CHOWN_RESTRICTED:6,_PC_NO_TRUNC:7,_PC_VDISABLE:8,\ _PC_ASYNC_IO:9,_PC_PRIO_IO:10,_PC_SYNC_IO:11,;  :T88=e_SC_ARG_MAX:0,_SC_CHILD_MAX:1,_SC_CLK_TCK:2,\ _SC_NGROUPS_MAX:3,_SC_OPEN_MAX:4,_SC_STREAM_MAX:5,\ _SC_TZNAME_MAX:6,_SC_JOB_CONTROL:7,_SC_SAVED_IDS:8,\ _SC_VERSION:9,_SC_PAGESIZE:10,_SC_BC_BASE_MAX:11,\ _SC_BC_DIM_MAX:12,_SC_BC_SCALE_MAX:13,_SC_BC_STRING_MAX:14,\ _SC_COLL_WEIGHTS_MAX:15,_SC_EQUIV_CLASS_MAX:16,_SC_EXPR_NEST_MAX:17,\ _SC_LINE_MAX:18,_SC_RE_DUP_MAX:19,_SC_2_VERSION:20,\ _SC_2_C_BIND:21,_SC_2_C_DEV:22,_SC_2_FORT_DEV:23,\ _SC_2_FORT_RUN:24,_SC_2_SW_DEV:25,_SC_2_LOCALEDEF:26,\ _SC_AIO_LISTIO_MAX:27,_SC_AIO_MAX:28,_SC_AIO_PRIO_DELTA_MAX:29,\ _SC_DELAYTIMER_MAX:30,_SC_MQ_OPEN_MAX:31,_SC_MQ_PRIO_MAX:32,\ _SC_RTSIG_MAX:33,_SC_SEM_NSEMS_MAX:34,_SC_SEM_VALUE_MAX:35,\ _SC_SIGQUEUE_MAX:36,_SC_TIMER_MAX:37,_SC_ASYNCHRONOUS_IO:38,\ _SC_FSYNC:39,_SC_MAPPED_FILES:40,_SC_MEMLOCK:41,\ _SC_MEMLOCK_RANGE:42,_SC_MEMORY_PROTECTION:43,_SC_MESSAGE_PASSING:44,\ _SC_PRIORITIZED_IO:45,_SC_PRIORITY_SCHEDULING:46,\ _SC_REALTIME_SIGNALS:47,_SC_SEMAPHORES:48,_SC_SHARED_MEMORY_OBJECTS:49,\ _SC_SYNCHRONIZED_IO:50,_SC_TIMERS:51,;  :T89=e_CS_PATH:0,; gdImageStringTTF:F26 brect:p65 fg:p1 fontlist:p26 ptsize:p13 angle:p13 string:p26 wint_t:t4 mstats:T98=s20bytes_total:4,0,32;chunks_used:4,32,32;\ bytes_used:4,64,32;chunks_free:4,96,32;bytes_free:4,128,32;; mallinfo:T99=s40arena:1,0,32;ordblks:1,32,32;\ smblks:1,64,32;hblks:1,96,32;hblkhd:1,128,32;\ usmblks:1,160,32;fsmblks:1,192,32;uordblks:1,224,32;\ fordblks:1,256,32;keepcost:1,288,32;; gdCacheTestFn_t:t100=*101=f1 gdCacheFetchFn_t:t102=*103=f20 gdCacheReleaseFn_t:t104=*105=f19 gdCache_element_t:t106=xsgdCache_element_s: gdCache_element_s:T106=s8next:107=*106,0,32;userdata:20,32,32;; gdCache_head_t:t108=xsgdCache_head_s: gdCache_head_s:T108=s24mru:107,0,32;size:1,32,32;\ error:26,64,32;gdCacheTest:100,96,32;gdCacheFetch:102,128,32;\ gdCacheRelease:104,160,32;; FT_Int16:t8 FT_UInt16:t9 FT_Int32:t1 FT_UInt32:t4  :T109=eFT_Err_Ok:0,FT_Err_Cannot_Open_Resource:1,\ FT_Err_Unknown_File_Format:2,FT_Err_Invalid_File_Format:3,\ FT_Err_Invalid_Version:4,FT_Err_Lower_Module_Version:5,\ FT_Err_Invalid_Argument:6,FT_Err_Unimplemented_Feature:7,\ FT_Err_Invalid_Glyph_Index:16,FT_Err_Invalid_Character_Code:17,\ FT_Err_Invalid_Glyph_Format:18,FT_Err_Cannot_Render_Glyph:19,\ FT_Err_Invalid_Outline:20,FT_Err_Invalid_Composite:21,\ FT_Err_Too_Many_Hints:22,FT_Err_Invalid_Pixel_Size:23,\ FT_Err_Invalid_Handle:32,FT_Err_Invalid_Library_Handle:33,\ FT_Err_Invalid_Driver_Handle:34,FT_Err_Invalid_Face_Handle:35,\ FT_Err_Invalid_Size_Handle:36,FT_Err_Invalid_Slot_Handle:37,\ FT_Err_Invalid_CharMap_Handle:38,FT_Err_Invalid_Cache_Handle:39,\ FT_Err_Invalid_Stream_Handle:40,FT_Err_Too_Many_Drivers:48,\ FT_Err_Too_Many_Extensions:49,FT_Err_Out_Of_Memory:64,\ FT_Err_Unlisted_Object:65,FT_Err_Cannot_Open_Stream:81,\ FT_Err_Invalid_Stream_Seek:82,FT_Err_Invalid_Stream_Skip:83,\ FT_Err_Invalid_Stream_Read:84,FT_Err_Invalid_Stream_Operation:85,\ FT_Err_Invalid_Frame_Operation:86,FT_Err_Nested_Frame_Access:87,\ FT_Err_Invalid_Frame_Read:88,FT_Err_Raster_Uninitialized:96,\ FT_Err_Raster_Corrupted:97,FT_Err_Raster_Overflow:98,\ FT_Err_Raster_Negative_Height:99,FT_Err_Too_Many_Caches:112,\ FT_Err_Max:113,; FT_Memory:t110=*111=xsFT_MemoryRec_: FT_Alloc_Func:t112=*113=f20 FT_Free_Func:t114=*115=f19 FT_Realloc_Func:t116=*117=f20 FT_MemoryRec_:T111=s16user:20,0,32;alloc:112,32,32;\ free:114,64,32;realloc:116,96,32;; FT_StreamDesc_:T118=u4value:3,0,32;pointer:20,0,32;; FT_StreamDesc:t118 FT_Stream:t119=*120=xsFT_StreamRec_: FT_Stream_IO:t121=*122=f5 FT_Stream_Close:t123=*124=f19 FT_StreamRec_:T120=s40base:63,0,32;size:5,32,32;\ pos:5,64,32;descriptor:118,96,32;pathname:118,128,32;\ read:121,160,32;close:123,192,32;memory:110,224,32;\ cursor:63,256,32;limit:63,288,32;; FT_Pos:t3 FT_Vector_:T125=s8x:3,0,32;y:3,32,32;; FT_Vector:t125 FT_Pixel_Mode_:T126=eft_pixel_mode_none:0,ft_pixel_mode_mono:1,\ ft_pixel_mode_grays:2,ft_pixel_mode_pal2:3,ft_pixel_mode_pal4:4,\ ft_pixel_mode_pal8:5,ft_pixel_mode_rgb15:6,ft_pixel_mode_rgb16:7,\ ft_pixel_mode_rgb24:8,ft_pixel_mode_rgb32:9,ft_pixel_mode_max:10,; FT_Pixel_Mode:t126 FT_Palette_Mode_:T127=eft_palette_mode_rgb:0,ft_palette_mode_rgba:1,\ ft_palettte_mode_max:2,; FT_Palette_Mode:t127 FT_Bitmap_:T128=s24rows:1,0,32;width:1,32,32;\ pitch:1,64,32;buffer:63,96,32;num_grays:8,128,16;\ pixel_mode:2,144,8;palette_mode:2,152,8;palette:20,160,32;; FT_Bitmap:t128 FT_Outline_:T129=s20n_contours:8,0,16;n_points:8,16,16;\ points:130=*125,32,32;tags:26,64,32;contours:131=*8,96,32;\ flags:1,128,32;; FT_Outline:t129 FT_Outline_Flags_:T132=eft_outline_none:0,ft_outline_owner:1,\ ft_outline_even_odd_fill:2,ft_outline_reverse_fill:4,\ ft_outline_ignore_dropouts:8,ft_outline_high_precision:256,\ ft_outline_single_pass:512,; FT_Outline_Flags:t132 FT_Outline_MoveTo_Func:t133=*134=f1 FT_Outline_LineTo_Func:t133 FT_Outline_ConicTo_Func:t135=*136=f1 FT_Outline_CubicTo_Func:t137=*138=f1 FT_Outline_Funcs_:T139=s24move_to:133,0,32;line_to:133,32,32;\ conic_to:135,64,32;cubic_to:137,96,32;shift:1,128,32;\ delta:3,160,32;; FT_Outline_Funcs:t139 FT_Glyph_Format_:T140=eft_glyph_format_none:0,ft_glyph_format_composite:1668246896,\ ft_glyph_format_bitmap:1651078259,ft_glyph_format_outline:1869968492,\ ft_glyph_format_plotter:1886154612,; FT_Glyph_Format:t140 FT_Raster:t141=*142=xsFT_RasterRec_: FT_Span_:T143=s6x:8,0,16;len:9,16,16;\ coverage:11,32,8;; FT_Span:t143 FT_Raster_Span_Func:t144=*145=f19 FT_Raster_BitTest_Func:t146=*147=f1 FT_Raster_BitSet_Func:t148=*149=f19  :T150=eft_raster_flag_default:0,ft_raster_flag_aa:1,\ ft_raster_flag_direct:2,; FT_Raster_Flag:t150 FT_Raster_Params_:T151=s32target:152=*128,0,32;source:20,32,32;\ flags:1,64,32;gray_spans:144,96,32;black_spans:144,128,32;\ bit_test:146,160,32;bit_set:148,192,32;user:20,224,32;; FT_Raster_Params:t151 FT_Raster_New_Func:t153=*154=f1 FT_Raster_Done_Func:t155=*156=f19 FT_Raster_Reset_Func:t157=*158=f19 FT_Raster_Set_Mode_Func:t159=*160=f1 FT_Raster_Render_Func:t161=*162=f1 FT_Raster_Funcs_:T163=s24glyph_format:140,0,32;raster_new:153,32,32;\ raster_reset:157,64,32;raster_set_mode:159,96,32;\ raster_render:161,128,32;raster_done:155,160,32;; FT_Raster_Funcs:t163 FT_Bool:t11 FT_FWord:t8 FT_UFWord:t9 FT_Char:t10 FT_Byte:t11 FT_String:t2 FT_Short:t8 FT_UShort:t9 FT_Int:t1 FT_UInt:t4 FT_Long:t3 FT_ULong:t5 FT_F2Dot14:t8 FT_F26Dot6:t3 FT_Fixed:t3 FT_Error:t1 FT_Pointer:t20 FT_UnitVector_:T164=s4x:8,0,16;y:8,16,16;; FT_UnitVector:t164 FT_Matrix_:T165=s16xx:3,0,32;xy:3,32,32;\ yx:3,64,32;yy:3,96,32;; FT_Matrix:t165 FT_BBox_:T166=s16xMin:3,0,32;yMin:3,32,32;\ xMax:3,64,32;yMax:3,96,32;; FT_BBox:t166 FT_ListNode:t167=*168=xsFT_ListNodeRec_: FT_List:t169=*170=xsFT_ListRec_: FT_ListNodeRec_:T168=s12prev:167,0,32;next:167,32,32;\ data:20,64,32;; FT_ListNodeRec:t168 FT_ListRec_:T170=s8head:167,0,32;tail:167,32,32;; FT_ListRec:t170 FT_Glyph_Metrics_:T171=s32width:3,0,32;height:3,32,32;\ horiBearingX:3,64,32;horiBearingY:3,96,32;horiAdvance:3,128,32;\ vertBearingX:3,160,32;vertBearingY:3,192,32;vertAdvance:3,224,32;; FT_Glyph_Metrics:t171 FT_Generic_Finalizer:t104 FT_Generic_:T172=s8data:20,0,32;finalizer:104,32,32;; FT_Generic:t172 FT_Bitmap_Size_:T173=s4height:8,0,16;width:8,16,16;; FT_Bitmap_Size:t173 FT_Library:t174=*175=xsFT_LibraryRec_: FT_Module:t176=*177=xsFT_ModuleRec_: FT_Driver:t178=*179=xsFT_DriverRec_: FT_Renderer:t180=*181=xsFT_RendererRec_: FT_Face:t182=*183=xsFT_FaceRec_: FT_Size:t184=*185=xsFT_SizeRec_: FT_GlyphSlot:t186=*187=xsFT_GlyphSlotRec_: FT_CharMap:t188=*189=xsFT_CharMapRec_: FT_Encoding_:T190=eft_encoding_none:0,ft_encoding_symbol:1937337698,\ ft_encoding_unicode:1970170211,ft_encoding_latin_2:1818326066,ft_encoding_sjis:1936353651,\ ft_encoding_gb2312:1734484000,ft_encoding_big5:1651074869,ft_encoding_wansung:2002873971,\ ft_encoding_johab:1785686113,ft_encoding_adobe_standard:1094995778,\ ft_encoding_adobe_expert:1094992453,ft_encoding_adobe_custom:1094992451,\ ft_encoding_apple_roman:1634889070,; FT_Encoding:t190 FT_CharMapRec_:T189=s12face:182,0,32;encoding:190,32,32;\ platform_id:9,64,16;encoding_id:9,80,16;; FT_CharMapRec:t189 FT_Face_Internal:t191=*192=xsFT_Face_InternalRec_: FT_FaceRec_:T183=s132num_faces:3,0,32;face_index:3,32,32;\ face_flags:3,64,32;style_flags:3,96,32;num_glyphs:3,128,32;\ family_name:193=*2,160,32;style_name:193,192,32;\ num_fixed_sizes:1,224,32;available_sizes:194=*173,256,32;\ num_charmaps:1,288,32;charmaps:195=*188,320,32;\ generic:172,352,64;bbox:166,416,128;units_per_EM:9,544,16;\ ascender:8,560,16;descender:8,576,16;height:8,592,16;\ max_advance_width:8,608,16;max_advance_height:8,624,16;\ underline_position:8,640,16;underline_thickness:8,656,16;\ glyph:186,672,32;size:184,704,32;charmap:188,736,32;\ driver:178,768,32;memory:110,800,32;stream:119,832,32;\ sizes_list:170,864,64;autohint:172,928,64;extensions:20,992,32;\ internal:191,1024,32;; FT_FaceRec:t183 FT_Size_Internal:t196=*197=xsFT_Size_InternalRec_: FT_Size_Metrics_:T198=s28x_ppem:9,0,16;y_ppem:9,16,16;\ x_scale:3,32,32;y_scale:3,64,32;ascender:3,96,32;\ descender:3,128,32;height:3,160,32;max_advance:3,192,32;; FT_Size_Metrics:t198 FT_SizeRec_:T185=s44face:182,0,32;generic:172,32,64;\ metrics:198,96,224;internal:196,320,32;; FT_SizeRec:t185 FT_SubGlyph:t199=xsFT_SubGlyph_: FT_Slot_Internal:t200=*201=xsFT_Slot_InternalRec_: FT_GlyphSlotRec_:T187=s152library:174,0,32;face:182,32,32;\ next:186,64,32;flags:4,96,32;generic:172,128,64;\ metrics:171,192,256;linearHoriAdvance:3,448,32;linearVertAdvance:3,480,32;\ advance:125,512,64;format:140,576,32;bitmap:128,608,192;\ bitmap_left:1,800,32;bitmap_top:1,832,32;outline:129,864,160;\ num_subglyphs:4,1024,32;subglyphs:202=*199,1056,32;\ control_data:20,1088,32;control_len:3,1120,32;other:20,1152,32;\ internal:200,1184,32;; FT_GlyphSlotRec:t187  :T203=eft_open_memory:1,ft_open_stream:2,ft_open_pathname:4,\ ft_open_driver:8,ft_open_params:16,; FT_Open_Flags:t203 FT_Parameter_:T204=s8tag:5,0,32;data:20,32,32;; FT_Parameter:t204 FT_Open_Args_:T205=s32flags:203,0,32;memory_base:206=*11,32,32;\ memory_size:3,64,32;pathname:193,96,32;stream:119,128,32;\ driver:176,160,32;num_params:1,192,32;params:207=*204,224,32;; FT_Open_Args:t205 FT_Render_Mode_:T208=eft_render_mode_normal:0,ft_render_mode_mono:1,; FT_Render_Mode:t208 FT_Kerning_Mode_:T209=eft_kerning_default:0,ft_kerning_unfitted:1,\ ft_kerning_unscaled:2,; FT_Kerning_Mode:t209 FT_Glyph_Class:t210=xsFT_Glyph_Class_: FT_GlyphRec_:T211=s20library:174,0,32;clazz:212=*210,32,32;\ format:140,64,32;advance:125,96,64;; FT_GlyphRec:t211 FT_Glyph:t213=*211 FT_BitmapGlyphRec_:T214=s52root:211,0,160;left:1,160,32;\ top:1,192,32;bitmap:128,224,192;; FT_BitmapGlyphRec:t214 FT_BitmapGlyph:t215=*214 FT_OutlineGlyphRec_:T216=s40root:211,0,160;outline:129,160,160;; FT_OutlineGlyphRec:t216 FT_OutlineGlyph:t217=*216  :T218=eft_glyph_bbox_unscaled:0,ft_glyph_bbox_subpixels:0,\ ft_glyph_bbox_gridfit:1,ft_glyph_bbox_truncate:2,\ ft_glyph_bbox_pixels:3,; font_t:t219=s20fontlist:26,0,32;library:220=*174,32,32;\ face:182,64,32;have_char_map_unicode:11,96,8;\ have_char_map_big5:11,104,8;have_char_map_sjis:11,112,8;\ have_char_map_apple_roman:11,120,8;glyphCache:221=*108,128,32;; fontkey_t:t222=s8fontlist:26,0,32;library:220,32,32;; tweencolor_t:t223=s20pixel:1,0,32;bgcolor:1,32,32;\ fgcolor:1,64,32;im:68,96,32;tweencolor:1,128,32;; tweencolorkey_t:t224=s16pixel:1,0,32;bgcolor:1,32,32;\ fgcolor:1,64,32;im:68,96,32;; gdTcl_UtfToUniChar:f1 str:p26 chPtr:p65 byte:1 n:1 fontTest:f1 element:p20 key:p20 a:225=*219 b:226=*222 fontFetch:f20 error:p227=*26 a:225 b:226 font_found:1 platform:9 encoding:9 fontsearchpath:26 fontpath:26 fontlist:26 fullname:26 name:26 path:26 dir:26 strtok_ptr:26 err:1 found:188 charmap:188 fontRelease:f19 tweenColorTest:f1 a:228=*223 b:229=*224 tweenColorFetch:f20 error:p227 a:228 b:229 pixel:1 npixel:1 bg:1 fg:1 tweenColorRelease:f19 gdft_draw_bitmap:f26 bitmap:p128 pen_x:p1 pen_y:p1 pixel:63 tpixel:65 row:1 col:1 pc:1 tc_elem:228 tc_key:224 tc_cache:V221 gdImageStringFT:F26 bbox:166 glyph_bbox:166 matrix:165 pen:125 delta:125 penf:125 face:182 image:213 slot:186 use_kerning:11 glyph_index:4 previous:4 sin_a:13 cos_a:13 font:225 fontkey:222 next:26 tmpstr:26 render:1 bm:215 fontCache:V221 library:V174 jiscode:1 d1:13 d2:13 gdroundupdown:F1 v1:p3 updown:p1 gdcache.c mstats:T64=s20bytes_total:4,0,32;chunks_used:4,32,32;\ mallinfo:T65=s40arena:1,0,32;ordblks:1,32,32;\ gdCacheTestFn_t:t66=*67=f1 gdCacheFetchFn_t:t68=*69=f20 gdCacheReleaseFn_t:t70=*71=f19 gdCache_element_t:t72=xsgdCache_element_s: gdCache_element_s:T72=s8next:73=*72,0,32;userdata:20,32,32;; gdCache_head_t:t74=xsgdCache_head_s: gdCache_head_s:T74=s24mru:73,0,32;size:1,32,32;\ error:26,64,32;gdCacheTest:66,96,32;gdCacheFetch:68,128,32;\ gdCacheRelease:70,160,32;; gdCacheCreate:F75=*74 gdCacheTest:p66 gdCacheFetch:p68 gdCacheRelease:p70 head:75 gdCacheDelete:F19 head:p75 elem:73 prev:73 gdCacheGet:F20 keydata:p20 prevprev:73 userdata:20 gdkanji.c __gnuc_va_list:t20 va_list:t20 debug:f19 format:p70=*2 error:f19 format:p70 args:20 DetectKanjiCode:f1 str:p52 whatcode:V1 oldcode:1 lang:26 SJIStoJIS:f19 p1:p54 p2:p54 c1:11 c2:r11 adjust:r1 rowOffset:r1 cellOffset:r1 han2zen:f19 daku:1 handaku:1 mtable:71=ar1;0;62;72=ar1;0;1;1 do_convert:f19 to:p52 from:p52 code:p70 jisx0208:1 hankaku:1 do_check_and_conv:f1 tmp:V73=ar1;0;1023;11 kanji:1 any2eucjp:F1 dest:p52 src:p52 dest_max:p4 tmp_dest:V74=ar1;0;1023;11 ret:1 wbmp.c Wbmp_:T34=s16type:1,0,32;width:1,32,32;\ height:1,64,32;bitmap:35=*1,96,32;; Wbmp:t34 gdIOCtx:T36=s28getC:37=*38=f1,0,32;getBuf:39=*40=f1,32,32;\ putC:41=*42=f19,64,32;putBuf:43=*44=f1,96,32;\ seek:45=*46=f1,128,32;tell:47=*48=f3,160,32;\ free:49=*50=f19,192,32;; gdIOCtx:t36 gdIOCtxPtr:t51=*36 gdImageStruct:T52=s7240pixels:53=*54=*11,0,32;sx:1,32,32;\ sy:1,64,32;colorsTotal:1,96,32;red:55=ar1;0;255;1,128,8192;\ green:55,8320,8192;blue:55,16512,8192;open:55,24704,8192;\ transparent:1,32896,32;polyInts:35,32928,32;polyAllocated:1,32960,32;\ brush:56=*52,32992,32;tile:56,33024,32;brushColorMap:55,33056,8192;\ tileColorMap:55,41248,8192;styleLength:1,49440,32;stylePos:1,49472,32;\ style:35,49504,32;interlace:1,49536,32;thick:1,49568,32;\ alpha:55,49600,8192;trueColor:1,57792,32;tpixels:57=*35,57824,32;\ gdImage:t52 gdImagePtr:t58=*52 gdFont:t59=s20nchars:1,0,32;offset:1,32,32;\ gdFontPtr:t60=*59 gdSource:t61=s8source:62=*63=f1,0,32;context:20,32,32;; gdSourcePtr:t64=*61 gdPoint:t65=s8x:1,0,32;y:1,32,32;; gdPointPtr:t66=*65 gdSink:t67=s8sink:68=*69=f1,0,32;context:20,32,32;; gdSinkPtr:t70=*67 getmbi:F1 getin:p71=*72=f1 in:p20 mbi:1 putmbi:F19 i:p1 putout:p73=*74=f19 out:p20 cnt:1 accu:1 skipheader:F1 getin:p71 createwbmp:F75=*34 width:p1 height:p1 wbmp:75 readwbmp:F1 return_wbmp:p76=*75 pel:1 pos:1 writewbmp:F1 wbmp:p75 putout:p73 bitpos:1 octet:1 freewbmp:F19 printwbmp:F19 gd_wbmp.c div_t:t64=s8quot:1,0,32;rem:1,32,32;; ldiv_t:t65=s8quot:3,0,32;rem:3,32,32;; __compar_fn_t:t66=*67=f1 comparison_fn_t:t66 qelem:T68=s12q_forw:69=*68,0,32;q_back:69,32,32;\ Wbmp_:T70=s16type:1,0,32;width:1,32,32;\ height:1,64,32;bitmap:48,96,32;; Wbmp:t70 gd_putout:F19 gd_getin:F1 gdImageWBMPCtx:F19 image:p51 out:p71=*28 wbmp:72=*70 gdImageCreateFromWBMPCtx:F51 infile:p71 wbmp:72 im:51 black:1 white:1 gdImageCreateFromWBMP:F51 inFile:p73=*25 in:71 gdImageWBMP:F19 im:p51 outFile:p73 out:71 gdImageWBMPPtr:F20 size:p48 gdhelpers.c gd_strtok_r:F26 s:p26 sep:p26 state:p70=*26 separators:71=ar1;0;255;2 start:26 result:26 gdCalloc:F20 nmemb:p4 size:p4 gdMalloc:F20 gdRealloc:F20 ptr:p20 gdFree:F19 gd_topal.c histcell:t9 histptr:t64=*9 hist1d:t65=ar1;0;7;9 hist2d:t66=*65 hist3d:t67=*66 hist4d:t68=*67 FSERROR:t8 LOCFSERROR:t1 FSERRPTR:t69=*8 my_cquantizer:t70=s32histogram:68,0,32;needs_zeroed:1,32,32;\ fserrors:69,64,32;on_odd_row:1,96,32;error_limiter:48,128,32;\ error_limiter_storage:48,160,32;transparentIsPresent:1,192,32;\ opaqueIsPresent:1,224,32;; my_cquantize_ptr:t71=*70 prescan_quantize:f19 cquantize:p71 histp:r64 histogram:r68 ptr:48 box:t72=s40c0min:1,0,32;c0max:1,32,32;\ c1min:1,64,32;c1max:1,96,32;c2min:1,128,32;\ c2max:1,160,32;c3min:1,192,32;c3max:1,224,32;\ volume:1,256,32;colorcount:3,288,32;; boxptr:t73=*72 find_biggest_color_pop:f73 boxlist:p73 numboxes:p1 boxp:r73 i:r1 maxc:r3 which:73 find_biggest_volume:f73 maxv:r1 update_box:f19 boxp:p73 histogram:68 histp:64 c0:1 c1:1 c2:1 c3:1 c0min:1 c0max:1 c1min:1 c1max:1 c2min:1 c2max:1 c3min:1 c3max:1 dist0:1 dist1:1 dist2:1 dist3:1 ccount:3 median_cut:f1 desired_colors:p1 lb:1 cmax:1 b1:r73 b2:r73 compute_color:f19 icolor:p1 count:3 total:3 c0total:3 c1total:3 c2total:3 c3total:3 select_colors:f19 boxlist:73 numboxes:1 find_nearby_colors:f1 minc0:p1 minc1:p1 minc2:p1 minc3:p1 colorlist:p48 numcolors:1 maxc0:1 maxc1:1 maxc2:1 maxc3:1 centerc0:1 centerc1:1 centerc2:1 centerc3:1 ncolors:1 minmaxdist:1 min_dist:1 max_dist:1 tdist:1 mindist:47 find_best_colors:f19 numcolors:p1 bestcolor:p48 ic0:1 ic1:1 ic2:1 ic3:1 icolor:1 bptr:r48 cptr:48 dist3:r1 xx0:1 xx1:1 xx2:1 xx3:r1 inc0:1 inc1:1 inc2:1 inc3:1 bestdist:74=ar1;0;127;1 fill_inverse_cmap:f19 c0:p1 c1:p1 c2:p1 c3:p1 minc0:1 minc1:1 minc2:1 minc3:1 cptr:r48 cachep:r64 colorlist:47 bestcolor:75=ar1;0;127;1 pass2_no_dither:F19 inptr:r48 outptr:46 num_rows:1 pass2_fs_dither:F19 cur0:1 cur1:1 cur2:r1 cur3:1 belowerr0:1 belowerr1:1 belowerr2:1 belowerr3:1 bpreverr0:1 bpreverr1:1 bpreverr2:1 bpreverr3:1 errorptr:69 inptr:48 cachep:64 dir:1 dir4:1 error_limit:48 colormap0:48 colormap1:48 colormap2:48 colormap3:48 pixcode:r1 bnexterr:r1 delta:r1 init_error_limit:f1 table:48 in:1 out:1 zeroHistogram:f19 histogram:p68 gdImageTrueColorToPalette:F19 dither:p1 colorsWanted:p1 cquantize:71 arraysize:4 out:76=*25 im2:51 mt:1 mtIndex:1 mo:1 moIndex:1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1  GCC: (GNU) 2.7.2.1           01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01             01.01    .symtab .strtab .shstrtab .hash .dynsym .dynstr .rel.text .rel.data .rel.rodata .text .rodata .data .got .dynamic .bss .stab .stabstr .comment .note                                                    ”   ”   @               !         Ô  Ô  p              )         D  D  ²                 1   	      ø'  ø'                 ;   	      C  C  P      	         E   	      hC  hC                 Q         pC  pC  —                W         K K W                 _         `h `X ¼ã                e         L <                  j         (L (< P                s         xL x< (                 x              x< ¨İ              ~                 à                 ‡              Àú à                           à   ü à                               €ş –                                8      {         	              H Æ                                                                                                                                                              	              
+-                                                                                                                                           ñÿ   €H  Ò       TJ  n       ÄK  J    %   @Y  -    7   p[  q    H   4f  ı     R   Àj  .     [            ñÿc   xœ  ¾     u    Ÿ  L     ‚   lŸ  Á                 ñÿ–   È   :    ¤   £  ¦     ·   ¬£  ~     Å   Ø®  ®     Ó   ˆ¯  ñ    ß            ñÿç            ñÿò   ¸º  R     ı   ü»  :       P»  )       |»  ~     )  »  B     7  0º  †     C  º       O  °¹  b     `  (¾       l  €½  ¦     }  8¼  ’     Š  Ì¼  ±     ˜           ñÿ¥  „¿  J     ±  4¿  O     ½  ¿  .     È  Ô¾  .     Ó  À  &     Ü  Ğ¿  2     å  À¾       ó           ñÿû           ñÿ  ¬Á  :       HÁ  a     !  8Â        -  èÁ  M     8  4Á       D           ñÿM  XÂ  z     _  ÔÂ  $     m  øÂ  $     |  Ã       ‹  xL                  ñÿ§  üM      ·  Tİ  ¥     È           ñÿĞ           ñÿÚ           ñÿä           ñÿï           ñÿù           ñÿ           ñÿ           ñÿ  pì  Ë    (  <î  6     1  tî      ;  øñ  7     G  0ò  V     V  ˆò  §    f  0ô       x  L       „  Dô  ¥    •  ”L       ¢  ˜L       ­           ñÿ·           ñÿÁ  0
+-      Ç  8
+- L     Í  L     	 Ø  „
+- ö    è  | ˜     ò   ­    ú  Ä z      œL         @ )      œP       *           ñÿ1           ñÿ;           ñÿG           ñÿR  # (    c  ¸$ A     z  ü$ =       <% Ñ    ™  - H    ¤  X/     ²  ø2     À   4      Ó   8 +    ä  L: “    ö  dB 1      ˜C m                    (p  ]    )  À´  a     7  lÀ  E     R  8= +    b             i             t  4G  &     ˆ  <P  &                  ¢  À      «  tš       ¼             Ã  0i  ^     Ñ  $k  /     Ü  ÔĞ      ê             û  8è                      Øé  ²     ,  ğj  2     2             J  ,À  >     [  l¶  9     e  S  '     |             Š  (L      ñÿ“                TQ  &     ´             Å  ô! *    Ñ  ì       æ             ÷             ş  n                     @ A     #             )  \G  "    B  K      ñÿI  8     R             ^  0 ]     e  xŞ     	 t             ‹             ‘  Tè      £  ! E     ¹             ¿  €µ  )     Æ  ©  Ğ    â  ¨¶  e     ì             û                                       &  ´ë  b     8             D  Ğé       P  À@     	 _  `Œ  Â     n             €  D ÿ    š             ¥  ôv  µ    ¶             ½  |´  D     È  `µ       Ğ   ”       ä             ô  ¬z      		  ¨¹     	 	             (	  $µ  ;     0	             =	             L	  ˆš  î    Y	  €  ¶     p	  ·  Ë     y	             €	  8F  ü     	  xF     	 –	   ®     	             ³	  $¹  Š     Ã	  „ ²     Î	  DS  W     æ	  ,¤  E     û	  Lë  f     
+-             
+-             &
+-  l]  ”     ?
+-  `h  (   	 N
+-  4g  2     `
+-             i
+-  ¨ ş     s
+-  8  E     ‡
+-             ™
+-             ¦
+-             ­
+-  Lh  á     »
+-             Î
+-  4¸  %     Õ
+-  œT      â
+-  <–       ó
+-  \¸  !     ú
+-  ¤9     	   t     	   d J     $  Øê  q     8             @             N             U  @#      ^  Øm  .     s             ‹             š             °  0   <     º  Ü ë     É             Ï  L¶       Ö  (•      å  h“       ò             
+-                ^  ¥      €O  º     1  P–  „    @             R  œS       e  üã  ;    ~             ‚  <Ğ  <                  “  <Ş  ]     ¢  œU  ¤    ²  €“       Â  °t  R     Ù  üİ  @     å  ƒ  Ö    ú                                                    &             7             >  ´À  ~     I  ä\  …     Y             `  ¨b  Š    r             x  XO  &     Š             —  Œê  J     ¨             ¯  T! @     »  Xj  f     Í  `š       â  ¨9  €   	 ò  x  N   	   i  ^       H¾  v       °¨  U     8             >  xL      ñÿJ             Q  ”      a  |Q      z  È B    “             ™             ª  pC  ‰    ¸             Ì             Ó             á             ÷               ìö  .                              -  ¼~  F    @  Ş  [   	 U             l             ƒ  Ô˜  Œ                 —             «  €¸  ¢     »  ° Y     É  üD  9    à  \#      ê  `     	 ø                             œŞ        H ?    '  l   Y     4  Ü·  )     =  ´ã  E     S             a  $Ã  E     v  ˆs  &    ‡  8  æ     ”  l Â       Ô@     	 ª  	 !    µ             Ç             Ü  $  D    ñ             	  dP  î     #  8ì  5     4             ;  |#      B  à; X    R  té  Z     b  ¬µ  6     l             s                          ‘  xL      ñÿ˜  t¤  <    °  L      ñÿÆ  ği  f     Ö   T      ñÿÛ             ğ             ÿ  hg  á                    ”! ]     '             ,             8             O  Üˆ  „    d  Ø@     	 k  9     	              „  N  F    ›             ¤  ˆ       ­             ¾  À¹  ‡   	 Î   #      ×  ¸  )     à             ó  ŒŞ     	 ÿ  Tk                     u  î    #             8             Q             X  xĞ  Y     f  äµ  h     o  ¼¹     	 {  ¨      …  lÃ  Ï       F     «             ´             ¹              gd.c RGB_to_HWB HWB_Diff HWB_to_RGB gdImageBrushApply gdImageTileApply dashedSet strlen16 gd_gd.c _gdCreateFromFile _gdPutHeader _gdImageGd gd_gd2.c _gd2GetHeader _gd2CreateFromFile _gd2ReadChunk _gd2PutHeader _gdImageGd2 gd_io.c gd_io_dp.c newDynamic dynamicGetchar dynamicPutchar dynamicGetbuf dynamicPutbuf dynamicSeek dynamicTell gdFreeDynamicCtx trimDynamic gdReallocDynamic allocDynamic appendDynamic gd_io_file.c fileGetchar filePutchar fileGetbuf filePutbuf fileTell fileSeek gdFreeFileCtx gd_ss.c gd_io_ss.c sourceGetchar sourceGetbuf sinkPutchar sinkPutbuf gdFreeSsCtx gd_png.c gdPngErrorHandler gdPngReadData gdPngWriteData gdPngFlushData gdPngJmpbufStruct gd_jpeg.c GD_JPEG_VERSION fatal_jpeg_error gdxpm.c gdfontt.c gdfonts.c gdfontmb.c gdfontl.c gdfontg.c gdtables.c gdft.c gdTcl_UtfToUniChar fontTest fontFetch fontRelease tweenColorTest tweenColorFetch tweenColorRelease tc_cache.24 gdft_draw_bitmap fontCache.27 library.28 gdcache.c gdkanji.c debug error whatcode.6 DetectKanjiCode SJIStoJIS han2zen do_convert tmp.15 do_check_and_conv tmp_dest.18 wbmp.c gd_wbmp.c gdhelpers.c gd_topal.c prescan_quantize find_biggest_color_pop find_biggest_volume update_box median_cut compute_color select_colors find_nearby_colors find_best_colors fill_inverse_cmap init_error_limit zeroHistogram longjmp gdImageFill gdImageGd2Ptr gdImageCreateFromPngSource pass2_fs_dither strcpy uncompress gdImageColorClosest gdImageColorAllocate sqrt gd_getin gdImageSaveAlpha printf gdImageString gdImageArc gdImagePngCtx FT_Init_FreeType init_source jpeg_read_scanlines jpeg_gdIOCtx_src lsqrt jpeg_simple_progression gdImagePngToSink gdGetByte gdImageColorDeallocate FT_Load_Glyph _DYNAMIC FT_Done_Face gdImageColorResolve png_get_rowbytes gd_strtok_r gdImageCreateFromXpm png_set_strip_16 getenv gdImageFillToBorder errno skipheader floor gdImageColorClosestAlpha _etext readwbmp _IO_stdout_ getmbi gdFontSmallRep png_create_read_struct qsort fill_input_buffer gdImageCreateFromWBMP fgets gdPutC gdImageCreateFromGd2PartCtx gdGetWord FT_Get_Kerning FT_Get_Char_Index png_set_sig_bytes memcpy jpeg_gdIOCtx_dest _IO_stderr_ term_source gdFontGiantRep gdImagePolygon jpeg_set_defaults gdImageTrueColorToPalette __overflow gdImageCopyMerge malloc gdImageGd2 Putchar gdImageSetThickness png_set_read_fn gdImageCopyMergeGray gdFontLargeRep png_set_packing Putword FT_Get_Glyph png_get_io_ptr _gdGetColors gdImageCreateFromGdCtx gdGetInt fflush gdImageDestroy gdSinT putmbi jpeg_start_decompress gdDPExtractData createwbmp gdImageColorTransparent gdImageCreateFromGd2 term_destination jpeg_destroy png_set_IHDR gdImageGetTrueColorPixel gdFontTinyData gdImageBoundsSafe __setjmp printwbmp gdImageCreateFromGd jpeg_write_marker png_set_tRNS calloc gdImageCharUp FT_Glyph_To_Bitmap gdSeek fileIOCtxPtr gdImageInterlace gdTell gdFontMediumBold gdFontTiny gdCacheCreate empty_output_buffer fprintf png_get_valid strcat gdMalloc gdImageFilledEllipse jpeg_destroy_decompress jpeg_std_error jpeg_CreateDecompress gdImageGd gdImageWBMPCtx fseek gdGetC gdImageSetTile gdCompareInt png_create_write_struct cos gdImageLine gdImageColorExactAlpha gdImageCompare png_get_error_ptr gdImagePaletteCopy gdImageCreateFromJpegCtx sin gdImagePng atan2 gdImageJpegPtr gdImageSetPixel gdImageSetStyle gdImageFilledRectangle gdImageJpeg gdImageCopyResampled strncmp png_write_info png_set_PLTE realloc FT_Set_Char_Size strtok gdNewSSCtx gdImageGetPixel sscanf gdImageDashedLine fread gdImageColorExact png_get_PLTE init_destination strdup gdImageWBMP gdImageStringUp16 gdImageAlphaBlending gdFontLargeData gdFontSmallData gdImageStringUp gdNewFileCtx gdImageCreateFromGd2Part fopen __bss_start memset gdImageSetBrush gdImageColorResolveAlpha gdImageCreateFromWBMPCtx ftell jpeg_read_header gdImageCreate jpeg_start_compress fclose png_write_end jpeg_destroy_compress png_get_IHDR gdImageStringFT __uflow png_set_write_fn gdImageCopyResized gdFontMediumBoldData jpeg_finish_decompress jpeg_resync_to_restart gdAlphaBlend strcmp jpeg_CreateCompress gdNewDynamicCtx gdCacheDelete gdImageCreateTrueColor gdRealloc gdFontTinyRep sprintf FT_Done_Glyph gdImageJpegCtx writewbmp gdImageGdPtr gdPutBuf gdImageCreateFromJpeg png_read_info gdImageCreateFromPng gdImageRectangle _gdPutColors any2eucjp gdFontGiant gdCacheGet FT_Glyph_Get_CBox jpeg_finish_compress gdImageFilledPolygon png_destroy_read_struct gdImageColorAllocateAlpha gdImageStringTTF fwrite gdFree pass2_no_dither skip_input_data gdPutWord access png_check_sig png_write_image _edata gdImageCreateFromGd2Ctx _GLOBAL_OFFSET_TABLE_ gdImageString16 _end png_read_update_info png_read_image gdImageChar png_get_tRNS gdImageWBMPPtr exit FT_New_Face png_create_info_struct gdImageCreateFromXbm gdCosT gdFontMediumBoldRep atoi gdImageColorClosestHWB compress freewbmp jpeg_set_quality gdFontGiantData gdCalloc gdGetBuf FT_Glyph_Transform gdFontSmall gdImageFilledArc strlen gdImageCopy jpeg_write_scanlines png_destroy_write_struct strchr gdImagePngPtr gdPutInt gdFontLarge gd_putout gdImageCreateFromPngCtx gdroundupdown vfprintf free png_read_end 
+\ No newline at end of file
+diff -Naur gd-2.0.1/libtool gd-2.0.1.patched/libtool
+--- gd-2.0.1/libtool	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/libtool	Tue Jul 30 11:36:01 2002
 @@ -0,0 +1,5229 @@
 +#! /bin/sh
 +
@@ -23413,9 +27613,9 @@ diff -Naur gd-1.8.4/libtool gd-1.8.4.patched/libtool
 +# mode:shell-script
 +# sh-indentation:2
 +# End:
-diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patched/ltmain.sh
---- gd-1.8.4/ltmain.sh	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/ltmain.sh	Mon Jul 22 00:02:04 2002
+diff -Naur gd-2.0.1/ltmain.sh gd-2.0.1.patched/ltmain.sh
+--- gd-2.0.1/ltmain.sh	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/ltmain.sh	Tue Jul 30 05:38:52 2002
 @@ -0,0 +1,4946 @@
 +# ltmain.sh - Provide generalized library-building support services.
 +# NOTE: Changing this file will not affect anything until you rerun configure.
@@ -28363,56 +32563,9 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patched/ltmain.sh
 +# mode:shell-script
 +# sh-indentation:2
 +# End:
-diff -Naur gd-1.8.4/mathmake.c gd-1.8.4.patched/mathmake.c
---- gd-1.8.4/mathmake.c	Tue Feb  6 11:44:02 2001
-+++ gd-1.8.4.patched/mathmake.c	Wed Dec 31 16:00:00 1969
-@@ -1,43 +0,0 @@
--#include <stdio.h>
--#include <math.h>
--
--#define scale 1024
--
--int basis[91];
--int cost[360];
--
--main(void) {
--	int i;
--	printf("#define costScale %d\n", scale);
--	printf("int cost[] = {\n  ");
--	for (i=0; (i <= 90); i++) {
--		basis[i] = cos((double)i * .0174532925) * scale;
--	}
--	for (i=0; (i < 90); i++) {
--		printf("%d,\n  ", cost[i] = basis[i]);
--	}
--	for (i=90; (i < 180); i++) {
--		printf("%d,\n  ", cost[i] = -basis[180-i]);
--	}
--	for (i=180; (i < 270); i++) {
--		printf("%d,\n  ", cost[i] = -basis[i-180]);
--	}
--	for (i=270; (i < 359); i++) {
--		printf("%d,\n  ", cost[i] = basis[360-i]);
--	}
--	printf("%d\n", cost[359] = basis[1]);
--	printf("};\n");
--	printf("#define sintScale %d\n", scale);
--	printf("int sint[] = {\n  ");
--	for (i=0; (i<360); i++) {
--		int val;
--		val = cost[(i + 270) % 360];
--		if (i != 359) {
--			printf("%d,\n  ", val);
--		} else {
--			printf("%d\n", val);
--		}
--	}
--	printf("};\n");
--}
--		
-diff -Naur gd-1.8.4/missing gd-1.8.4.patched/missing
---- gd-1.8.4/missing	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/missing	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/missing gd-2.0.1.patched/missing
+--- gd-2.0.1/missing	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/missing	Tue Jul 30 05:29:52 2002
 @@ -0,0 +1,188 @@
 +#! /bin/sh
 +# Common stub for a few missing GNU programs while installing.
@@ -28602,9 +32755,9 @@ diff -Naur gd-1.8.4/missing gd-1.8.4.patched/missing
 +esac
 +
 +exit 0
-diff -Naur gd-1.8.4/mkinstalldirs gd-1.8.4.patched/mkinstalldirs
---- gd-1.8.4/mkinstalldirs	Wed Dec 31 16:00:00 1969
-+++ gd-1.8.4.patched/mkinstalldirs	Sun Jul 21 23:25:42 2002
+diff -Naur gd-2.0.1/mkinstalldirs gd-2.0.1.patched/mkinstalldirs
+--- gd-2.0.1/mkinstalldirs	Wed Dec 31 19:00:00 1969
++++ gd-2.0.1.patched/mkinstalldirs	Tue Jul 30 05:38:47 2002
 @@ -0,0 +1,40 @@
 +#! /bin/sh
 +# mkinstalldirs --- make directory hierarchy
@@ -28612,7 +32765,7 @@ diff -Naur gd-1.8.4/mkinstalldirs gd-1.8.4.patched/mkinstalldirs
 +# Created: 1993-05-16
 +# Public domain
 +
-+# $Id: patch_gd.pl,v 1.4 2002-07-22 07:27:59 lstein Exp $
++# $Id: patch_gd.pl,v 1.5 2002-07-31 02:31:00 lstein Exp $
 +
 +errstatus=0
 +
@@ -28646,2949 +32799,6 @@ diff -Naur gd-1.8.4/mkinstalldirs gd-1.8.4.patched/mkinstalldirs
 +exit $errstatus
 +
 +# mkinstalldirs ends here
-diff -Naur gd-1.8.4/readme.txt gd-1.8.4.patched/readme.txt
---- gd-1.8.4/readme.txt	Tue Feb  6 11:44:03 2001
-+++ gd-1.8.4.patched/readme.txt	Wed Dec 31 16:00:00 1969
-@@ -1,2939 +0,0 @@
--
--                                   gd 1.8.4
--                                       
--A graphics library for fast image creation
--
--Follow this link to the latest version of this document.
--
--     _HEY! READ THIS!_ gd 1.8.4 creates PNG, JPEG and WBMP images, not
--     GIF images. This is a good thing. PNG is a more compact format, and
--     full compression is available. JPEG works well with photographic
--     images, and is still more compatible with the major Web browsers
--     than even PNG is. WBMP is intended for wireless devices (not
--     regular web browsers). Existing code will need modification to call
--     gdImagePng or gdImageJpeg instead of gdImageGif. _Please do not ask
--     us to send you the old GIF version of GD._ Unisys holds a patent on
--     the LZW compression algorithm, which is used in fully compressed
--     GIF images. The best solution is to move to legally unencumbered,
--     well-compressed, modern image formats such as PNG and JPEG as soon
--     as possible.
--     
--     gd 1.8.4 _requires_ that the following libraries also be installed:
--     
--     libpng (see the libpng home page)
--     
--     zlib (see the info-zip home page) zlib
--     
--     jpeg-6b or later, if desired (see the Independent JPEG Group home
--     page)
--     
--     If you want to use the TrueType font support, you must also install
--     the _FreeType 2.x library_, including the header files. See the
--     Freetype Home Page, or SourceForge. No, I cannot explain why that
--     site is down on a particular day, and no, I can't send you a copy.
--     
--     If you want to use the Xpm color bitmap loading support, you must
--     also have the X Window System and the Xpm library installed (Xpm is
--     often included in modern X distributions).
--     
--     Please read the documentation and install the required libraries.
--     Do not send email asking why png.h is not found. See the
--     requirements section for more information. Thank you!
--     
--  Table of Contents
--  
--     * Credits and license terms
--     * What's new in version "XYZ" of GD?
--     * What is gd?
--     * What if I want to use another programming language?
--     * What else do I need to use gd?
--     * How do I get gd?
--     * How do I build gd?
--     * gd basics: using gd in your program
--     * webpng: a useful example
--     * Function and type reference by category
--     * About the additional .gd image file format
--     * Please tell us you're using gd!
--     * If you have problems
--     * Alphabetical quick index
--       
--   Up to the Boutell.Com, Inc. Home Page
--   
--  Credits and license terms
--  
--   In order to resolve any possible confusion regarding the authorship of
--   gd, the following copyright statement covers all of the authors who
--   have required such a statement. _If you are aware of any oversights in
--   this copyright notice, please contact Thomas Boutell who will be
--   pleased to correct them._
--
--COPYRIGHT STATEMENT FOLLOWS THIS LINE
--
--     Portions copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000 by Cold
--     Spring Harbor Laboratory. Funded under Grant P41-RR02188 by the
--     National Institutes of Health.
--     
--     Portions copyright 1996, 1997, 1998, 1999, 2000 by Boutell.Com,
--     Inc.
--     
--     Portions relating to GD2 format copyright 1999, 2000 Philip Warner.
--     
--     Portions relating to PNG copyright 1999, 2000 Greg Roelofs.
--     
--     Portions relating to libttf copyright 1999, 2000 John Ellson
--     (ellson@lucent.com).
--     
--     Portions relating to JPEG copyright 2000, Doug Becker and copyright
--     (C) 1994-1998, Thomas G. Lane. This software is based in part on
--     the work of the Independent JPEG Group.
--     
--     Portions relating to WBMP copyright 2000 Maurice Szmurlo and Johan
--     Van den Brande.
--     
--     _Permission has been granted to copy, distribute and modify gd in
--     any context without fee, including a commercial application,
--     provided that this notice is present in user-accessible supporting
--     documentation._
--     
--     This does not affect your ownership of the derived work itself, and
--     the intent is to assure proper credit for the authors of gd, not to
--     interfere with your productive use of gd. If you have questions,
--     ask. "Derived works" includes all programs that utilize the
--     library. Credit must be given in user-accessible documentation.
--     
--     _This software is provided "AS IS."_ The copyright holders disclaim
--     all warranties, either express or implied, including but not
--     limited to implied warranties of merchantability and fitness for a
--     particular purpose, with respect to this code and accompanying
--     documentation.
--     
--     Although their code does not appear in gd 1.8.4, the authors wish
--     to thank David Koblas, David Rowley, and Hutchison Avenue Software
--     Corporation for their prior contributions.
--     
--END OF COPYRIGHT STATEMENT
--
--  What is gd?
--  
--   gd is a graphics library. It allows your code to quickly draw images
--   complete with lines, arcs, text, multiple colors, cut and paste from
--   other images, and flood fills, and write out the result as a PNG or
--   JPEG file. This is particularly useful in World Wide Web applications,
--   where PNG and JPEG are two of the formats accepted for inline images
--   by most browsers.
--   
--   gd is not a paint program. If you are looking for a paint program, you
--   are looking in the wrong place. If you are not a programmer, you are
--   looking in the wrong place.
--   
--   gd does not provide for every possible desirable graphics operation.
--   It is not necessary or desirable for gd to become a kitchen-sink
--   graphics package, but version 1.7.3 incorporates most of the commonly
--   requested features for an 8-bit 2D package. Support for truecolor
--   images, including truecolor JPEG and PNG, is planned for version 2.0.
--   
--  What if I want to use another programming language?
--  
--    Perl
--    
--   gd can also be used from Perl, courtesy of Lincoln Stein's GD.pm
--   library, which uses gd as the basis for a set of Perl 5.x classes.
--   Highly recommended.
--   
--    Tcl
--    
--   gd can be used from Tcl with John Ellson's Gdtclft dynamically loaded
--   extension package. (Gdtclft2.0 or later is needed for gd-1.6 and up
--   with PNG output.)
--   
--    Pascal
--    
--   Pascal enthusiasts should look into Michael Bradbury's gdfp package.
--   
--    Haskell
--    
--   A new gd interface is now available for Haskell programmers.
--   
--    REXX
--    
--   A gd interface for the REXX language is available.
--   
--    Any Language
--    
--   There are, at the moment, at least three simple interpreters that
--   perform gd operations. You can output the desired commands to a simple
--   text file from whatever scripting language you prefer to use, then
--   invoke the interpreter.
--   
--     * tgd, by Bradley K. Sherman
--     * fly, by Martin Gleeson
--       
--  What's new in version 1.8.4?
--  
--     * Add support for FreeType2 (John Ellson ellson@lucent.com)
--     * Add support for finding in fonts in a builtin DEFAULT_FONTPATH, or
--       in a path from the GDFONTPATH environment variable.
--     * remove some unused symbols to reduce compiler warnings
--     * bugfix in size comparisons in gdImageCompare
--     * REXX now mentioned
--     * All memory allocation functions are now wrapped within the
--       library; gdFree is exported and recommended for freeing memory
--       returned by the gdImage(Something)Ptr family of functions.
--       
--  What's new in version 1.8.3?
--  
--     * WBMP output memory leak fixed
--     * #include <gd.h> corrected to #include "gd.h" in gd_wbmp.c
--     * Documented the fact that the source and output images shouldn't
--       match in the WBMP test except for black and white source images
--       
--  What's new in version 1.8.2?
--  
--     * WBMP support debugged and improved by Johann Van den Brande
--     * WBMP tests added to gdtest.c by Thomas Boutell
--     * Use of platform-dependent 'install' command removed by Thomas
--       Boutell
--     * Comments added to Makefile warning users to juggle the order of
--       the libraries if the linker complains; is there any portable way
--       to do this automatically, short of using autoconf?
--     * Documentation of gdImageCreateFromXpm corrected
--     * Updated links to fast-moving, always dodging libpng and zlib web
--       sites
--       
--  What's new in version 1.8.1?
--  
--     * Optional components no longer built by default (following the
--       documentation)
--     * JPEG code no longer requires inappropriate header files
--     * Win32 patches from Joe Gregorio
--     * 16-bit font support for bdftogd, from Honza Pazdziora
--       
--  What's new in version 1.8?
--  
--     * Support for JPEG output, courtesy of Doug Becker
--     * A link to Michael Bradbery's Pascal wrapper
--     * Support for WBMP output, courtesy of Maurice Szmurlo
--     * gdImageColorClosestHWB function based on hue, whiteness,
--       blackness, superior to the regular gdImageColorClosest function,
--       courtesy of Philip Warner
--     * License clarification: yes, you can modify gd
--       
--    Additional JPEG Information
--    
--   Support for reading and writing JPEG-format images is courtesy of Doug
--   Becker and the Independent JPEG Group / Thomas G. Lane. You can get
--   the latest version of the IJG JPEG software from
--   ftp://ftp.uu.net/graphics/jpeg/ (e.g., the jpegsrc.v6b.tar.gz file).
--   You _must_ use version 6b or later of the IJG JPEG software. You might
--   also consult the JPEG FAQ at http://www.faqs.org/faqs/jpeg-faq/.
--   
--  What's new in version 1.7.3?
--  
--   Another attempt at Makefile fixes to permit linking with all libraries
--   required on platforms with order- dependent linkers. Perhaps it will
--   work this time.
--   
--  What's new in version 1.7.2?
--  
--   An uninitialized-pointer bug in gdtestttf.c was corrected. This bug
--   caused crashes at the end of each call to gdImageStringTTF on some
--   platforms. Thanks to Wolfgang Haefelinger.
--   
--   Documentation fixes. Thanks to Dohn Arms.
--   
--   Makefile fixes to permit linking with all libraries required on
--   platforms with order- dependent linkers.
--   
--  What's new in version 1.7.1?
--  
--   A minor buglet in the Makefile was corrected, as well as an inaccurate
--   error message in gdtestttf.c. Thanks to Masahito Yamaga.
--   
--  What's new in version 1.7?
--  
--   Version 1.7 contains the following changes:
--     * Japanese language support for the TrueType functions. Thanks to
--       Masahito Yamaga.
--     * autoconf and configure have been removed, in favor of a carefully
--       designed Makefile which produces and properly installs the library
--       and the binaries. System-dependent variables are at the top of the
--       Makefile for easy modification. I'm sorry, folks, but autoconf
--       generated _many, many confused email messages_ from people who
--       didn't have things where autoconf expected to find them. I am not
--       an autoconf/automake wizard, and gd is a simple, very compact
--       library which does not need to be a shared library. I _did_ make
--       many improvements over the old gd 1.3 Makefile, which were
--       directly inspired by the autoconf version found in the 1.6 series
--       (thanks to John Ellson).
--     * Completely ANSI C compliant, according to the -pedantic-errors
--       flag of gcc. Several pieces of not-quite-ANSI-C code were causing
--       problems for those with non-gcc compilers.
--     * gdttf.c patched to allow the use of Windows symbol fonts, when
--       present (thanks to Joseph Peppin).
--     * extern "C" wrappers added to gd.h and the font header files for
--       the convenience of C++ programmers. bdftogd was also modified to
--       automatically insert these wrappers into future font header files.
--       Thanks to John Lindal.
--     * Compiles correctly on platforms that don't define SEEK_SET. Thanks
--       to Robert Bonomi.
--     * Loads Xpm images via the gdImageCreateFromXpm function, if the Xpm
--       library is available. Thanks to Caolan McNamara.
--       
--  What's new in version 1.6.3?
--  
--   Version 1.6.3 corrects a memory leak in gd_png.c. This leak caused a
--   significant amount of memory to be allocated and not freed when
--   writing a PNG image.
--   
--  What's new in version 1.6.2?
--  
--   Version 1.6.2 from John Ellson adds two new functions:
--     * gdImageStringTTF - scalable, rotatable, anti-aliased, TrueType
--       strings using the FreeType library, but only if libttf is found by
--       configure. _We do not provide TrueType fonts. Obtaining them is
--       entirely up to you._
--     * gdImageColorResolve - an efficient alternative for the common code
--       fragment:
--
--
--      if ((color=gdImageColorExact(im,R,G,B)) < 0)
--          if ((color=gdImageColorAllocate(im,R,G,B)) < 0)
--              color=gdImageColorClosest(im,R,G,B);
--
--   Also in this release the build process has been converted to GNU
--   autoconf/automake/libtool conventions so that both (or either) static
--   and shared libraries can be built.
--   
--  What's new in version 1.6.1?
--  
--   Version 1.6.1 incorporates superior PNG reading and writing code from
--   Greg Roelofs, with minor modifications by Tom Boutell. Specifically, I
--   altered his code to read non-palette images (converting them to
--   palette images badly, by dithering them), and to tolerate palette
--   images with types of transparency that gd doesn't actually support (it
--   just ignores the advanced transparency features). Any bugs in this
--   area are therefore my fault, not Greg's.
--   
--   Unlike gd 1.6, users should have no trouble linking with gd 1.6.1 if
--   they follow the instructions and install all of the pieces. However,
--   _If you get undefined symbol errors, be sure to check for older
--   versions of libpng in your library directories!_
--   
--  What's new in version 1.6?
--  
--   Version 1.6 features the following changes:
--   
--   _Support for 8-bit palette PNG images has been added. Support for GIF
--   has been removed._ This step was taken to completely avoid the legal
--   controversy regarding the LZW compression algorithm used in GIF.
--   Unisys holds a patent which is relevant to LZW compression. PNG is a
--   superior image format in any case. Now that PNG is supported by both
--   Microsoft Internet Explorer and Netscape (in their recent releases),
--   we highly recommend that GD users upgrade in order to get
--   well-compressed images in a format which is legally unemcumbered.
--   
--  What's new in version 1.5?
--  
--   Version 1.5 featured the following changes:
--   
--   _New GD2 format_
--          An improvement over the GD format, the GD2 format uses the zlib
--          compression library to compress the image in chunks. This
--          results in file sizes comparable to GIFs, with the ability to
--          access parts of large images without having to read the entire
--          image into memory.
--          
--          This format also supports version numbers and rudimentary
--          validity checks, so it should be more 'supportable' than the
--          previous GD format.
--          
--   _Re-arranged source files_
--          gd.c has been broken into constituant parts: io, gif, gd, gd2
--          and graphics functions are now in separate files.
--          
--   _Extended I/O capabilities._
--          The source/sink feature has been extended to support GD2 file
--          formats (which require seek/tell functions), and to allow more
--          general non-file I/O.
--          
--   _Better support for Lincoln Stein's Perl Module_
--          The new gdImage*Ptr function returns the chosen format stored
--          in a block of memory. This can be directly used by the GD perl
--          module.
--          
--   _Added functions_
--          gdImageCreateFromGd2Part - allows retrieval of part of an image
--          (good for huge images, like maps),
--          gdImagePaletteCopy - Copies a palette from one image to
--          another, doing it's best to match the colors in the target
--          image to the colors in the source palette.
--          gdImageGd2, gdImageCreateFromGd2 - Support for new format
--          gdImageCopyMerge - Merges two images (useful to highlight part
--          of an image)
--          gdImageCopyMergeGray - Similar to gdImageCopyMerge, but tries
--          to preserve source image hue.
--          gdImagePngPtr, gdImageJpegPtr, gdImageWBMPPtr, gdImageGdPtr,
--          gdImageGd2Ptr - return memory blocks for each type of image.
--          gdImageCreateFromPngCtx, gdImageCreateFromGdCtx,
--          gdImageCreateFromGd2Ctx, gdImageCreateFromGd2PartCtx - Support
--          for new I/O context.
--          
--   _NOTE:_ In fairness to Thomas Boutell, any bug/problems with any of
--   the above features should probably be reported to Philip Warner.
--   
--  What's new in version 1.4?
--  
--   Version 1.4 features the following changes:
--   
--   Fixed polygon fill routine (again)
--          Thanks to Kirsten Schulz, version 1.4 is able to fill numerous
--          types of polygons that caused problems with previous releases,
--          including version 1.3.
--          
--   Support for alternate data sources
--          Programmers who wish to load a GIF from something other than a
--          stdio FILE * stream can use the new gdImageCreateFromPngSource
--          function.
--          
--   Support for alternate data destinations
--          Programmers who wish to write a GIF to something other than a
--          stdio FILE * stream can use the new gdImagePngToSink function.
--          
--   More tolerant when reading GIFs
--          Version 1.4 does not crash when reading certain animated GIFs,
--          although it still only reads the first frame. Version 1.4 also
--          has overflow testing code to prevent crashes when reading
--          damaged GIFs.
--          
--  What's new in version 1.3?
--  
--   Version 1.3 features the following changes:
--   
--   Non-LZW-based GIF compression code
--          Version 1.3 contained GIF compression code that uses simple Run
--          Length Encoding instead of LZW compression, while still
--          retaining compatibility with normal LZW-based GIF decoders
--          (your browser will still like your GIFs). _LZW compression is
--          patented by Unisys. We are currently reevaluating the approach
--          taken by gd 1.3. The current release of gd does not support
--          this approach. We recommend that you use the current release,
--          and generate PNG images._ Thanks to Hutchison Avenue Software
--          Corporation for contributing the RLE GIF code.
--          
--   8-bit fonts, and 8-bit font support
--          This improves support for European languages. Thanks are due to
--          Honza Pazdziora and also to Jan Pazdziora . Also see the
--          provided bdftogd Perl script if you wish to convert fixed-width
--          X11 fonts to gd fonts.
--          
--   16-bit font support (no fonts provided)
--          Although no such fonts are provided in the distribution, fonts
--          containing more than 256 characters should work if the
--          gdImageString16 and gdImageStringUp16 routines are used.
--          
--   Improvements to the "webpng" example/utility
--          The "webpng" utility is now a slightly more useful application.
--          Thanks to Brian Dowling for this code.
--          
--   Corrections to the color resolution field of GIF output
--          Thanks to Bruno Aureli.
--          
--   Fixed polygon fills
--          A one-line patch for the infamous polygon fill bug, courtesy of
--          Jim Mason. I believe this fix is sufficient. However, if you
--          find a situation where polygon fills still fail to behave
--          properly, please send code that demonstrates the problem, _and_
--          a fix if you have one. Verifying the fix is important.
--          
--   Row-major, not column-major
--          Internally, gd now represents the array of pixels as an array
--          of rows of pixels, rather than an array of columns of pixels.
--          This improves the performance of compression and decompression
--          routines slightly, because horizontally adjacent pixels are now
--          next to each other in memory. _This should not affect properly
--          written gd applications, but applications that directly
--          manipulate the pixels array will require changes._
--          
--  What else do I need to use gd?
--  
--   To use gd, you will need an ANSI C compiler. _All popular Windows 95
--   and NT C compilers are ANSI C compliant._ Any full-ANSI-standard C
--   compiler should be adequate. _The cc compiler released with SunOS
--   4.1.3 is not an ANSI C compiler. Most Unix users who do not already
--   have gcc should get it. gcc is free, ANSI compliant and a de facto
--   industry standard. Ask your ISP why it is missing._
--   
--   As of version 1.6, you also need the zlib compression library, and the
--   libpng library. As of version 1.6.2, you can draw text using
--   antialiased TrueType fonts if you also have the libttf library
--   installed, but this is not mandatory. zlib is available for a variety
--   of platforms from the zlib web site. libpng is available for a variety
--   of platforms from the PNG web site.
--   
--   You will also want a PNG viewer, if you do not already have one for
--   your system, since you will need a good way to check the results of
--   your work. Netscape 4.04 and higher, and Microsoft Internet Explorer
--   4.0 or higher, both support PNG. For some purposes you might be
--   happier with a package like Lview Pro for Windows or xv for X. There
--   are PNG viewers available for every graphics-capable modern operating
--   system, so consult newsgroups relevant to your particular system.
--   
--  How do I get gd?
--  
--    By HTTP
--    
--     * Gzipped Tar File (Unix)
--     * .ZIP File (Windows)
--       
--    By FTP
--    
--     * Gzipped Tar File (Unix)
--     * .ZIP File (Windows)
--       
--  How do I build gd?
--  
--   In order to build gd, you must first unpack the archive you have
--   downloaded. If you are not familiar with tar and gunzip (Unix) or ZIP
--   (Windows), please consult with an experienced user of your system.
--   Sorry, we cannot answer questions about basic Internet skills.
--   
--   Unpacking the archive will produce a directory called "gd-1.8.4".
--   
--    For Unix
--    
--   cd to the 1.8.4 directory. Edit the Makefile with your preferred text
--   editor and make any necessary changes to the settings at the top,
--   especially if you want Xpm or TrueType support. Next, type "make". If
--   you are the system administrator, and you wish to make the gd library
--   available to other programs, you may also wish to type "make install".
--   
--   If you get errors, edit the Makefile again, paying special attention
--   to the INCLUDEDIRS and LIBDIRS settings.
--   
--   IF YOU GET LINKER ERRORS, TRY JUGGLING THE ORDER OF THE -l DIRECTIVES
--   IN THE MAKEFILE. Some platforms may prefer that the libraries be
--   listed in the opposite order.
--   
--    For Windows, Mac, Et Cetera
--    
--   Create a project using your favorite programming environment. Copy all
--   of the gd files to the project directory. Add gd.c to your project.
--   Add other source files as appropriate. Learning the basic skills of
--   creating projects with your chosen C environment is up to you.
--   
--   You have now built both the gd library and a demonstration program
--   which shows off the capabilities of gd. To see it in action, type
--   "gddemo".
--   
--   gddemo should execute without incident, creating the file demoout.png.
--   (Note there is also a file named demoin.png, which is provided in the
--   package as part of the demonstration.)
--   
--   Display demoout.png in your PNG viewer. The image should be 128x128
--   pixels and should contain an image of the space shuttle with quite a
--   lot of graphical elements drawn on top of it.
--   
--   (If you are missing the demoin.png file, the other items should appear
--   anyway.)
--   
--   Look at demoin.png to see the original space shuttle image which was
--   scaled and copied into the output image.
--   
--  gd basics: using gd in your program
--  
--   gd lets you create PNG or JPEG images on the fly. To use gd in your
--   program, include the file gd.h, and link with the libgd.a library
--   produced by "make libgd.a", under Unix. Under other operating systems
--   you will add gd.c to your own project.
--   
--   If you want to use the provided fonts, include gdfontt.h, gdfonts.h,
--   gdfontmb.h, gdfontl.h and/or gdfontg.h. For more impressive results,
--   install FreeType 2.x and use the new gdImageStringFT function. If you
--   are not using the provided Makefile and/or a library-based approach,
--   be sure to include the source modules as well in your project. (They
--   may be too large for 16-bit memory models, that is, 16-bit DOS and
--   Windows.)
--   
--   Here is a short example program. _(For a more advanced example, see
--   gddemo.c, included in the distribution. gddemo.c is NOT the same
--   program; it demonstrates additional features!)_
--   
--/* Bring in gd library functions */
--#include "gd.h"
--
--/* Bring in standard I/O so we can output the PNG to a file */
--#include <stdio.h>
--
--int main() {
--        /* Declare the image */
--        gdImagePtr im;
--        /* Declare output files */
--        FILE *pngout, *jpegout;
--        /* Declare color indexes */
--        int black;
--        int white;
--
--        /* Allocate the image: 64 pixels across by 64 pixels tall */
--        im = gdImageCreate(64, 64);
--
--        /* Allocate the color black (red, green and blue all minimum).
--                Since this is the first color in a new image, it will
--                be the background color. */
--        black = gdImageColorAllocate(im, 0, 0, 0);
--
--        /* Allocate the color white (red, green and blue all maximum). */
--        white = gdImageColorAllocate(im, 255, 255, 255);
--        
--        /* Draw a line from the upper left to the lower right,
--                using white color index. */
--        gdImageLine(im, 0, 0, 63, 63, white);
--
--        /* Open a file for writing. "wb" means "write binary", important
--                under MSDOS, harmless under Unix. */
--        pngout = fopen("test.png", "wb");
--
--        /* Do the same for a JPEG-format file. */
--        jpegout = fopen("test.jpg", "wb");
--
--        /* Output the image to the disk file in PNG format. */
--        gdImagePng(im, pngout);
--
--        /* Output the same image in JPEG format, using the default
--                JPEG quality setting. */
--        gdImageJpeg(im, jpegout, -1);
--
--        /* Close the files. */
--        fclose(pngout);
--        fclose(jpegout);
--
--        /* Destroy the image in memory. */
--        gdImageDestroy(im);
--}
--
--   When executed, this program creates an image, allocates two colors
--   (the first color allocated becomes the background color), draws a
--   diagonal line (note that 0, 0 is the upper left corner), writes the
--   image to PNG and JPEG files, and destroys the image.
--   
--   The above example program should give you an idea of how the package
--   works. gd provides many additional functions, which are listed in the
--   following reference chapters, complete with code snippets
--   demonstrating each. There is also an alphabetical index.
--   
--  Webpng: a more powerful gd example
--  
--   Webpng is a simple utility program to manipulate PNGs from the command
--   line. It is written for Unix and similar command-line systems, but
--   should be easily adapted for other environments. Webpng allows you to
--   set transparency and interlacing and output interesting information
--   about the PNG in question.
--   
--   webpng.c is provided in the distribution. Unix users can simply type
--   "make webpng" to compile the program. Type "webpng" with no arguments
--   to see the available options.
--   
--Function and type reference
--
--     * Types
--     * Image creation, destruction, loading and saving
--     * Drawing, styling, brushing, tiling and filling functions
--     * Query functions (not color-related)
--     * Font and text-handling functions
--     * Color handling functions
--     * Copying and resizing functions
--     * Miscellaneous Functions
--     * Constants
--       
--  Types
--  
--   gdImage_(TYPE)_
--          The data structure in which gd stores images. gdImageCreate
--          returns a pointer to this type, and the other functions expect
--          to receive a pointer to this type as their first argument. You
--          may read the members sx (size on X axis), sy (size on Y axis),
--          colorsTotal (total colors), red (red component of colors; an
--          array of 256 integers between 0 and 255), green (green
--          component of colors, as above), blue (blue component of colors,
--          as above), and transparent (index of transparent color, -1 if
--          none); please do so using the macros provided. Do NOT set the
--          members directly from your code; use the functions provided.
--          
--
--typedef struct {
--        unsigned char ** pixels;
--        int sx;
--        int sy;
--        int colorsTotal;
--        int red[gdMaxColors];
--        int green[gdMaxColors];
--        int blue[gdMaxColors];
--        int open[gdMaxColors];
--        int transparent;
--} gdImage;
--
--   gdImagePtr _(TYPE)_
--          A pointer to an image structure. gdImageCreate returns this
--          type, and the other functions expect it as the first argument.
--          
--   gdFont _(TYPE)_
--          A font structure. Used to declare the characteristics of a
--          font. Plese see the files gdfontl.c and gdfontl.h for an
--          example of the proper declaration of this structure. You can
--          provide your own font data by providing such a structure and
--          the associated pixel array. You can determine the width and
--          height of a single character in a font by examining the w and h
--          members of the structure. If you will not be creating your own
--          fonts, you will not need to concern yourself with the rest of
--          the components of this structure.
--          
--
--typedef struct {
--        /* # of characters in font */
--        int nchars;
--        /* First character is numbered... (usually 32 = space) */
--        int offset;
--        /* Character width and height */
--        int w;
--        int h;
--        /* Font data; array of characters, one row after another.
--                Easily included in code, also easily loaded from
--                data files. */
--        char *data;
--} gdFont;
--
--   gdFontPtr _(TYPE)_
--          A pointer to a font structure. Text-output functions expect
--          these as their second argument, following the gdImagePtr
--          argument. Two such pointers are declared in the provided
--          include files gdfonts.h and gdfontl.h.
--          
--   gdPoint _(TYPE)_
--          Represents a point in the coordinate space of the image; used
--          by gdImagePolygon and gdImageFilledPolygon.
--          
--
--typedef struct {
--        int x, y;
--} gdPoint, *gdPointPtr;
--
--   gdPointPtr _(TYPE)_
--          A pointer to a gdPoint structure; passed as an argument to
--          gdImagePolygon and gdImageFilledPolygon.
--          
--   gdSource _(TYPE)_
--
--typedef struct {
--        int (*source) (void *context, char *buffer, int len);
--        void *context;
--} gdSource, *gdSourcePtr;
--
--   Represents a source from which a PNG can be read. Programmers who do
--   not wish to read PNGs from a file can provide their own alternate
--   input mechanism, using the gdImageCreateFromPngSource function. See
--   the documentation of that function for an example of the proper use of
--   this type.
--   
--   gdSink _(TYPE)_
--
--typedef struct {
--        int (*sink) (void *context, char *buffer, int len);
--        void *context;
--} gdSink, *gdSinkPtr;
--
--   Represents a "sink" (destination) to which a PNG can be written.
--   Programmers who do not wish to write PNGs to a file can provide their
--   own alternate output mechanism, using the gdImagePngToSink function.
--   See the documentation of that function for an example of the proper
--   use of this type.
--   
--  Image creation, destruction, loading and saving
--  
--   gdImageCreate(sx, sy) _(FUNCTION)_
--          gdImageCreate is called to create images. Invoke gdImageCreate
--          with the x and y dimensions of the desired image. gdImageCreate
--          returns a gdImagePtr to the new image, or NULL if unable to
--          allocate the image. The image must eventually be destroyed
--          using gdImageDestroy().
--          
--
--... inside a function ...
--gdImagePtr im;
--im = gdImageCreate(64, 64);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageCreateFromJpeg(FILE *in) _(FUNCTION)_
--          gdImageCreateFromJpegCtx(FILE *in) _(FUNCTION)_
--          
--          
--          gdImageCreateFromJpeg is called to load images from JPEG format
--          files. Invoke gdImageCreateFromJpeg with an already opened
--          pointer to a file containing the desired image.
--          gdImageCreateFromJpeg returns a gdImagePtr to the new image, or
--          NULL if unable to load the image (most often because the file
--          is corrupt or does not contain a JPEG image).
--          gdImageCreateFromPng does _not_ close the file. You can inspect
--          the sx and sy members of the image to determine its size. The
--          image must eventually be destroyed using gdImageDestroy().
--          
--
--gdImagePtr im;
--... inside a function ...
--FILE *in;
--in = fopen("myjpeg.jpg", "rb");
--im = gdImageCreateFromJpeg(in);
--fclose(in);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageCreateFromPng(FILE *in) _(FUNCTION)_
--          gdImageCreateFromPngCtx(gdIOCtx *in) _(FUNCTION)_
--          
--          
--          gdImageCreateFromPng is called to load images from PNG format
--          files. Invoke gdImageCreateFromPng with an already opened
--          pointer to a file containing the desired image.
--          gdImageCreateFromPng returns a gdImagePtr to the new image, or
--          NULL if unable to load the image (most often because the file
--          is corrupt or does not contain a PNG image).
--          gdImageCreateFromPng does _not_ close the file. You can inspect
--          the sx and sy members of the image to determine its size. The
--          image must eventually be destroyed using gdImageDestroy().
--          
--
--gdImagePtr im;
--... inside a function ...
--FILE *in;
--in = fopen("mypng.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageCreateFromPngSource(gdSourcePtr in) _(FUNCTION)_
--          gdImageCreateFromPngSource is called to load a PNG from a data
--          source other than a file. Usage is very similar to the
--          gdImageCreateFromPng function, except that the programmer
--          provides a custom data source.
--          
--          The programmer must write an input function which accepts a
--          context pointer, a buffer, and a number of bytes to be read as
--          arguments. This function must read the number of bytes
--          requested, unless the end of the file has been reached, in
--          which case the function should return zero, or an error has
--          occurred, in which case the function should return -1. The
--          programmer then creates a gdSource structure and sets the
--          source pointer to the input function and the context pointer to
--          any value which is useful to the programmer.
--          
--          The example below implements gdImageCreateFromPng by creating a
--          custom data source and invoking gdImageCreateFromPngSource.
--          
--
--static int freadWrapper(void *context, char *buf, int len);
--
--gdImagePtr gdImageCreateFromPng(FILE *in)
--{
--        gdSource s;
--        s.source = freadWrapper;
--        s.context = in;
--        return gdImageCreateFromPngSource(&s);
--}
--
--static int freadWrapper(void *context, char *buf, int len)
--{
--        int got = fread(buf, 1, len, (FILE *) context);
--        return got;
--}
--
--   gdImageCreateFromGd(FILE *in) _(FUNCTION)_
--          gdImageCreateFromGdCtx(gdIOCtx *in) _(FUNCTION)_
--          
--          
--          gdImageCreateFromGd is called to load images from gd format
--          files. Invoke gdImageCreateFromGd with an already opened
--          pointer to a file containing the desired image in the gd file
--          format, which is specific to gd and intended for very fast
--          loading. (It is _not_ intended for compression; for
--          compression, use PNG or JPEG.) gdImageCreateFromGd returns a
--          gdImagePtr to the new image, or NULL if unable to load the
--          image (most often because the file is corrupt or does not
--          contain a gd format image). gdImageCreateFromGd does _not_
--          close the file. You can inspect the sx and sy members of the
--          image to determine its size. The image must eventually be
--          destroyed using gdImageDestroy().
--          
--
--... inside a function ...
--gdImagePtr im;
--FILE *in;
--in = fopen("mygd.gd", "rb");
--im = gdImageCreateFromGd(in);
--fclose(in);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageCreateFromGd2(FILE *in) _(FUNCTION)_
--          gdImageCreateFromGd2Ctx(gdIOCtx *in) _(FUNCTION)_
--          
--          
--          gdImageCreateFromGd2 is called to load images from gd2 format
--          files. Invoke gdImageCreateFromGd2 with an already opened
--          pointer to a file containing the desired image in the gd2 file
--          format, which is specific to gd2 and intended for fast loading
--          of parts of large images. (It is a compressed format, but
--          generally not as good a LZW compression). gdImageCreateFromGd
--          returns a gdImagePtr to the new image, or NULL if unable to
--          load the image (most often because the file is corrupt or does
--          not contain a gd format image). gdImageCreateFromGd2 does _not_
--          close the file. You can inspect the sx and sy members of the
--          image to determine its size. The image must eventually be
--          destroyed using gdImageDestroy().
--          
--
--... inside a function ...
--gdImagePtr im;
--FILE *in;
--in = fopen("mygd.gd2", "rb");
--im = gdImageCreateFromGd2(in);
--fclose(in);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageCreateFromGd2Part(FILE *in, int srcX, int srcY, int w, int h)
--          _(FUNCTION)_
--          gdImageCreateFromGd2PartCtx(gdIOCtx *in) _(FUNCTION)_
--          
--          
--          gdImageCreateFromGd2Part is called to load parts of images from
--          gd2 format files. Invoked in the same way as
--          gdImageCreateFromGd2, but with extra parameters indicating the
--          source (x, y) and width/height of the desired image.
--          gdImageCreateFromGd2Part returns a gdImagePtr to the new image,
--          or NULL if unable to load the image. The image must eventually
--          be destroyed using gdImageDestroy().
--          
--   gdImageCreateFromXbm(FILE *in) _(FUNCTION)_
--          gdImageCreateFromXbm is called to load images from X bitmap
--          format files. Invoke gdImageCreateFromXbm with an already
--          opened pointer to a file containing the desired image.
--          gdImageCreateFromXbm returns a gdImagePtr to the new image, or
--          NULL if unable to load the image (most often because the file
--          is corrupt or does not contain an X bitmap format image).
--          gdImageCreateFromXbm does _not_ close the file. You can inspect
--          the sx and sy members of the image to determine its size. The
--          image must eventually be destroyed using gdImageDestroy().
--          
--
--... inside a function ...
--gdImagePtr im;
--FILE *in;
--in = fopen("myxbm.xbm", "rb");
--im = gdImageCreateFromXbm(in);
--fclose(in);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageCreateFromXpm(char *filename) _(FUNCTION)_
--          gdImageCreateFromXbm is called to load images from XPM X Window
--          System color bitmap format files. This function is available
--          only if HAVE_XPM is selected in the Makefile and the Xpm
--          library is linked with the application. Unlike most gd file
--          functions, the Xpm functions require filenames, not file
--          pointers. gdImageCreateFromXpm returns a gdImagePtr to the new
--          image, or NULL if unable to load the image (most often because
--          the file is corrupt or does not contain an XPM bitmap format
--          image). You can inspect the sx and sy members of the image to
--          determine its size. The image must eventually be destroyed
--          using gdImageDestroy().
--          
--
--... inside a function ...
--gdImagePtr im;
--FILE *in;
--in = fopen("myxpm.xpm", "rb");
--im = gdImageCreateFromXpm(in);
--fclose(in);
--/* ... Use the image ... */
--gdImageDestroy(im);
--
--   gdImageDestroy(gdImagePtr im) _(FUNCTION)_
--          gdImageDestroy is used to free the memory associated with an
--          image. It is important to invoke gdImageDestroy before exiting
--          your program or assigning a new image to a gdImagePtr variable.
--          
--
--... inside a function ...
--gdImagePtr im;
--im = gdImageCreate(10, 10);
--/* ... Use the image ... */
--/* Now destroy it */
--gdImageDestroy(im);
--
--   void gdImageJpeg(gdImagePtr im, FILE *out, int quality) _(FUNCTION)_
--          void gdImageJpegCtx(gdImagePtr im, gdIOCtx *out, int quality)
--          
--   _(FUNCTION)_
--   
--   gdImageJpeg outputs the specified image to the specified file in JPEG
--   format. The file must be open for writing. Under MSDOS and all
--   versions of Windows, it is important to use "wb" as opposed to simply
--   "w" as the mode when opening the file, and under Unix there is no
--   penalty for doing so. gdImageJpeg does _not_ close the file; your code
--   must do so.
--   
--   If quality is negative, the default IJG JPEG quality value (which
--   should yield a good general quality / size tradeoff for most
--   situations) is used. Otherwise, for practical purposes, quality should
--   be a value in the range 0-95, higher quality values usually implying
--   both higher quality and larger image sizes.
--   
--   If you have set image interlacing using gdImageInterlace, this
--   function will interpret that to mean you wish to output a progressive
--   JPEG. Some programs (e.g., Web browsers) can display progressive JPEGs
--   incrementally; this can be useful when browsing over a relatively slow
--   communications link, for example. Progressive JPEGs can also be
--   slightly smaller than sequential (non-progressive) JPEGs.
--
--... inside a function ...
--gdImagePtr im;
--int black, white;
--FILE *out;
--/* Create the image */
--im = gdImageCreate(100, 100);
--/* Allocate background */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate drawing color */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Draw rectangle */
--gdImageRectangle(im, 0, 0, 99, 99, black);
--/* Open output file in binary mode */
--out = fopen("rect.jpg", "wb");
--/* Write JPEG using default quality */
--gdImageJpeg(im, out, -1);
--/* Close file */
--fclose(out);
--/* Destroy image */
--gdImageDestroy(im);
--
--   void* gdImageJpegPtr(gdImagePtr im, int *size) _(FUNCTION)_
--   Identical to gdImageJpeg except that it returns a pointer to a memory
--   area with the JPEG data. This memory must be freed by the caller when
--   it is no longer needed. _The caller must invoke gdFree(), not free(),
--   unless the caller is absolutely certain that the same implementations
--   of malloc, free, etc. are used both at library build time and at
--   application build time._ The 'size' parameter receives the total size
--   of the block of memory.
--   
--   void gdImagePng(gdImagePtr im, FILE *out) _(FUNCTION)_
--   gdImagePng outputs the specified image to the specified file in PNG
--   format. The file must be open for writing. Under MSDOS and all
--   versions of Windows, it is important to use "wb" as opposed to simply
--   "w" as the mode when opening the file, and under Unix there is no
--   penalty for doing so. gdImagePng does _not_ close the file; your code
--   must do so.
--
--... inside a function ...
--gdImagePtr im;
--int black, white;
--FILE *out;
--/* Create the image */
--im = gdImageCreate(100, 100);
--/* Allocate background */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate drawing color */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Draw rectangle */
--gdImageRectangle(im, 0, 0, 99, 99, black);
--/* Open output file in binary mode */
--out = fopen("rect.png", "wb");
--/* Write PNG */
--gdImagePng(im, out);
--/* Close file */
--fclose(out);
--/* Destroy image */
--gdImageDestroy(im);
--
--   void* gdImagePngPtr(gdImagePtr im, int *size) _(FUNCTION)_
--   Identical to gdImagePng except that it returns a pointer to a memory
--   area with the PNG data. This memory must be freed by the caller when
--   it is no longer needed. _The caller must invoke gdFree(), not free(),
--   unless the caller is absolutely certain that the same implementations
--   of malloc, free, etc. are used both at library build time and at
--   application build time._ The 'size' parameter receives the total size
--   of the block of memory.
--   
--   gdImagePngToSink(gdImagePtr im, gdSinkPtr out) _(FUNCTION)_
--   gdImagePngToSink is called to write a PNG to a data "sink"
--   (destination) other than a file. Usage is very similar to the
--   gdImagePng function, except that the programmer provides a custom data
--   sink.
--   
--   The programmer must write an output function which accepts a context
--   pointer, a buffer, and a number of bytes to be written as arguments.
--   This function must write the number of bytes requested and return that
--   number, unless an error has occurred, in which case the function
--   should return -1. The programmer then creates a gdSink structure and
--   sets the sink pointer to the output function and the context pointer
--   to any value which is useful to the programmer.
--   
--   The example below implements gdImagePng by creating a custom data
--   source and invoking gdImagePngFromSink.
--
--static int stdioSink(void *context, char *buffer, int len)
--{
--        return fwrite(buffer, 1, len, (FILE *) context);
--}
--
--void gdImagePng(gdImagePtr im, FILE *out)
--{
--        gdSink mySink;
--        mySink.context = (void *) out;
--        mySink.sink = stdioSink;
--        gdImagePngToSink(im, &mySink);
--}
--
--   void gdImageWBMP(gdImagePtr im, int fg, FILE *out)
--   gdImageWBMPCtx(gdIOCtx *out) _(FUNCTION)__(FUNCTION)_
--   gdImageWBMP outputs the specified image to the specified file in WBMP
--   format. The file must be open for writing. Under MSDOS and all
--   versions of Windows, it is important to use "wb" as opposed to simply
--   "w" as the mode when opening the file, and under Unix there is no
--   penalty for doing so. gdImageWBMP does _not_ close the file; your code
--   must do so.
--   
--   _WBMP file support is black and white only. The color index specified
--   by the fg argument is the "foreground," and only pixels of this color
--   will be set in the WBMP file._ All other pixels will be considered
--   "background."
--
--... inside a function ...
--gdImagePtr im;
--int black, white;
--FILE *out;
--/* Create the image */
--im = gdImageCreate(100, 100);
--/* Allocate background */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate drawing color */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Draw rectangle */
--gdImageRectangle(im, 0, 0, 99, 99, black);
--/* Open output file in binary mode */
--out = fopen("rect.wbmp", "wb");
--/* Write WBMP, with black as foreground */
--gdImageWBMP(im, black, out);
--/* Close file */
--fclose(out);
--/* Destroy image */
--gdImageDestroy(im);
--
--   void* gdImageWBMPPtr(gdImagePtr im, int *size) _(FUNCTION)_
--   Identical to gdImageWBMP except that it returns a pointer to a memory
--   area with the WBMP data. This memory must be freed by the caller when
--   it is no longer needed. _The caller must invoke gdFree(), not free(),
--   unless the caller is absolutely certain that the same implementations
--   of malloc, free, etc. are used both at library build time and at
--   application build time._ The 'size' parameter receives the total size
--   of the block of memory.
--   
--   void gdImageGd(gdImagePtr im, FILE *out) _(FUNCTION)_
--   gdImageGd outputs the specified image to the specified file in the gd
--   image format. The file must be open for writing. Under MSDOS and all
--   versions of Windows, it is important to use "wb" as opposed to simply
--   "w" as the mode when opening the file, and under Unix there is no
--   penalty for doing so. gdImagePng does _not_ close the file; your code
--   must do so.
--   
--   The gd image format is intended for fast reads and writes of images
--   your program will need frequently to build other images. It is _not_ a
--   compressed format, and is not intended for general use.
--
--... inside a function ...
--gdImagePtr im;
--int black, white;
--FILE *out;
--/* Create the image */
--im = gdImageCreate(100, 100);
--/* Allocate background */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate drawing color */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Draw rectangle */
--gdImageRectangle(im, 0, 0, 99, 99, black);
--/* Open output file in binary mode */
--out = fopen("rect.gd", "wb");
--/* Write gd format file */
--gdImageGd(im, out);
--/* Close file */
--fclose(out);
--/* Destroy image */
--gdImageDestroy(im);
--
--   void* gdImageGdPtr(gdImagePtr im, int *size) _(FUNCTION)_
--   Identical to gdImageGd except that it returns a pointer to a memory
--   area with the GD data. This memory must be freed by the caller when it
--   is no longer needed. _The caller must invoke gdFree(), not free(),
--   unless the caller is absolutely certain that the same implementations
--   of malloc, free, etc. are used both at library build time and at
--   application build time._ The 'size' parameter receives the total size
--   of the block of memory.
--   
--   void gdImageGd2(gdImagePtr im, FILE *out, int chunkSize, int fmt)
--   _(FUNCTION)_
--   gdImageGd2 outputs the specified image to the specified file in the
--   gd2 image format. The file must be open for writing. Under MSDOS and
--   all versions of Windows, it is important to use "wb" as opposed to
--   simply "w" as the mode when opening the file, and under Unix there is
--   no penalty for doing so. gdImageGd2 does _not_ close the file; your
--   code must do so.
--   
--   The gd2 image format is intended for fast reads and writes of parts of
--   images. It is a compressed format, and well suited to retrieving smll
--   sections of much larger images. The third and fourth parameters are
--   the 'chunk size' and format resposectively.
--   
--   The file is stored as a series of compressed subimages, and the _Chunk
--   Size_ determines the sub-image size - a value of zero causes the GD
--   library to use the default.
--   
--   It is also possible to store GD2 files in an uncompressed format, in
--   which case the fourth parameter should be GD2_FMT_RAW.
--
--... inside a function ...
--gdImagePtr im;
--int black, white;
--FILE *out;
--/* Create the image */
--im = gdImageCreate(100, 100);
--/* Allocate background */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate drawing color */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Draw rectangle */
--gdImageRectangle(im, 0, 0, 99, 99, black);
--/* Open output file in binary mode */
--out = fopen("rect.gd", "wb");
--/* Write gd2 format file */
--gdImageGd2(im, out, 0, GD2_FMT_COMPRESSED);
--/* Close file */
--fclose(out);
--/* Destroy image */
--gdImageDestroy(im);
--
--   void* gdImageGd2Ptr(gdImagePtr im, int chunkSize, int fmt, int *size)
--   _(FUNCTION)_
--   Identical to gdImageGd2 except that it returns a pointer to a memory
--   area with the GD2 data. This memory must be freed by the caller when
--   it is no longer needed. _The caller must invoke gdFree(), not free(),
--   unless the caller is absolutely certain that the same implementations
--   of malloc, free, etc. are used both at library build time and at
--   application build time._ The 'size' parameter receives the total size
--   of the block of memory.
--   
--  Drawing Functions
--  
--   void gdImageSetPixel(gdImagePtr im, int x, int y, int color)
--          _(FUNCTION)_
--          gdImageSetPixel sets a pixel to a particular color index.
--          Always use this function or one of the other drawing functions
--          to access pixels; do not access the pixels of the gdImage
--          structure directly.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Set a pixel near the center. */
--gdImageSetPixel(im, 50, 50, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageLine(gdImagePtr im, int x1, int y1, int x2, int y2, int
--          color) _(FUNCTION)_
--          gdImageLine is used to draw a line between two endpoints (x1,y1
--          and x2, y2). The line is drawn using the color index specified.
--          Note that the color index can be an actual color returned by
--          gdImageColorAllocate or one of gdStyled, gdBrushed or
--          gdStyledBrushed.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a line from the upper left corner to the lower right corner. */
--gdImageLine(im, 0, 0, 99, 99, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageDashedLine(gdImagePtr im, int x1, int y1, int x2, int y2,
--          int color) _(FUNCTION)_
--          gdImageDashedLine is provided _solely for backwards
--          compatibility _with gd 1.0. New programs should draw dashed
--          lines using the normal gdImageLine function and the new
--          gdImageSetStyle function.
--          
--          gdImageDashedLine is used to draw a dashed line between two
--          endpoints (x1,y1 and x2, y2). The line is drawn using the color
--          index specified. The portions of the line that are not drawn
--          are left transparent so the background is visible.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a dashed line from the upper left corner to the lower right corner. */
--gdImageDashedLine(im, 0, 0, 99, 99);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImagePolygon(gdImagePtr im, gdPointPtr points, int pointsTotal,
--          int color) _(FUNCTION)_
--          gdImagePolygon is used to draw a polygon with the verticies (at
--          least 3) specified, using the color index specified. See also
--          gdImageFilledPolygon.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--/* Points of polygon */
--gdPoint points[3];
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a triangle. */
--points[0].x = 50;
--points[0].y = 0;
--points[1].x = 99;
--points[1].y = 99;
--points[2].x = 0;
--points[2].y = 99;
--gdImagePolygon(im, points, 3, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageRectangle(gdImagePtr im, int x1, int y1, int x2, int y2,
--          int color) _(FUNCTION)_
--          gdImageRectangle is used to draw a rectangle with the two
--          corners (upper left first, then lower right) specified, using
--          the color index specified.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a rectangle occupying the central area. */
--gdImageRectangle(im, 25, 25, 74, 74, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageFilledPolygon(gdImagePtr im, gdPointPtr points, int
--          pointsTotal, int color) _(FUNCTION)_
--          gdImageFilledPolygon is used to fill a polygon with the
--          verticies (at least 3) specified, using the color index
--          specified. See also gdImagePolygon.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--int red;
--/* Points of polygon */
--gdPoint points[3];
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate the color red. */
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* Draw a triangle. */
--points[0].x = 50;
--points[0].y = 0;
--points[1].x = 99;
--points[1].y = 99;
--points[2].x = 0;
--points[2].y = 99;
--/* Paint it in white */
--gdImageFilledPolygon(im, points, 3, white);
--/* Outline it in red; must be done second */
--gdImagePolygon(im, points, 3, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageFilledRectangle(gdImagePtr im, int x1, int y1, int x2, int
--          y2, int color) _(FUNCTION)_
--          gdImageFilledRectangle is used to draw a solid rectangle with
--          the two corners (upper left first, then lower right) specified,
--          using the color index specified.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = int gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a filled rectangle occupying the central area. */
--gdImageFilledRectangle(im, 25, 25, 74, 74, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageArc(gdImagePtr im, int cx, int cy, int w, int h, int s,
--          int e, int color) _(FUNCTION)_
--          gdImageArc is used to draw a partial ellipse centered at the
--          given point, with the specified width and height in pixels. The
--          arc begins at the position in degrees specified by s and ends
--          at the position specified by e. The arc is drawn in the color
--          specified by the last argument. A circle can be drawn by
--          beginning from 0 degrees and ending at 360 degrees, with width
--          and height being equal. e must be greater than s. Values
--          greater than 360 are interpreted modulo 360.
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 50);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Inscribe an ellipse in the image. */
--gdImageArc(im, 50, 25, 98, 48, 0, 360, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageFillToBorder(gdImagePtr im, int x, int y, int border, int
--          color) _(FUNCTION)_
--          gdImageFillToBorder floods a portion of the image with the
--          specified color, beginning at the specified point and stopping
--          at the specified border color. For a way of flooding an area
--          defined by the color of the starting point, see gdImageFill.
--          
--          The border color _cannot_ be a special color such as gdTiled;
--          it must be a proper solid color. The fill color can be,
--          however.
--          
--          Note that gdImageFillToBorder is recursive. It is not the most
--          naive implementation possible, and the implementation is
--          expected to improve, but there will always be degenerate cases
--          in which the stack can become very deep. This can be a problem
--          in MSDOS and MS Windows 3.1 environments. (Of course, in a Unix
--          or Windows 95/98/NT environment with a proper stack, this is
--          not a problem at all.)
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--int red;
--im = gdImageCreate(100, 50);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate the color red. */
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* Inscribe an ellipse in the image. */
--gdImageArc(im, 50, 25, 98, 48, 0, 360, white);
--/* Flood-fill the ellipse. Fill color is red, border color is
--        white (ellipse). */
--gdImageFillToBorder(im, 50, 50, white, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageFill(gdImagePtr im, int x, int y, int color) _(FUNCTION)_
--          gdImageFill floods a portion of the image with the specified
--          color, beginning at the specified point and flooding the
--          surrounding region of the same color as the starting point. For
--          a way of flooding a region defined by a specific border color
--          rather than by its interior color, see gdImageFillToBorder.
--          
--          The fill color can be gdTiled, resulting in a tile fill using
--          another image as the tile. However, the tile image cannot be
--          transparent. If the image you wish to fill with has a
--          transparent color index, call gdImageTransparent on the tile
--          image and set the transparent color index to -1 to turn off its
--          transparency.
--          
--          Note that gdImageFill is recursive. It is not the most naive
--          implementation possible, and the implementation is expected to
--          improve, but there will always be degenerate cases in which the
--          stack can become very deep. This can be a problem in MSDOS and
--          MS Windows environments. (Of course, in a Unix or Windows
--          95/98/NT environment with a proper stack, this is not a problem
--          at all.)
--          
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--int red;
--im = gdImageCreate(100, 50);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Allocate the color red. */
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* Inscribe an ellipse in the image. */
--gdImageArc(im, 50, 25, 98, 48, 0, 360, white);
--/* Flood-fill the ellipse. Fill color is red, and will replace the
--        black interior of the ellipse. */
--gdImageFill(im, 50, 50, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--   void gdImageSetBrush(gdImagePtr im, gdImagePtr brush) _(FUNCTION)_
--          A "brush" is an image used to draw wide, shaped strokes in
--          another image. Just as a paintbrush is not a single point, a
--          brush image need not be a single pixel. _Any_ gd image can be
--          used as a brush, and by setting the transparent color index of
--          the brush image with gdImageColorTransparent, a brush of any
--          shape can be created. All line-drawing functions, such as
--          gdImageLine and gdImagePolygon, will use the current brush if
--          the special "color" gdBrushed or gdStyledBrushed is used when
--          calling them.
--          
--          gdImageSetBrush is used to specify the brush to be used in a
--          particular image. You can set any image to be the brush. If the
--          brush image does not have the same color map as the first
--          image, any colors missing from the first image will be
--          allocated. If not enough colors can be allocated, the closest
--          colors already available will be used. This allows arbitrary
--          PNGs to be used as brush images. It also means, however, that
--          you should not set a brush unless you will actually use it; if
--          you set a rapid succession of different brush images, you can
--          quickly fill your color map, and the results will not be
--          optimal.
--          
--          You need not take any special action when you are finished with
--          a brush. As for any other image, if you will not be using the
--          brush image for any further purpose, you should call
--          gdImageDestroy. You must not use the color gdBrushed if the
--          current brush has been destroyed; you can of course set a new
--          brush to replace it.
--          
--
--... inside a function ...
--gdImagePtr im, brush;
--FILE *in;
--int black;
--im = gdImageCreate(100, 100);
--/* Open the brush PNG. For best results, portions of the
--        brush that should be transparent (ie, not part of the
--        brush shape) should have the transparent color index. */
--in = fopen("star.png", "rb");
--brush = gdImageCreateFromPng(in);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--gdImageSetBrush(im, brush);
--/* Draw a line from the upper left corner to the lower right corner
--        using the brush. */
--gdImageLine(im, 0, 0, 99, 99, gdBrushed);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--/* Destroy the brush image */
--gdImageDestroy(brush);
--
--   void gdImageSetTile(gdImagePtr im, gdImagePtr tile) _(FUNCTION)_
--          A "tile" is an image used to fill an area with a repeated
--          pattern. _Any_ gd image can be used as a tile, and by setting
--          the transparent color index of the tile image with
--          gdImageColorTransparent, a tile that allows certain parts of
--          the underlying area to shine through can be created. All
--          region-filling functions, such as gdImageFill and
--          gdImageFilledPolygon, will use the current tile if the special
--          "color" gdTiled is used when calling them.
--          
--          gdImageSetTile is used to specify the tile to be used in a
--          particular image. You can set any image to be the tile. If the
--          tile image does not have the same color map as the first image,
--          any colors missing from the first image will be allocated. If
--          not enough colors can be allocated, the closest colors already
--          available will be used. This allows arbitrary PNGs to be used
--          as tile images. It also means, however, that you should not set
--          a tile unless you will actually use it; if you set a rapid
--          succession of different tile images, you can quickly fill your
--          color map, and the results will not be optimal.
--          
--          You need not take any special action when you are finished with
--          a tile. As for any other image, if you will not be using the
--          tile image for any further purpose, you should call
--          gdImageDestroy. You must not use the color gdTiled if the
--          current tile has been destroyed; you can of course set a new
--          tile to replace it.
--          
--
--... inside a function ...
--gdImagePtr im, tile;
--FILE *in;
--int black;
--im = gdImageCreate(100, 100);
--/* Open the tile PNG. For best results, portions of the
--        tile that should be transparent (ie, allowing the
--        background to shine through) should have the transparent
--        color index. */
--in = fopen("star.png", "rb");
--tile = gdImageCreateFromPng(in);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--gdImageSetTile(im, tile);
--/* Fill an area using the tile. */
--gdImageFilledRectangle(im, 25, 25, 75, 75, gdTiled);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--/* Destroy the tile image */
--gdImageDestroy(tile);
--
--   void gdImageSetStyle(gdImagePtr im, int *style, int styleLength)
--          _(FUNCTION)_
--          It is often desirable to draw dashed lines, dotted lines, and
--          other variations on a broken line. gdImageSetStyle can be used
--          to set any desired series of colors, including a special color
--          that leaves the background intact, to be repeated during the
--          drawing of a line.
--          
--          To use gdImageSetStyle, create an array of integers and assign
--          them the desired series of color values to be repeated. You can
--          assign the special color value gdTransparent to indicate that
--          the existing color should be left unchanged for that particular
--          pixel (allowing a dashed line to be attractively drawn over an
--          existing image).
--          
--          Then, to draw a line using the style, use the normal
--          gdImageLine function with the special color value gdStyled.
--          
--          As of version 1.1.1, the style array is copied when you set the
--          style, so you need not be concerned with keeping the array
--          around indefinitely. This should not break existing code that
--          assumes styles are not copied.
--          
--          You can also combine styles and brushes to draw the brush image
--          at intervals instead of in a continuous stroke. When creating a
--          style for use with a brush, the style values are interpreted
--          differently: zero (0) indicates pixels at which the brush
--          should not be drawn, while one (1) indicates pixels at which
--          the brush should be drawn. To draw a styled, brushed line, you
--          must use the special color value gdStyledBrushed. For an
--          example of this feature in use, see gddemo.c (provided in the
--          distribution).
--          
--
--gdImagePtr im;
--int styleDotted[2], styleDashed[6];
--FILE *in;
--int black;
--int red;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* Set up dotted style. Leave every other pixel alone. */
--styleDotted[0] = red;
--styleDotted[1] = gdTransparent;
--/* Set up dashed style. Three on, three off. */
--styleDashed[0] = red;
--styleDashed[1] = red;
--styleDashed[2] = red;
--styleDashed[3] = gdTransparent;
--styleDashed[4] = gdTransparent;
--styleDashed[5] = gdTransparent;
--/* Set dotted style. Note that we have to specify how many pixels are
--        in the style! */
--gdImageSetStyle(im, styleDotted, 2);
--/* Draw a line from the upper left corner to the lower right corner. */
--gdImageLine(im, 0, 0, 99, 99, gdStyled);
--/* Now the dashed line. */
--gdImageSetStyle(im, styleDashed, 6);
--gdImageLine(im, 0, 99, 0, 99, gdStyled);
--
--/* ... Do something with the image, such as saving it to a file ... */
--
--/* Destroy it */
--gdImageDestroy(im);
--
--  Query Functions
--  
--        int gdImageBlue(gdImagePtr im, int color) _(MACRO)_
--                gdImageBlue is a macro which returns the blue component
--                of the specified color index. Use this macro rather than
--                accessing the structure members directly.
--                
--        int gdImageGetPixel(gdImagePtr im, int x, int y) _(FUNCTION)_
--                gdImageGetPixel() retrieves the color index of a
--                particular pixel. Always use this function to query
--                pixels; do not access the pixels of the gdImage structure
--                directly.
--                
--
--... inside a function ...
--FILE *in;
--gdImagePtr im;
--int c;
--in = fopen("mypng.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--c = gdImageGetPixel(im, gdImageSX(im) / 2, gdImageSY(im) / 2);
--printf("The value of the center pixel is %d; RGB values are %d,%d,%d\n",
--        c, im->red[c], im->green[c], im->blue[c]);
--gdImageDestroy(im);
--
--        int gdImageBoundsSafe(gdImagePtr im, int x, int y) _(FUNCTION)_
--                gdImageBoundsSafe returns true (1) if the specified point
--                is within the bounds of the image, false (0) if not. This
--                function is intended primarily for use by those who wish
--                to add functions to gd. All of the gd drawing functions
--                already clip safely to the edges of the image.
--                
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--if (gdImageBoundsSafe(im, 50, 50)) {
--        printf("50, 50 is within the image bounds\n");
--} else {
--        printf("50, 50 is outside the image bounds\n");
--}
--gdImageDestroy(im);
--
--        int gdImageGreen(gdImagePtr im, int color) _(MACRO)_
--                gdImageGreen is a macro which returns the green component
--                of the specified color index. Use this macro rather than
--                accessing the structure members directly.
--                
--        int gdImageRed(gdImagePtr im, int color) _(MACRO)_
--                gdImageRed is a macro which returns the red component of
--                the specified color index. Use this macro rather than
--                accessing the structure members directly.
--                
--        int gdImageSX(gdImagePtr im) _(MACRO)_
--                gdImageSX is a macro which returns the width of the image
--                in pixels. Use this macro rather than accessing the
--                structure members directly.
--                
--        int gdImageSY(gdImagePtr im) _(MACRO)_
--                gdImageSY is a macro which returns the height of the
--                image in pixels. Use this macro rather than accessing the
--                structure members directly.
--                
--  Fonts and text-handling functions
--  
--        void gdImageChar(gdImagePtr im, gdFontPtr font, int x, int y, int
--                c, int color) _(FUNCTION)_
--                gdImageChar is used to draw single characters on the
--                image. (To draw multiple characters, use gdImageString or
--                gdImageString16. See also gdImageStringFT for a high
--                quality solution.) The second argument is a pointer to a
--                font definition structure; five fonts are provided with
--                gd, gdFontTiny, gdFontSmall, gdFontMediumBold,
--                gdFontLarge, and gdFontGiant. You must include the files
--                "gdfontt.h", "gdfonts.h", "gdfontmb.h", "gdfontl.h" and
--                "gdfontg.h" respectively and (if you are not using a
--                library-based approach) link with the corresponding .c
--                files to use the provided fonts. The character specified
--                by the fifth argument is drawn from left to right in the
--                specified color. (See gdImageCharUp for a way of drawing
--                vertical text.) Pixels not set by a particular character
--                retain their previous color.
--                
--
--#include "gd.h"
--#include "gdfontl.h"
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a character. */
--gdImageChar(im, gdFontLarge, 0, 0, 'Q', white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        void gdImageCharUp(gdImagePtr im, gdFontPtr font, int x, int y,
--                int c, int color) _(FUNCTION)_
--                gdImageCharUp is used to draw single characters on the
--                image, rotated 90 degrees. (To draw multiple characters,
--                use gdImageStringUp or gdImageStringUp16.) The second
--                argument is a pointer to a font definition structure;
--                five fonts are provided with gd, gdFontTiny, gdFontSmall,
--                gdFontMediumBold, gdFontLarge, and gdFontGiant. You must
--                include the files "gdfontt.h", "gdfonts.h", "gdfontmb.h",
--                "gdfontl.h" and "gdfontg.h" respectively and (if you are
--                not using a library-based approach) link with the
--                corresponding .c files to use the provided fonts. The
--                character specified by the fifth argument is drawn from
--                bottom to top, rotated at a 90-degree angle, in the
--                specified color. (See gdImageChar for a way of drawing
--                horizontal text.) Pixels not set by a particular
--                character retain their previous color.
--                
--
--#include "gd.h"
--#include "gdfontl.h"
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a character upwards so it rests against the top of the image. */
--gdImageCharUp(im, gdFontLarge,
--        0, gdFontLarge->h, 'Q', white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        void gdImageString(gdImagePtr im, gdFontPtr font, int x, int y,
--                unsigned char *s, int color) _(FUNCTION)_
--                gdImageString is used to draw multiple characters on the
--                image. (To draw single characters, use gdImageChar.) The
--                second argument is a pointer to a font definition
--                structure; five fonts are provided with gd, gdFontTiny,
--                gdFontSmall, gdFontMediumBold, gdFontLarge, and
--                gdFontGiant. You must include the files "gdfontt.h",
--                "gdfonts.h", "gdfontmb.h", "gdfontl.h" and "gdfontg.h"
--                respectively and (if you are not using a library-based
--                approach) link with the corresponding .c files to use the
--                provided fonts. The null-terminated C string specified by
--                the fifth argument is drawn from left to right in the
--                specified color. (See gdImageStringUp for a way of
--                drawing vertical text. See also gdImageStringFT for a
--                high quality solution.) Pixels not set by a particular
--                character retain their previous color.
--                
--
--#include "gd.h"
--#include "gdfontl.h"
--#include <string.h>
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--/* String to draw. */
--char *s = "Hello.";
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a centered string. */
--gdImageString(im, gdFontLarge,
--        im->w / 2 - (strlen(s) * gdFontLarge->w / 2),
--        im->h / 2 - gdFontLarge->h / 2,
--        s, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        void gdImageString16(gdImagePtr im, gdFontPtr font, int x, int y,
--                unsigned short *s, int color) _(FUNCTION)_
--                gdImageString is used to draw multiple 16-bit characters
--                on the image. (To draw single characters, use
--                gdImageChar.) The second argument is a pointer to a font
--                definition structure; five fonts are provided with gd,
--                gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge,
--                and gdFontGiant. You must include the files "gdfontt.h",
--                "gdfonts.h", "gdfontmb.h", "gdfontl.h" and "gdfontg.h"
--                respectively and (if you are not using a library-based
--                approach) link with the corresponding .c files to use the
--                provided fonts. The null-terminated string of characters
--                represented as 16-bit unsigned short integers specified
--                by the fifth argument is drawn from left to right in the
--                specified color. (See gdImageStringUp16 for a way of
--                drawing vertical text.) Pixels not set by a particular
--                character retain their previous color.
--                
--                This function was added in gd1.3 to provide a means of
--                rendering fonts with more than 256 characters for those
--                who have them. A more frequently used routine is
--                gdImageString.
--                
--        void gdImageStringUp(gdImagePtr im, gdFontPtr font, int x, int y,
--                unsigned char *s, int color) _(FUNCTION)_
--                gdImageStringUp is used to draw multiple characters on
--                the image, rotated 90 degrees. (To draw single
--                characters, use gdImageCharUp.) The second argument is a
--                pointer to a font definition structure; five fonts are
--                provided with gd, gdFontTiny, gdFontSmall,
--                gdFontMediumBold, gdFontLarge, and gdFontGiant. You must
--                include the files "gdfontt.h", "gdfonts.h", "gdfontmb.h",
--                "gdfontl.h" and "gdfontg.h" respectively and (if you are
--                not using a library-based approach) link with the
--                corresponding .c files to use the provided fonts.The
--                null-terminated C string specified by the fifth argument
--                is drawn from bottom to top (rotated 90 degrees) in the
--                specified color. (See gdImageString for a way of drawing
--                horizontal text.) Pixels not set by a particular
--                character retain their previous color.
--                
--
--#include "gd.h"
--#include "gdfontl.h"
--#include <string.h>
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--/* String to draw. */
--char *s = "Hello.";
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color white (red, green and blue all maximum). */
--white = gdImageColorAllocate(im, 255, 255, 255);
--/* Draw a centered string going upwards. Axes are reversed,
--        and Y axis is decreasing as the string is drawn. */
--gdImageStringUp(im, gdFontLarge,
--        im->w / 2 - gdFontLarge->h / 2,
--        im->h / 2 + (strlen(s) * gdFontLarge->w / 2),
--        s, white);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        void gdImageStringUp16(gdImagePtr im, gdFontPtr font, int x, int
--                y, unsigned short *s, int color) _(FUNCTION)_
--                gdImageString is used to draw multiple 16-bit characters
--                vertically on the image. (To draw single characters, use
--                gdImageChar.) The second argument is a pointer to a font
--                definition structure; five fonts are provided with gd,
--                gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge,
--                and gdFontGiant. You must include the files "gdfontt.h",
--                "gdfonts.h", "gdfontmb.h", "gdfontl.h" and "gdfontg.h"
--                respectively and (if you are not using a library-based
--                approach) link with the corresponding .c files to use the
--                provided fonts. The null-terminated string of characters
--                represented as 16-bit unsigned short integers specified
--                by the fifth argument is drawn from bottom to top in the
--                specified color. (See gdImageStringUp16 for a way of
--                drawing horizontal text.) Pixels not set by a particular
--                character retain their previous color.
--                
--                This function was added in gd1.3 to provide a means of
--                rendering fonts with more than 256 characters for those
--                who have them. A more frequently used routine is
--                gdImageStringUp.
--                
--        char *gdImageStringFT(gdImagePtr im, int *brect, int fg, char
--                *fontname, double ptsize, double angle, int x, int y,
--                char *string) _(FUNCTION)_
--                _RECOMMENDED. New in 1.8.4._ gdImageStringFT draws text
--                using the FreeType 2.x library.
--                
--                gdImageStringFT draws a string of anti-aliased characters
--                on the image using the FreeType library to render
--                user-supplied TrueType fonts. _We do not provide TrueType
--                fonts (.ttf and .ttc files). Obtaining them is entirely
--                up to you._ The string is anti-aliased, meaning that
--                there should be fewer "jaggies" visible. The fontname is
--                the full pathname to a TrueType font file, or a font face
--                name if the GDFONTPATH environment variable or FreeType's
--                DEFAULT_FONTPATH variable have been set intelligently.
--                The string may be arbitrarily scaled (ptsize) and rotated
--                (angle in radians).
--                
--                The user-supplied int brect[8] array is filled on return
--                from gdImageStringFT with the 8 elements representing the
--                4 corner coordinates of the bounding rectangle.
--                0 lower left corner, X position
--                lower left corner, Y position
--                lower right corner, X position
--                3 lower right corner, Y position
--                4 upper right corner, X position
--                5 upper right corner, Y position
--                6 upper left corner, X position
--                7 upper left corner, Y position
--                
--                The points are relative to the text regardless of the
--                angle, so "upper left" means in the top left-hand corner
--                seeing the text horizontally.
--                
--                Use a NULL gdImagePtr to get the bounding rectangle
--                without rendering. This is a relatively cheap operation
--                if followed by a rendering of the same string, because of
--                the caching of the partial rendering during bounding
--                rectangle calculation.
--                
--                The string is rendered in the color indicated by the gf
--                color index. _Use the negative of the desired color index
--                to disable anti-aliasing._
--                
--                The string may contain UTF-8 sequences like: "&#192;"
--                
--                gdImageStringFT will return a null char* on success, or
--                an error string on failure.
--                
--
--#include "gd.h"
--#include <string.h>
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--int brect[8];
--int x, y;
--char *err;
--
--char *s = "Hello."; /* String to draw. */
--double sz = 40.;
--char *f = "/usr/local/share/ttf/Times.ttf";  /* User supplied font */
--
--/* obtain brect so that we can size the image */
--err = gdImageStringFT(NULL,&brect[0],0,f,sz,0.,0,0,s);
--if (err) {fprintf(stderr,err); return 1;}
--
--/* create an image big enough for the string plus a little whitespace */
--x = brect[2]-brect[6] + 6;
--y = brect[3]-brect[7] + 6;
--im = gdImageCreate(x,y);
--
--/* Background color (first allocated) */
--white = gdImageColorResolve(im, 255, 255, 255);
--black = gdImageColorResolve(im, 0, 0, 0);
--
--/* render the string, offset origin to center string*/
--/* note that we use top-left coordinate for adjustment
-- * since gd origin is in top-left with y increasing downwards. */
--x = 3 - brect[6];
--y = 3 - brect[7];
--err = gdImageStringFT(im,&brect[0],black,f,sz,0.0,x,y,s);
--if (err) {fprintf(stderr,err); return 1;}
--
--/* Write img to stdout */
--gdImagePng(im, stdout);
--
--/* Destroy it */
--gdImageDestroy(im);
--
--        char *gdImageStringTTF(gdImagePtr im, int *brect, int fg, char
--                *fontname, double ptsize, double angle, int x, int y,
--                char *string) _(FUNCTION)_
--                _DEPRECATED._ gdImageStringTTF draws text using the
--                FreeType 1.x library. For better results, use
--                gdImageStringFT and FreeType 2.x.
--                
--                gdImageStringTTF draws a string of anti-aliased
--                characters on the image using the FreeType library to
--                render user-supplied TrueType fonts. _We do not provide
--                TrueType fonts (.ttf and .ttc files). Obtaining them is
--                entirely up to you._ The string is anti-aliased, meaning
--                that there should be fewer "jaggies" visible. The
--                fontname is the full pathname to a TrueType font file, or
--                a font face name if the GDFONTPATH environment variable
--                or FreeType's DEFAULT_FONTPATH variable have been set
--                intelligently. The string may be arbitrarily scaled
--                (ptsize) and rotated (angle in radians).
--                
--                The user-supplied int brect[8] array is filled on return
--                from gdImageStringTTF with the 8 elements representing
--                the 4 corner coordinates of the bounding rectangle.
--                0 lower left corner, X position
--                lower left corner, Y position
--                lower right corner, X position
--                3 lower right corner, Y position
--                4 upper right corner, X position
--                5 upper right corner, Y position
--                6 upper left corner, X position
--                7 upper left corner, Y position
--                
--                The points are relative to the text regardless of the
--                angle, so "upper left" means in the top left-hand corner
--                seeing the text horizontally.
--                
--                Use a NULL gdImagePtr to get the bounding rectangle
--                without rendering. This is a relatively cheap operation
--                if followed by a rendering of the same string, because of
--                the caching of the partial rendering during bounding
--                rectangle calculation.
--                
--                The string is rendered in the color indicated by the gf
--                color index. _Use the negative of the desired color index
--                to disable anti-aliasing._
--                
--                The string may contain UTF-8 sequences like: "&#192;"
--                
--                gdImageStringTTF will return a null char* on success, or
--                an error string on failure.
--                
--
--#include "gd.h"
--#include <string.h>
--... inside a function ...
--gdImagePtr im;
--int black;
--int white;
--int brect[8];
--int x, y;
--char *err;
--
--char *s = "Hello."; /* String to draw. */
--double sz = 40.;
--char *f = "/usr/local/share/ttf/Times.ttf";  /* User supplied font */
--
--/* obtain brect so that we can size the image */
--err = gdImageStringTTF(NULL,&brect[0],0,f,sz,0.,0,0,s);
--if (err) {fprintf(stderr,err); return 1;}
--
--/* create an image big enough for the string plus a little whitespace */
--x = brect[2]-brect[6] + 6;
--y = brect[3]-brect[7] + 6;
--im = gdImageCreate(x,y);
--
--/* Background color (first allocated) */
--white = gdImageColorResolve(im, 255, 255, 255);
--black = gdImageColorResolve(im, 0, 0, 0);
--
--/* render the string, offset origin to center string*/
--/* note that we use top-left coordinate for adjustment
-- * since gd origin is in top-left with y increasing downwards. */
--x = 3 - brect[6];
--y = 3 - brect[7];
--err = gdImageStringTTF(im,&brect[0],black,f,sz,0.0,x,y,s);
--if (err) {fprintf(stderr,err); return 1;}
--
--/* Write img to stdout */
--gdImagePng(im, stdout);
--
--/* Destroy it */
--gdImageDestroy(im);
--
--  Color-handling functions
--  
--        int gdImageColorAllocate(gdImagePtr im, int r, int g, int b)
--                _(FUNCTION)_
--                gdImageColorAllocate finds the first available color
--                index in the image specified, sets its RGB values to
--                those requested (255 is the maximum for each), and
--                returns the index of the new color table entry. When
--                creating a new image, the first time you invoke this
--                function, you are setting the background color for that
--                image.
--                
--                In the event that all gdMaxColors colors (256) have
--                already been allocated, gdImageColorAllocate will return
--                -1 to indicate failure. (This is not uncommon when
--                working with existing PNG files that already use 256
--                colors.) Note that gdImageColorAllocate does not check
--                for existing colors that match your request; see
--                gdImageColorExact, gdImageColorClosest and
--                gdImageColorClosestHWB for ways to locate existing colors
--                that approximate the color desired in situations where a
--                new color is not available. Also see gdImageColorResolve,
--                new in gd-1.6.2.
--                
--
--... inside a function ...
--gdImagePtr im;
--int black;
--int red;
--im = gdImageCreate(100, 100);
--/* Background color (first allocated) */
--black = gdImageColorAllocate(im, 0, 0, 0);
--/* Allocate the color red. */
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* Draw a dashed line from the upper left corner to the lower right corner. */
--gdImageDashedLine(im, 0, 0, 99, 99, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        int gdImageColorClosest(gdImagePtr im, int r, int g, int b)
--                _(FUNCTION)_
--                gdImageColorClosest searches the colors which have been
--                defined thus far in the image specified and returns the
--                index of the color with RGB values closest to those of
--                the request. (Closeness is determined by Euclidian
--                distance, which is used to determine the distance in
--                three-dimensional color space between colors.)
--                
--                If no colors have yet been allocated in the image,
--                gdImageColorClosest returns -1.
--                
--                This function is most useful as a backup method for
--                choosing a drawing color when an image already contains
--                gdMaxColors (256) colors and no more can be allocated.
--                (This is not uncommon when working with existing PNG
--                files that already use many colors.) See
--                gdImageColorExact for a method of locating exact matches
--                only.
--                
--
--... inside a function ...
--gdImagePtr im;
--FILE *in;
--int red;
--/* Let's suppose that photo.png is a scanned photograph with
--        many colors. */
--in = fopen("photo.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* Try to allocate red directly */
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* If we fail to allocate red... */
--if (red == (-1)) {
--        /* Find the _closest_ color instead. */
--        red = gdImageColorClosest(im, 255, 0, 0);
--}
--/* Draw a dashed line from the upper left corner to the lower right corner */
--gdImageDashedLine(im, 0, 0, 99, 99, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        int gdImageColorClosestHWB(gdImagePtr im, int r, int g, int b)
--                _(FUNCTION)_
--                gdImageColorClosestHWB searches the colors which have
--                been defined thus far in the image specified and returns
--                the index of the color with hue, whiteness and blackness
--                closest to the requested color. This scheme is typically
--                superior to the Euclidian distance scheme used by
--                gdImageColorClosest.
--                
--                If no colors have yet been allocated in the image,
--                gdImageColorClosestHWB returns -1.
--                
--                This function is most useful as a backup method for
--                choosing a drawing color when an image already contains
--                gdMaxColors (256) colors and no more can be allocated.
--                (This is not uncommon when working with existing PNG
--                files that already use many colors.) See
--                gdImageColorExact for a method of locating exact matches
--                only.
--                
--
--... inside a function ...
--gdImagePtr im;
--FILE *in;
--int red;
--/* Let's suppose that photo.png is a scanned photograph with
--        many colors. */
--in = fopen("photo.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* Try to allocate red directly */
--red = gdImageColorAllocate(im, 255, 0, 0);
--/* If we fail to allocate red... */
--if (red == (-1)) {
--        /* Find the _closest_ color instead. */
--        red = gdImageColorClosestHWB(im, 255, 0, 0);
--}
--/* Draw a dashed line from the upper left corner to the lower right corner */
--gdImageDashedLine(im, 0, 0, 99, 99, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        int gdImageColorExact(gdImagePtr im, int r, int g, int b)
--                _(FUNCTION)_
--                gdImageColorExact searches the colors which have been
--                defined thus far in the image specified and returns the
--                index of the first color with RGB values which exactly
--                match those of the request. If no allocated color matches
--                the request precisely, gdImageColorExact returns -1. See
--                gdImageColorClosest for a way to find the color closest
--                to the color requested.
--                
--
--... inside a function ...
--gdImagePtr im;
--int red;
--in = fopen("photo.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* The image may already contain red; if it does, we'll save a slot
--        in the color table by using that color. */
--/* Try to allocate red directly */
--red = gdImageColorExact(im, 255, 0, 0);
--/* If red isn't already present... */
--if (red == (-1)) {
--        /* Second best: try to allocate it directly. */
--        red = gdImageColorAllocate(im, 255, 0, 0);
--        /* Out of colors, so find the _closest_ color instead. */
--        red = gdImageColorClosest(im, 255, 0, 0);
--}
--/* Draw a dashed line from the upper left corner to the lower right corner */
--gdImageDashedLine(im, 0, 0, 99, 99, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        int gdImageColorResolve(gdImagePtr im, int r, int g, int b)
--                _(FUNCTION)_
--                gdImageColorResolve searches the colors which have been
--                defined thus far in the image specified and returns the
--                index of the first color with RGB values which exactly
--                match those of the request. If no allocated color matches
--                the request precisely, then gdImageColorResolve tries to
--                allocate the exact color. If there is no space left in
--                the color table then gdImageColorResolve returns the
--                closest color (as in gdImageColorClosest). This function
--                always returns an index of a color.
--                
--
--... inside a function ...
--gdImagePtr im;
--int red;
--in = fopen("photo.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* The image may already contain red; if it does, we'll save a slot
--        in the color table by using that color. */
--/* Get index of red, or color closest to red */
--red = gdImageColorResolve(im, 255, 0, 0);
--/* Draw a dashed line from the upper left corner to the lower right corner */
--gdImageDashedLine(im, 0, 0, 99, 99, red);
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        int gdImageColorsTotal(gdImagePtr im) _(MACRO)_
--                gdImageColorsTotal is a macro which returns the number of
--                colors currently allocated in the image. Use this macro
--                to obtain this information; do not access the structure
--                directly.
--                
--        int gdImageColorRed(gdImagePtr im, int c) _(MACRO)_
--                gdImageColorRed is a macro which returns the red portion
--                of the specified color in the image. Use this macro to
--                obtain this information; do not access the structure
--                directly.
--                
--        int gdImageColorGreen(gdImagePtr im, int c) _(MACRO)_
--                gdImageColorGreen is a macro which returns the green
--                portion of the specified color in the image. Use this
--                macro to obtain this information; do not access the
--                structure directly.
--                
--        int gdImageColorBlue(gdImagePtr im, int c) _(MACRO)_
--                gdImageColorBlue is a macro which returns the green
--                portion of the specified color in the image. Use this
--                macro to obtain this information; do not access the
--                structure directly.
--                
--        int gdImageGetInterlaced(gdImagePtr im) _(MACRO)_
--                gdImageGetInterlaced is a macro which returns true (1) if
--                the image is interlaced, false (0) if not. Use this macro
--                to obtain this information; do not access the structure
--                directly. See gdImageInterlace for a means of interlacing
--                images.
--                
--        int gdImageGetTransparent(gdImagePtr im) _(MACRO)_
--                gdImageGetTransparent is a macro which returns the
--                current transparent color index in the image. If there is
--                no transparent color, gdImageGetTransparent returns -1.
--                Use this macro to obtain this information; do not access
--                the structure directly.
--                
--        void gdImageColorDeallocate(gdImagePtr im, int color) _(FUNCTION)_
--                
--                gdImageColorDeallocate marks the specified color as being
--                available for reuse. It does not attempt to determine
--                whether the color index is still in use in the image.
--                After a call to this function, the next call to
--                gdImageColorAllocate for the same image will set new RGB
--                values for that color index, changing the color of any
--                pixels which have that index as a result. If multiple
--                calls to gdImageColorDeallocate are made consecutively,
--                the lowest-numbered index among them will be reused by
--                the next gdImageColorAllocate call.
--                
--
--... inside a function ...
--gdImagePtr im;
--int red, blue;
--in = fopen("photo.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* Look for red in the color table. */
--red = gdImageColorExact(im, 255, 0, 0);
--/* If red is present... */
--if (red != (-1)) {
--        /* Deallocate it. */
--        gdImageColorDeallocate(im, red);
--        /* Allocate blue, reusing slot in table.
--                Existing red pixels will change color. */
--        blue = gdImageColorAllocate(im, 0, 0, 255);
--}
--/* ... Do something with the image, such as saving it to a file... */
--/* Destroy it */
--gdImageDestroy(im);
--
--        void gdImageColorTransparent(gdImagePtr im, int color)
--                _(FUNCTION)_
--                gdImageColorTransparent sets the transparent color index
--                for the specified image to the specified index. To
--                indicate that there should be _no_ transparent color,
--                invoke gdImageColorTransparent with a color index of -1.
--                Note that JPEG images do not support transparency, so
--                this setting has no effect when writing JPEG images.
--                
--                The color index used should be an index allocated by
--                gdImageColorAllocate, whether explicitly invoked by your
--                code or implicitly invoked by loading an image. In order
--                to ensure that your image has a reasonable appearance
--                when viewed by users who do not have transparent
--                background capabilities (or when you are writing a
--                JPEG-format file, which does not support transparency),
--                be sure to give reasonable RGB values to the color you
--                allocate for use as a transparent color, _even though it
--                will be transparent on systems that support PNG
--                transparency_.
--                
--
--... inside a function ...
--gdImagePtr im;
--int black;
--FILE *in, *out;
--in = fopen("photo.png", "rb");
--im = gdImageCreateFromPng(in);
--fclose(in);
--/* Look for black in the color table and make it transparent. */
--black = gdImageColorExact(im, 0, 0, 0);
--/* If black is present... */
--if (black != (-1)) {
--        /* Make it transparent */
--        gdImageColorTransparent(im, black);
--}
--/* Save the newly-transparent image back to the file */
--out = fopen("photo.png", "wb");
--gdImagePng(im, out);
--fclose(out);
--/* Destroy it */
--gdImageDestroy(im);
--
--  Copying and resizing functions
--  
--        void gdImageCopy(gdImagePtr dst, gdImagePtr src, int dstX, int
--                dstY, int srcX, int srcY, int w, int h) _(FUNCTION)_
--                gdImageCopy is used to copy a rectangular portion of one
--                image to another image. (For a way of stretching or
--                shrinking the image in the process, see
--                gdImageCopyResized.)
--                
--                The dst argument is the destination image to which the
--                region will be copied. The src argument is the source
--                image from which the region is copied. The dstX and dstY
--                arguments specify the point in the destination image to
--                which the region will be copied. The srcX and srcY
--                arguments specify the upper left corner of the region in
--                the source image. The w and h arguments specify the width
--                and height of the region.
--                
--                When you copy a region from one location in an image to
--                another location in the same image, gdImageCopy will
--                perform as expected unless the regions overlap, in which
--                case the result is unpredictable.
--                
--                _Important note on copying between images:_ since
--                different images do not necessarily have the same color
--                tables, pixels are not simply set to the same color index
--                values to copy them. gdImageCopy will attempt to find an
--                identical RGB value in the destination image for each
--                pixel in the copied portion of the source image by
--                invoking gdImageColorExact. If such a value is not found,
--                gdImageCopy will attempt to allocate colors as needed
--                using gdImageColorAllocate. If both of these methods
--                fail, gdImageCopy will invoke gdImageColorClosest to find
--                the color in the destination image which most closely
--                approximates the color of the pixel being copied.
--                
--
--... Inside a function ...
--gdImagePtr im_in;
--gdImagePtr im_out;
--int x, y;
--FILE *in;
--FILE *out;
--/* Load a small png to tile the larger one with */
--in = fopen("small.png", "rb");
--im_in = gdImageCreateFromPng(in);
--fclose(in);
--/* Make the output image four times as large on both axes */
--im_out = gdImageCreate(im_in->sx * 4, im_in->sy * 4);
--/* Now tile the larger image using the smaller one */
--for (y = 0; (y < 4); y++) {
--        for (x = 0; (x < 4); x++) {
--                gdImageCopy(im_out, im_in,
--                        x * im_in->sx, y * im_in->sy,
--                        0, 0,
--                        im_in->sx, im_in->sy);
--        }
--}
--out = fopen("tiled.png", "wb");
--gdImagePng(im_out, out);
--fclose(out);
--gdImageDestroy(im_in);
--gdImageDestroy(im_out);
--
--        void gdImageCopyResized(gdImagePtr dst, gdImagePtr src, int dstX,
--                int dstY, int srcX, int srcY, int destW, int destH, int
--                srcW, int srcH) _(FUNCTION)_
--                gdImageCopyResized is used to copy a rectangular portion
--                of one image to another image. The X and Y dimensions of
--                the original region and the destination region can vary,
--                resulting in stretching or shrinking of the region as
--                appropriate. (For a simpler version of this function
--                which does not deal with resizing, see gdImageCopy.)
--                
--                The dst argument is the destination image to which the
--                region will be copied. The src argument is the source
--                image from which the region is copied. The dstX and dstY
--                arguments specify the point in the destination image to
--                which the region will be copied. The srcX and srcY
--                arguments specify the upper left corner of the region in
--                the source image. The dstW and dstH arguments specify the
--                width and height of the destination region. The srcW and
--                srcH arguments specify the width and height of the source
--                region and can differ from the destination size, allowing
--                a region to be scaled during the copying process.
--                
--                When you copy a region from one location in an image to
--                another location in the same image, gdImageCopy will
--                perform as expected unless the regions overlap, in which
--                case the result is unpredictable. If this presents a
--                problem, create a scratch image in which to keep
--                intermediate results.
--                
--                _Important note on copying between images:_ since images
--                do not necessarily have the same color tables, pixels are
--                not simply set to the same color index values to copy
--                them. gdImageCopy will attempt to find an identical RGB
--                value in the destination image for each pixel in the
--                copied portion of the source image by invoking
--                gdImageColorExact. If such a value is not found,
--                gdImageCopy will attempt to allocate colors as needed
--                using gdImageColorAllocate. If both of these methods
--                fail, gdImageCopy will invoke gdImageColorClosest to find
--                the color in the destination image which most closely
--                approximates the color of the pixel being copied.
--                
--
--... Inside a function ...
--gdImagePtr im_in;
--gdImagePtr im_out;
--int x, y;
--FILE *in;
--FILE *out;
--/* Load a small png to expand in the larger one */
--in = fopen("small.png", "rb");
--im_in = gdImageCreateFromPng(in);
--fclose(in);
--/* Make the output image four times as large on both axes */
--im_out = gdImageCreate(im_in->sx * 4, im_in->sy * 4);
--/* Now copy the smaller image, but four times larger */
--gdImageCopyResized(im_out, im_in, 0, 0, 0, 0,
--        im_out->sx, im_out->sy,
--        im_in->sx, im_in->sy);
--out = fopen("large.png", "wb");
--gdImagePng(im_out, out);
--fclose(out);
--gdImageDestroy(im_in);
--gdImageDestroy(im_out);
--
--        void gdImageCopyMerge(gdImagePtr dst, gdImagePtr src, int dstX,
--                int dstY, int srcX, int srcY, int w, int h, int pct)
--                _(FUNCTION)_
--                gdImageCopyMerge is almost identical to gdImageCopy,
--                except that it 'merges' the two images by an amount
--                specified in the last parameter. If the last parameter is
--                100, then it will function identically to gdImageCopy -
--                the source image replaces the pixels in the destination.
--                
--                If, however, the _pct_ parameter is less than 100, then
--                the two images are merged. With pct = 0, no action is
--                taken.
--                
--                This feature is most useful to 'highlight' sections of an
--                image by merging a solid color with pct = 50:
--                
--
--... Inside a function ...
--gdImageCopyMerge(im_out, im_in, 100, 200, 0, 0, 30, 50, 50);
--
--        void gdImageCopyMergeGray(gdImagePtr dst, gdImagePtr src, int
--                dstX, int dstY, int srcX, int srcY, int w, int h, int
--                pct) _(FUNCTION)_
--                gdImageCopyMergeGray is almost identical to
--                gdImageCopyMerge, except that when merging images it
--                preserves the hue of the source by converting the
--                destination pixels to grey scale before the copy
--                operation.
--                
--
--... Inside a function ...
--gdImageCopyMergeGray(im_out, im_in, 100, 200, 0, 0, 30, 50, 50);
--
--        void gdImagePaletteCopy(gdImagePtr dst, gdImagePtr src)
--                _(FUNCTION)_
--                Copies a palette from one image to another, attempting to
--                match the colors in the target image to the colors in the
--                source palette.
--                
--  Miscellaneous Functions
--  
--              int gdImageCompare(gdImagePtr im1, gdImagePtr im2)
--                      _(FUNCTION)_
--                      gdImageCompare returns a bitmap indicating if the
--                      two images are different. The members of the bitmap
--                      are defined in gd.h, but the most important is
--                      GD_CMP_IMAGE, which indicated that the images will
--                      actually appear different when displayed. Other,
--                      less important, differences relate to pallette
--                      entries. Any difference in the transparent colour
--                      is assumed to make images display differently, even
--                      if the transparent colour is not used.
--                      
--
--... Inside a function ...
--cmpMask = gdImageCompare(im1, im2);
--
--              gdImageInterlace(gdImagePtr im, int interlace) _(FUNCTION)_
--                      
--                      gdImageInterlace is used to determine whether an
--                      image should be stored in a linear fashion, in
--                      which lines will appear on the display from first
--                      to last, or in an interlaced fashion, in which the
--                      image will "fade in" over several passes. By
--                      default, images are not interlaced. (When writing
--                      JPEG images, interlacing implies generating
--                      progressive JPEG files, which are represented as a
--                      series of scans of increasing quality.
--                      Noninterlaced gd images result in regular
--                      [sequential] JPEG data streams.)
--                      
--                      A nonzero value for the interlace argument turns on
--                      interlace; a zero value turns it off. Note that
--                      interlace has no effect on other functions, and has
--                      no meaning unless you save the image in PNG or JPEG
--                      format; the gd and xbm formats do not support
--                      interlace.
--                      
--                      When a PNG is loaded with gdImageCreateFromPng or a
--                      JPEG is loaded with gdImageCreateFromJpeg,
--                      interlace will be set according to the setting in
--                      the PNG or JPEG file.
--                      
--                      Note that many PNG and JPEG viewers and web
--                      browsers do _not_ support interlace or the
--                      incremental display of progressive JPEGs. However,
--                      the interlaced PNG or progressive JPEG should still
--                      display; it will simply appear all at once, just as
--                      other images do.
--                      
--
--gdImagePtr im;
--FILE *out;
--/* ... Create or load the image... */
--
--/* Now turn on interlace */
--gdImageInterlace(im, 1);
--/* And open an output file */
--out = fopen("test.png", "wb");
--/* And save the image  -- could also use gdImageJpeg */
--gdImagePng(im, out);
--fclose(out);
--gdImageDestroy(im);
--
--              gdFree(void *ptr) _(FUNCTION)_
--                      gdFree provides a reliable way to free memory
--                      allocated by functions such as gdImagePngPtr which
--                      return blocks of memory. Use of this function
--                      guarantees that the version of free() that is
--                      ultimately called will be intended for use with the
--                      version of malloc() that originally allocated the
--                      block.
--                      
--  Constants
--  
--                    gdBrushed _(CONSTANT)_
--                            Used in place of a color when invoking a
--                            line-drawing function such as gdImageLine or
--                            gdImageRectangle. When gdBrushed is used as
--                            the color, the brush image set with
--                            gdImageSetBrush is drawn in place of each
--                            pixel of the line (the brush is usually
--                            larger than one pixel, creating the effect of
--                            a wide paintbrush). See also gdStyledBrushed
--                            for a way to draw broken lines with a series
--                            of distinct copies of an image.
--                            
--                    gdMaxColors_(CONSTANT)_
--                            The constant 256. This is the maximum number
--                            of colors in a PNG file according to the PNG
--                            standard, and is also the maximum number of
--                            colors in a gd image.
--                            
--                    gdStyled _(CONSTANT)_
--                            Used in place of a color when invoking a
--                            line-drawing function such as gdImageLine or
--                            gdImageRectangle. When gdStyled is used as
--                            the color, the colors of the pixels are drawn
--                            successively from the style that has been set
--                            with gdImageSetStyle. If the color of a pixel
--                            is equal to gdTransparent, that pixel is not
--                            altered. (This mechanism is completely
--                            unrelated to the "transparent color" of the
--                            image itself; see gdImageColorTransparent
--                            gdImageColorTransparent for that mechanism.)
--                            See also gdStyledBrushed.
--                            
--                    gdStyledBrushed _(CONSTANT)_
--                            Used in place of a color when invoking a
--                            line-drawing function such as gdImageLine or
--                            gdImageRectangle. When gdStyledBrushed is
--                            used as the color, the brush image set with
--                            gdImageSetBrush is drawn at each pixel of the
--                            line, providing that the style set with
--                            gdImageSetStyle contains a nonzero value (OR
--                            gdTransparent, which does not equal zero but
--                            is supported for consistency) for the current
--                            pixel. (Pixels are drawn successively from
--                            the style as the line is drawn, returning to
--                            the beginning when the available pixels in
--                            the style are exhausted.) Note that this
--                            differs from the behavior of gdStyled, in
--                            which the values in the style are used as
--                            actual pixel colors, except for
--                            gdTransparent.
--                            
--                    gdDashSize _(CONSTANT)_
--                            The length of a dash in a dashed line.
--                            Defined to be 4 for backwards compatibility
--                            with programs that use gdImageDashedLine. New
--                            programs should use gdImageSetStyle and call
--                            the standard gdImageLine function with the
--                            special "color" gdStyled or gdStyledBrushed.
--                            
--                    gdTiled _(CONSTANT)_
--                            Used in place of a normal color in
--                            gdImageFilledRectangle, gdImageFilledPolygon,
--                            gdImageFill, and gdImageFillToBorder. gdTiled
--                            selects a pixel from the tile image set with
--                            gdImageSetTile in such a way as to ensure
--                            that the filled area will be tiled with
--                            copies of the tile image. See the discussions
--                            of gdImageFill and gdImageFillToBorder for
--                            special restrictions regarding those
--                            functions.
--                            
--                    gdTransparent _(CONSTANT)_
--                            Used in place of a normal color in a style to
--                            be set with gdImageSetStyle. gdTransparent is
--                            _not_ the transparent color index of the
--                            image; for that functionality please see
--                            gdImageColorTransparent.
--                            
--  About the additional .gd image file format
--  
--                            In addition to reading and writing the PNG
--                            and JPEG formats and reading the X Bitmap
--                            format, gd has the capability to read and
--                            write its own ".gd" format. This format is
--                            _not_ intended for general purpose use and
--                            should never be used to distribute images. It
--                            is not a compressed format. Its purpose is
--                            solely to allow very fast loading of images
--                            your program needs often in order to build
--                            other images for output. If you are
--                            experiencing performance problems when
--                            loading large, fixed PNG images your program
--                            needs to produce its output images, you may
--                            wish to examine the functions
--                            gdImageCreateFromGd and gdImageGd, which read
--                            and write .gd format images.
--                            
--                            The program "pngtogd.c" is provided as a
--                            simple way of converting .png files to .gd
--                            format. I emphasize again that you will not
--                            need to use this format unless you have a
--                            need for high-speed loading of a few
--                            frequently-used images in your program.
--                            
--  About the .gd2 image file format
--  
--                            In addition to reading and writing the PNG
--                            format and reading the X Bitmap format, gd
--                            has the capability to read and write its own
--                            ".gd2" format. This format is _not_ intended
--                            for general purpose use and should never be
--                            used to distribute images. It is a compressed
--                            format allowing pseudo-random access to large
--                            image files. Its purpose is solely to allow
--                            very fast loading of _parts_ of images If you
--                            are experiencing performance problems when
--                            loading large, fixed PNG or JPEG images your
--                            program needs to produce its output images,
--                            you may wish to examine the functions
--                            gdImageCreateFromGd2,
--                            gdImageCreateFromGd2Part and gdImageGd2,
--                            which read and write .gd2 format images.
--                            
--                            The program "pngtogd2.c" is provided as a
--                            simple way of converting .png files to .gd2
--                            format.
--                            
--  About the gdIOCtx structure
--  
--                            Version 1.5 of GD added a new style of I/O
--                            based on an IOCtx structure (the most
--                            up-to-date version can be found in gd_io.h):
--                            
--
--typedef struct gdIOCtx {
--        int     (*getC)(struct gdIOCtx*);
--        int     (*getBuf)(struct gdIOCtx*, void*, int);
--
--        void     (*putC)(struct gdIOCtx*, int);
--        int     (*putBuf)(struct gdIOCtx*, const void*, int);
--
--        int     (*seek)(struct gdIOCtx*, const int);
--        long    (*tell)(struct gdIOCtx*);
--
--        void    (*free)(struct gdIOCtx*);
--
--} gdIOCtx;
--
--                    Most functions that accepted files in previous
--                            versions now also have a counterpart that
--                            accepts an I/O context. These functions have
--                            a 'Ctx' suffix.
--                            
--                            The Ctx routines use the function pointers in
--                            the I/O context pointed to by gdIOCtx to
--                            perform all I/O. Examples of how to implement
--                            an I/O context can be found in io_file.c
--                            (which provides a wrapper for file routines),
--                            and io_dp.c (which implements in-memory
--                            storage).
--                            
--                            It is not necessary to implement all
--                            functions in an I/O context if you know that
--                            it will only be used in limited
--                            cirsumstances. At the time of writing
--                            (Version 1.6.1, July 1999), the known
--                            requirements are:
--                            
--                            All   Must have 'free',
--                            Anything that reads from the context Must
--                            have 'getC' and 'getBuf',
--                            Anything that writes to the context Must have
--                            'putC' and 'putBuf'.
--                            If gdCreateFromGd2Part is called Must also
--                            have 'seek' and 'tell'.
--                            If gdImageGd2 is called Must also have 'seek'
--                            and 'tell'.
--                            
--  Please tell us you're using gd!
--  
--                            When you contact us and let us know you are
--                            using gd, you help us justify the time spent
--                            in maintaining and improving it. So please
--                            let us know. If the results are publicly
--                            visible on the web, a URL is a wonderful
--                            thing to receive, but if it's not a publicly
--                            visible project, a simple note is just as
--                            welcome.
--                            
--  If you have problems
--  
--                            If you have any difficulties with gd, feel
--                            free to contact the author, Thomas Boutell.
--                            Problems relating to the gd2 format should be
--                            addressed to Philip Warner.
--                            
--                            _Be sure to read this manual carefully first.
--                            _
--  Alphabetical quick index
--  
--                            gdBrushed | gdDashSize | gdFont | gdFontPtr |
--                            gdFree | gdImage | gdImageArc | gdImageBlue |
--                            gdImageBoundsSafe | gdImageChar |
--                            gdImageCharUp | gdImageColorAllocate |
--                            gdImageColorClosest | gdImageColorDeallocate
--                            | gdImageColorExact | gdImageColorResolve |
--                            gdImageColorTransparent | gdImageCopy |
--                            gdImageCopyResized | gdImageCreate |
--                            gdImageCreateFromGd | gdImageCreateFromGd2 |
--                            gdImageCreateFromGd2Part |
--                            gdImageCreateFromJpeg | gdImageCreateFromPng
--                            | gdImageCreateFromPngSource |
--                            gdImageCreateFromXbm | gdImageCreateFromXpm |
--                            gdImageDashedLine | gdImageDestroy |
--                            gdImageFill | gdImageFillToBorder |
--                            gdImageFilledRectangle | gdImageGd |
--                            gdImageGd2 | gdImageGetInterlaced |
--                            gdImageGetPixel | gdImageGetTransparent |
--                            gdImageGreen | gdImageInterlace | gdImageJpeg
--                            | gdImageLine | gdImageFilledPolygon |
--                            gdImagePaletteCopy | gdImagePng |
--                            gdImagePngToSink | gdImagePolygon |
--                            gdImagePtr | gdImageWBMP | gdImageRectangle |
--                            gdImageRed | gdImageSetBrush |
--                            gdImageSetPixel | gdImageSetStyle |
--                            gdImageSetTile | gdImageString |
--                            gdImageString16 | gdImageStringFT |
--                            gdImageStringTTF | gdImageStringUp |
--                            gdImageStringUp16 | gdImageWBMP | gdMaxColors
--                            | gdPoint | gdStyled | gdStyledBrushed |
--                            gdTiled | gdTransparent
--                            
--                            _Boutell.Com, Inc._
 END_OF_PATCH
 
 close PATCH or die "patch failed with status $?\n";

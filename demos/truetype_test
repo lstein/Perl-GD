@@ -6,8 +6,8 @@ use constant FONT_DIRECTORY => '/dosc/windows/fonts';
 
 my $directory = shift || FONT_DIRECTORY;
 
-my @fonts =  <$directory/*.ttf>;
-die "Usage: $0 <directory>\nDisplays a directory of TrueType fonts\n" unless @fonts;
+my @fonts =  <$directory/*.pfa $directory/*.pfb $directory/*.ttf>;
+die "Usage: $0 <directory>\nDisplays a directory of TrueType and Type1 fonts\n" unless @fonts;
 
 my $im = new GD::Image(800,600);
 my ($white,$black) =  (

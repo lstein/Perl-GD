@@ -10,8 +10,8 @@ BEGIN {$| = 1; $loaded = 0; print "1..10\n"; }
 END {print "not ok 1\n" unless $loaded;}
 
 use GD qw(:DEFAULT GD_CMP_IMAGE);
-print "ok 1\n";
 $loaded++;
+print "ok 1\n";
 
 chdir 't' || die "Couldn't change to 't' directory: $!";
 
@@ -19,58 +19,46 @@ $arg = shift;
 
 if (defined $arg && $arg eq '--write') {
   warn "Writing regression files...";
-  compare(&test1,2,'write');
-  compare(&test2,3,'write');
-  compare(&test3,4,'write');
-  compare(&test4,5,'write');
-  compare(&test5,6,'write');
-  compare(&test6,7,'write');
-  compare(&test7,8,'write');
-  compare(&test8('frog.xpm'),9,'write');
-  compare(&test9('frog.jpg'),10,'write');
-#  compare(&test10('frog.gif'),11,'write');
+  compare(&test2,2,'write');
+  compare(&test3,3,'write');
+  compare(&test4,4,'write');
+  compare(&test5,5,'write');
+  compare(&test6,6,'write');
+  compare(&test7,7,'write');
+  compare(&test8,8,'write');
+  compare(&test9('frog.xpm'),9,'write');
+  compare(&test10('frog.jpg'),10,'write');
 }
 
-compare(test1(),++$loaded);
-compare(test2(),++$loaded);
-compare(test3(),++$loaded);
-compare(test4(),++$loaded);
-compare(test5(),++$loaded);
-compare(test6(),++$loaded);
+compare(test2(),2);
+compare(test3(),3);
+compare(test4(),4);
+compare(test5(),5);
+compare(test6(),6);
+compare(test7(),7);
 
 if (GD::Image->stringTTF(0,FONT,12.0,0.0,20,20,"Hello world!")) {
-  multicompare(test7(),++$loaded,undef);
-#  print "ok ",++$loaded," # This test doesn't work with some freetype versions\n";
+  multicompare(test8(),8,undef);
 } elsif ($@ =~/not built with .+Type font support/) {
-  print "ok ",++$loaded," # Skip, no FreeType font support\n";
+  print "ok ",8," # Skip, no FreeType font support\n";
 } else {
-  print "not ok ",++$loaded,"\n";
+  print "not ok ",8,"\n";
 }
 
 if (GD::Image->newFromXpm('frog.xpm')) {
-  compare(test8('frog.xpm'),++$loaded);
+  compare(test9('frog.xpm'),9);
 } elsif ($@ =~/not built with xpm support/) {
-  print "ok ",++$loaded," # Skip, no XPM support\n";
+  print "ok ",9," # Skip, no XPM support\n";
 } else {
-  print "not ok ",++$loaded,"\n";
+  print "not ok ",9,"\n";
 }
 
 if (GD::Image->newFromJpeg('frog.jpg')) {
-  compare(test9('frog.jpg'),++$loaded);
+  compare(test10('frog.jpg'),10);
 } elsif ($@ =~/not built with jpeg support/) {
-  print "ok ",++$loaded," # Skip, no JPEG support\n";
+  print "ok ",10," # Skip, no JPEG support\n";
 } else {
-  print "not ok ",++$loaded,"\n";
-}
-
-if (0) {
-if (GD::Image->newFromGif('frog.gif')) {
-  compare(test10('frog.gif'),++$loaded);
-} elsif ($@ =~/not built with gif support/) {
-  print "ok ",++$loaded," # Skip, no GIF support\n";
-} else {
-  print "not ok ",++$loaded,"\n";
-}
+  print "not ok ",10,"\n";
 }
 
 sub compare {
@@ -109,7 +97,7 @@ sub multicompare {
     opendir(DIR,'.');
   ENTRY:
     while (my $entry =readdir(DIR)) {
-      next unless $entry =~ /^$file-\d+/;
+      next unless $entry =~ /^$file(-\d+)?/;
       open (REGRESSFILE,$entry)
 	|| die "Can't open regression file './t/$entry': $!\n";
       binmode REGRESSFILE;
@@ -125,7 +113,7 @@ sub multicompare {
   }
 }
 
-sub test1 {
+sub test2 {
     my($im) = new GD::Image(300,300);
     my($white) = $im->colorAllocate(255, 255, 255);        
     my($black) = $im->colorAllocate(0, 0, 0);
@@ -145,7 +133,7 @@ sub test1 {
     return $im->png;
 }
 
-sub test2 {
+sub test3 {
     my($im) = new GD::Image(300,300);
     my($white,$black,$red,$blue,$yellow) = (
 					    $im->colorAllocate(255, 255, 255),
@@ -176,7 +164,7 @@ sub test2 {
     return $im->png;
 }
 
-sub test3 {
+sub test4 {
     my($im) = new GD::Image(100,50);
     my($black,$white,$red,$blue) = 
 	(
@@ -190,7 +178,7 @@ sub test3 {
     return $im->png;
 }
 
-sub test4 {
+sub test5 {
     my($im) = new GD::Image(225,180);
     my($black,$white,$red,$blue,$yellow) = 
        ($im->colorAllocate(0, 0, 0),
@@ -213,7 +201,7 @@ sub test4 {
     return $im->png;
 }
 
-sub test5 {
+sub test6 {
     my($im) = new GD::Image(300,300);
     my($white,$black,$red,$blue,$yellow) = 
 	(
@@ -248,7 +236,7 @@ sub test5 {
     return $im->png;
 }
 
-sub test6 {
+sub test7 {
     my $dtor = 0.0174533;
     my $pi = 3.141592654;
     my $xsize = 500;   my $ysize = 500;   my $scale = 1;
@@ -271,7 +259,7 @@ sub test6 {
     return $im->png;
 }
 
-sub test7 {
+sub test8 {
   my $im = GD::Image->new(400,250);
   if (!$im) { printf("Test7: no image");};
   my($white,$black,$red,$blue,$yellow) = 
@@ -284,25 +272,26 @@ sub test7 {
     );
 
   # Some TTFs
-  $im->stringFT($black,FONT,12.0,0.0,20,20,"Hello world!") || return;
-  $im->stringFT($red,FONT,14.0,0.0,20,80,"Hello world!") || return;
-  $im->stringFT($blue,FONT,30.0,-0.5,60,100,"Goodbye cruel world!") || die $@;
-  $im->png;
-}
-
-sub test8 {
-  my $fn = shift;
-  my $im = GD::Image->newFromXpm($fn);
+  $im->stringFT($black,FONT,12.0,0.0,20,20,"Hello world!") || warn $@;
+  $im->stringFT($red,FONT,14.0,0.0,20,80,"Hello world!") || warn $@;
+  $im->stringFT($blue,FONT,30.0,-0.5,60,100,"Goodbye cruel world!") || warn $@;
   $im->png;
 }
 
 sub test9 {
   my $fn = shift;
-  my $im = GD::Image->newFromJpeg($fn);
+  my $im = GD::Image->newFromXpm($fn);
   $im->png;
 }
 
 sub test10 {
+  my $fn = shift;
+  my $im = GD::Image->newFromJpeg($fn);
+  $im->png;
+}
+
+# not used
+sub test11 {
   my $fn = shift;
   my $im = GD::Image->newFromGif($fn);
   $im->gif;
