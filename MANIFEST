@@ -12,6 +12,7 @@ demos/gd_example.cgi
 demos/polys.pl
 demos/shapes.pl
 demos/tile.gif
+demos/transform.pl
 libgd/Makefile.PL
 libgd/README
 libgd/gd.h
@@ -28,7 +29,7 @@ libgd/gdfontt.c
 libgd/gdfontt.h
 libgd/io.h
 libgd/libgd.c
-libgd/mtables.c
+libgd/mtables.h
 qd.pl
 t/GD.t
 t/test.out.1.gif
@@ -36,5 +37,6 @@ t/test.out.2.gif
 t/test.out.3.gif
 t/test.out.4.gif
 t/test.out.5.gif
+t/test.out.6.gif
 t/tile.gif
 typemap

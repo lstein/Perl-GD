@@ -111,6 +111,7 @@ typedef struct {
 } gdPoint, *gdPointPtr;
 
 void gdImagePolygon(gdImagePtr im, gdPointPtr p, int n, int c);
+void gdImageOpenPolygon(gdImagePtr im, gdPointPtr p, int n, int c);
 void gdImageFilledPolygon(gdImagePtr im, gdPointPtr p, int n, int c);
 
 int gdImageColorAllocate(gdImagePtr im, int r, int g, int b);

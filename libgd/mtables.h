@@ -1,3 +1,6 @@
+#ifndef MTABLES_H
+#define MTABLES_H 1
+
 #define costScale 1024
 int cost[] = {
   1024,
@@ -724,3 +727,5 @@ int sint[] = {
   -35,
   -17
 };
+
+#endif

@@ -3,10 +3,11 @@ package GD;
 # Copyright 1995 Lincoln D. Stein.  See accompanying README file for
 # usage information
 
-require 5.002;
+require 5.003;
 require Exporter;
 require DynaLoader;
 require AutoLoader;
+$VERSION = 1.15;
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -177,6 +178,43 @@ sub GD::Polygon::map {
     }
 }
 
+# draws closed polygon with the specified color
+sub GD::Image::polygon {
+    my $self = shift;
+    my($p,$c) = @_;
+    $self->openPolygon($p, $c);
+    $self->line( @{$p->{'points'}->[0]},
+	    @{$p->{'points'}->[$p->{'length'}-1]}, $c);
+}
+
+# These routines added by Winfriend Koenig.
+sub GD::Polygon::toPt {
+    my($self, $dx, $dy) = @_;
+    unless ($self->length > 0) {
+	$self->addPt($dx,$dy);
+	return;
+    }
+    my ($x, $y) = $self->getPt($self->length-1);
+    $self->addPt($x+$dx,$y+$dy);
+}
+
+sub GD::Polygon::transform($$$$$$$) {
+    # see PostScript Ref. page 154
+    my($self, $a, $b, $c, $d, $tx, $ty) = @_;
+    my $size = $self->length;
+    for (my $i=0;$i<$size;$i++) {
+	my($x,$y)=$self->getPt($i);
+	$self->setPt($i, $a*$x+$c*$y+$tx, $b*$x+$d*$y+$ty);
+    }
+    
+}
+
+sub GD::Polygon::scale {
+    my($self, $sx, $sy) = @_;
+    $self->transform($sx,0,0,$sy,0,0);
+}
+
+
 # Autoload methods go after __END__, and are processed by the autosplit program.
 1;
 __END__
@@ -184,6 +222,35 @@ __END__
 =head1 NAME
 
 GD.pm - Interface to Gd Graphics Library
+
+=head1 SYNOPSIS
+
+    use GD;
+        
+    # create a new image
+    $im = new GD::Image(100,100);
+
+    # allocate some colors
+    $white = $im->colorAllocate(255,255,255);
+    $black = $im->colorAllocate(0,0,0);       
+    $red = $im->colorAllocate(255,0,0);      
+    $blue = $im->colorAllocate(0,0,255);
+
+    # make the background transparent and interlaced
+    $im->transparent($white);
+    $im->interlaced('true');
+
+    # Put a black frame around the picture
+    $im->rectangle(0,0,99,99,$black);
+
+    # Draw a blue oval
+    $im->arc(50,50,95,75,0,360,$blue);
+
+    # And fill it with red
+    $im->fill(50,50,$red);
+
+    # Convert the image to GIF and print it on standard output
+    print $im->gif;
 
 =head1 DESCRIPTION
 
@@ -921,6 +988,20 @@ Delete the specified vertex, returning its value.
 
 	($x,$y) = $poly->deletePt(1); 
 
+=item C<toPt>
+
+C<GD::Polygon::toPt(dx,dy)> I<object method>
+
+Draw from current vertex to a new vertex, using relative 
+(dx,dy) coordinates.  If this is the first point, act like
+addPt().
+
+	$poly->addPt(0,0);
+	$poly->toPt(0,50);
+	$poly->toPt(25,-25);
+	$myImage->fillPoly($poly,$blue);
+
+
 =item C<length>
 
 C<GD::Polygon::length> I<object method>
@@ -974,6 +1055,24 @@ box as the source rectangle.
 
 	# Make the polygon really tall
 	$poly->map($poly->bounds,0,0,50,200);
+
+=item C<scale>
+
+C<GD::Polygon::scale(sx,sy)> I<object method>
+
+Scale each vertex of the polygon by the X and Y factors indicated by
+sx and sy.  For example scale(2,2) will make the polygon twice as
+large.  For best results, move the center of the polygon to position
+(0,0) before you scale, then move it back to its previous position.
+
+=item C<transform>
+
+C<GD::Polygon::transform(sx,rx,sy,ry,tx,ty)> I<object method>
+
+Run each vertex of the polygon through a transformation matrix, where
+sx and sy are the X and Y scaling factors, rx and ry are the X and Y
+rotation factors, and tx and ty are X and Y offsets.  See the Adobe
+PostScript Reference, page 154 for a full explanation, or experiment.
 
 =back
 

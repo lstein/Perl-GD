@@ -8,7 +8,7 @@ if (defined($arg) && ($arg eq '--write')) {
     $WRITEREGRESS++;
 }
 
-print "1..5\n";
+print "1..6\n";
 warn "\n";
 
 &compare(&test1,1);
@@ -16,6 +16,7 @@ warn "\n";
 &compare(&test3,3);
 &compare(&test4,4);
 &compare(&test5,5);
+&compare(&test6,6);
 
 sub compare {
     my($imageData,$testNo) = @_;
@@ -155,5 +156,29 @@ sub test5 {
     $im->fill(132,62,$blue);
     $im->fill(100,70,$red);
     $im->fill(40,40,$yellow);
+    return $im->gif;
+}
+
+sub test6 {
+    my $dtor = 0.0174533;
+    my $pi = 3.141592654;
+    my $xsize = 500;   my $ysize = 500;   my $scale = 1;
+    my $x_offset = $xsize/2;   my $y_offset = $ysize/2;
+    my $im = new GD::Image($xsize,$ysize);
+    my $poly = new GD::Polygon;
+    my $col_bg = $im->colorAllocate(0,0,0);
+    my $col_fg = $im->colorAllocate(255,255,0);
+    my $col_fill = $im->colorAllocate(255,0,0);
+
+    my $r_0 = 100;     my $theta_0 = 20;      my $spring_factor = 30;
+    for($theta=0;$theta<=360;$theta++) {
+	my $r = $r_0 + $spring_factor*sin(2*$pi*$theta/$theta_0);
+	my $x = int($r * cos($theta*$dtor))*$scale+$x_offset;
+	my $y = int($r * sin($theta*$dtor))*$scale+$y_offset;
+	$poly->addPt($x,$y);
+    }
+
+    $im->filledPolygon($poly,$col_fill);            # Call gdImageFilledPolygon()
+
     return $im->gif;
 }

@@ -3,10 +3,13 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'	=> 'GD',
-    'VERSION'	=> '1.14',
+    'VERSION'	=> '1.15',
     'MYEXTLIB'  => 'libgd/libgd$(LIB_EXT)',
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
+    # Uncomment the line below if you're getting link errors
+    # having to do with missing math functions (like floor)
+    'LIBS'      =>  ["-lm"],
     # Uncomment the line below if you're using a perl compiled
     # for fastCGI (http://www.fastcgi.com/).
     # 'DEFINE'	=> '-DFCGI'

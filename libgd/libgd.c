@@ -1,10 +1,9 @@
-#include <malloc.h>
-#include "io.h"
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include "io.h"
 #include "gd.h"
-#include "mtables.c"
+#include "mtables.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -2355,6 +2354,23 @@ void gdImageGd(gdImagePtr im, FILE *out) {
   free(data);
 }
 
+#ifdef USE_SFIO
+#undef fgets
+#define fgets(s,n,f) myfgets(s,n,f) 
+char * myfgets(char *s, int n, FILE *fd)
+{
+  char *p = s;
+  while ((n > 0) && !PerlIO_eof(fd)) {
+    *s =  PerlIO_getc(fd);
+    if ((*s == '\n') || (*s == '\0')) break;
+    s++;
+  }
+  if (s != p) 
+    return(p);
+  else
+    return NULL;
+}
+#endif
 
 gdImagePtr
 gdImageCreateFromXbm(FILE *fd)
@@ -2466,6 +2482,15 @@ fail:
 
 void gdImagePolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 {
+	if (!n) {
+		return;
+	}
+	gdImageLine(im, p->x, p->y, p[n-1].x, p[n-1].y, c);
+	gdImageOpenPolygon(im, p, n, c);
+}
+
+void gdImageOpenPolygon(gdImagePtr im, gdPointPtr p, int n, int c)
+{
 	int i;
 	int lx, ly;
 	if (!n) {
@@ -2473,7 +2498,6 @@ void gdImagePolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 	}
 	lx = p->x;
 	ly = p->y;
-	gdImageLine(im, lx, ly, p[n-1].x, p[n-1].y, c);
 	for (i=1; (i < n); i++) {
 		p++;
 		gdImageLine(im, lx, ly, p->x, p->y, c);
@@ -2481,9 +2505,9 @@ void gdImagePolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 		ly = p->y;
 	}
 }	
-	
+
 int gdCompareInt(const void *a, const void *b);
-	
+
 void gdImageFilledPolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 {
 	int i;
@@ -2507,50 +2531,48 @@ void gdImageFilledPolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 	y1 = p[0].y;
 	y2 = p[0].y;
 	for (i=1; (i < n); i++) {
-		if (p[i].y < y1) {
-			y1 = p[i].y;
-		}
 		if (p[i].y > y2) {
 			y2 = p[i].y;
+		} else if (p[i].y < y1) {
+			y1 = p[i].y;
 		}
 	}
 	for (y=y1; (y <= y2); y++) {
-		int interLast = 0;
 		int dirLast = 0;
-		int interFirst = 1;
 		ints = 0;
-		for (i=0; (i <= n); i++) {
+		if (p[0].y == y) {
+			i = n;
+			while (dirLast == 0 && i--) {
+				if (p[i].y > y)
+					dirLast = 1;
+				else if (p[i].y < y)
+					dirLast = -1;
+			}
+		}
+		for (i=0; (i < n); i++) {
 			int x1, x2;
 			int y1, y2;
 			int dir;
-			int ind1, ind2;
-			int lastInd1 = 0;
-			if ((i == n) || (!i)) {
-				ind1 = n-1;
-				ind2 = 0;
-			} else {
-				ind1 = i-1;
-				ind2 = i;
-			}
-			y1 = p[ind1].y;
-			y2 = p[ind2].y;
+			int i2 = i+1;
+			if (i2 == n)
+				i2 = 0;
+			y1 = p[i].y;
+			y2 = p[i2].y;
 			if (y1 < y2) {
-				y1 = p[ind1].y;
-				y2 = p[ind2].y;
-				x1 = p[ind1].x;
-				x2 = p[ind2].x;
+				x1 = p[i].x;
+				x2 = p[i2].x;
 				dir = -1;
 			} else if (y1 > y2) {
-				y2 = p[ind1].y;
-				y1 = p[ind2].y;
-				x2 = p[ind1].x;
-				x1 = p[ind2].x;
+				y2 = p[i].y;
+				y1 = p[i2].y;
+				x2 = p[i].x;
+				x1 = p[i2].x;
 				dir = 1;
 			} else {
 				/* Horizontal; just draw it */
 				gdImageLine(im, 
-					p[ind1].x, y1, 
-					p[ind2].x, y1,
+					p[i].x, y1, 
+					p[i2].x, y1,
 					c);
 				continue;
 			}
@@ -2558,37 +2580,11 @@ void gdImageFilledPolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 				int inter = 
 					(y-y1) * (x2-x1) / (y2-y1) + x1;
 				/* Only count intersections once
-					except at maxima and minima. Also, 
-					if two consecutive intersections are
-					endpoints of the same horizontal line
-					that is not at a maxima or minima,	
-					discard the leftmost of the two. */
-				if (!interFirst) {
-					if ((p[ind1].y == p[lastInd1].y) &&
-						(p[ind1].x != p[lastInd1].x)) {
-						if (dir == dirLast) {
-							if (inter > interLast) {
-								/* Replace the old one */
-								im->polyInts[ints] = inter;
-							} else {
-								/* Discard this one */
-							}	
-							continue;
-						}
-					}
-					if (inter == interLast) {
-						if (dir == dirLast) {
-							continue;
-						}
-					}
-				} 
-				if (i > 0) {
-					im->polyInts[ints++] = inter;
-				}
-				lastInd1 = i;
+					except at maxima and minima. */
+				if ((y == p[i].y) && (dir == dirLast))
+					continue;
+				im->polyInts[ints++] = inter;
 				dirLast = dir;
-				interLast = inter;
-				interFirst = 0;
 			}
 		}
 		qsort(im->polyInts, ints, sizeof(int), gdCompareInt);
@@ -2598,7 +2594,7 @@ void gdImageFilledPolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 		}
 	}
 }
-	
+
 int gdCompareInt(const void *a, const void *b)
 {
 	return (*(const int *)a) - (*(const int *)b);

@@ -5,9 +5,13 @@
 #ifdef FCGI
 #include <fcgi_stdio.h>
 #else
+#ifdef USE_SFIO
+#include <config.h>
+#include <perlio.h>
+#else
 #include <stdio.h>
 #endif
-
+#endif
 /* Copyright 1995, 1996, Lincoln D. Stein.  See accompanying README file for
 	usage restrictions */
 
@@ -458,7 +462,7 @@ gddashedLine(image,x1,y1,x2,y2,color)
 	}
 
 void
-gdpolygon(image,poly,color)
+gdopenPolygon(image,poly,color)
 	GD::Image	image
 	SV *		poly
 	int		color
@@ -509,7 +513,7 @@ gdpolygon(image,poly,color)
 			polyptr[i].y = y;
 		}
 
-		gdImagePolygon(image,polyptr,length,color);
+		gdImageOpenPolygon(image,polyptr,length,color);
 		safefree((char*) polyptr);
 	}
 

@@ -4,9 +4,8 @@ WriteMakefile(
 	'NAME'     =>   'libgd',
         'LINKTYPE'  => 'static',
         'SKIP'      => [qw(static dynamic test)],
-	'H'         => [qw(gd.h gdfontl.h gdfonts.h io.h gdfontg.h gdfontmb.h gdfontt.h)],
-        'C'         => [qw(gdfontg.c gdfontmb.c gdfontt.c mtables.c gdfontl.c gdfonts.c libgd.c)],
-
+	'H'         => [qw(gd.h gdfontl.h gdfonts.h io.h gdfontg.h gdfontmb.h gdfontt.h mtables.h)],
+        'C'         => [qw(gdfontg.c gdfontmb.c gdfontt.c gdfontl.c gdfonts.c libgd.c)],
         'clean'    =>   {'FILES' => 'libgd.a'}
 );
 
