@@ -26,14 +26,21 @@ remains attached.  Code from the gd graphics library is covered
 separately, under a 1994 copyright by Quest Protein Database Center,
 Cold Spring Harbor Labs, and by Thomas Boutell.
 
-THE LATEST VERSION IS 1.16
+THE LATEST VERSION IS 1.17
+
+WHAT'S NEW IN 1.17
+
+	- Patches from Gurusamy Sarathy <gsar@engin.umich.edu> that allow GD 
+	  to compile correctly on Win32 systems.
+	- Patches from Jan Pazdziora <adelton@fi.muni.cz> to handle the 
+          full ISO-Latin-2 alphabet, along with some bug fixes.
 
 WHAT'S NEW IN 1.16
 
-	- Patches from Andreas Koenig to use FileHandle correctly (also fixes problems
-	with mod_perl).
+	- Patches from Andreas Koenig <koenig@kulturbox.de> to use 
+          FileHandle correctly (also fixes problems with mod_perl).
 
-WHAT'S NEW IN 1.16
+WHAT'S NEW IN 1.15
 
 	- Patches from Ulrich Pfeifer to allow to compile
 	  correctly with FastCGI
@@ -67,14 +74,14 @@ INSTALLATION:
 
 2.  Unpack the tar file:
 
-	zcat GD-1.16.tar.gz | tar xvf -
+	zcat GD-1.17.tar.gz | tar xvf -
 
-    This will create the directory GD-1.16. Do NOT install this directory
+    This will create the directory GD-1.17. Do NOT install this directory
     into the Perl source tree.
 
 3.  To compile GD.pm on a system that supports dynamic linking:
 
-	a.  cd GD-1.16
+	a.  cd GD-1.17
 	b.  perl Makefile.PL
 	c.  make
 	d.  make install
@@ -86,7 +93,7 @@ INSTALLATION:
 4.  To compile GD.pm statically on systems that do not support dynamic
     linking (I think this includes Windows NT):
 
-	a.  cd GD-1.16
+	a.  cd GD-1.17
         b.  perl Makefile.PL
         c.  make perl
         d.  make inst_perl
@@ -96,7 +103,7 @@ INSTALLATION:
      like to install Perl under a different name, such as "gdperl",
      follow this recipe:
 
-	a.  cd GD-1.16
+	a.  cd GD-1.17
         b.  perl Makefile.PL MAP_TARGET=gdperl
         c.  make gdperl
         d.  make inst_perl
@@ -110,7 +117,7 @@ INSTALLATION:
     files to standard output.  To view the files, pipe their
     output to "display" or "xv" in this way:
 
-	a.  cd GD-1.16/demos
+	a.  cd GD-1.17/demos
 	b   perl shapes.pl | xv -
 
 7.  See demos/gd_example.cgi for an example of how to use GD to create
@@ -127,13 +134,13 @@ IF YOU DON'T HAVE PRIVILEGES TO INSTALL GD.pm in your system's main
 Perl library directory, don't despair.  You can install it into your
 home directory using the following feature of Makefile.PL:
 
-	a.  cd GD-1.16
+	a.  cd GD-1.17
 	b.  perl Makefile.PL INSTALLDIRS=site \
                              INSTALLSITELIB=/home/fred/lib \
                              INSTALLSITEARCH=/home/fred/lib/arch
 	c.  make
 	d.  make install
-
+p
 You'll now need to modify your GD-using scripts to tell Perl where to
 find GD.  This example assumes that your home directory is at path
 "/home/fred"; change it as appropriate.
@@ -158,7 +165,7 @@ using the modified Perl.  In this example, I assume that this version
 of Perl is found at '/usr/local/fcgi/bin/perl': modify as appropriate
 for your system.
 
-	a. cd GD-1.16
+	a. cd GD-1.17
 	b. edit Makefile.PL and uncomment the line 
                'DEFINE'	=> '-DFCGI'
         c. /usr/local/fcgi/bin/perl Makefile.PL
@@ -212,7 +219,12 @@ fonts into GD fonts.
    Yes.  The latest MacPerl binaries come with GD already compiled in and
    ready to go.
 
-4. Are there any Windows NT binaries of GD?
+4. Are there any Windows 95/NT binaries of GD?
+
+   Thanks to Gurusamy Sarathy, GD-1.17 now compiles correctly on
+   Win32 systems.  If you have a C compiler, you can compile and
+   install it as a .DLL library.  (If you don't have a C compiler,
+   you can get a free version of gcc at Cygnus, ftp://ftp.cygnus.com/)
 
    David Roth has done a port to Windows NT/95.  You can find it at:
 
@@ -222,12 +234,40 @@ fonts into GD fonts.
    Perl interpreter.  If there is a mismatch, you may encounter a
    "parse error" message.
 
+   As of January 16, David Roth's site has been inaccessible for some 
+   time (first it was not recognized by the DNS; now it asks for a
+   user name and password).  An OLD GD binary is available on CPAN, in
+   
+       modules/by-module/GD/DAVEROTH/Win32_gd_v961016.zip
+
+   I don't know if it will work.  Let me know if you have success.
+
+   Alternately, download the "standard" port of perl 5.004 from a CPAN
+   site near you.  It contains a prebuilt version of GD, statically linked
+   to the binary.
+
 5. GD won't compile on system XX.
 
    The most frequent problem is missing or redundant symbols during the link.
    If you get an error about missing math symbols (usually "floor"), then
    uncomment the line in Makefile.PL that starts with 'LIBS'.  If you get an
    error about multiple redundant symbols, then comment out the line.
+
+6. How come the fonts are so limited?
+
+   The font support comes from libgd, where the fonts are compiled into the
+   binary.  In order to keep the binary size down, only a few fonts are 
+   compiled in.  Some day, perhaps, a future version will come with support
+   for true type fonts, postscript fonts, but don't hold your breath.
+
+   If you want to add fonts, and have access to X11-style BDF fonts, you can
+   use Jan Pazdiora's <adelton@fi.muni.cz> utility, bdftogd.  It will produce
+   a font in a form that can be linked into libgd.  You will also need to hack
+   the files GD.xs and GD.pm to add the appropriate name for the new font.
+   If you are savvy enough to figure bdftogd out, you'll be able to figure out
+   what to do.
+
+   bdftogd is included in this distribution with Jan's kind permission.
 
 BUG REPORTS
 

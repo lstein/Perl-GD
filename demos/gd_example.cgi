@@ -26,6 +26,8 @@ $im->arc(50,50,95,75,0,360,$blue);
 # And fill it with red
 $im->fill(50,50,$red);
 
+binmode STDOUT;
+
 # Convert the image to GIF and print it on standard output
 print $im->gif;
 

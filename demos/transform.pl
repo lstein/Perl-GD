@@ -28,4 +28,6 @@ $im->filledPolygon($poly,$red);
 $poly->transform(0.55,0.20,0.0,1,-25,50);
 $im->filledPolygon($poly,$blue);
 
+binmode STDOUT;
+
 print $im->gif;

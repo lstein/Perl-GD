@@ -100,7 +100,7 @@ void gdImageRectangle(gdImagePtr im, int x1, int y1, int x2, int y2, int color);
 void gdImageFilledRectangle(gdImagePtr im, int x1, int y1, int x2, int y2, int color);
 int gdImageBoundsSafe(gdImagePtr im, int x, int y);
 void gdImageChar(gdImagePtr im, gdFontPtr f, int x, int y, int c, int color);
-void gdImageCharUp(gdImagePtr im, gdFontPtr f, int x, int y, char c, int color);
+void gdImageCharUp(gdImagePtr im, gdFontPtr f, int x, int y, int c, int color);
 void gdImageString(gdImagePtr im, gdFontPtr f, int x, int y, char *s, int color);
 void gdImageStringUp(gdImagePtr im, gdFontPtr f, int x, int y, char *s, int color);
 

@@ -1,14 +1,21 @@
-#ifndef GDFONTT_H
-#define GDFONTT_H 1
 
-/* gdfontt.h: brings in the tinyest of the provided fonts.
-	Also link with gdfontt.c. */
+#ifndef _GDFONTT_H_
+#define _GDFONTT_H_ 1
+
+/*
+	This is a header file for gd font, generated using
+	bdftogd version 0.5 by Jan Pazdziora, adelton@fi.muni.cz
+	from bdf font
+	-Misc-Fixed-Medium-R-Normal--8-80-75-75-C-50-ISO8859-2
+	at Thu Jan  8 13:49:54 1998.
+	The original bdf was holding following copyright:
+	"Libor Skarvada, libor@informatics.muni.cz"
+ */
+
 
 #include "gd.h"
-
-/* 5x8  font derived from a public domain font in the X
-        distribution. Contains the 127 standard ascii characters. */
 
 extern gdFontPtr gdFontTiny;
 
 #endif
+

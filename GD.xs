@@ -12,7 +12,7 @@
  #endif
  #include <perlio.h>
 #endif
-/* Copyright 1995, 1996, Lincoln D. Stein.  See accompanying README file for
+/* Copyright 1995 - 1998, Lincoln D. Stein.  See accompanying README file for
 	usage restrictions */
 
 static int

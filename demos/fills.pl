@@ -23,6 +23,8 @@ $im->arc(50, 25, 98, 48, 0, 360, $white);
 # black interior of the ellipse
 $im->fill(50, 21, $red);
 
+binmode STDOUT;
+
 # print the image to stdout
 print $im->gif;
 

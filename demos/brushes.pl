@@ -37,6 +37,8 @@ $im->rectangle(150,150,250,250,$black);
 $im->setStyle($green,$green,$green,gdTransparent,$red,$red,$red,gdTransparent);
 $im->line(0,280,300,280,gdStyled);
 
+binmode STDOUT;
+
 # print the image to stdout
 print $im->gif;
 

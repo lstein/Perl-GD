@@ -28,6 +28,8 @@ $im->filledPolygon($poly,$yellow);
 $poly->map($poly->bounds,50,20,80,160);
 $im->filledPolygon($poly,$white);
 
+binmode STDOUT;
+
 # print the image to stdout
 print $im->gif;
 

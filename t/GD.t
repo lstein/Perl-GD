@@ -29,6 +29,7 @@ sub compare {
     if ($fht eq "bare"){
         open (REGRESSFILE,"./test.out.$testNo.gif") 
 	    || die "Can't open regression file './t/test.out.$testNo.gif': $!\n";
+        binmode REGRESSFILE;
         $regressdata = <REGRESSFILE>;
         close REGRESSFILE;
 	print $imageData eq $regressdata ? "ok $ok" : "not ok $ok","\n";
@@ -44,6 +45,7 @@ sub compare {
     if ($WRITEREGRESS) {
 	open (REGRESSFILE,">./test.out.$testNo.gif") 
 	    || die "Can't open regression file './t/test.out.$testNo.gif': $!\n";
+        binmode REGRESSFILE;
 	print REGRESSFILE $imageData;
 	close REGRESSFILE;
     }

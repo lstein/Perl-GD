@@ -10,7 +10,7 @@ require DynaLoader;
 require AutoLoader;
 use strict;
 use vars qw($VERSION @ISA @EXPORT $AUTOLOAD);
-$VERSION = "1.16";
+$VERSION = "1.17";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -74,33 +74,36 @@ sub GD::gdTinyFont {
 sub GD::Image::newFromGif {
     croak("Usage: newFromGif(class,filehandle)") unless @_==2;
     my($class,$fh) = @_;
-    unless (ref $fh) {
+    unless (ref $fh or ref(\$fh) eq 'GLOB') {
 	my($package) = caller;
 	no strict;
-	$fh = "$package\::$fh";
+	$fh = *{"$package\::$fh"};
     }
+    binmode($fh);
     $class->_newFromGif($fh);
 }
 
 sub GD::Image::newFromXbm {
     croak("Usage: newFromXbm(class,filehandle)") unless @_==2;
     my($class,$fh) = @_;
-    unless (ref $fh) {
+    unless (ref $fh or ref(\$fh) eq 'GLOB') {
 	my($package) = caller;
 	no strict;
-	$fh = "$package\::$fh";
+	$fh = *{"$package\::$fh"};
     }
+    binmode($fh);
     $class->_newFromXbm($fh);
 }
 
 sub GD::Image::newFromGd {
     croak("Usage: newFromGd(class,filehandle)") unless @_==2;
     my($class,$fh) = @_;
-    unless (ref $fh) {
+    unless (ref $fh or ref(\$fh) eq 'GLOB') {
 	my($package) = caller;
 	no strict;
-	$fh = "$package\::$fh";
+	$fh = *{"$package\::$fh"};
     }
+    binmode($fh);
     $class->_newFromGd($fh);
 }
 
@@ -279,6 +282,9 @@ GD.pm - Interface to Gd Graphics Library
     # And fill it with red
     $im->fill(50,50,$red);
 
+    # make sure we are writing to a binary stream
+    binmode STDOUT;
+
     # Convert the image to GIF and print it on standard output
     print $im->gif;
 
@@ -337,6 +343,9 @@ A Simple Example:
 	# And fill it with red
 	$im->fill(50,50,$red);
 
+	# make sure we are writing to a binary stream
+	binmode STDOUT;
+
 	# Convert the image to GIF and print it on standard output
 	print $im->gif;
 
@@ -371,7 +380,10 @@ The polygon can then be passed to an image for rendering.
 When you're done drawing, you can convert the image into GIF format by
 sending it a gif() message.  It will return a (potentially large)
 scalar value containing the binary data for the image.  Ordinarily you
-will print it out at this point or write it to a file.
+will print it out at this point or write it to a file.  To ensure
+portability to platforms that differentiate between text and binary
+files, be sure to call C<binmode()> on the file you are writing
+the image to.
 
 =back
 
@@ -407,6 +419,8 @@ initialized image which you can then manipulate as you please.  If it
 fails, which usually happens if the thing at the other end of the
 filehandle is not a valid GIF file, the call returns undef.  Notice
 that the call doesn't automatically close the filehandle for you.
+But it does call C<binmode(FILEHANDLE)> for you, on platforms where
+this matters.
 
 To get information about the size and color usage of the information,
 you can call the image query methods described below.
@@ -428,6 +442,9 @@ contents of an X Bitmap file:
 	$myImage = newFromXbm GD::Image(XBM) || die;
 	close XBM;
 
+Note that this function also calls C<binmode(FILEHANDLE)> before
+reading from the filehandle.
+
 =item C<newFromGd>
 
 C<GD::Image::newFromGd(FILEHANDLE)> I<class method>
@@ -443,6 +460,9 @@ become B<BIG>.
 	$myImage = newFromGd GD::Image(GDF) || die;
 	close GDF;
 
+Note that this function also calls C<binmode(FILEHANDLE)> before
+reading from the supplied filehandle.
+
 =item C<gif>
 
 C<GD::Image::gif> I<object method>
@@ -452,8 +472,12 @@ pipe it to a display program, or write it to a file.  Example:
 
 	$gif_data = $myImage->gif;
 	open (DISPLAY,"| display -") || die;
+	binmode DISPLAY;
 	print DISPLAY $gif_data;
 	close DISPLAY;
+
+Note the use of C<binmode()>.  This is crucial for portability to
+DOSish platforms.
 
 =item C<gd>
 
@@ -462,6 +486,7 @@ C<GD::Image::gd> I<object method>
 This returns the image data in GD format.  You can then print it,
 pipe it to a display program, or write it to a file.  Example:
 
+	binmode MYOUTFILE;
 	print MYOUTFILE $myImage->gd;
 
 =back
@@ -578,6 +603,7 @@ Example:
 	$im = newFromGif GD::Image(GIF);
 	$white = $im->colorClosest(255,255,255); # find white
 	$im->transparent($white);
+	binmode STDOUT;
 	print $im->gif;
 
 =back

@@ -450,7 +450,7 @@ void gdImageChar(gdImagePtr im, gdFontPtr f, int x, int y, int c, int color)
 	}
 }
 
-void gdImageCharUp(gdImagePtr im, gdFontPtr f, int x, int y, char c, int color)
+void gdImageCharUp(gdImagePtr im, gdFontPtr f, int x, int y, int c, int color)
 {
 	int cx, cy;
 	int px, py;
@@ -479,7 +479,7 @@ void gdImageString(gdImagePtr im, gdFontPtr f, int x, int y, char *s, int color)
 	int l;
 	l = strlen(s);
 	for (i=0; (i<l); i++) {
-		gdImageChar(im, f, x, y, s[i], color);
+		gdImageChar(im, f, x, y, (unsigned char)s[i], color);
 		x += f->w;
 	}
 }
@@ -490,7 +490,7 @@ void gdImageStringUp(gdImagePtr im, gdFontPtr f, int x, int y, char *s, int colo
 	int l;
 	l = strlen(s);
 	for (i=0; (i<l); i++) {
-		gdImageCharUp(im, f, x, y, s[i], color);
+		gdImageCharUp(im, f, x, y, (unsigned char)s[i], color);
 		y -= f->w;
 	}
 }

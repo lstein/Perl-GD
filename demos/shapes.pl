@@ -42,6 +42,8 @@ $im->fill(132,62,$blue);
 $im->fill(100,70,$red);
 $im->fill(40,40,$yellow);
 
+binmode STDOUT;
+
 # print the image to stdout
 print $im->gif;
 
