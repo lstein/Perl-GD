@@ -45,5 +45,5 @@ $im->fill(40,40,$yellow);
 binmode STDOUT;
 
 # print the image to stdout
-print $im->gif;
+print $im->png;
 

@@ -2,7 +2,7 @@
 
 use GD;
 
-print "Content-type: image/gif\n\n";
+print "Content-type: image/png\n\n";
         
 # create a new image
 $im = new GD::Image(100,100);
@@ -28,7 +28,7 @@ $im->fill(50,50,$red);
 
 binmode STDOUT;
 
-# Convert the image to GIF and print it on standard output
-print $im->gif;
+# Convert the image to PNG and print it on standard output
+print $im->png;
 
 

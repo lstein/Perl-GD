@@ -31,5 +31,5 @@ $im->filledPolygon($poly,$white);
 binmode STDOUT;
 
 # print the image to stdout
-print $im->gif;
+print $im->png;
 

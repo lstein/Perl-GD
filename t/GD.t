@@ -1,24 +1,45 @@
 #!perl
 
+use lib './blib/lib','./blib/arch','../blib/lib','../blib/arch';
 use FileHandle;
-use GD;
+use constant FONT=>'./Generic.ttf';
+
+my $loaded;
+BEGIN {$| = 1; $loaded = 0; print "1..8\n"; }
+END {print "not ok 1\n" unless $loaded;}
+
+use GD qw(:DEFAULT GD_CMP_IMAGE);
+print "ok 1\n";
+$loaded++;
+
 chdir 't' || die "Couldn't change to 't' directory: $!";
 
 $arg = shift;
-if (1 || defined($arg) && ($arg eq '--write')) {
-    $WRITEREGRESS++;
+if (defined $arg && $arg eq '--write') {
+  warn "Writing regression files...";
+  compare(&test1,2,'write');
+  compare(&test2,3,'write');
+  compare(&test3,4,'write');
+  compare(&test4,5,'write');
+  compare(&test5,6,'write');
+  compare(&test6,7,'write');
+  compare(&test7,8,'write');
 }
 
-print "1..12\n";
-
-for $filehandletype ("bare", "handle"){
-    &compare(&test1,1,$filehandletype);
-    &compare(&test2,2,$filehandletype);
-    &compare(&test3,3,$filehandletype);
-    &compare(&test4,4,$filehandletype);
-    &compare(&test5,5,$filehandletype);
-    &compare(&test6,6,$filehandletype);
+compare(test1(),++$loaded);
+compare(test2(),++$loaded);
+compare(test3(),++$loaded);
+compare(test4(),++$loaded);
+compare(test5(),++$loaded);
+compare(test6(),++$loaded);
+if (GD::Image->stringTTF(0,FONT,12.0,0.0,20,20,"Hello world!")) {
+  compare(test7(),++$loaded);
+} elsif ($@ =~/not built with libgd was not built with TrueType font support/) {
+  print "ok ",++$loaded," # Skip\n";
+} else {
+  print "not ok ",++$loaded,"\n";
 }
+
 
 sub compare {
     my($imageData,$testNo,$fht) = @_;
@@ -26,28 +47,20 @@ sub compare {
     undef $/;
     my $ok = $testNo;
     my $regressdata;
-    if ($fht eq "bare"){
-        open (REGRESSFILE,"./test.out.$testNo.gif") 
-	    || die "Can't open regression file './t/test.out.$testNo.gif': $!\n";
-        binmode REGRESSFILE;
-        $regressdata = <REGRESSFILE>;
-        close REGRESSFILE;
-	print $imageData eq $regressdata ? "ok $ok" : "not ok $ok","\n";
-    } else {
-	my $fh = FileHandle->new;
-        $fh->open("./test.out.$testNo.gif") or
-	    die "Can't open regression file './t/test.out.$testNo.gif': $!\n";
-        my $regressgif = GD::Image->newFromGif($fh);
-        $fh->close;
-	$ok = $testNo+6;
-	print $imageData eq $regressgif->gif ? "ok $ok" : "not ok $ok","\n";
-    }
-    if ($WRITEREGRESS) {
-	open (REGRESSFILE,">./test.out.$testNo.gif") 
-	    || die "Can't open regression file './t/test.out.$testNo.gif': $!\n";
-        binmode REGRESSFILE;
-	print REGRESSFILE $imageData;
-	close REGRESSFILE;
+    my $file = ($^O eq 'VMS')? "test.out_".$testNo."_png" : "./test.out.$testNo.png";
+    if (defined $fht and $fht eq 'write') {
+      open (REGRESSFILE,">$file")
+	|| die "Can't open regression file '$file': $!\n";
+      binmode REGRESSFILE;
+      print REGRESSFILE $imageData;
+      close REGRESSFILE;
+    } else{
+      open (REGRESSFILE,"./test.out.$testNo.png") 
+	|| die "Can't open regression file './t/test.out.$testNo.png': $!\n";
+      binmode REGRESSFILE;
+      $regressdata = <REGRESSFILE>;
+      close REGRESSFILE;
+      print $imageData eq $regressdata ? "ok $ok" : "not ok $ok","\n";
     }
 }
 
@@ -58,8 +71,8 @@ sub test1 {
     my($red) = $im->colorAllocate(255, 0, 0);      
     my($green) = $im->colorAllocate(0,255,0);
     my($yellow) = $im->colorAllocate(255,250,205);
-    open (TILE,"./tile.gif") || die "Can't open tile file: $!";
-    my($tile) = newFromGif GD::Image(TILE);
+    open (TILE,"./tile.png") || die "Can't open tile file: $!";
+    my($tile) = newFromPng GD::Image(TILE);
     close TILE;
     $im->setBrush($tile);
     $im->arc(100,100,100,150,0,360,gdBrushed);
@@ -68,7 +81,7 @@ sub test1 {
     $im->rectangle(150,150,250,250,$black);
     $im->setStyle($green,$green,$green,gdTransparent,$red,$red,$red,gdTransparent);
     $im->line(0,280,300,280,gdStyled);
-    return $im->gif;
+    return $im->png;
 }
 
 sub test2 {
@@ -99,7 +112,7 @@ sub test2 {
     $im->interlaced(1);
     $im->copy($im,150,150,20,20,50,50);
     $im->copyResized($im,10,200,20,20,100,100,50,50);
-    return $im->gif;
+    return $im->png;
 }
 
 sub test3 {
@@ -113,7 +126,7 @@ sub test3 {
 	 );
     $im->arc(50, 25, 98, 48, 0, 360, $white);
     $im->fill(50, 21, $red);
-    return $im->gif;
+    return $im->png;
 }
 
 sub test4 {
@@ -136,7 +149,7 @@ sub test4 {
     $im->filledPolygon($poly,$yellow);
     $poly->map($poly->bounds,50,20,80,160);
     $im->filledPolygon($poly,$white);
-    return $im->gif;
+    return $im->png;
 }
 
 sub test5 {
@@ -171,7 +184,7 @@ sub test5 {
     $im->fill(132,62,$blue);
     $im->fill(100,70,$red);
     $im->fill(40,40,$yellow);
-    return $im->gif;
+    return $im->png;
 }
 
 sub test6 {
@@ -184,7 +197,6 @@ sub test6 {
     my $col_bg = $im->colorAllocate(0,0,0);
     my $col_fg = $im->colorAllocate(255,255,0);
     my $col_fill = $im->colorAllocate(255,0,0);
-
     my $r_0 = 100;     my $theta_0 = 20;      my $spring_factor = 30;
     for($theta=0;$theta<=360;$theta++) {
 	my $r = $r_0 + $spring_factor*sin(2*$pi*$theta/$theta_0);
@@ -195,5 +207,23 @@ sub test6 {
 
     $im->filledPolygon($poly,$col_fill);            # Call gdImageFilledPolygon()
 
-    return $im->gif;
+    return $im->png;
+}
+
+sub test7 {
+  my $im = GD::Image->new(400,250);
+  my($white,$black,$red,$blue,$yellow) = 
+    (
+     $im->colorAllocate(255, 255, 255),
+     $im->colorAllocate(0, 0, 0),
+     $im->colorAllocate(255, 0, 0),
+     $im->colorAllocate(0,0,255),
+     $im->colorAllocate(255,250,205)
+    );
+
+  # Some TTFs
+  $im->stringTTF($black,FONT,12.0,0.0,20,20,"Hello world!") || return;
+  $im->stringTTF($red,FONT,14.0,0.0,20,80,"Hello world!") || return;
+  $im->stringTTF($blue,FONT,30.0,-0.5,60,100,"Goodbye cruel world!") || die $@;
+  $im->png;
 }

@@ -19,9 +19,9 @@ $green = $im->colorAllocate(0,255,0);
 # allocate yellow
 $yellow = $im->colorAllocate(255,250,205);
 
-# Get an image from a gif file
-open (TILE,"./tile.gif") || die;
-$tile = newFromGif GD::Image(TILE);
+# Get an image from a png file
+open (TILE,"./tile.png") || die;
+$tile = newFromPng GD::Image(TILE);
 close TILE;
 
 # use it as a paintbrush
@@ -40,5 +40,5 @@ $im->line(0,280,300,280,gdStyled);
 binmode STDOUT;
 
 # print the image to stdout
-print $im->gif;
+print $im->png;
 

@@ -30,4 +30,4 @@ $im->filledPolygon($poly,$blue);
 
 binmode STDOUT;
 
-print $im->gif;
+print $im->png;

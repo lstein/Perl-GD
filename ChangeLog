@@ -1,2 +1,3 @@
+1.20	Rewritten for libgd 1.6.3
 1.19	Fixed Makefile.PL for better compilation on Windoze machines
 	

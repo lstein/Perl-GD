@@ -3,14 +3,14 @@ package GD;
 # Copyright 1995 Lincoln D. Stein.  See accompanying README file for
 # usage information
 
-require 5.00323;
+require 5.004;
 require FileHandle;
 require Exporter;
 require DynaLoader;
 require AutoLoader;
 use strict;
-use vars qw($VERSION @ISA @EXPORT $AUTOLOAD);
-$VERSION = "1.19";
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
+$VERSION = "1.20";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -30,6 +30,33 @@ $VERSION = "1.19";
 	gdLargeFont
 	gdGiantFont
 );
+
+@EXPORT_OK = qw (
+	GD_CMP_IMAGE 
+        GD_CMP_NUM_COLORS
+	GD_CMP_COLOR
+	GD_CMP_SIZE_X
+	GD_CMP_SIZE_Y
+        GD_CMP_TRANSPARENT
+	GD_CMP_BACKGROUND
+	GD_CMP_INTERLACE
+);
+
+%EXPORT_TAGS = (cmp  => [qw(GD_CMP_IMAGE 
+			    GD_CMP_NUM_COLORS
+			    GD_CMP_COLOR
+			    GD_CMP_SIZE_X
+			    GD_CMP_SIZE_Y
+			    GD_CMP_TRANSPARENT
+			    GD_CMP_BACKGROUND
+			    GD_CMP_INTERLACE
+			    )
+			]
+	       );
+
+# documentation error
+*GD::Polygon::delete = \&GD::Polygon::deletePt;
+
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
     # XS function.  If a constant is not found then control is passed
@@ -76,8 +103,8 @@ sub GD::gdGiantFont {
 }
 
 # This is a C callback
-sub GD::Image::newFromGif {
-    croak("Usage: newFromGif(class,filehandle)") unless @_==2;
+sub GD::Image::newFromPng {
+    croak("Usage: newFromPng(class,filehandle)") unless @_==2;
     my($class,$fh) = @_;
     unless (ref $fh or ref(\$fh) eq 'GLOB') {
 	my($package) = caller;
@@ -85,7 +112,7 @@ sub GD::Image::newFromGif {
 	$fh = *{"$package\::$fh"};
     }
     binmode($fh);
-    $class->_newFromGif($fh);
+    $class->_newFromPng($fh);
 }
 
 sub GD::Image::newFromXbm {
@@ -110,6 +137,16 @@ sub GD::Image::newFromGd {
     }
     binmode($fh);
     $class->_newFromGd($fh);
+}
+
+sub GD::Image::clone {
+  croak("Usage: clone(\$image)") unless @_ == 1;
+  my $self = shift;
+  my ($x,$y) = $self->getBounds;
+  my $new = $self->new($x,$y);
+  return unless $new;
+  $new->copy($self,0,0,0,0,$x,$y);
+  return $new;
 }
 
 ### The polygon object ###
@@ -183,11 +220,16 @@ sub GD::Polygon::bounds {
 }
 
 # delete a vertex, returning it, just for fun
-sub GD::Polygon::delete {
-    my($self,$index) = @_;
-    my($vertex) = splice(@{$self->{'points'}},$index,1);
-    return @$vertex;
-}
+sub GD::Polygon::deletePt {
+     my($self,$index) = @_;
+     unless (($index>=0) && ($index<@{$self->{'points'}})) {
+ 	warn "Attempt to delete an undefined polygon vertex";
+ 	return undef;
+     }
+      my($vertex) = splice(@{$self->{'points'}},$index,1);
+     $self->{'length'}--;
+      return @$vertex;
+  }
 
 # translate the polygon in space by deltaX and deltaY
 sub GD::Polygon::offset {
@@ -290,14 +332,14 @@ GD.pm - Interface to Gd Graphics Library
     # make sure we are writing to a binary stream
     binmode STDOUT;
 
-    # Convert the image to GIF and print it on standard output
-    print $im->gif;
+    # Convert the image to PNG and print it on standard output
+    print $im->png;
 
 =head1 DESCRIPTION
 
 B<GD.pm> is a port of Thomas Boutell's gd graphics library (see
 below).  GD allows you to create color drawings using a large number of
-graphics primitives, and emit the drawings as GIF files.
+graphics primitives, and emit the drawings as PNG files.
 
 GD defines the following three classes:
 
@@ -351,8 +393,8 @@ A Simple Example:
 	# make sure we are writing to a binary stream
 	binmode STDOUT;
 
-	# Convert the image to GIF and print it on standard output
-	print $im->gif;
+	# Convert the image to PNG and print it on standard output
+	print $im->png;
 
 Notes:
 
@@ -362,7 +404,7 @@ Notes:
 To create a new, empty image, send a new() message to GD::Image, passing
 it the width and height of the image you want to create.  An image
 object will be returned.  Other class methods allow you to initialize
-an image from a preexisting GIF, GD or XBM file.
+an image from a preexisting PNG, GD or XBM file.
 
 =item 2.
 Next you will ordinarily add colors to the image's color table.
@@ -382,8 +424,8 @@ points to the returned polygon one at a time using the addPt() method.
 The polygon can then be passed to an image for rendering.
 
 =item 5.
-When you're done drawing, you can convert the image into GIF format by
-sending it a gif() message.  It will return a (potentially large)
+When you're done drawing, you can convert the image into PNG format by
+sending it a png() message.  It will return a (potentially large)
 scalar value containing the binary data for the image.  Ordinarily you
 will print it out at this point or write it to a file.  To ensure
 portability to platforms that differentiate between text and binary
@@ -401,7 +443,7 @@ the image to.
 
 =item C<new>
 
-C<GD::Image::new(width,height)> I<class method>
+C<GD::Image-E<gt>new(width,height)> I<class method>
 
 To create a new, blank image, send a new() message to the GD::Image
 class.  For example:
@@ -413,16 +455,17 @@ specify the dimensions, a default of 64 x 64 will be chosen. If
 something goes wrong (e.g. insufficient memory), this call will
 return undef.
 
-=item C<newFromGif>
 
-C<GD::Image::newFromGif(FILEHANDLE)> I<class method>
+=item C<newFromPng>
 
-This will create an image from a GIF file read in through the provided
+C<GD::Image-E<gt>newFromPng(FILEHANDLE)> I<class method>
+
+This will create an image from a PNG file read in through the provided
 filehandle.  The filehandle must previously have been opened on a
-valid GIF file or pipe.  If successful, this call will return an
+valid PNG file or pipe.  If successful, this call will return an
 initialized image which you can then manipulate as you please.  If it
 fails, which usually happens if the thing at the other end of the
-filehandle is not a valid GIF file, the call returns undef.  Notice
+filehandle is not a valid PNG file, the call returns undef.  Notice
 that the call doesn't automatically close the filehandle for you.
 But it does call C<binmode(FILEHANDLE)> for you, on platforms where
 this matters.
@@ -432,15 +475,16 @@ you can call the image query methods described below.
 
 	Example usage:
 
-	open (GIF,"barnswallow.gif") || die;
-	$myImage = newFromGif GD::Image(GIF) || die;
-	close GIF;
+	open (PNG,"barnswallow.png") || die;
+	$myImage = newFromPng GD::Image(PNG) || die;
+	close PNG;
+
 
 =item C<newFromXbm>
 
-C<GD::Image::newFromXbm(FILEHANDLE)> I<class method>
+C<GD::Image-E<gt>newFromXbm(FILEHANDLE)> I<class method>
 
-This works in exactly the same way as C<newFromGif>, but reads the
+This works in exactly the same way as C<newFromPng>, but reads the
 contents of an X Bitmap file:
 
 	open (XBM,"coredump.xbm") || die;
@@ -450,15 +494,16 @@ contents of an X Bitmap file:
 Note that this function also calls C<binmode(FILEHANDLE)> before
 reading from the filehandle.
 
+
 =item C<newFromGd>
 
-C<GD::Image::newFromGd(FILEHANDLE)> I<class method>
+C<GD::Image-E<gt>newFromGd(FILEHANDLE)> I<class method>
 
-This works in exactly the same way as C<newFromGif>, but reads the
+This works in exactly the same way as C<newFromPng>, but reads the
 contents of a GD file.  GD is Tom Boutell's disk-based storage format,
 intended for the rare case when you need to read and write the image
 to disk quickly.  It's not intended for regular use, because, unlike
-GIF or JPEG, no image compression is performed and these files can
+PNG or JPEG, no image compression is performed and these files can
 become B<BIG>.
 
 	open (GDF,"godzilla.gd") || die;
@@ -468,31 +513,50 @@ become B<BIG>.
 Note that this function also calls C<binmode(FILEHANDLE)> before
 reading from the supplied filehandle.
 
-=item C<gif>
 
-C<GD::Image::gif> I<object method>
+=item C<newFromGd2>
 
-This returns the image data in GIF format.  You can then print it,
+C<GD::Image-E<gt>newFromGd2(FILEHANDLE)> I<class method>
+
+This works in exactly the same way as C<newFromgd()>, but uses the new
+compressed GD2 image format.
+
+
+=item C<png>
+
+C<$image-E<gt>png> I<object method>
+
+This returns the image data in PNG format.  You can then print it,
 pipe it to a display program, or write it to a file.  Example:
 
-	$gif_data = $myImage->gif;
+	$png_data = $myImage->png;
 	open (DISPLAY,"| display -") || die;
 	binmode DISPLAY;
-	print DISPLAY $gif_data;
+	print DISPLAY $png_data;
 	close DISPLAY;
 
 Note the use of C<binmode()>.  This is crucial for portability to
 DOSish platforms.
 
+
 =item C<gd>
 
-C<GD::Image::gd> I<object method>
+C<$image-E<gt>gd> I<object method>
 
 This returns the image data in GD format.  You can then print it,
 pipe it to a display program, or write it to a file.  Example:
 
 	binmode MYOUTFILE;
 	print MYOUTFILE $myImage->gd;
+
+
+
+=item C<gd2>
+
+C<$image-E<gt>gd2> I<object method>
+
+Same as gd(), except that it returns the data in compressed GD2
+format.
 
 =back
 
@@ -502,7 +566,7 @@ pipe it to a display program, or write it to a file.  Example:
 
 =item C<colorAllocate>
 
-C<GD::Image::colorAllocate(red,green,blue)> I<object method>
+C<$image-E<gt>colorAllocate(red,green,blue)> I<object method>
 
 This allocates a color with the specified red, green and blue
 components and returns its index in the color table, if specified.
@@ -521,7 +585,7 @@ Example:
 
 =item C<colorDeallocate>
 
-C<GD::Image::colorDeallocate(colorIndex)> I<object method> 
+C<$image-E<gt>colorDeallocate(colorIndex)> I<object method> 
 
 This marks the color at the specified index as being ripe for
 reallocation.  The next time colorAllocate is used, this entry will be
@@ -535,7 +599,7 @@ Example:
 
 =item C<colorClosest>
 
-C<GD::Image::colorClosest(red,green,blue)> I<object method>
+C<$image-E<gt>colorClosest(red,green,blue)> I<object method>
 
 This returns the index of the color closest in the color table to the
 red green and blue components specified.  If no colors have yet been
@@ -547,7 +611,7 @@ Example:
 
 =item C<colorExact>
 
-C<GD::Image::colorExact(red,green,blue)> I<object method>
+C<$image-E<gt>colorExact(red,green,blue)> I<object method>
 
 This returns the index of a color that exactly matches the specified
 red green and blue components.  If such a color is not in the color
@@ -556,9 +620,21 @@ table, this call returns -1.
 	$rosey = $myImage->colorExact(255,100,80);
 	warn "Everything's coming up roses.\n" if $rosey >= 0;
 
+=item C<colorResolve>
+
+C<$image-E<gt>colorResolve(red,green,blue)> I<object method>
+
+This returns the index of a color that exactly matches the specified
+red green and blue components.  If such a color is not in the color
+table and there is room, then this method allocates the color in the
+color table and returns its index.
+
+	$rosey = $myImage->colorResolve(255,100,80);
+	warn "Everything's coming up roses.\n" if $rosey >= 0;
+
 =item C<colorsTotal>
 
-C<GD::Image::colorsTotal)> I<object method>
+C<$image-E<gt>colorsTotal)> I<object method>
 
 This returns the total number of colors allocated in the object.
 
@@ -566,7 +642,7 @@ This returns the total number of colors allocated in the object.
 
 =item C<getPixel>
 
-C<GD::Image::getPixel(x,y)> I<object method>
+C<$image-E<gt>getPixel(x,y)> I<object method>
 
 This returns the color table index underneath the specified
 point.  It can be combined with rgb()
@@ -579,7 +655,7 @@ Example:
 
 =item C<rgb>
 
-C<GD::Image::rgb(colorIndex)> I<object method>
+C<$image-E<gt>rgb(colorIndex)> I<object method>
 
 This returns a list containing the red, green and blue components of
 the specified color index.
@@ -590,12 +666,12 @@ Example:
 
 =item C<transparent>
 
-C<GD::Image::transparent(colorIndex)> I<object method>
+C<$image-E<gt>transparent(colorIndex)> I<object method>
 
 This marks the color at the specified index as being transparent.
 Portions of the image drawn in this color will be invisible.  This is
 useful for creating paintbrushes of odd shapes, as well as for
-making GIF backgrounds transparent for displaying on the Web.  Only
+making PNG backgrounds transparent for displaying on the Web.  Only
 one color can be transparent at any time. To disable transparency, 
 specify -1 for the index.  
 
@@ -604,12 +680,12 @@ current index of the transparent color, or -1 if none.
 
 Example:
 
-	open(GIF,"test.gif");
-	$im = newFromGif GD::Image(GIF);
+	open(PNG,"test.png");
+	$im = newFromPng GD::Image(PNG);
 	$white = $im->colorClosest(255,255,255); # find white
 	$im->transparent($white);
 	binmode STDOUT;
-	print $im->gif;
+	print $im->png;
 
 =back
 
@@ -626,7 +702,7 @@ module is loaded.
 
 =item C<gdBrushed>
 
-C<GD::Image::setBrush( )> and C<GD::gdBrushed>
+C<$image-E<gt>setBrush( )> and C<GD::gdBrushed>
 
 You can draw lines and shapes using a brush pattern.  Brushes are 
 just images that you can create and manipulate in the usual way. When
@@ -658,7 +734,7 @@ Example:
 
 =item C<gdStyled>
 
-C<GD::Image::setStyle(@colors)> and C<GD::gdStyled>
+C<$image-E<gt>setStyle(@colors)> and C<GD::gdStyled>
 
 Styled lines consist of an arbitrary series of repeated colors and are
 useful for generating dotted and dashed lines.  To create a styled
@@ -705,7 +781,7 @@ C<setStyled> command.
 
 =item C<setPixel>
 
-C<GD::Image::setPixel(x,y,color)> I<object method> 
+C<$image-E<gt>setPixel(x,y,color)> I<object method> 
 
 This sets the pixel at (x,y) to the specified color index.  No value
 is returned from this method.  The coordinate system starts at the
@@ -720,7 +796,7 @@ Example:
 
 =item C<line>
 
-C<GD::Image::line(x1,y1,x2,y2,color)> I<object method>
+C<$image-E<gt>line(x1,y1,x2,y2,color)> I<object method>
 
 This draws a line from (x1,y1) to (x2,y2) of the specified color.  You
 can use a real color, or one of the special colors gdBrushed, 
@@ -734,7 +810,7 @@ Example:
 
 =item C<dashedLine>
 
-C<GD::Image::dashedLine(x1,y1,x2,y2,color)> I<object method>
+C<$image-E<gt>dashedLine(x1,y1,x2,y2,color)> I<object method>
 
 This draws a dashed line from (x1,y1) to (x2,y2) in the specified
 color.  A more powerful way to generate arbitrary dashed and dotted
@@ -760,7 +836,7 @@ Example:
 
 =item C<filledRectangle>
 
-C<GD::Image::filledRectangle(x1,y1,x2,y2,color)> I<object method>
+C<$image-E<gt>filledRectangle(x1,y1,x2,y2,color)> I<object method>
 
 This draws a rectangle filed with the specified color.  You can use a
 real color, or the special fill color gdTiled to fill the polygon
@@ -769,8 +845,8 @@ with a pattern.
 Example:
 
 	# read in a fill pattern and set it
-	open(GIF,"happyface.gif") || die;
-	$tile = newFromGif GD::Image(GIF);
+	open(PNG,"happyface.png") || die;
+	$tile = newFromPng GD::Image(PNG);
 	$myImage->setTile($tile); 
 
 	# draw the rectangle, filling it with the pattern
@@ -778,7 +854,7 @@ Example:
 
 =item C<polygon>
 
-C<GD::Image::polygon(polygon,color)> I<object method> 
+C<$image-E<gt>polygon(polygon,color)> I<object method> 
 
 This draws a polygon with the specified color.  The polygon must be
 created first (see below).  The polygon must have at least three
@@ -796,7 +872,7 @@ Example:
 
 =item C<filledPolygon>
 
-C<GD::Image::filledPolygon(poly,color)> I<object method>
+C<$image-E<gt>filledPolygon(poly,color)> I<object method>
 
 This draws a polygon filled with the specified color.  You can use a
 real color, or the special fill color gdTiled to fill the polygon
@@ -815,7 +891,7 @@ Example:
 
 =item C<arc>
 
-C<GD::Image::arc(cx,cy,width,height,start,end,color)> I<object method>
+C<$image-E<gt>arc(cx,cy,width,height,start,end,color)> I<object method>
 
 This draws arcs and ellipses.  (cx,cy) are the center of the arc, and
 (width,height) specify the width and height, respectively.  The
@@ -835,7 +911,7 @@ Example:
 
 =item C<fill>
 
-C<GD::Image::fill(x,y,color)> I<object method>
+C<$image-E<gt>fill(x,y,color)> I<object method>
 
 This method flood-fills regions with the specified color.  The color
 will spread through the image, starting at point (x,y), until it is
@@ -850,7 +926,7 @@ Example:
 	$myImage->rectangle(10,10,100,100,$black);
 	$myImage->fill(50,50,$blue);
 
-=item C<GD::Image::fillToBorder(x,y,bordercolor,color)> I<object method>
+=item C<$image-E<gt>fillToBorder(x,y,bordercolor,color)> I<object method>
 
 Like C<fill>, this method flood-fills regions with the specified color,
 starting at position (x,y).
@@ -884,11 +960,11 @@ attempt to find the best match, with varying results.
 
 =item C<copy>
 
-C<GD::Image::copy(sourceImage,dstX,dstY,srcX,srcY,width,height)> I<object method>
+C<$image-E<gt>copy(sourceImage,dstX,dstY,srcX,srcY,width,height)> I<object method>
 
-This is the simpler of the two copy operations, copying the specified
-region from the source image to the destination image (the one
-performing the method call).  (srcX,srcY) specify the upper left
+This is the simplest of the several copy operations, copying the
+specified region from the source image to the destination image (the
+one performing the method call).  (srcX,srcY) specify the upper left
 corner of a rectangle in the source image, and (width,height) give the
 width and height of the region to copy.  (dstX,dstY) control where in
 the destination image to stamp the copy.  You can use the same image
@@ -905,9 +981,48 @@ Example:
 	# the rectangle starting at (10,10) in $myImage
 	$myImage->copy($srcImage,10,10,0,0,25,25);
 
+=item C<clone>
+
+C<$image-E<gt>clone()> I<object method>
+
+Make a copy of the image and return it as a new object.  The new image
+will look identical.  However, it may differ in the size of the color
+palette and other nonessential details.
+
+Example:
+
+	$myImage = new GD::Image(100,100);
+	... various drawing stuff ...
+        $copy = $myImage->clone;
+
+C<$image-E<gt>copyMerge(sourceImage,dstX,dstY,srcX,srcY,width,height,percent)> I<object method>
+
+This copies the indicated rectangle from the source image to the
+destination image, merging the colors to the extent specified by
+percent (an integer between 0 and 100).  Specifying 100% has the same
+effect as copy() -- replacing the destination pixels with the source
+image.  This is most useful for highlighting an area by merging in a
+solid rectangle.
+
+Example:
+
+	$myImage = new GD::Image(100,100);
+	... various drawing stuff ...
+	$redImage = new GD::Image(50,50);
+	... more drawing stuff ...
+	# copy a 25x25 pixel region from $srcImage to
+	# the rectangle starting at (10,10) in $myImage, merging 50%
+	$myImage->copyMerge($srcImage,10,10,0,0,25,25,50);
+
+C<$image-E<gt>copyMergeGray(sourceImage,dstX,dstY,srcX,srcY,width,height,percent)> I<object method>
+
+This is identical to copyMerge() except that it preserves the hue of
+the source by converting all the pixels of the destination rectangle
+to grayscale before merging.
+
 =item C<copyResized>
 
-C<GD::Image::copyResized(sourceImage,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH)> I<object method>
+C<$image-E<gt>copyResized(sourceImage,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH)> I<object method>
 
 This method is similar to copy() but allows you to choose different
 sizes for the source and destination rectangles.  The source and
@@ -940,7 +1055,7 @@ way of dynamically creating your own fonts.
 
 =item C<string>
 
-C<GD::Image::string(font,x,y,string,color)> I<Object Method>
+C<$image-E<gt>string(font,x,y,string,color)> I<Object Method>
 
 This method draws a string startin at position (x,y) in the specified
 font and color.  Your choices of fonts are gdSmallFont, gdMediumBoldFont,
@@ -952,7 +1067,7 @@ Example:
 
 =item C<stringUp>
 
-C<GD::Image::stringUp(font,x,y,string,color)> I<Object Method>
+C<$image-E<gt>stringUp(font,x,y,string,color)> I<Object Method>
 
 Just like the previous call, but draws the text rotated
 counterclockwise 90 degrees.
@@ -961,13 +1076,49 @@ counterclockwise 90 degrees.
 
 =item C<charUp>
 
-C<GD::Image::char(font,x,y,char,color)> I<Object Method>
-C<GD::Image::charUp(font,x,y,char,color)> I<Object Method>
+C<$image-E<gt>char(font,x,y,char,color)> I<Object Method>
+C<$image-E<gt>charUp(font,x,y,char,color)> I<Object Method>
 
 These methods draw single characters at position (x,y) in the
 specified font and color.  They're carry-overs from the C interface,
 where there is a distinction between characters and strings.  Perl is
 insensible to such subtle distinctions.
+
+=item C<stringTTF>
+
+C<@bounds = $image-E<gt>stringTTF(fgcolor,fontname,ptsize,angle,x,y,string)> I<Object Method> 
+C<@bounds = GD::Image-E<gt>stringTTF(fgcolor,fontname,ptsize,angle,x,y,string)> I<Class Method>
+
+This method uses TrueType to draw a scaled, antialiased string using
+the TrueType vector font of your choice.  It requires that libgd to
+have been compiled with TrueType support, and for the appropriate
+TrueType font to be installed on your system.  
+
+The arguments are as follows:
+
+  fgcolor    Color index to draw the string in
+  fontname   An absolute or relative path to the TrueType (.ttf) font file
+  ptsize     The desired point size (may be fractional)
+  angle      The rotation angle, in radians
+  x,y        X and Y coordinates to start drawing the string
+  string     The string itself
+
+If successful, the method returns an eight-element list giving the
+boundaries of the rendered string:
+
+ @bounds[0,1]  Lower left corner (x,y)
+ @bounds[2,3]  Lower right corner (x,y)
+ @bounds[4,5]  Upper right corner (x,y)
+ @bounds[6,7]  Upper left corner (x,y)
+
+In case of an error (such as the font not being available, or TTF
+support not being available), the method returns an empty list and
+sets $@ to the error message.
+
+You may also call this method from the GD::Image class name, in which
+case it doesn't do any actual drawing, but returns the bounding box
+using an inexpensive operation.  You can use this to perform layout
+operations prior to drawing.
 
 =back
 
@@ -977,7 +1128,7 @@ insensible to such subtle distinctions.
 
 =item C<interlaced>
 
-C<GD::Image::interlaced( )> C<GD::Image::interlaced(1)> I<Object method>
+C<$image-E<gt>interlaced( )> C<$image-E<gt>interlaced(1)> I<Object method>
 
 This method sets or queries the image's interlaced setting.  Interlace
 produces a cool venetian blinds effect on certain viewers.  Provide a
@@ -987,12 +1138,42 @@ current setting.
 
 =item C<getBounds>
 
-C<GD::Image::getBounds( )> I<Object method>
+C<$image-E<gt>getBounds( )> I<Object method>
 
 This method will return a two-member list containing the width and
 height of the image.  You query but not not change the size of the
 image once it's created.
 
+=item C<compare>
+
+C<$image1-E<gt>compare($image2)>
+
+Compare two images and return a bitmap describing the differenes
+found, if any.  The return value must be logically ANDed with one or
+more constants in order to determine the differences.  The following
+constants are available:
+
+  GD_CMP_IMAGE             The two images look different
+  GD_CMP_NUM_COLORS        The two images have different numbers of colors
+  GD_CMP_COLOR             The two images' palettes differ
+  GD_CMP_SIZE_X            The two images differ in the horizontal dimension
+  GD_CMP_SIZE_Y            The two images differ in the vertical dimension
+  GD_CMP_TRANSPARENT       The two images have different transparency
+  GD_CMP_BACKGROUND        The two images have different background colors
+  GD_CMP_INTERLACE         The two images differ in their interlace
+
+The most important of these is GD_CMP_IMAGE, which will tell you
+whether the two images will look different, ignoring differences in the
+order of colors in the color palette and other invisible changes.  The
+constants are not imported by default, but must be imported individually
+or by importing the :cmp tag.  Example:
+
+  use GD qw(:DEFAULT :cmp);
+  # get $image1 from somewhere
+  # get $image2 from somewhere
+  if ($image1->compare($image2) & GD_CMP_IMAGE) {
+     warn "images differ!";
+  }
 
 =back
 
@@ -1007,7 +1188,7 @@ Quickdraw library).
 
 =item C<new>
 
-C<GD::Polygon::new> I<class method>
+C<GD::Polygon-E<gt>new> I<class method>
 
 Create an empty polygon with no vertices.
 
@@ -1015,7 +1196,7 @@ Create an empty polygon with no vertices.
 
 =item C<addPt>
 
-C<GD::Polygon::addPt(x,y)> I<object method>
+C<$poly-E<gt>addPt(x,y)> I<object method>
 
 Add point (x,y) to the polygon.
 
@@ -1026,7 +1207,7 @@ Add point (x,y) to the polygon.
 
 =item C<getPt>
 
-C<GD::Polygon::getPt(index)> I<object method>
+C<$poly-E<gt>getPt(index)> I<object method>
 
 Retrieve the point at the specified vertex.
 
@@ -1034,7 +1215,7 @@ Retrieve the point at the specified vertex.
 
 =item C<setPt>
 
-C<GD::Polygon::setPt(index,x,y)> I<object method>
+C<$poly-E<gt>setPt(index,x,y)> I<object method>
 
 Change the value of an already existing vertex.  It is an error to set
 a vertex that isn't already defined.
@@ -1043,7 +1224,7 @@ a vertex that isn't already defined.
 
 =item C<deletePt>
 
-C<GD::Polygon:deletePt(index)> I<object method>
+C<$poly-E<gt>deletePt(index)> I<object method>
 
 Delete the specified vertex, returning its value.
 
@@ -1051,7 +1232,7 @@ Delete the specified vertex, returning its value.
 
 =item C<toPt>
 
-C<GD::Polygon::toPt(dx,dy)> I<object method>
+C<$poly-E<gt>toPt(dx,dy)> I<object method>
 
 Draw from current vertex to a new vertex, using relative 
 (dx,dy) coordinates.  If this is the first point, act like
@@ -1065,7 +1246,7 @@ addPt().
 
 =item C<length>
 
-C<GD::Polygon::length> I<object method>
+C<$poly-E<gt>length> I<object method>
 
 Return the number of vertices in the polygon.
 
@@ -1073,7 +1254,7 @@ Return the number of vertices in the polygon.
 
 =item C<vertices>
 
-C<GD::Polygon::vertices> I<object method>
+C<$poly-E<gt>vertices> I<object method>
 
 Return a list of all the verticies in the polygon object.  Each
 membver of the list is a reference to an (x,y) array.
@@ -1085,7 +1266,7 @@ membver of the list is a reference to an (x,y) array.
 
 =item C<bounds>
 
-C<GD::Polygon::bounds> I<object method>
+C<$poly-E<gt>bounds> I<object method>
 
 Return the smallest rectangle that completely encloses the polygon.
 The return value is an array containing the (left,top,right,bottom) of
@@ -1095,7 +1276,7 @@ the rectangle.
 
 =item C<offset>
 
-C<GD::Polygon::offset(dx,dy)> I<object method>
+C<$poly-E<gt>offset(dx,dy)> I<object method>
 
 Offset all the vertices of the polygon by the specified horizontal
 (dh) and vertical (dy) amounts.  Positive numbers move the polygon
@@ -1105,7 +1286,7 @@ down and to the right.
 
 =item C<map>
 
-C<GD::Polygon::map(srcL,srcT,srcR,srcB,destL,dstT,dstR,dstB)> I<object method>
+C<$poly-E<gt>map(srcL,srcT,srcR,srcB,destL,dstT,dstR,dstB)> I<object method>
 
 Map the polygon from a source rectangle to an equivalent position in a
 destination rectangle, moving it and resizing it as necessary.  See
@@ -1119,7 +1300,7 @@ box as the source rectangle.
 
 =item C<scale>
 
-C<GD::Polygon::scale(sx,sy)> I<object method>
+C<$poly-E<gt>scale(sx,sy)> I<object method>
 
 Scale each vertex of the polygon by the X and Y factors indicated by
 sx and sy.  For example scale(2,2) will make the polygon twice as
@@ -1128,7 +1309,7 @@ large.  For best results, move the center of the polygon to position
 
 =item C<transform>
 
-C<GD::Polygon::transform(sx,rx,sy,ry,tx,ty)> I<object method>
+C<$poly-E<gt>transform(sx,rx,sy,ry,tx,ty)> I<object method>
 
 Run each vertex of the polygon through a transformation matrix, where
 sx and sy are the X and Y scaling factors, rx and ry are the X and Y
@@ -1139,54 +1320,59 @@ PostScript Reference, page 154 for a full explanation, or experiment.
 
 =head2 Font Utilities
 
-Gd's support for fonts is minimal.  Basically you have access to a
-half dozen for drawing, and not much else.  However, for future
-compatibility, I've made the fonts into perl objects of type GD::Font
-that you can query and, perhaps someday manipulate.
+The libgd library (used by the Perl GD library) has built-in support
+for about half a dozen fonts, which were converted from public-domain
+X Windows fonts.  For more fonts, compile libgd with TrueType support
+and use the stringTTF() call.
 
-This distribution comes with Jan Pazdziora's bdftogd program, an
-B<unsupported> utility that can help you convert BDF fonts into GD
-format.
+If you wish to add more built-in fonts, the directory bdf_scripts
+contains two contributed utilities that may help you convert X-Windows
+BDF-format fonts into the format that libgd uses internally.  However
+these scripts were written for earlier versions of GD which included
+its own mini-gd library.  These scripts will have to be adapted for
+use with libgd, and the libgd library itself will have to be
+recompiled and linked!  Please do not contact me for help with these
+scripts: they are unsupported.
 
 =over 5
 
 =item C<gdSmallFont>
 
-C<GD::Font::Small> I<constant>
+C<GD::Font-E<gt>Small> I<constant>
 
 This is the basic small font, "borrowed" from a well known public
 domain 6x12 font.
 
 =item C<gdLargeFont>
 
-C<GD::Font::Large> I<constant>
+C<GD::Font-E<gt>Large> I<constant>
 
 This is the basic large font, "borrowed" from a well known public
 domain 8x16 font.
 
 =item C<gdMediumBoldFont>
 
-C<GD::Font::MediumBold> I<constant>
+C<GD::Font-E<gt>MediumBold> I<constant>
 
 This is a bold font intermediate in size between the small and large
 fonts, borrowed from a public domain 7x13 font;
 
 =item C<gdTinyFont>
 
-C<GD::Font::Tiny> I<constant>
+C<GD::Font-E<gt>Tiny> I<constant>
 
 This is a tiny, almost unreadable font, 5x8 pixels wide.
 
 =item C<gdGiantFont>
 
-C<GD::Font::Giant> I<constant>
+C<GD::Font-E<gt>Giant> I<constant>
 
 This is a 9x15 bold font converted by Jan Pazdziora from a sans serif
 X11 font.
 
 =item C<nchars>
 
-C<GD::Font::nchars>	I<object method>
+C<$font-E<gt>nchars>	I<object method>
 
 This returns the number of characters in the font.
 
@@ -1194,7 +1380,7 @@ This returns the number of characters in the font.
 
 =item C<offset>
 
-C<GD::Font::offset> 	I<object method>
+C<$font-E<gt>offset> 	I<object method>
 
 This returns the ASCII value of the first character in the font
 
@@ -1202,7 +1388,7 @@ This returns the ASCII value of the first character in the font
 
 =item C<height>
 
-C<GD::Font::width> C<GD::Font::height>	I<object methods>
+C<$font-E<gt>width> C<GD::Font::height>	I<object methods>
 
 These return the width and height of the font.
 
@@ -1213,21 +1399,15 @@ These return the width and height of the font.
 =head1 Obtaining the C-language version of gd
 
 libgd, the C-language version of gd, can be obtained at URL
-http://www.boutell.com/gd/gd.html.  Directions for installing and
-using it can be found at that site.  Please do not contact me for help
-with libgd.
+http://www.boutell.com/gd/.  Directions for installing and using it
+can be found at that site.  Please do not contact me for help with
+libgd.
 
 =head1 Copyright Information
 
-The GD.pm interface is copyright 1995, Lincoln D. Stein.  You are free
-to use it for any purpose, commercial or noncommercial, provided that
-if you redistribute the source code this statement of copyright
-remains attached. The gd library is covered separately under a 1994
-copyright by Quest Protein Database Center, Cold Spring Harbor Labs
-and Thomas Boutell.  For usage information see the gd documentation at
-URL
-
-	http://www.boutell.com/gd/gd.html
+The GD.pm interface is copyright 1995-1999, Lincoln D. Stein.  It is
+distributed under the same terms as Perl itself.  See the "Artistic
+License" in the Perl source code distribution for licensing terms.
 
 The latest versions of GD.pm are available at
 

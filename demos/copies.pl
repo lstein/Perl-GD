@@ -41,5 +41,5 @@ $im->copyResized($im,10,200,20,20,100,100,50,50);
 binmode STDOUT;
 
 # print the image to stdout
-print $im->gif;
+print $im->png;
 

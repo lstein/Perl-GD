@@ -1,0 +1,8 @@
+These are contributed scripts that can be used to convert BDF fonts
+into statically-linked fonts suitable for use with GD.  They were
+written for earlier versions of GD which had its own special version
+of the gd library.  They will need work to adapt for versions of GD
+which link to a dynamically loaded libgd (1.20 and higher).
+
+Lincoln Stein
+August 30, 1999

@@ -26,5 +26,5 @@ $im->fill(50, 21, $red);
 binmode STDOUT;
 
 # print the image to stdout
-print $im->gif;
+print $im->png;
 
