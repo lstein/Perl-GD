@@ -17,8 +17,8 @@ warn "Type perl Makefile.PL -h for command-line option summary\n";
 
 
 # =====> PATHS: CHECK AND ADJUST <=====
-my @INC     = qw(-I/usr/local/include -I/usr/local/include/gd);
-my @LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/local/lib);
+my @INC     = qw(-I/usr/include -I/usr/include/gd);
+my @LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/lib);
 my @LIBS    = qw(-lgd -lpng -lz);
 
 #############################################################################################
