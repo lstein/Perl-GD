@@ -4,6 +4,7 @@ MANIFEST
 Makefile.PL
 ChangeLog
 README
+README.unix
 README.QUICKDRAW
 demos/brushes.pl
 demos/copies.pl

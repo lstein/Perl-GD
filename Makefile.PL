@@ -5,17 +5,17 @@ my $CAPI = defined $ExtUtils::MakeMaker::CAPI_support ? 'TRUE' : 'FALSE';
 
 # CHECK AND ADJUST
 my @extrasearch = qw( -L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/local/lib );
-my @extrainc    = '-I/usr/local/include', '-I/usr/local/include/gd'; 
+my @extrainc    = ('-I/usr/local/include', '-I/usr/local/include/gd'); 
 
 my @extralibs;
-push @extralibs, '-lgd','-lz','-lpng','-lttf';
+push @extralibs, '-lgd','-lpng','-lttf','-lz';
 push @extralibs, "-lm" unless $^O eq 'MSWin32';
+push @extrasearch,@extralibs,'-lX11';
 
 # FreeBSD 3.3 with libgd built from ports croaks if -lXpm is specified 
 if ($^O ne 'freebsd') { 
-    push @extralibs,@extrasearch,'-lX11','-lXpm'; 
+  push @extralibs,'-lXpm'; 
 } 
- 
 
 WriteMakefile(
     'NAME'	=> 'GD',

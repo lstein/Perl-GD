@@ -17,6 +17,12 @@ f.  support for transparency and interlacing
 For full information on usage, see the accompanying man and html
 documentation.
 
+===> NOTE: This version of GD REQUIRES libgd 1.7.3 or higher.  If you
+===> have an older version of libgd installed you must remove libgd.a,
+===> libgd.so (if present) and gd.h.  Then install the new version of
+===> libgd from boutell.com (see below).  This particularly applies to
+===> users of RedHat Linux systems.
+
 COPYRIGHT INFO
 
 The GD.pm interface is copyright 1995-1999, Lincoln D. Stein.  It is
@@ -28,7 +34,10 @@ Code from the gd graphics library is covered separately, under a 1994
 copyright by Quest Protein Database Center, Cold Spring Harbor Labs,
 and by Thomas Boutell.
 
-THE LATEST VERSION IS 1.23
+THE LATEST VERSION IS 1.24
+
+WHAT'S NEW IN 1.24
+	- added more help in compiling and installing to docs
 
 WHAT'S NEW IN 1.23
 	- added some more libraries to link in, might help unresolved symbol problems
