@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "2.07";
+$VERSION = "2.10";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -223,6 +223,7 @@ sub _image_type {
   my $magic = substr($data,0,4);
   return 'Png'  if $magic eq "\x89PNG";
   return 'Jpeg' if $magic eq "\377\330\377\340";
+  return 'Jpeg' if $magic eq "\377\330\377\341";
   return 'Jpeg' if $magic eq "\377\330\377\356";
   return 'Gd2'  if $magic eq "gd2\000";
   return 'Xpm'  if substr($data,0,9) eq "/* XPM */";
@@ -798,6 +799,13 @@ Example:
 	$white = $myImage->colorAllocate(0,0,0); #background color
 	$black = $myImage->colorAllocate(255,255,255);
 	$peachpuff = $myImage->colorAllocate(255,218,185);
+
+=item B<$index = $image-E<gt>colorAllocateAlpha(reg,green,blue,alpha)>
+
+This allocates a color with the specified red, green, and blue components,
+plus the specified alpha channel.  The alpha value may range from 0 (opaque)
+to 127 (transparent).  The C<alphaBlending> function changes the way this
+alpha channel affects the resulting image.
 
 =item B<$image-E<gt>colorDeallocate(colorIndex)>
 

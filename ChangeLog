@@ -1,3 +1,10 @@
+2.10	More alpha functions from Cory Watson
+	Suppress CAPI warning.
+	Warn about Math::Trig warning
+2.09	VMS documentation patch from Martin Zinser
+	Non-standard library finding path options from Peter Kruty
+2.08	Applied 5.00503 compatibility patch from Mathieu Arnold
+	New check for JPEG magic tag returned by some digital cameras.
 2.07	Now compatible with (and requires!) libgd 2.0.12.
 	Added setThickness() method.
 	Added support for compression level argument to png().

@@ -1,10 +1,16 @@
 use ExtUtils::MakeMaker qw(prompt WriteMakefile);
 
+require 5.6.0;
+
 unless (@ARGV) {
 warn "\nNOTICE: This module requires libgd 2.0.12 or higher.\n";
 warn "        it will NOT work with earlier versions.\n";
 warn "        See www.cpan.org for versions of GD that are compatible\n";
 warn "        with earlier versions of libgd.\n";
+warn "\n";
+warn "        If you are using Math::Trig 1.01 or lower, it has a bug that\n";
+warn "        causes a \"prerequisite not found\" warning to be issued.  You may\n";
+warn "        safely ignore this warning.\n";
 warn "\n";
 warn "Type perl Makefile.PL -h for command-line option summary\n";
 }
@@ -23,6 +29,8 @@ my $result = GetOptions("options=s"       => \$options,
 			"lib_gd_path=s"   => \$lib_gd_path,
 			"lib_ft_path=s"   => \$lib_ft_path,
 			"lib_png_path=s"  => \$lib_png_path,
+			"lib_jpeg_path=s" => \$lib_jpeg_path,
+			"lib_xpm_path=s"  => \$lib_xpm_path,
 			"lib_zlib_path=s" => \$lib_zlib_path,
 		       );
 unless ($result) {
@@ -36,6 +44,8 @@ Configure GD module.
      -lib_gd_path   path            path to libgd
      -lib_ft_path   path            path to Freetype library
      -lib_png_path  path            path to libpng
+     -lib_jpeg_path path            path to libjpeg
+     -lib_xpm_path  path            path to libxpm
      -lib_zlib_path path            path to libpng
 
 If no options are passed on the command line.  The program will
@@ -62,6 +72,18 @@ if( defined($lib_png_path) )
     @INC     = ("-I$lib_png_path/include", @INC);
     @LIBPATH = ("-L$lib_png_path/lib", @LIBPATH); 
 }
+if( defined($lib_jpeg_path) )  
+{  
+    print "JPEG library used from:      $lib_jpeg_path\n";
+    @INC     = ("-I$lib_jpeg_path/include", @INC);
+    @LIBPATH = ("-L$lib_jpeg_path/lib", @LIBPATH); 
+}
+if( defined($lib_xpm_path) )  
+{  
+    print "XPM library used from:      $lib_xpm_path\n";
+    @INC     = ("-I$lib_xpm_path/include", @INC);
+    @LIBPATH = ("-L$lib_xpm_path/lib", @LIBPATH); 
+}
 if( defined($lib_zlib_path) ) 
 {
     print "Zlib library used from:     $lib_zlib_path\n";
@@ -78,7 +100,7 @@ if ($^O eq 'VMS'){
   if ($ENV{"LIB_ROOT"} eq "") {
     warn "Define lib_root as a concealed logical pointing to the\n";
     warn "Top directory where you have your libraries installed\n";
-    warn "E.g. define/job/trans=conc lib_root public$device:[public.util.libs.]\n";
+    warn "E.g. define/job/trans=conc lib_root public\$device:[public.util.libs.]\n";
     warn "Also define the logical pubbin to point to the location\n";
     warn "of the object libraries\n";
     warn "Then re-invoke Makefile.PL\n";
@@ -145,9 +167,9 @@ push @INC, '-I/X11' if ($XPM && $^O eq 'VMS');
 # FreeBSD 3.3 with libgd built from ports croaks if -lXpm is specified 
 if ($^O ne 'freebsd' && $^O ne 'MSWin32') { 
   push @LIBS,'-lX11','-lXpm' if $XPM; 
-} 
+}
 
-my $CAPI = defined $ExtUtils::MakeMaker::CAPI_support ? 'TRUE' : 'FALSE';
+my $CAPI = defined $ExtUtils::MakeMaker::CAPI_support;
 my $DEFINES = '';
 $DEFINES    .= ' -DHAVE_JPEG' if $JPEG;
 $DEFINES    .= ' -DHAVE_FT'   if $FT;
@@ -158,7 +180,7 @@ WriteMakefile(
     'NAME'	=> 'GD',
     'VERSION_FROM'	=> 'GD.pm',
     'PREREQ_PM' => {
-		    Math::Trig => 1.00,
+		    'Math::Trig' => 0,
 		    },
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
@@ -166,7 +188,7 @@ WriteMakefile(
     'INC'       => join(' ',$ENV{'GD_INC'},@INC), 
     'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
     'ABSTRACT'  => 'Interface to Gd Graphics Library',
-    'CAPI'      => $CAPI,
+     $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
 );
 
