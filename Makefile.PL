@@ -4,7 +4,7 @@ require 5.6.0;
 
 unless (@ARGV) {
 warn <<END;
-NOTICE: This module requires libgd 2.0.28 or higher.
+NOTICE: This module requires libgd 2.0.25 or higher.
         it will NOT work with earlier versions. If you are getting
         compile or link errors, then please get and install a new
         version of libgd from www.boutell.com. Do NOT ask Lincoln
@@ -129,6 +129,11 @@ if ($^O eq 'VMS'){
   @INC     = qw(-I/lib_root/gd -I/lib_root/libpng -I/lib_root/zlib);
   @LIBPATH = qw(-Lpubbin);
   @LIBS    = qw(-llibgd.olb -llibpng.olb -llibz.olb);
+}
+
+# workaround for solaris systems?
+elsif ($^O =~ /solaris/i) {
+    push @LIBS,'-liconv';
 }
 
 ###################################################################
