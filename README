@@ -26,10 +26,12 @@ remains attached.  Code from the gd graphics library is covered
 separately, under a 1994 copyright by Quest Protein Database Center,
 Cold Spring Harbor Labs, and by Thomas Boutell.
 
-THE LATEST VERSION IS 1.13
+THE LATEST VERSION IS 1.14
 
-After releasing version 1.10, several small bugs were discovered
-thanks to Andreas Koenig and others.  These have been fixed in 1.13.
+After releasing version 1.14, several bugs were discovered by Andreas
+Koenig and others, including one horrible problem that prevented GD
+from running correctly on Solaris and IRIX.  These have been fixed in
+1.14.
 
 WHAT'S NEW
 
@@ -56,14 +58,14 @@ INSTALLATION:
 
 2.  Unpack the tar file:
 
-	zcat GD-1.10.tar.gz | tar xvf -
+	zcat GD-1.14.tar.gz | tar xvf -
 
-    This will create the directory GD-1.10. Do NOT install this directory
+    This will create the directory GD-1.14. Do NOT install this directory
     into the Perl source tree.
 
 3.  To compile GD.pm on a system that supports dynamic linking:
 
-	a.  cd GD-1.10
+	a.  cd GD-1.14
 	b.  perl Makefile.PL
 	c.  make
 	d.  make install
@@ -75,7 +77,7 @@ INSTALLATION:
 4.  To compile GD.pm statically on systems that do not support dynamic
     linking (I think this includes Windows NT):
 
-	a.  cd GD-1.10
+	a.  cd GD-1.14
         b.  perl Makefile.PL
         c.  make perl
         d.  make inst_perl
@@ -85,7 +87,7 @@ INSTALLATION:
      like to install Perl under a different name, such as "gdperl",
      follow this recipe:
 
-	a.  cd GD-1.10
+	a.  cd GD-1.14
         b.  perl Makefile.PL MAP_TARGET=gdperl
         c.  make gdperl
         d.  make inst_perl
@@ -99,7 +101,7 @@ INSTALLATION:
     files to standard output.  To view the files, pipe their
     output to "display" or "xv" in this way:
 
-	a.  cd GD-1.10/demos
+	a.  cd GD-1.14/demos
 	b   perl shapes.pl | xv -
 
 7.  See demos/gd_example.cgi for an example of how to use GD to create
@@ -119,7 +121,7 @@ home directory using the following trick:
 	cd ~
 	mkdir lib
 	mkdir lib/perl
-        mv    GD-1.10/blib/* lib/perl
+        mv    GD-1.14/blib/* lib/perl
 
 You'll now need to modify your GD-using scripts to tell Perl where to
 find GD.  This example assumes that your home directory is at path
@@ -145,7 +147,7 @@ using the modified Perl.  In this example, I assume that this version
 of Perl is found at '/usr/local/fcgi/bin/perl': modify as appropriate
 for your system.
 
-	a. cd GD-1.10
+	a. cd GD-1.14
 	b. edit Makefile.PL and uncomment the line 
                'DEFINE'	=> '-DFCGI'
         c. /usr/local/fcgi/bin/perl Makefile.PL
