@@ -363,6 +363,9 @@ extern	gdFontPtr	gdFontTiny;
 #  endif
 #endif
 
+#define bigendian(a) \
+    (a[3]<<24)+(a[2]<<16)+(a[1]<<8)+a[0]
+
 /* definitions required to create images from in-memory buffers */
 		     
 typedef struct bufIOCtx {
@@ -1639,7 +1642,9 @@ colorsTotal(image)
 	PROTOTYPE: $
 	CODE:
 	{
-		RETVAL = gdImageColorsTotal(image);
+	   if (gdImageTrueColor(image))
+ 	     XSRETURN_UNDEF;
+	   RETVAL = gdImageColorsTotal(image);
 	}
 	OUTPUT:
 		RETVAL
@@ -1979,6 +1984,80 @@ CODE:
 
 
 MODULE = GD		PACKAGE = GD::Font	PREFIX=gd
+
+GD::Font
+gdload(packname="GD::Font",fontpath)
+     char * packname
+     char * fontpath
+     PROTOTYPE: $$
+     PREINIT:
+       int       fontfile;
+       int       datasize;
+       SV*       errormsg;
+       char      errstr[256];
+       gdFontPtr font;
+       char      word[4];
+       char*     fontdata;
+     CODE:
+     {
+       fontfile = open(fontpath,O_RDONLY);
+       if (fontfile < 0) {
+         errormsg = perl_get_sv("@",0);
+	 snprintf(errstr,256,"could not open font file %s: %s",fontpath,strerror(errno));
+         sv_setpv(errormsg,errstr);
+ 	 XSRETURN_EMPTY;
+       }
+       font = (gdFontPtr)safemalloc(sizeof(gdFont));
+       if (font == NULL)
+	 croak("safemalloc() returned NULL while trying to allocate font struct.\n");
+       /* read header from font - note that the file is assumed to be bigendian*/
+       if (read(fontfile,word,4) < 4)
+	 croak(strerror(errno));
+       font->nchars = bigendian(word);
+
+       if (read(fontfile,word,4) < 4)
+	 croak(strerror(errno));
+       font->offset = bigendian(word);
+
+       if (read(fontfile,word,4) < 4)
+	 croak(strerror(errno));
+       font->w = bigendian(word);
+
+       if (read(fontfile,word,4) < 4)
+	 croak(strerror(errno));
+       font->h = bigendian(word);
+
+       datasize = font->nchars * font->w * font->h;
+       fontdata = (char*)safemalloc(datasize);
+       if (fontdata == NULL)
+	 croak("safemalloc() returned NULL while trying to allocate font bitmap.\n");
+
+       if (read(fontfile,fontdata,datasize) < datasize)
+	 croak(strerror(errno));
+
+       font->data = fontdata;
+
+       close(fontfile); /* please don't leak file descriptors! */
+       RETVAL = font;
+     }
+     OUTPUT:
+            RETVAL
+
+void
+gdDESTROY(self)
+     GD::Font      self
+     PROTOTYPE: $
+     CODE:
+     {
+       if (self == gdFontSmall ||
+	   self == gdFontLarge ||
+	   self == gdFontGiant ||
+	   self == gdFontMediumBold ||
+	   self == gdFontTiny)
+	 XSRETURN_EMPTY;
+       safefree(self->data);
+       safefree(self);
+     }
 
 GD::Font
 gdSmall(packname="GD::Font")

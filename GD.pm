@@ -878,6 +878,8 @@ This returns the total number of colors allocated in the object.
 
 	$maxColors = $myImage->colorsTotal;
 
+In the case of a TrueColor image, this call will return undef.
+
 =item B<$index = $image-E<gt>getPixel(x,y)> I<object method>
 
 This returns the color table index underneath the specified
