@@ -42,6 +42,10 @@
 #endif
 #endif /* 5.00503 */
 
+#ifdef WIN32
+#define snprintf _snprintf
+#endif
+
 static int
 not_here(char *s)
 {
@@ -835,7 +839,7 @@ gdnewFromGifData(packname="GD::Image", imageData, ...)
 	  SV* errormsg;
           int     truecolor = truecolor_default;
 	CODE:
-#ifdef HAVE_JPEG
+#ifdef HAVE_GIF
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromGifCtx(ctx);
