@@ -86,9 +86,11 @@ $image->colorAllocate(0,0,0);
 $image->colorAllocate(255,0,0);
 $image->rectangle(0,0,300,300,0);
 $image->filledRectangle(10,10,50,50,2);
-my $image2 = GD::Image->newFromGdData($image->gd);
+my $gd = $image->gd;
+my $image2 = GD::Image->newFromGdData($gd);
 print ((image($image) eq image($image2)) ? "ok 11\n" : "not ok 11\n");
-$image2 = GD::Image->newFromGd2Data($image->gd2);
+my $gd2 = $image->gd2;
+$image2 = GD::Image->newFromGd2Data($gd2);
 print ((image($image) eq image($image2)) ? "ok 12\n" : "not ok 12\n");
 
 exit 0;
