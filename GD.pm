@@ -76,7 +76,7 @@ sub GD::fileno {
 sub GD::Image::gif {
     my $self = shift;
     my $pid = open(GIF,"-|");
-    my($return,$scalar);
+    my($return,$scalar) = ('','');
     if ($pid) {			# child is going to pipe some stuff to us
 	while(read(GIF,$scalar,1024)) {
 	    $return .= $scalar;

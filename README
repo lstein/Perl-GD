@@ -72,7 +72,7 @@ INSTALLATION:
 	a.  cd perl5.001/ext/GD/demos
 	b   shapes.pl | xv -
 
-The current version is 1.00.  It is up to date with respect to gd version 1.2.
+The current version is 1.01.  It is up to date with respect to gd version 1.2.
 When version 2.0 of gd is released, the new version of GD will be found at
 
 	http://www-genome.wi.mit.edu/pub/software/WWW/GD.html
