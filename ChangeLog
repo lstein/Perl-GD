@@ -1,3 +1,4 @@
+1.32	Added support for Tru64 UNIX v5.0
 1.29	Fixed a corrupted .xpm file in the regression suite
 		(caused test 9 to fail)
 1.28    Added support for gd 1.8.3

@@ -10982,7 +10982,7 @@ diff -Naur gd-1.8.3/ltconfig gd-1.8.3_patched/ltconfig
 +  no_builtin_flag=' -fno-builtin'
 +
 +  case "$host_os" in
-+  aix3* | aix4* | irix5* | irix6* | osf3* | osf4*)
++  aix3* | aix4* | irix5* | irix6* | osf3* | osf4* | osf5*)
 +    # PIC is the default for these OSes.
 +    ;;
 +  os2*)
@@ -11023,7 +11023,7 @@ diff -Naur gd-1.8.3/ltconfig gd-1.8.3_patched/ltconfig
 +    # We can build DLLs from non-PIC.
 +    ;;
 +
-+  osf3* | osf4*)
++  osf3* | osf4* | osf5*)
 +    # All OSF/1 code is PIC.
 +    wl='-Wl,'
 +    link_static_flag='-non_shared'
@@ -11358,7 +11358,7 @@ diff -Naur gd-1.8.3/ltconfig gd-1.8.3_patched/ltconfig
 +    old_archive_from_new_cmds='emximp -o $objdir/$libname.a $objdir/$libname.def'
 +    ;;
 +
-+  osf3* | osf4*)
++  osf3* | osf4* | osf5*)
 +    allow_undefined_flag=' -expect_unresolved \*'
 +    archive_cmds='$LD -shared${allow_undefined_flag} -o $lib -soname $soname -set_version $verstring$libobjs$deplibs'
 +    hardcode_libdir_flag_spec='${wl}-rpath ${wl}$libdir'
@@ -11722,7 +11722,7 @@ diff -Naur gd-1.8.3/ltconfig gd-1.8.3_patched/ltconfig
 +  shlibpath_var=LIBPATH
 +  ;;
 +
-+osf3* | osf4*)
++osf3* | osf4* | osf5*)
 +  version_type=osf
 +  soname_spec='${libname}${release}.so'
 +  library_names_spec='${libname}${release}.so.$versuffix $libname.so'

@@ -426,11 +426,18 @@ gdnewFromJpegData(packname="GD::Image", imageData)
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
+	  SV* errormsg;
 	CODE:
+#ifdef HAVE_JPEG
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromJpegCtx(ctx);
         ctx->free(ctx);
+#else
+        errormsg = perl_get_sv("@",0);
+        sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+        XSRETURN_EMPTY;
+#endif
 	OUTPUT:
 	RETVAL
 

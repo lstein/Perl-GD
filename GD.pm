@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "1.30";
+$VERSION = "1.32";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -44,16 +44,16 @@ $VERSION = "1.30";
 	GD_CMP_INTERLACE
 );
 
-%EXPORT_TAGS = (cmp  => [qw(GD_CMP_IMAGE 
-			    GD_CMP_NUM_COLORS
-			    GD_CMP_COLOR
-			    GD_CMP_SIZE_X
-			    GD_CMP_SIZE_Y
-			    GD_CMP_TRANSPARENT
-			    GD_CMP_BACKGROUND
-			    GD_CMP_INTERLACE
-			    )
-			]
+%EXPORT_TAGS = ('cmp'  => [qw(GD_CMP_IMAGE 
+			      GD_CMP_NUM_COLORS
+			      GD_CMP_COLOR
+			      GD_CMP_SIZE_X
+			      GD_CMP_SIZE_Y
+			      GD_CMP_TRANSPARENT
+			      GD_CMP_BACKGROUND
+			      GD_CMP_INTERLACE
+			     )
+			  ]
 	       );
 
 # documentation error
@@ -652,6 +652,8 @@ support.
 NOTE: The libgd library is unable to read certain XPM files, returning
 an all-black image instead.
 
+=back
+
 =head1 GD::Image Methods
 
 Once a GD::Image object is created, you can draw with it, copy it, and
@@ -663,6 +665,8 @@ a file.
 
 The following methods convert the internal drawing format into
 standard output file formats.
+
+=over 4
 
 =item B<$pngdata = $image-E<gt>png>
 
