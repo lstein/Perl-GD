@@ -4,10 +4,12 @@
 #
 # Author:	Dan Harasty
 # Email:	harasty@cpan.org
-# Version:	0.1
-# Date:		7/20/2002
+# Version:	0.2
+# Date:		2002/08/06
 #
-# See POD at end of file.
+# For usage documentation: see POD at end of file
+#
+# For changes: see "Changes" file included with distribution
 #
 
 use strict;
@@ -28,14 +30,8 @@ package GD::Polyline;
 #
 
 use vars qw($VERSION @ISA);
-$VERSION = "0.1";
+$VERSION = "0.2";
 @ISA = qw(GD::Polygon);
-
-sub scale {
-    my($self, $sx, $sy, $cx, $cy) = @_;
-    $self->offset(-$cx,-$cy) if $cx or $cy;
-    $self->transform($sx,0,0,$sy,$cx,$cy);
-}
 
 
 package GD::Polygon;
@@ -52,6 +48,12 @@ use Carp 'croak','carp';
 use vars qw($bezSegs $csr);
 $bezSegs = 20;	# number of bezier segs -- number of segments in each portion of the spline produces by toSpline()
 $csr = 1/3;		# control seg ratio -- the one possibly user-tunable parameter in the addControlPoints() algorithm
+
+sub scale {
+    my($self, $sx, $sy, $cx, $cy) = @_;
+    $self->offset(-$cx,-$cy) if $cx or $cy;
+    $self->transform($sx,0,0,$sy,$cx,$cy);
+}
 
 
 sub rotate {
@@ -647,8 +649,6 @@ number of segments in the returned polyline per set-of-four
 control points.  In the future, this and other parameters of
 the algorithm may be configurable.
 
-For more info on Bezier splines, see [ref needed].
-
 =item C<addControlPoints>
 
 C<$polyline-E<gt>addControlPoints()> I<object method & factory method>
@@ -738,6 +738,37 @@ either $image->polygon() or $image->polyline().
 =head1 Examples
 
 Please see file "polyline-examples.pl" that is included with the distribution.
+
+=head1 See Also
+
+For more info on Bezier splines, see http://www.webreference.com/dlab/9902/bezier.html.
+
+=head1 Future Features
+
+On the drawing board are additional features such as:
+
+	- polygon winding algorithms (to determine if a point is "inside" or "outside" the polygon)
+
+	- new polygon from bounding box
+	
+	- find bounding polygon (tightest fitting simple convex polygon for a given set of vertices)
+	
+	- addPts() method to add many points at once
+	
+	- clone() method for polygon
+	
+	- functions to interwork GD with SVG
+	
+Please provide input on other possible features you'd like to see.
+
+=head1 Author
+
+This module has been written by Daniel J. Harasty.  
+Please send questions, comments, complaints, and kudos to him
+at harasty@cpan.org.
+
+Thanks to Lincoln Stein for input and patience with me and this, 
+my first CPAN contribution.
 
 =head1 Copyright Information
 
