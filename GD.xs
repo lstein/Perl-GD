@@ -1358,6 +1358,27 @@ gdrotate180(src)
 	}
 
 void
+gdcopyRotated(dst,src,dstX,dstY,srcX,srcY,srcW,srcH,angle)
+        GD::Image       dst
+	GD::Image	src
+        double          dstX
+        double          dstY
+        int             srcX
+        int             srcY
+        int             srcW
+        int             srcH
+        int             angle
+	PROTOTYPE: $$$$$$$$$
+	CODE:
+	{
+#ifdef VERSION_33
+        gdImageCopyRotated(dst,src,dstX,dstY,srcX,srcY,srcW,srcH,angle);
+#else
+        die("libgd 2.0.33 or higher required for copyRotated support");
+#endif
+	}
+
+void
 gdflipHorizontal(src)
 	GD::Image	src
 	PROTOTYPE: $
@@ -2138,8 +2159,7 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
 	      else
 		croak("Unknown charmap %s",SvPV_nolen(*value));
 	    }
-	    /* proxy for version 2.0.33 or higher */
-#ifdef HAVE_FONTCONFIG
+#ifdef VERSION_33
             if (value = hv_fetch(hash,"resolution",strlen("resolution"),0)) {
 	      strex.flags |= gdFTEX_RESOLUTION;
 	      a = SvPV_nolen(*value);

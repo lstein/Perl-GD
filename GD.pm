@@ -1448,6 +1448,15 @@ pixels of the source area rather than selecting one representative
 pixel. This method is identical to copyResized() when the destination
 image is a palette image.
 
+=item B<$image-E<gt>copyRotated($sourceImage,$dstX,$dstY,>
+
+B<				$srcX,$srcY,$width,$height,$angle)>
+
+Like copyResized() but the $angle argument specifies an arbitrary
+amount to rotate the image clockwise (in degrees).  In addition, $dstX
+and $dstY species the B<center> of the destination image, and not the
+topleft corner.
+
 =item B<$image-E<gt>trueColorToPalette([$dither], [$colors])>
 
 This method converts a truecolor image to a palette image. The code for

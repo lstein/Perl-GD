@@ -157,15 +157,16 @@ unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
 ##################################################################################################################
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
-my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$FTCIRCLE);
+my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$FTCIRCLE,$VERSION_33);
 if( defined($options) )
 {
-  $JPEG     = $options =~ m/JPEG/i;
-  $FT       = $options =~ m/FT|FREETYPE/i;
-  $XPM      = $options =~ m/XPM/i;
-  $GIF      = $options =~ m/GIF/i;
-  $PNG      = $options =~ m/PNG/i;
-  $ANIMGIF  = $options =~ m/ANIMGIF/i;
+  $JPEG      = $options =~ m/JPEG/i;
+  $FT        = $options =~ m/FT|FREETYPE/i;
+  $XPM       = $options =~ m/XPM/i;
+  $GIF       = $options =~ m/GIF/i;
+  $PNG       = $options =~ m/PNG/i;
+  $ANIMGIF   = $options =~ m/ANIMGIF/i;
+  $VERSION_33= $options =~ m/VERSION_33/i;
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
   $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
   $FTCIRCLE  = $options =~ m/FTCIRCLE/i;
@@ -211,6 +212,7 @@ $DEFINES    .= ' -DHAVE_GIF'     if $GIF;
 $DEFINES    .= ' -DHAVE_PNG'     if $PNG;
 $DEFINES    .= ' -DFCGI'         if $FCGI;
 $DEFINES    .= ' -DHAVE_ANIMGIF' if $ANIMGIF;
+$DEFINES    .= ' -DVERSION_33'   if $VERSION_33;
 $DEFINES    .= ' -DHAVE_UNCLOSEDPOLY' if $UNCLOSEDPOLY;
 $DEFINES    .= ' -DHAVE_FONTCONFIG'   if $FONTCONFIG;
 $DEFINES    .= ' -DHAVE_FTCIRCLE'  if $FTCIRCLE;
@@ -258,7 +260,7 @@ sub try_to_autoconfigure {
   $$options      = $features;
 
   my ($minor)    = $version =~ /^2\.\d+\.(\d+)$/;
-  $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE" if defined($minor) && $minor >= 33;
+  $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE VERSION_33" if defined($minor) && $minor >= 33;
 }
 
 sub MY::postamble {
