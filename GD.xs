@@ -42,6 +42,10 @@
 #endif
 #endif /* 5.00503 */
 
+#ifdef WIN32
+#define snprintf _snprintf
+#endif
+
 static int
 not_here(char *s)
 {
