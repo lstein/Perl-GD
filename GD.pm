@@ -185,7 +185,7 @@ sub GD::Image::newFromJpeg {
 }
 
 sub GD::Image::newFromGif {
-    croak("Usage: newFromJpeg(class,filehandle,[truecolor])") unless @_>=2;
+    croak("Usage: newFromGif(class,filehandle,[truecolor])") unless @_>=2;
     my($class) = shift;
     my($f)     = shift;
     my $fh = $class->_make_filehandle($f);
