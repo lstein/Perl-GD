@@ -17,14 +17,16 @@ f.  support for transparency and interlacing
 For full information on usage, see the accompanying man and html
 documentation.
 
-===> NOTE: This version of GD REQUIRES libgd 1.8.3 or higher.  If you
+===> NOTE: This version of GD REQUIRES libgd 1.8.4 or higher.  If you
 ===> have an older version of libgd installed you must remove libgd.a,
 ===> libgd.so (if present) and gd.h.  Then install the new version of
 ===> libgd from www.boutell.com (see below).  This particularly
 ===> applies to users of Linux systems.
 
-===> This version of GD no longer supports GIF output because of
-===> threats from the legal department at Unisys.  Source code
+===> This version of GD no longer supports GIF output by default
+===> because of threats from the legal department at Unisys.
+===> If you have not got a version of libgd with
+===> GIF support (see http://www.rhyme.com.au/gd), then source code
 ===> that calls $image->gif will have to be changed to call either
 ===> $image->jpg or $image->png to output in JPEG or PNG formats.
 ===> The last version of GD that supported GIF output was version 
@@ -37,7 +39,7 @@ covered by the Perl "Artistic License", which allows for free usage
 and redistribution.  See the Artistic License in the Perl source
 package for details.
 
-THE LATEST VERSION IS 1.33
+THE LATEST VERSION IS 1.34
 
 INSTALLATION:
 
@@ -55,7 +57,7 @@ Read these instructions all the way through before you start!
 		http://www.libpng.org/pub/png
 
 	d. The zlib compression library:
-		http://www.cdrom.com/pub/infozip/zlib/
+		http://www.gzip.org/zlib/ 
 
 	(OPTIONAL)
 
@@ -280,7 +282,9 @@ FREQUENTLY ASKED QUESTIONS
    are forced to remove GIF support from GD.  PNG is technically better
    than GIF, and is supported by newer Web browsers, including Netscape
    Navigator 4.04 and higher, and Microsoft Internet Explorer 4.0 and
-   higher.
+   higher.  If you really want GIF support and are willing to accept the
+   legal liability, there is a patch to gd available
+   at http://www.rime.com.au/gd/.
 
 2. Is there a utility to convert X Windows BDF fonts into GD fonts.
 

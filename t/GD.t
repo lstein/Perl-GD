@@ -27,6 +27,7 @@ if (defined $arg && $arg eq '--write') {
   compare(&test7,8,'write');
   compare(&test8('frog.xpm'),9,'write');
   compare(&test9('frog.jpg'),10,'write');
+#  compare(&test10('frog.gif'),11,'write');
 }
 
 compare(test1(),++$loaded);
@@ -59,6 +60,16 @@ if (GD::Image->newFromJpeg('frog.jpg')) {
   print "ok ",++$loaded," # Skip, no JPEG support\n";
 } else {
   print "not ok ",++$loaded,"\n";
+}
+
+if (0) {
+if (GD::Image->newFromGif('frog.gif')) {
+  compare(test10('frog.gif'),++$loaded);
+} elsif ($@ =~/not built with gif support/) {
+  print "ok ",++$loaded," # Skip, no GIF support\n";
+} else {
+  print "not ok ",++$loaded,"\n";
+}
 }
 
 sub compare {
@@ -232,6 +243,7 @@ sub test6 {
 
 sub test7 {
   my $im = GD::Image->new(400,250);
+  if (!$im) { printf("Test7: no image");};
   my($white,$black,$red,$blue,$yellow) = 
     (
      $im->colorAllocate(255, 255, 255),
@@ -258,5 +270,11 @@ sub test9 {
   my $fn = shift;
   my $im = GD::Image->newFromJpeg($fn);
   $im->png;
+}
+
+sub test10 {
+  my $fn = shift;
+  my $im = GD::Image->newFromGif($fn);
+  $im->gif;
 }
 

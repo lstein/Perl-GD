@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "1.33";
+$VERSION = "1.35";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -104,10 +104,6 @@ sub GD::gdGiantFont {
     return &GD::Font::Giant;
 }
 
-sub GD::gif {
-  croak("GIF support has been disabled for legal reasons. Use PNG or JPEG output");
-}
-
 
 sub GD::Image::_make_filehandle {
   shift;  # get rid of class
@@ -146,6 +142,14 @@ sub GD::Image::new {
     return $pack->$method($fh);
   }
   return $pack->_new(@_);
+}
+
+sub GD::Image::newFromGif {
+    croak("Usage: newFromGif(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromGif($fh);
 }
 
 sub GD::Image::newFromPng {
@@ -401,14 +405,20 @@ GD.pm - Interface to Gd Graphics Library
     # make sure we are writing to a binary stream
     binmode STDOUT;
 
+    # Convert the image to GIF and print it on standard output
+    print $im->gif;
+
     # Convert the image to PNG and print it on standard output
     print $im->png;
 
 =head1 DESCRIPTION
 
-B<GD.pm> is a port of Thomas Boutell's gd graphics library (see
-below).  GD allows you to create color drawings using a large number of
+B<GD.pm> is a patched version of the port of Thomas Boutell's gd 
+graphics library (see
+below). GD allows you to create color drawings using a large number of
 graphics primitives, and emit the drawings as PNG files.
+
+The patches reintroduce GIF support.
 
 GD defines the following three classes:
 
@@ -462,6 +472,9 @@ A Simple Example:
 	# make sure we are writing to a binary stream
 	binmode STDOUT;
 
+	# Convert the image to GIF and print it on standard output
+	print $im->gif;
+
 	# Convert the image to PNG and print it on standard output
 	print $im->png;
 
@@ -473,7 +486,7 @@ Notes:
 To create a new, empty image, send a new() message to GD::Image, passing
 it the width and height of the image you want to create.  An image
 object will be returned.  Other class methods allow you to initialize
-an image from a preexisting PNG, GD or XBM file.
+an image from a preexisting GIF, PNG, GD, GD2 or XBM file.
 
 =item 2.
 Next you will ordinarily add colors to the image's color table.
@@ -637,6 +650,13 @@ example:
 This reads a 100x100 square portion of the image starting from
 position (10,20).
 
+=item B<$image = GD::Image-E<gt>newFromGif($file)>
+
+=item B<$image = GD::Image-E<gt>newFromGifData($data)>
+
+This works in exactly the same way as C<newFromGd()> and
+newFromGdData, but use the GIF image format.
+
 =item B<$image = GD::Image-E<gt>newFromXpm($filename)>
 
 This creates a new GD::Image object starting from a B<filename>.  This
@@ -681,6 +701,11 @@ pipe it to a display program, or write it to a file.  Example:
 
 Note the use of C<binmode()>.  This is crucial for portability to
 DOSish platforms.
+
+=item B<$gifdata = $image-E<gt>gif>
+
+This returns the image data in GIF format.  You can then print it,
+pipe it to a display program, or write it to a file. 
 
 =item B<$jpegdata = $image-E<gt>jpeg([$quality])>
 
@@ -758,6 +783,20 @@ Example:
 
 	$apricot = $myImage->colorClosest(255,200,180);
 
+=item B<$index = $image-E<gt>colorClosestHWB(red,green,blue)>
+
+This also attempts to return the color closest in the color table to the
+red green and blue components specified. If uses a Hue/White/Black 
+color representation to make the selected colour more likely to match
+human perceptions of similar colors.
+
+If no colors have yet been
+allocated, then this call returns -1.
+
+Example:
+
+	$mostred = $myImage->colorClosestHWB(255,0,0);
+
 =item B<$index = $image-E<gt>colorExact(red,green,blue)>
 
 This returns the index of a color that exactly matches the specified
@@ -808,7 +847,7 @@ Example:
 This marks the color at the specified index as being transparent.
 Portions of the image drawn in this color will be invisible.  This is
 useful for creating paintbrushes of odd shapes, as well as for
-making PNG backgrounds transparent for displaying on the Web.  Only
+making GIF & PNG backgrounds transparent for displaying on the Web.  Only
 one color can be transparent at any time. To disable transparency, 
 specify -1 for the index.  
 
@@ -1325,7 +1364,6 @@ coordinates.  If this is the first point, act like addPt().
 	$poly->toPt(25,-25);
 	$myImage->fillPoly($poly,$blue);
 
-
 =item B<$vertex_count = $poly-E<gt>length>
 
 Return the number of vertices in the polygon.
@@ -1484,3 +1522,5 @@ The latest versions of GD.pm are available at
 =head1 SEE ALSO
 
 Image::Magick
+
+=cut
