@@ -28,7 +28,12 @@ Code from the gd graphics library is covered separately, under a 1994
 copyright by Quest Protein Database Center, Cold Spring Harbor Labs,
 and by Thomas Boutell.
 
-THE LATEST VERSION IS 1.21
+THE LATEST VERSION IS 1.22
+
+WHAT's NEW IN 1.22
+	- added support for statically linked libgd.a, which is
+		now default for libgd 1.7.3 (grrrr)
+	- added newFromGd2Part() and newFromXPM() methods
 
 WHAT'S NEW IN 1.21
 	- fix to regression test so that all tests pass when truetype support
@@ -120,6 +125,22 @@ INSTALLATION:
     This will create GD.pm, its HTML manual page, and install GD into
     the system-wide Perl library directory.  You'll need root
     privileges to do the install step.  If you don't have them, see below.
+
+    If during step (b) you see either of these messages:
+
+      Note (probably harmless): No library found for -lttf
+      Note (probably harmless): No library found for -lXpm
+
+    this means that FreeType and/or Xpm support will not be compiled
+    in.  You may still be able to use the library, but the functions
+    that call these routines will fail (check the $@ variable for the
+    exact error message).  If you get a link error while loading the
+    module, then you be able to recover the situation by changing
+    the library search path specified by the @extrasearch variable 
+    in Makefile.PL
+ 
+    If you see notes about any other missing libraries (-lz, -lgd, -lpng) then
+    this module will not compile and install correctly.
 
 4.  To compile GD.pm statically on systems that do not support dynamic
     linking:
@@ -290,6 +311,11 @@ FREQUENTLY ASKED QUESTIONS
    If you get an error about missing math symbols (usually "floor"), then
    uncomment the line in Makefile.PL that starts with 'LIBS'.  If you get an
    error about multiple redundant symbols, then comment out the line.
+
+5. When I try to load an XPM file, all I get is blackness!
+
+   I can't get the libgd createFromXpm() function to work, either.  
+   There may be a bug in the library.
 
 BUG REPORTS
 

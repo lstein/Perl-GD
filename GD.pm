@@ -8,9 +8,10 @@ require FileHandle;
 require Exporter;
 require DynaLoader;
 require AutoLoader;
+use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "1.21";
+$VERSION = "1.22";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -139,6 +140,31 @@ sub GD::Image::newFromGd {
     $class->_newFromGd($fh);
 }
 
+sub GD::Image::newFromGd2 {
+    croak("Usage: newFromGd2(class,filehandle)") unless @_==2;
+    my($class,$fh) = @_;
+    unless (ref $fh or ref(\$fh) eq 'GLOB') {
+	my($package) = caller;
+	no strict;
+	$fh = *{"$package\::$fh"};
+    }
+    binmode($fh);
+    $class->_newFromGd2($fh);
+}
+
+sub GD::Image::newFromGd2Part {
+    croak("Usage: newFromGd2(class,filehandle,srcX,srcY,width,height)") unless @_==6;
+    my($class,$fh) = splice(@_,0,2);
+    unless (ref $fh or ref(\$fh) eq 'GLOB') {
+	my($package) = caller;
+	no strict;
+	$fh = *{"$package\::$fh"};
+    }
+    binmode($fh);
+    $class->_newFromGd2Part($fh,@_);
+}
+
+
 sub GD::Image::clone {
   croak("Usage: clone(\$image)") unless @_ == 1;
   my $self = shift;
@@ -180,7 +206,7 @@ sub GD::Polygon::getPt {
 sub GD::Polygon::setPt {
     my($self,$index,$x,$y) = @_;
     unless (($index>=0) && ($index<$self->{'length'})) {
-	warn "Attempt to set an undefined polygon vertex";
+	carp "Attempt to set an undefined polygon vertex";
 	return undef;
     }
     @{$self->{'points'}->[$index]} = ($x,$y);
@@ -223,7 +249,7 @@ sub GD::Polygon::bounds {
 sub GD::Polygon::deletePt {
      my($self,$index) = @_;
      unless (($index>=0) && ($index<@{$self->{'points'}})) {
- 	warn "Attempt to delete an undefined polygon vertex";
+ 	carp "Attempt to delete an undefined polygon vertex";
  	return undef;
      }
       my($vertex) = splice(@{$self->{'points'}},$index,1);
@@ -485,7 +511,7 @@ you can call the image query methods described below.
 C<GD::Image-E<gt>newFromXbm(FILEHANDLE)> I<class method>
 
 This works in exactly the same way as C<newFromPng>, but reads the
-contents of an X Bitmap file:
+contents of an X Bitmap (black & white) file:
 
 	open (XBM,"coredump.xbm") || die;
 	$myImage = newFromXbm GD::Image(XBM) || die;
@@ -494,6 +520,31 @@ contents of an X Bitmap file:
 Note that this function also calls C<binmode(FILEHANDLE)> before
 reading from the filehandle.
 
+
+=item C<newFromXpm>
+
+C<GD::Image-E<gt>newFromXpm($filename)> I<class method>
+
+This creates a new GD::Image object starting from a B<filename>.  This
+is unlike the other newFrom() functions because it does not take a
+filehandle.  This difference comes from an inconsistency in the
+underlying gd library.
+
+	$myImage = newFromXpm GD::Image('earth.xpm') || die;
+
+This function is only available if libgd was compiled with XPM
+support.  
+
+NOTE: As of version 1.7.3 of the libgd library, I can't get the
+underlying createFromXpm() function to return a valid image -- I just
+get black.
+
+=item C<newFromGd2>
+
+C<GD::Image-E<gt>newFromGd2(FILEHANDLE)> I<class method>
+
+This works in exactly the same way as C<newFromgd()>, but uses the new
+compressed GD2 image format.
 
 =item C<newFromGd>
 
@@ -521,6 +572,21 @@ C<GD::Image-E<gt>newFromGd2(FILEHANDLE)> I<class method>
 This works in exactly the same way as C<newFromgd()>, but uses the new
 compressed GD2 image format.
 
+=item C<newFromGd2Part>
+
+C<GD::Image-E<gt>newFromGd2Part(FILEHANDLE,srcX,srcY,width,height)> I<class method>
+
+This class method allows you to read in just a portion of a GD version
+2 image file.  In additionto a filehandle, it accepts the top-left
+corner and dimensions (width,height) of the region of the image to
+read.  For example:
+
+	open (GDF,"godzilla.gd2") || die;
+	$myImage = GD::Image->newFromGd2Part(GDF,10,20,100,100) || die;
+	close GDF;
+
+This reads a 100x100 square portion of the image starting from
+position (10,20).
 
 =item C<png>
 

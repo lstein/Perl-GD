@@ -1,3 +1,6 @@
+1.22	Fix to Makefile.PL to accomodate linking static libraries.
+	Added newFromGd2Part() method.
+	Supports libgd 1.7.1.
 1.21	Slight fix in regression tests so that test 8 doesn't fail when compiled
 		without TrueType support.
 1.20	Rewritten for libgd 1.6.3

@@ -5,7 +5,7 @@ use FileHandle;
 use constant FONT=>'./Generic.ttf';
 
 my $loaded;
-BEGIN {$| = 1; $loaded = 0; print "1..8\n"; }
+BEGIN {$| = 1; $loaded = 0; print "1..9\n"; }
 END {print "not ok 1\n" unless $loaded;}
 
 use GD qw(:DEFAULT GD_CMP_IMAGE);
@@ -15,6 +15,7 @@ $loaded++;
 chdir 't' || die "Couldn't change to 't' directory: $!";
 
 $arg = shift;
+
 if (defined $arg && $arg eq '--write') {
   warn "Writing regression files...";
   compare(&test1,2,'write');
@@ -24,6 +25,7 @@ if (defined $arg && $arg eq '--write') {
   compare(&test5,6,'write');
   compare(&test6,7,'write');
   compare(&test7,8,'write');
+  compare(&test8('earth.xpm'),9,'write');
 }
 
 compare(test1(),++$loaded);
@@ -32,10 +34,20 @@ compare(test3(),++$loaded);
 compare(test4(),++$loaded);
 compare(test5(),++$loaded);
 compare(test6(),++$loaded);
+
 if (GD::Image->stringTTF(0,FONT,12.0,0.0,20,20,"Hello world!")) {
   compare(test7(),++$loaded);
 } elsif ($@ =~/not built with TrueType font support/) {
-  print "ok ",++$loaded," # Skip\n";
+  warn "\n$@";
+  print "ok ",++$loaded," # Skip, no TrueType font support\n";
+} else {
+  print "not ok ",++$loaded,"\n";
+}
+
+if (GD::Image->newFromXpm('earth.xpm')) {
+  compare(test8('earth.xpm'),++$loaded);
+} elsif ($@ =~/not built with xpm support/) {
+  print "ok ",++$loaded," # Skip, no XPM support\n";
 } else {
   print "not ok ",++$loaded,"\n";
 }
@@ -225,5 +237,11 @@ sub test7 {
   $im->stringTTF($black,FONT,12.0,0.0,20,20,"Hello world!") || return;
   $im->stringTTF($red,FONT,14.0,0.0,20,80,"Hello world!") || return;
   $im->stringTTF($blue,FONT,30.0,-0.5,60,100,"Goodbye cruel world!") || die $@;
+  $im->png;
+}
+
+sub test8 {
+  my $fn = shift;
+  my $im = GD::Image->newFromXpm($fn);
   $im->png;
 }

@@ -18,6 +18,10 @@
 /* Copyright 1995 - 1998, Lincoln D. Stein.  See accompanying README file for
 	usage restrictions */
 
+#ifndef gdImageCreateFromXpm
+gdImagePtr gdImageCreateFromXpm(char *filename);
+#endif
+
 static int
 not_here(char *s)
 {
@@ -229,7 +233,7 @@ not_there:
 
 typedef gdImagePtr	GD__Image;
 typedef gdFontPtr	GD__Font;
-typedef PerlIO * InputStream;
+typedef PerlIO          * InputStream;
 extern 	gdFontPtr	gdFontGiant;
 extern 	gdFontPtr	gdFontLarge;
 extern	gdFontPtr	gdFontSmall;
@@ -242,12 +246,14 @@ extern	gdFontPtr	gdFontTiny;
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm((FILE*)x)
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd((FILE*)x)
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2((FILE*)x)
+#define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part((FILE*)x,a,b,c,d)
 #  endif
 #else
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng(x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm(x)
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd(x)
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(x)
+#define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part(x,a,b,c,d)
 #endif
 
 
@@ -312,6 +318,40 @@ gd_newFromGd2(packname="GD::Image", filehandle)
 	PROTOTYPE: $$
 	CODE:
 	RETVAL = GDIMAGECREATEFROMGD2(filehandle);
+	OUTPUT:
+	RETVAL
+
+GD::Image
+gdnewFromXpm(packname="GD::Image", filename)
+	char *	packname
+	char * filename
+	PROTOTYPE: $$
+        PREINIT:
+	  gdImagePtr img;
+	  SV* errormsg;
+	CODE:
+	img = gdImageCreateFromXpm(filename);
+        if (img == NULL) {
+	    errormsg = perl_get_sv("@",0);
+	    if (errormsg != NULL)
+	      sv_setpv(errormsg,"libgd was not built with xpm support\n");
+	    XSRETURN_EMPTY;
+        }
+        RETVAL = img;
+        OUTPUT:
+        RETVAL
+
+GD::Image
+gd_newFromGd2Part(packname="GD::Image", filehandle,srcX,srcY,width,height)
+	char *	packname
+	InputStream	filehandle
+	int srcX
+	int srcY
+	int width
+	int height
+	PROTOTYPE: $$
+	CODE:
+	RETVAL = GDIMAGECREATEFROMGD2PART(filehandle,srcX,srcY,width,height);
 	OUTPUT:
 	RETVAL
 
