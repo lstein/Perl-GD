@@ -3,14 +3,14 @@
 #include "XSUB.h"
 #include "libgd/gd.h"
 #ifdef FCGI
-#include <fcgi_stdio.h>
+ #include <fcgi_stdio.h>
 #else
-#ifdef USE_SFIO
-#include <config.h>
-#include <perlio.h>
-#else
-#include <stdio.h>
-#endif
+ #ifdef USE_SFIO
+  #include <config.h>
+ #else
+  #include <stdio.h>
+ #endif
+ #include <perlio.h>
 #endif
 /* Copyright 1995, 1996, Lincoln D. Stein.  See accompanying README file for
 	usage restrictions */
@@ -187,39 +187,11 @@ not_there:
 
 typedef gdImagePtr	GD__Image;
 typedef gdFontPtr	GD__Font;
+typedef PerlIO * InputStream;
 extern 	gdFontPtr	gdFontLarge;
 extern	gdFontPtr	gdFontSmall;
 extern	gdFontPtr	gdFontMediumBold;
 extern	gdFontPtr	gdFontTiny;
-
-/* Utility functions */
-FILE* fh2file (fhandle,style)
-char* fhandle;
-char* style;
-{
-  dSP ;
-  int count ;
-  FILE* file;
-  int fd,newfd;
-  
-  ENTER ;
-  SAVETMPS;
-  PUSHMARK(sp) ;
-  XPUSHs(sv_2mortal(newSVpv(fhandle,0)));
-  PUTBACK ;
-  count = perl_call_pv("GD::fileno", G_SCALAR);
-  SPAGAIN ;
-  if (count != 1)
-    croak("Didn't get a single result from fileno() call.\n");
-  fd = POPi;
-  PUTBACK ;
-  FREETMPS ;
-  LEAVE ;
-
-  newfd = dup(fd);
-  file = fdopen(newfd,style);
-  return file;
-}
 
 MODULE = GD		PACKAGE = GD
 
@@ -246,67 +218,34 @@ gdnew(packname="GD::Image", x=64, y=64)
 		RETVAL
 
 GD::Image
-gdnewFromGif(packname="GD::Image", filehandle)
+gd_newFromGif(packname="GD::Image", filehandle)
 	char *	packname
-	char *	filehandle
+	InputStream	filehandle
 	PROTOTYPE: $$
 	CODE:
-	{
-		gdImagePtr theImage;
-		FILE*	theFile;
-		theFile = fh2file(filehandle,"r");
-		if (theFile == NULL) {
-		  RETVAL = NULL;
-		} else {
-		  theImage = gdImageCreateFromGif(theFile);
-		  RETVAL = theImage;
-		}
-		fclose(theFile);
-	}
+	RETVAL = gdImageCreateFromGif(filehandle);
 	OUTPUT:
-		RETVAL
+	RETVAL
 
 GD::Image
-gdnewFromXbm(packname="GD::Image", filehandle)
+gd_newFromXbm(packname="GD::Image", filehandle)
 	char *	packname
-	char *	filehandle
+	InputStream	filehandle
 	PROTOTYPE: $$
 	CODE:
-	{
-		gdImagePtr theImage;
-		FILE*	theFile;
-		theFile = fh2file(filehandle,"r");
-		if (theFile == NULL) {
-			RETVAL = NULL;
-		} else {
-			theImage = gdImageCreateFromXbm(theFile);
-			RETVAL = theImage;
-		}
-		fclose(theFile);
-	}
+	RETVAL = gdImageCreateFromXbm(filehandle);
 	OUTPUT:
-		RETVAL
+	RETVAL
 
 GD::Image
-gdnewFromGd(packname="GD::Image", filehandle)
+gd_newFromGd(packname="GD::Image", filehandle)
 	char *	packname
-	char *	filehandle
+	InputStream	filehandle
 	PROTOTYPE: $$
 	CODE:
-	{
-		gdImagePtr theImage;
-		FILE*	theFile;
-		theFile = fh2file(filehandle,"r");
-		if (theFile == NULL) {
-			RETVAL = NULL;
-		} else {
-			theImage = gdImageCreateFromGd(theFile);
-			RETVAL = theImage;
-		}
-		fclose(theFile);
-	}
+	RETVAL = gdImageCreateFromGd(filehandle);
 	OUTPUT:
-		RETVAL
+	RETVAL
 
 
 void

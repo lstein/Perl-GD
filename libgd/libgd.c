@@ -321,7 +321,6 @@ void gdImageLine(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
 }
 
 /* As above, plus dashing */
-
 #define dashedSet \
 	{ \
 		dashStep++; \

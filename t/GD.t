@@ -1,33 +1,46 @@
 #!perl
 
+use FileHandle;
 use GD;
 chdir 't' || die "Couldn't change to 't' directory: $!";
 
 $arg = shift;
-if (defined($arg) && ($arg eq '--write')) {
+if (1 || defined($arg) && ($arg eq '--write')) {
     $WRITEREGRESS++;
 }
 
-print "1..6\n";
-warn "\n";
+print "1..12\n";
 
-&compare(&test1,1);
-&compare(&test2,2);
-&compare(&test3,3);
-&compare(&test4,4);
-&compare(&test5,5);
-&compare(&test6,6);
+for $filehandletype ("bare", "handle"){
+    &compare(&test1,1,$filehandletype);
+    &compare(&test2,2,$filehandletype);
+    &compare(&test3,3,$filehandletype);
+    &compare(&test4,4,$filehandletype);
+    &compare(&test5,5,$filehandletype);
+    &compare(&test6,6,$filehandletype);
+}
 
 sub compare {
-    my($imageData,$testNo) = @_;
+    my($imageData,$testNo,$fht) = @_;
     local($/);
     undef $/;
-    open (REGRESSFILE,"./test.out.$testNo.gif") 
-	|| die "Can't open regression file './t/test.out.$testNo.gif': $!\n";
-    my($regressdata) = <REGRESSFILE>;
-    close REGRESSFILE;
-    print $imageData eq $regressdata ? "ok $testNo" : "not ok $testNo","\n";
-    warn $imageData eq $regressdata ? "ok $testNo" : "not ok $testNo","\n";
+    my $ok = $testNo;
+    my $regressdata;
+    if ($fht eq "bare"){
+        open (REGRESSFILE,"./test.out.$testNo.gif") 
+	    || die "Can't open regression file './t/test.out.$testNo.gif': $!\n";
+        $regressdata = <REGRESSFILE>;
+        close REGRESSFILE;
+	print $imageData eq $regressdata ? "ok $ok" : "not ok $ok","\n";
+    } else {
+	my $fh = FileHandle->new;
+        $fh->open("./test.out.$testNo.gif") or
+	    die "Can't open regression file './t/test.out.$testNo.gif': $!\n";
+        my $regressgif = GD::Image->newFromGif($fh);
+        $fh->close;
+	$ok = $testNo+6;
+	print $imageData eq $regressgif->gif ? "ok $ok" : "not ok $ok","\n";
+    }
     if ($WRITEREGRESS) {
 	open (REGRESSFILE,">./test.out.$testNo.gif") 
 	    || die "Can't open regression file './t/test.out.$testNo.gif': $!\n";

@@ -4,10 +4,13 @@ package GD;
 # usage information
 
 require 5.003;
+require FileHandle;
 require Exporter;
 require DynaLoader;
 require AutoLoader;
-$VERSION = 1.15;
+use strict;
+use vars qw($VERSION @ISA @EXPORT $AUTOLOAD);
+$VERSION = "1.16";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -33,14 +36,14 @@ sub AUTOLOAD {
 
     my($constname);
     ($constname = $AUTOLOAD) =~ s/.*:://;
-    $val = constant($constname, @_ ? $_[0] : 0);
+    my $val = constant($constname, @_ ? $_[0] : 0);
     if ($! != 0) {
 	if ($! =~ /Invalid/) {
 	    $AutoLoader::AUTOLOAD = $AUTOLOAD;
 	    goto &AutoLoader::AUTOLOAD;
 	}
 	else {
-	    ($pack,$file,$line) = caller;
+	    my($pack,$file,$line) = caller;
 	    die "Your vendor has not defined GD macro $pack\:\:$constname, used at $file line $line.\n";
 	}
     }
@@ -68,10 +71,37 @@ sub GD::gdTinyFont {
 }
 
 # This is a C callback
-sub GD::fileno {
-    my($fh) = @_;
-    my($package) = caller;
-    return fileno "$package\:\:$fh";
+sub GD::Image::newFromGif {
+    croak("Usage: newFromGif(class,filehandle)") unless @_==2;
+    my($class,$fh) = @_;
+    unless (ref $fh) {
+	my($package) = caller;
+	no strict;
+	$fh = "$package\::$fh";
+    }
+    $class->_newFromGif($fh);
+}
+
+sub GD::Image::newFromXbm {
+    croak("Usage: newFromXbm(class,filehandle)") unless @_==2;
+    my($class,$fh) = @_;
+    unless (ref $fh) {
+	my($package) = caller;
+	no strict;
+	$fh = "$package\::$fh";
+    }
+    $class->_newFromXbm($fh);
+}
+
+sub GD::Image::newFromGd {
+    croak("Usage: newFromGd(class,filehandle)") unless @_==2;
+    my($class,$fh) = @_;
+    unless (ref $fh) {
+	my($package) = caller;
+	no strict;
+	$fh = "$package\::$fh";
+    }
+    $class->_newFromGd($fh);
 }
 
 ### The polygon object ###
