@@ -1,3 +1,7 @@
+1.37	$gd->can('gif') and $gd->can('newFromGif') now return false if the
+	GIF patch is not installed.
+	Patch from Jeremy Wadsack to prevent compilation errors when
+	Freetype is not installed.
 1.36	Recovered GD after the theft of my CVS server.  Current version
 	folds in GIF-restoration patches, TTF->Freetype transition, and
 	a new color lookup routine.

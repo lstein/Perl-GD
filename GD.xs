@@ -420,6 +420,7 @@ gdnewFromGd2Data(packname="GD::Image", imageData)
 	OUTPUT:
 	RETVAL
 
+#ifdef HAVE_GIF
 GD::Image
 gdnewFromGifData(packname="GD::Image", imageData)
 	char *	packname
@@ -431,18 +432,14 @@ gdnewFromGifData(packname="GD::Image", imageData)
           STRLEN   len;
           SV* errormsg;
 	CODE:
-#ifdef HAVE_GIF
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromGifCtx(ctx);
         ctx->free(ctx);
-#else
-    errormsg = perl_get_sv("@",0);
-    sv_setpv(errormsg,"GD/libgd was not built with gif support\n");
-    XSRETURN_EMPTY;
-#endif
 	OUTPUT:
 	RETVAL
+
+#endif
 
 GD::Image
 gdnewFromJpegData(packname="GD::Image", imageData)
@@ -485,6 +482,7 @@ gdnewFromWBMPData(packname="GD::Image", imageData)
 	OUTPUT:
 	RETVAL
 
+#ifdef HAVE_GIF
 GD::Image
 gd_newFromGif(packname="GD::Image", filehandle)
 	char *	packname
@@ -493,15 +491,11 @@ gd_newFromGif(packname="GD::Image", filehandle)
 	PREINIT:
 		SV* errormsg;
 	CODE:
-#ifdef HAVE_GIF
 	RETVAL = (GD__Image) GDIMAGECREATEFROMGIF(filehandle);
-#else
-    errormsg = perl_get_sv("@",0);
-    sv_setpv(errormsg,"GD/libgd was not built with gif support\n");
-    XSRETURN_EMPTY;
-#endif
 	OUTPUT:
 	RETVAL
+
+#endif
 
 GD::Image
 gd_newFromXbm(packname="GD::Image", filehandle)
@@ -643,6 +637,7 @@ gdpng(image)
   OUTPUT:
     RETVAL
 
+#ifdef HAVE_GIF
 SV*
 gdgif(image)
   GD::Image	image
@@ -653,18 +648,14 @@ gdgif(image)
   {
 	void*         data;
 	int           size;
-#ifdef HAVE_GIF
 	data = (void *) gdImageGifPtr(image,&size);
 	RETVAL = newSVpv((char*) data,size);
 	free(data);
-#else
-	errormsg = perl_get_sv("@",0);
-	sv_setpv(errormsg,"GD/libgd was not built with gif support\n");
-	XSRETURN_EMPTY;
-#endif
   }
   OUTPUT:
     RETVAL
+
+#endif
 
 SV*
 gdjpeg(image,quality=-1)
@@ -1365,7 +1356,7 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string)
 	  } else {
 	    img = NULL;
 	  }
-
+#ifdef HAVE_TTF
 	  err = gdImageStringFT(img,brect,fgcolor,fontname,ptsize,angle,x,y,string);
 	  if (err) {
 	    errormsg = perl_get_sv("@",0);
@@ -1377,8 +1368,14 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string)
 	    for (i=0;i<8;i++)
 	      PUSHs(sv_2mortal(newSViv(brect[i])));
 	  }
-
+#else
+	  errormsg = perl_get_sv("@",0);
+	  if (errormsg != NULL)
+	    sv_setpv(errormsg,"GD/libgd was not built with TrueType font support\n");
+	  XSRETURN_EMPTY;
+#endif
 	}
+
 
 MODULE = GD		PACKAGE = GD::Font	PREFIX=gd
 
