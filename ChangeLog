@@ -1,5 +1,5 @@
-2.10	More alpha functions from Cory Watson
-	Suppress CAPI warning.
+2.11	More alpha functions from Cory Watson
+2.10	Suppress CAPI warning.
 	Warn about Math::Trig warning
 2.09	VMS documentation patch from Martin Zinser
 	Non-standard library finding path options from Peter Kruty
