@@ -20,7 +20,6 @@ WriteMakefile(
 sub MY::postamble {
     my $postamble =<<'END';
 $(MYEXTLIB): libgd/Makefile
-	DEFINE='$(DEFINE)'; export DEFINE INC; \
 END
 
     $postamble .= ($^O eq 'MSWin32') ? <<'END1' : <<'END2';

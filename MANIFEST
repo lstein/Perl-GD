@@ -5,6 +5,7 @@ GD.pm
 GD.xs
 MANIFEST
 Makefile.PL
+ChangeLog
 README
 README.QUICKDRAW
 demos/brushes.pl

@@ -1,0 +1,2 @@
+1.19	Fixed Makefile.PL for better compilation on Windoze machines
+	

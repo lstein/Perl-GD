@@ -10,7 +10,7 @@ require DynaLoader;
 require AutoLoader;
 use strict;
 use vars qw($VERSION @ISA @EXPORT $AUTOLOAD);
-$VERSION = "1.18";
+$VERSION = "1.19";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -985,7 +985,7 @@ true parameter to set the interlace attribute.  Provide undef to
 disable it.  Call the method without parameters to find out the
 current setting.
 
-=item c<getBounds>
+=item C<getBounds>
 
 C<GD::Image::getBounds( )> I<Object method>
 
@@ -1005,7 +1005,7 @@ Quickdraw library).
 
 =over 5
 
-=item c<new>
+=item C<new>
 
 C<GD::Polygon::new> I<class method>
 
@@ -1231,6 +1231,5 @@ URL
 
 The latest versions of GD.pm are available at
 
-  http://www.genome.wi.mit.edu/ftp/pub/software/WWW/GD.html
-  ftp://ftp-genome.wi.mit.edu/pub/software/WWW/GD.pm.tar.gz
+  http://stein.cshl.org/WWW/software/GD
 
