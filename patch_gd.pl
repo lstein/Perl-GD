@@ -15784,7 +15784,7 @@ diff -Naur gd-1.8.4/mkinstalldirs gd-1.8.4.patch/mkinstalldirs
 +# Created: 1993-05-16
 +# Public domain
 +
-+# $Id: patch_gd.pl,v 1.2 2002/06/12 02:01:47 lstein Exp $
++# $Id: patch_gd.pl,v 1.3 2002/06/19 12:07:01 lstein Exp $
 +
 +errstatus=0
 +
@@ -18766,6 +18766,7 @@ END_OF_PATCH
 close PATCH or die "patch failed with status $?\n";
   
 chmod 0755,'./configure';
+chmod 0755,'./missing';
 chmod 0755,'./install-sh';
 warn "\nAll done.  Read INSTALL and then run the `configure' script.\n";
 

@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "1.39";
+$VERSION = "1.40";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -58,7 +58,7 @@ $VERSION = "1.39";
 
 # documentation error
 *GD::Polygon::delete = \&GD::Polygon::deletePt;
-*GD::Image::stringFT = \&GD::Image::stringTTF;
+*GD::Image::stringTTF = \&GD::Image::stringFT;
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -1231,7 +1231,7 @@ TrueType font to be installed on your system.
 The arguments are as follows:
 
   fgcolor    Color index to draw the string in
-  fontname   An absolute or relative path to the TrueType (.ttf) font file
+  fontname   An absolute path to the TrueType (.ttf) font file
   ptsize     The desired point size (may be fractional)
   angle      The rotation angle, in radians
   x,y        X and Y coordinates to start drawing the string
@@ -1256,7 +1256,8 @@ operations prior to drawing.
 
 For backward compatibility with older versions of the FreeType
 library, the alias stringTTF() is also recognized.  Also be aware that
-(for some reason) relative font paths are not recognized.
+relative font paths are not recognized due to problems in the libgd
+library.
 
 =back
 

@@ -2,7 +2,8 @@
 
 use lib './blib/lib','./blib/arch','../blib/lib','../blib/arch';
 use FileHandle;
-use constant FONT=>'./Generic.ttf';
+use FindBin qw($Bin);
+use constant FONT=>"$Bin/Generic.ttf";
 
 my $loaded;
 BEGIN {$| = 1; $loaded = 0; print "1..10\n"; }
@@ -36,9 +37,10 @@ compare(test3(),++$loaded);
 compare(test4(),++$loaded);
 compare(test5(),++$loaded);
 compare(test6(),++$loaded);
+
 if (GD::Image->stringTTF(0,FONT,12.0,0.0,20,20,"Hello world!")) {
-  # compare(test7(),++$loaded);
-  print "ok ",++$loaded," # This test doesn't work with some freetype versions\n";
+  compare(test7(),++$loaded);
+#  print "ok ",++$loaded," # This test doesn't work with some freetype versions\n";
 } elsif ($@ =~/not built with .+Type font support/) {
   print "ok ",++$loaded," # Skip, no FreeType font support\n";
 } else {
