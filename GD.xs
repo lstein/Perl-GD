@@ -188,6 +188,7 @@ not_there:
 typedef gdImagePtr	GD__Image;
 typedef gdFontPtr	GD__Font;
 typedef PerlIO * InputStream;
+extern 	gdFontPtr	gdFontGiant;
 extern 	gdFontPtr	gdFontLarge;
 extern	gdFontPtr	gdFontSmall;
 extern	gdFontPtr	gdFontMediumBold;
@@ -813,6 +814,17 @@ gdLarge(packname="GD::Font")
 	CODE:
 	{
 		RETVAL = gdFontLarge;
+	}
+	OUTPUT:
+		RETVAL
+
+GD::Font
+gdGiant(packname="GD::Font")
+	char *	packname
+	PROTOTYPE: $
+	CODE:
+	{
+		RETVAL = gdFontGiant;
 	}
 	OUTPUT:
 		RETVAL

@@ -3,14 +3,14 @@ package GD;
 # Copyright 1995 Lincoln D. Stein.  See accompanying README file for
 # usage information
 
-require 5.003;
+require 5.00323;
 require FileHandle;
 require Exporter;
 require DynaLoader;
 require AutoLoader;
 use strict;
 use vars qw($VERSION @ISA @EXPORT $AUTOLOAD);
-$VERSION = "1.17";
+$VERSION = "1.18";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -24,10 +24,11 @@ $VERSION = "1.17";
 	gdStyledBrushed
 	gdTiled
 	gdTransparent
-	gdSmallFont
-	gdLargeFont
-	gdMediumBoldFont
 	gdTinyFont
+	gdSmallFont
+	gdMediumBoldFont
+	gdLargeFont
+	gdGiantFont
 );
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -68,6 +69,10 @@ sub GD::gdMediumBoldFont {
 
 sub GD::gdTinyFont {
     return &GD::Font::Tiny;
+}
+
+sub GD::gdGiantFont {
+    return &GD::Font::Giant;
 }
 
 # This is a C callback
@@ -927,7 +932,7 @@ Example:
 Gd allows you to draw characters and strings, either in normal
 horizontal orientation or rotated 90 degrees.  These routines use a
 GD::Font object, described in more detail below.  There are four
-built-in fonts, available in global variables gdLargeFont,
+built-in fonts, available in global variables gdGiantFont, gdLargeFont,
 gdMediumBoldFont, gdSmallFont and gdTinyFont.  Currently there is no
 way of dynamically creating your own fonts.
 
@@ -939,7 +944,7 @@ C<GD::Image::string(font,x,y,string,color)> I<Object Method>
 
 This method draws a string startin at position (x,y) in the specified
 font and color.  Your choices of fonts are gdSmallFont, gdMediumBoldFont,
-gdTinyFont and gdLargeFont.
+gdTinyFont, gdLargeFont and gdGiantFont.
 
 Example:
 
@@ -1134,39 +1139,50 @@ PostScript Reference, page 154 for a full explanation, or experiment.
 
 =head2 Font Utilities
 
-Gd's support for fonts is minimal.  Basically you have access to
-gdSmallFont and gdLargeFont for drawing, and not much else.  However,
-for future compatibility, I've made the fonts into perl objects of
-type GD::Font that you can query and, perhaps someday manipulate.
+Gd's support for fonts is minimal.  Basically you have access to a
+half dozen for drawing, and not much else.  However, for future
+compatibility, I've made the fonts into perl objects of type GD::Font
+that you can query and, perhaps someday manipulate.
+
+This distribution comes with Jan Pazdziora's bdftogd program, an
+B<unsupported> utility that can help you convert BDF fonts into GD
+format.
 
 =over 5
 
 =item C<gdSmallFont>
 
-C<GD::Font::gdSmallFont> I<constant>
+C<GD::Font::Small> I<constant>
 
 This is the basic small font, "borrowed" from a well known public
 domain 6x12 font.
 
 =item C<gdLargeFont>
 
-C<GD::Font::gdLargeFont> I<constant>
+C<GD::Font::Large> I<constant>
 
 This is the basic large font, "borrowed" from a well known public
 domain 8x16 font.
 
 =item C<gdMediumBoldFont>
 
-C<GD::Font::gdMediumBoldFont> I<constant>
+C<GD::Font::MediumBold> I<constant>
 
 This is a bold font intermediate in size between the small and large
 fonts, borrowed from a public domain 7x13 font;
 
 =item C<gdTinyFont>
 
-C<GD::Font::gdTinyFont> I<constant>
+C<GD::Font::Tiny> I<constant>
 
 This is a tiny, almost unreadable font, 5x8 pixels wide.
+
+=item C<gdGiantFont>
+
+C<GD::Font::Giant> I<constant>
+
+This is a 9x15 bold font converted by Jan Pazdziora from a sans serif
+X11 font.
 
 =item C<nchars>
 
