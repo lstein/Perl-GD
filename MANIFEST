@@ -50,3 +50,4 @@ t/test.out.8.png-5
 t/test.out.9.png
 t/tile.png
 typemap
+META.yml                                 Module meta-data (added by MakeMaker)

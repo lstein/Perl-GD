@@ -21,6 +21,12 @@ my @INC     = qw(-I/usr/include -I/usr/include/gd);
 my @LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/lib);
 my @LIBS    = qw(-lgd -lpng -lz);
 
+# support for AMD64 libraries
+if (1 || -d '/usr/lib64') {
+  my @libs64 = map {my $a = $_; $a=~ s/lib$/lib64/; $a} @LIBPATH;
+  @LIBPATH = (@LIBPATH,@libs64);
+}
+
 #############################################################################################
 # Build options passed in to script to support reproducible builds via Makefiles
 #############################################################################################
