@@ -1,3 +1,6 @@
+1.29	Fixed a corrupted .xpm file in the regression suite
+		(caused test 9 to fail)
+1.28    Added support for gd 1.8.3
 1.27	Fixed strict refs problem on 5.00503 and earlier
 1.26	Brought up to date with libgd 1.8.1
 1.24-1.25 More tweaks to Makefile.PL.
