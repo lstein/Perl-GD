@@ -58,7 +58,7 @@ $VERSION = "1.39";
 
 # documentation error
 *GD::Polygon::delete = \&GD::Polygon::deletePt;
-*GD::Image::stringFT = \&GD::Image::stringTTF;
+*GD::Image::stringTTF = \&GD::Image::stringFT;
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
