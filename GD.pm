@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "2.06";
+$VERSION = "2.07";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -26,6 +26,12 @@ $VERSION = "2.06";
 	gdStyledBrushed
 	gdTiled
 	gdTransparent
+	gdAntiAliased
+        gdArc
+        gdChord
+        gdPie
+        gdNoFill
+        gdEdged
 	gdTinyFont
 	gdSmallFont
 	gdMediumBoldFont
@@ -205,6 +211,11 @@ sub GD::Image::newFromGd2Part {
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromGd2Part($fh,@_);
+}
+
+sub GD::Image::ellipse ($$$$$) {
+  my ($self,$cx,$cy,$width,$height,$color) = @_;
+  $self->arc($cx,$cy,$width,$height,0,360,$color);
 }
 
 sub _image_type {
@@ -709,7 +720,7 @@ a file.
 The following methods convert the internal drawing format into
 standard output file formats.
 
-=item B<$pngdata = $image-E<gt>png>
+=item B<$pngdata = $image-E<gt>png([$compression_level])>
 
 This returns the image data in PNG format.  You can then print it,
 pipe it to a display program, or write it to a file.  Example:
@@ -722,6 +733,17 @@ pipe it to a display program, or write it to a file.  Example:
 
 Note the use of C<binmode()>.  This is crucial for portability to
 DOSish platforms.
+
+The optional $compression_level argument controls the amount of
+compression to apply to the output PNG image.  Values range from 0-9,
+where 0 means no compression (largest files, highest quality) and 9
+means maximum compression (smallest files, worst quality).  A
+compression level of -1 uses the default compression level selected
+when zlib was compiled on your system, and is the same as calling
+png() with no argument.  Be careful not to confuse this argument with
+the jpeg() quality argument, which ranges from 0-100 and has the
+opposite meaning from compression (higher numbers give higher
+quality).
 
 =item B<$jpegdata = $image-E<gt>jpeg([$quality])>
 
@@ -907,8 +929,8 @@ Example:
 
 	# Create a brush at an angle
 	$diagonal_brush = new GD::Image(5,5);
-	$white = $diagonal_brush->allocateColor(255,255,255);
-	$black = $diagonal_brush->allocateColor(0,0,0);
+	$white = $diagonal_brush->colorAllocate(255,255,255);
+	$black = $diagonal_brush->colorAllocate(0,0,0);
 	$diagonal_brush->transparent($white);
 	$diagonal_brush->line(0,4,4,0,$black); # NE diagonal
 
@@ -917,6 +939,12 @@ Example:
 	
 	# Draw a circle using the brush
 	$myImage->arc(50,50,25,25,0,360,gdBrushed);
+
+=item B<$image-E<gt>setThickness($thickness)>
+
+Lines drawn with line(), rectangle(), arc(), and so forth are 1 pixel
+thick by default.  Call setThickness() to change the line drawing
+width.
 
 =item B<$image-E<gt>setStyle(@colors)>
 
@@ -956,6 +984,50 @@ details.
 The gdStyled color is used for creating dashed and dotted lines.  A
 styled line can contain any series of colors and is created using the
 setStyled() command.
+
+=item B<gdAntiAliased>
+
+The C<gdAntiAliased> color is used for drawing lines with antialiasing
+turned on.  Antialiasing will blend the jagged edges of lines with the
+background, creating a smoother look.  The actual color drawn is set
+with setAntiAliased().
+
+=item B<$image-E<gt>setAntiAliased($color)>
+
+"Antialiasing" is a process by which jagged edges associated with line
+drawing can be reduced by blending the foreground color with an
+appropriate percentage of the background, depending on how much of the
+pixel in question is actually within the boundaries of the line being
+drawn. All line-drawing methods, such as line() and polygon, will draw
+antialiased lines if the special "color" B<gdAntiAliased> is used when
+calling them.
+
+setAntiAliased() is used to specify the actual foreground color to be
+used when drawing antialiased lines. You may set any color to be the
+foreground, however as of libgd version 2.0.12 an alpha channel component is
+not supported.
+
+Antialiased lines can be drawn on both truecolor and palette-based
+images. However, attempts to draw antialiased lines on highly complex
+palette-based backgrounds may not give satisfactory results, due to
+the limited number of colors available in the palette. Antialiased
+line-drawing on simple backgrounds should work well with palette-based
+images; otherwise create or fetch a truecolor image instead.
+
+=item B<$image-E<gt>setAntiAliasedDontBlend($color,[$flag])>
+
+Normally, when drawing lines with the special B<gdAntiAliased>
+"color," blending with the background to reduce jagged edges is the
+desired behavior. However, when it is desired that lines not be
+blended with one particular color when it is encountered in the
+background, the setAntiAliasedDontBlend() method can be used to
+indicate the special color that the foreground should stand out more
+clearly against.
+
+Once turned on, you can turn this feature off by calling
+setAntiAliasedDontBlend() with a second argument of 0:
+
+ $image->setAntiAliasedDontBlend($color,0);
 
 =back
 
@@ -1061,6 +1133,15 @@ Example:
 	# draw the polygon, filling it with a color
 	$myImage->filledPolygon($poly,$peachpuff);
 
+=item B<$image-E<gt>ellipse($cx,$cy,$width,$height,$color)>
+
+=item B<$image-E<gt>filledEllipse($cx,$cy,$width,$height,$color)>
+
+These methods() draw ellipses. ($cx,$cy) is the center of the arc, and
+($width,$height) specify the ellipse width and height, respectively.
+filledEllipse() is like Ellipse() except that the former produces
+filled versions of the ellipse.
+
 =item B<$image-E<gt>arc($cx,$cy,$width,$height,$start,$end,$color)>
 
 This draws arcs and ellipses.  (cx,cy) are the center of the arc, and
@@ -1078,6 +1159,30 @@ Example:
 
 	# draw a semicircle centered at 100,100
 	$myImage->arc(100,100,50,50,0,180,$blue);
+
+=item B<$image-E<gt>filledArc($cx,$cy,$width,$height,$start,$end,$color [,$arc_style])>
+
+This method is like arc() except that it colors in the pie wedge with
+the selected color.  $arc_style is optional.  If present it is a
+bitwise OR of the following constants:
+
+  gdArc           connect start & end points of arc with a rounded edge
+  gdChord         connect start & end points of arc with a straight line
+  gdPie           synonym for gdChord
+  gdNoFill        outline the arc or chord
+  gdEdged         connect beginning and ending of the arc to the center
+
+gdArc and gdChord are mutally exclusive.  gdChord just connects the
+starting and ending angles with a straight line, while gdArc produces
+a rounded edge. gdPie is a synonym for gdArc. gdNoFill indicates that
+the arc or chord should be outlined, not filled. gdEdged, used
+together with gdNoFill, indicates that the beginning and ending angles
+should be connected to the center; this is a good way to outline
+(rather than fill) a "pie slice."
+
+Example:
+
+  $image->filledArc(100,100,50,50,0,90,$blue,gdEdged|gdNoFill);
 
 =item B<$image-E<gt>fill($x,$y,$color)>
 
@@ -1110,6 +1215,8 @@ Example:
 	$myImage->fillToBorder(50,50,$black,$blue);
 
 =back
+
+
 
 =head2 Image Copying Commands
 
@@ -1213,11 +1320,11 @@ Example:
 
 B<				$srcX,$srcY,$destW,$destH,$srcW,$srcH)>
 
-This method is similar to copyResized() but 
-provides "smooth" copying from a large image to a smaller
-one, using a weighted average of the pixels of the source area rather
-than selecting one representative pixel. This function is identical
-to copyResized() when the destination image is a palette image.
+This method is similar to copyResized() but provides "smooth" copying
+from a large image to a smaller one, using a weighted average of the
+pixels of the source area rather than selecting one representative
+pixel. This method is identical to copyResized() when the destination
+image is a palette image.
 
 =item B<$image-E<gt>trueColorToPalette([$dither], [$colors])>
 
@@ -1306,6 +1413,8 @@ insensible to such subtle distinctions.
 
 =item B<@bounds = GD::Image-E<gt>stringFT($fgcolor,$fontname,$ptsize,$angle,$x,$y,$string)>
 
+=item B<@bounds = $image-E<gt>stringFT($fgcolor,$fontname,$ptsize,$angle,$x,$y,$string,\%options)>
+
 This method uses TrueType to draw a scaled, antialiased string using
 the TrueType vector font of your choice.  It requires that libgd to
 have been compiled with TrueType support, and for the appropriate
@@ -1337,6 +1446,37 @@ case it doesn't do any actual drawing, but returns the bounding box
 using an inexpensive operation.  You can use this to perform layout
 operations prior to drawing.
 
+Using a negative color index will disable anti-aliasing, as described
+in the libgd manual page at
+L<http://www.boutell.com/gd/manual2.0.9.html#gdImageStringFT>.
+
+An optional 8th argument allows you to pass a hashref of options to
+stringFT().  Two hashkeys are recognized: B<linespacing>, if present,
+controls the spacing between lines of text.  B<charmap>, if present,
+sets the character map to use.
+
+The value of B<linespacing> is supposed to be a multiple of the
+character height, so setting linespacing to 2.0 will result in
+double-spaced lines of text.  However the current version of libgd
+(2.0.12) does not do this.  Instead the linespacing seems to be double
+what is provided in this argument.  So use a spacing of 0.5 to get
+separation of exactly one line of text.  In practice, a spacing of 0.6
+seems to give nice results.  Another thing to watch out for is that
+successive lines of text should be separated by the "\r\n" characters,
+not just "\n".
+
+The value of B<charmap> is one of "Unicode", "Shift_JIS" and "Big5".
+The interaction between Perl, Unicode and libgd is not clear to me,
+and you should experiment a bit if you want to use this feature.
+
+Example:
+
+ $gd->stringFT($black,'/dosc/windows/Fonts/pala.ttf',40,0,20,90,
+              "hi there\r\nbye now",
+	      {linespacing=>0.6,
+	       charmap  => 'Unicode',
+	      });
+
 For backward compatibility with older versions of the FreeType
 library, the alias stringTTF() is also recognized.  Also be aware that
 relative font paths are not recognized due to problems in the libgd
@@ -1347,7 +1487,17 @@ library.
 =head2 Alpha channels
 
 The alpha channel methods allow you to control the way drawings are
-processed according to the alpha channel.
+processed according to the alpha channel. When true color is turned
+on, colors are encoded as four bytes, in which the last three bytes
+are the RGB color values, and the first byte is the alpha channel.
+Therefore the hexadecimal representation of a non transparent RGB
+color will be: C=0x00(rr)(bb)(bb)
+
+When alpha blending is turned on, you can use the first byte of the
+color to control the transparency, meaning that a rectangle painted
+with color 0x00(rr)(bb)(bb) will be opaque, and another one painted
+with 0x7f(rr)(gg)(bb) will be transparent. The Alpha value must be >=
+0 and <= 0x7f.
 
 =over 4
 
@@ -1436,6 +1586,24 @@ or by importing the :cmp tag.  Example:
   if ($image1->compare($image2) & GD_CMP_IMAGE) {
      warn "images differ!";
   }
+
+=item B<$image-E<gt>clip($x1,$y1,$x2,$y2)>
+
+=item B<($x1,$y1,$x2,$y2) = $image-E<gt>clip>
+
+Set or get the clipping rectangle.  When the clipping rectangle is
+set, all drawing will be clipped to occur within this rectangle.  The
+clipping rectangle is initially set to be equal to the boundaries of
+the whole image. Change it by calling clip() with the coordinates of
+the new clipping rectangle.  Calling clip() without any arguments will
+return the current clipping rectangle.
+
+=item B<$flag = $image-E<gt>boundsSafe($x,$y)>
+
+The boundsSafe() method will return true if the point indicated by
+($x,$y) is within the clipping rectangle, or false if it is not.  If
+the clipping rectangle has not been set, then it will return true if
+the point lies within the image boundaries.
 
 =back
 

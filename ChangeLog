@@ -1,3 +1,10 @@
+2.07	Now compatible with (and requires!) libgd 2.0.12.
+	Added setThickness() method.
+	Added support for compression level argument to png().
+	Added support for antialiasing drawing using setAntiAliased() and setAntiAliasedDontBled().
+	Added extended options to stringFT().
+	Added filledArc(), ellipse() and filledEllipse() methods.
+	Added command-line options to Makefile.PL provided by David Eisenberg.
 2.06	Added saveAlpha() and alphaBlending() methods.
 2.05	Alpha methods courtesy Georges Arnould.
 2.041	Added a regression test to detect certain versions of freetype.
