@@ -23,7 +23,7 @@ l.  produces output in svg format via GD::SVG.
 For full information on usage, see the accompanying man and html
 documentation.
 
-=> IMPORTANT: This version of GD REQUIRES libgd 2.0.12 or higher.  If you <=
+=> IMPORTANT: This version of GD REQUIRES libgd 2.0.28 or higher.  If you <=
 => have an older version of libgd installed you must remove libgd.a,      <=
 => libgd.so (if present) and gd.h.  Then install the new version of       <=
 => libgd from www.boutell.com (see below).  This particularly             <=
@@ -72,7 +72,7 @@ older version of libgd.  Symptoms of this problem include errors about
 functions not being recognized in the gd.h header file, and undefined
 symbols from the linker.  If you are having this type of error, please
 REMOVE all versions of libgd, gd.h from your system and reinstall
-libgd 2.0.12 or higher.  Do not contact Lincoln for help until you
+libgd 2.0.28 or higher.  Do not contact Lincoln for help until you
 have done this.
 
 Use GD 1.41 for libgd versions 1.8.4 and lower.
@@ -271,7 +271,7 @@ FREQUENTLY ASKED QUESTIONS
 
 2. Why do I get errors about functions not being found when building this module?
 
-   You need libgd (the C library that does all the work) version 2.0.12 or
+   You need libgd (the C library that does all the work) version 2.0.28 or
    higher.  Older versions will give you errors during GD
    installation. Get the latest version from www.boutell.com and install it.
    Sometimes just installing the new version of libgd is not enough: you must

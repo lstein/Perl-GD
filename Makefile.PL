@@ -4,7 +4,7 @@ require 5.6.0;
 
 unless (@ARGV) {
 warn <<END;
-NOTICE: This module requires libgd 2.0.12 or higher.
+NOTICE: This module requires libgd 2.0.25 or higher.
         it will NOT work with earlier versions. If you are getting
         compile or link errors, then please get and install a new
         version of libgd from www.boutell.com. Do NOT ask Lincoln
