@@ -37,7 +37,7 @@ covered by the Perl "Artistic License", which allows for free usage
 and redistribution.  See the Artistic License in the Perl source
 package for details.
 
-THE LATEST VERSION IS 1.27
+THE LATEST VERSION IS 1.30
 
 INSTALLATION:
 
@@ -352,6 +352,16 @@ Also do NOT contact me for issues involving the images looking
 distorted, having the wrong color tables, or other such low-level
 issues.  These problems should be referred to Tom Boutell because they
 pertain to the underlying libgd library.
+
+WHAT'S NEW IN 1.30
+	- now you can create GD::Image objects directly from image DATA
+	- reformatted documentation
+
+WHAT'S NEW IN 1.29
+	- internal release
+
+WHAT'S NEW IN 1.28
+	- fixed a bad regression test
 
 WHAT'S NEW IN 1.27
 	- updated for compatibility with libgd 1.8.3

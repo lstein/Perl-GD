@@ -262,6 +262,75 @@ extern	gdFontPtr	gdFontTiny;
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part(x,a,b,c,d)
 #endif
 
+/* definitions required to create images from in-memory buffers */
+		     
+typedef struct bufIOCtx {
+  gdIOCtx    ctx;
+  char*      data;
+  int        length;
+  int        pos;
+} bufIOCtx;
+
+typedef struct bufIOCtx *bufIOCtxPtr;
+
+static int bufGetC (gdIOCtxPtr ctx) {
+  bufIOCtxPtr bctx = (bufIOCtxPtr) ctx;
+
+  if (bctx->pos >= bctx->length) return EOF;
+  return bctx->data[bctx->pos];
+}
+
+static int bufGetBuf (gdIOCtxPtr ctx, void* buf, int len) {
+  bufIOCtxPtr bctx = (bufIOCtxPtr) ctx;
+  int remain,rlen;
+
+  remain = bctx->length - bctx->pos;
+  if (remain >= len) {
+    rlen = len;
+  } else {
+    if (remain <= 0) return EOF;
+    rlen = remain;
+  }
+  memcpy(buf,(void*)(bctx->data + bctx->pos),rlen);
+  bctx->pos += rlen;
+  return rlen;
+}
+
+static int bufSeek (gdIOCtxPtr ctx, const int pos) {
+  bufIOCtxPtr bctx = (bufIOCtxPtr) ctx;
+  bctx->pos = pos;
+  if (bctx->pos > bctx->length)
+    bctx->pos = bctx->length;
+  return TRUE;
+}
+
+static long bufTell (gdIOCtxPtr ctx) {
+  bufIOCtxPtr bctx = (bufIOCtxPtr) ctx;
+  return bctx->pos;
+}
+
+static void bufFree(gdIOCtxPtr ctx) {
+  Safefree(ctx);
+}
+
+static gdIOCtx* newDynamicCtx (char* data, int length) {
+  bufIOCtxPtr   ctx;
+  
+  Newz(0,ctx,1,bufIOCtx);
+  if (ctx == NULL) return NULL;
+  ctx->data   = data;
+  ctx->pos    = 0;
+  ctx->length = length;
+
+  ctx->ctx.getC   = bufGetC;
+  ctx->ctx.getBuf = bufGetBuf;
+  ctx->ctx.seek   = bufSeek;
+  ctx->ctx.tell   = bufTell;
+  ctx->ctx.free   = bufFree;
+  ctx->ctx.putC   = NULL;
+  ctx->ctx.putBuf = NULL;
+  return (gdIOCtx*)ctx;
+}
 
 MODULE = GD		PACKAGE = GD
 
@@ -273,7 +342,7 @@ constant(name,arg)
 MODULE = GD		PACKAGE = GD::Image	PREFIX=gd
 
 GD::Image
-gdnew(packname="GD::Image", x=64, y=64)
+gd_new(packname="GD::Image", x=64, y=64)
 	char *	packname
 	int	x
 	int	y
@@ -294,6 +363,91 @@ gd_newFromPng(packname="GD::Image", filehandle)
 	PROTOTYPE: $$
 	CODE:
 	RETVAL = (GD__Image) GDIMAGECREATEFROMPNG(filehandle);
+	OUTPUT:
+	RETVAL
+
+GD::Image
+gdnewFromPngData(packname="GD::Image", imageData)
+	char *	packname
+	SV *  imageData
+	PROTOTYPE: $$
+        PREINIT:
+	  gdIOCtx* ctx;
+          char*    data;
+          STRLEN   len;
+	CODE:
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+	RETVAL = (GD__Image) gdImageCreateFromPngCtx(ctx);
+        ctx->free(ctx);
+	OUTPUT:
+	RETVAL
+
+GD::Image
+gdnewFromGdData(packname="GD::Image", imageData)
+	char *	packname
+	SV *  imageData
+	PROTOTYPE: $$
+        PREINIT:
+	  gdIOCtx* ctx;
+          char*    data;
+          STRLEN   len;
+	CODE:
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+	RETVAL = (GD__Image) gdImageCreateFromGdCtx(ctx);
+        ctx->free(ctx);
+	OUTPUT:
+	RETVAL
+
+GD::Image
+gdnewFromGd2Data(packname="GD::Image", imageData)
+	char *	packname
+	SV *  imageData
+	PROTOTYPE: $$
+        PREINIT:
+	  gdIOCtx* ctx;
+          char*    data;
+          STRLEN   len;
+	CODE:
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+	RETVAL = (GD__Image) gdImageCreateFromGd2Ctx(ctx);
+        ctx->free(ctx);
+	OUTPUT:
+	RETVAL
+
+GD::Image
+gdnewFromJpegData(packname="GD::Image", imageData)
+	char *	packname
+	SV *  imageData
+	PROTOTYPE: $$
+        PREINIT:
+	  gdIOCtx* ctx;
+          char*    data;
+          STRLEN   len;
+	CODE:
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+	RETVAL = (GD__Image) gdImageCreateFromJpegCtx(ctx);
+        ctx->free(ctx);
+	OUTPUT:
+	RETVAL
+
+GD::Image
+gdnewFromWBMPData(packname="GD::Image", imageData)
+	char *	packname
+	SV *  imageData
+	PROTOTYPE: $$
+        PREINIT:
+	  gdIOCtx* ctx;
+          char*    data;
+          STRLEN   len;
+	CODE:
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+	RETVAL = (GD__Image) gdImageCreateFromWBMPCtx(ctx);
+        ctx->free(ctx);
 	OUTPUT:
 	RETVAL
 
