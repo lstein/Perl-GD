@@ -56,7 +56,7 @@ Usage: perl Makefile.PL [options]
 Configure GD module.
 
  Options:
-     -options       "JPEG,FT,XPM,ANIMGIF"   feature options, separated by commas
+     -options       "JPEG,FT,PNG,GIF,XPM,ANIMGIF"   feature options, separated by commas
      -lib_gd_path   path            path to libgd
      -lib_ft_path   path            path to Freetype library
      -lib_png_path  path            path to libpng
@@ -166,7 +166,7 @@ if( defined($options) )
   $XPM       = $options =~ m/XPM/i;
   $GIF       = $options =~ m/GIF/i;
   $PNG       = $options =~ m/PNG/i;
-  $ANIMGIF   = $options =~ m/ANIMGIF/i;
+  $ANIMGIF   = $GIF && $options =~ m/ANIMGIF/i;
   $VERSION_33= $options =~ m/VERSION_33/i;
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
   $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
@@ -178,7 +178,8 @@ else
     $JPEG    = lc prompt('Build JPEG support?','y') eq 'y';
     $PNG     = lc prompt('Build PNG support?','y') eq 'y';
     $FT      = lc prompt('Build FreeType support?','y') eq 'y';
-    $ANIMGIF = lc prompt('Build support for animated GIFs?','y') eq 'y';
+    $GIF     = lc prompt('Build GIF support?','y') eq 'y';
+    $ANIMGIF = $GIF && lc prompt('Build support for animated GIFs?','y') eq 'y';
     $XPM     = $^O !~ /^freebsd|MSWin32$/ && lc prompt('Build XPM support?','y') eq 'y';
 }
 ##################################################################################################################

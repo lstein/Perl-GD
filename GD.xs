@@ -810,7 +810,7 @@ gd_newFromGif(packname="GD::Image", filehandle, ...)
         if (img == NULL) {
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+	    sv_setpv(errormsg,"libgd was not built with gif support\n");
 	  XSRETURN_EMPTY;
         }
         RETVAL = img;

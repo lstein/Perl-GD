@@ -125,25 +125,24 @@ bootstrap GD;
 
 # Preloaded methods go here.
 sub GD::gdSmallFont {
-    return &GD::Font::Small;
+    return GD::Font->Small;
 }
 
 sub GD::gdLargeFont {
-    return &GD::Font::Large;
+    return GD::Font->Large;
 }
 
 sub GD::gdMediumBoldFont {
-    return &GD::Font::MediumBold;
+    return GD::Font->MediumBold;
 }
 
 sub GD::gdTinyFont {
-    return &GD::Font::Tiny;
+    return GD::Font->Tiny;
 }
 
 sub GD::gdGiantFont {
-    return &GD::Font::Giant;
+    return GD::Font->Giant;
 }
-
 
 sub GD::Image::_make_filehandle {
   shift;  # get rid of class
