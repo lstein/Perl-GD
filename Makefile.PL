@@ -1,6 +1,6 @@
 use ExtUtils::MakeMaker qw(prompt WriteMakefile);
 
-warn "NOTICE: This module requires libgd 1.8.4 or higher (shared library version 4.X).\n";
+warn "NOTICE: This module requires libgd 2.0.1 or higher.\n";
 
 # =====> PATHS: CHECK AND ADJUST <=====
 my @INC     = qw(-I/usr/local/include -I/usr/local/include/gd);

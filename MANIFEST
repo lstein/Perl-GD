@@ -5,6 +5,8 @@ MANIFEST
 Makefile.PL
 README
 README.QUICKDRAW
+patch_gd.pl
+GD/Polyline.pm
 README.unix
 bdf_scripts/README
 bdf_scripts/bdftogd
@@ -16,6 +18,7 @@ demos/fills.pl
 demos/font_list.png
 demos/fonttest
 demos/gd_example.cgi
+demos/polyline-example.pl
 demos/polys.pl
 demos/polyline.pl
 demos/shapes.pl
