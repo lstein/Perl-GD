@@ -18,7 +18,7 @@ static ::    libgd$(LIB_EXT)
 
 libgd$(LIB_EXT): $(O_FILES)
 	$(AR) cr libgd$(LIB_EXT) $(O_FILES)
-        $(RANLIB) libgd$(LIB_EXT)
+	$(RANLIB) libgd$(LIB_EXT)
 ';
 }
 

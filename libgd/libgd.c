@@ -835,7 +835,7 @@ void* gdImageGifPtr(gdImagePtr im, int* size) {
 
   dp = gdImageGifData(im);
   if (dp == NULL)
-    return;
+    return NULL;
 
   *size = dp->logicalSize;
   data = dp->data;
@@ -2688,6 +2688,7 @@ allocDynamic (dynamicPtr* dp,int initialSize) {
 static int
 appendDynamic (dynamicPtr* dp, const void* src, int size) {
   int bytesNeeded;
+  char* tmp;
 
   if (!dp->dataGood) return FALSE;
 
@@ -2701,7 +2702,9 @@ appendDynamic (dynamicPtr* dp, const void* src, int size) {
 
   /* if we get here, we can be sure that we have enough bytes
      to copy safely */
-  memcpy(dp->data+dp->logicalSize,src,size);
+  tmp = (char*) dp->data;
+  tmp += dp->logicalSize;
+  memcpy((void*)tmp,src,size);
   dp->logicalSize += size;
   return TRUE;
 }
