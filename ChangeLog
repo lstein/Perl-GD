@@ -1,3 +1,5 @@
+1.27	Fixed strict refs problem on 5.00503 and earlier
+1.26	Brought up to date with libgd 1.8.1
 1.24-1.25 More tweaks to Makefile.PL.
 1.23    Added a bunch more libraries and includes... might or might not port
 	to other platforms now

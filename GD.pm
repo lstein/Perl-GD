@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "1.26";
+$VERSION = "1.27";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -110,6 +110,7 @@ sub GD::gif {
 
 sub GD::Image::_make_filehandle {
   shift;  # get rid of class
+  no strict 'refs';
   my $thing = shift;
   return $thing if defined(fileno $thing);
 

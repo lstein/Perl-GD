@@ -11000,7 +11000,7 @@ diff -Naur gd-1.8.1/mkinstalldirs gd-1.8.1_patched/mkinstalldirs
 +# Created: 1993-05-16
 +# Public domain
 +
-+# $Id: mkinstalldirs,v 1.10 1996/05/03 07:37:52 friedman Exp $
++# $Id: patch_gd.sh,v 1.1.1.1 2000/03/22 19:19:04 lstein Exp $
 +
 +errstatus=0
 +
