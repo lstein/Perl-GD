@@ -22,7 +22,7 @@ warn "\nIf you experience compile problems, please check the \@INC, \@LIBPATH an
 
 #### no user-serviceable parts below #####
 
-push @LIBS,'-lttf' if $TTF;
+push @LIBS,'-lfreetype' if $TTF;
 push @LIBS,'-ljpeg' if $JPEG;
 push @LIBS, '-lm' unless $^O eq 'MSWin32';
 

@@ -1352,7 +1352,7 @@ gdstringUp(image,font,x,y,s,color)
 	}
 
 void
-gdstringTTF(image,fgcolor,fontname,ptsize,angle,x,y,string)
+gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string)
         SV *	        image
         int             fgcolor
 	char *          fontname
@@ -1377,7 +1377,7 @@ gdstringTTF(image,fgcolor,fontname,ptsize,angle,x,y,string)
 	    img = NULL;
 	  }
 
-	  err = gdImageStringTTF(img,brect,fgcolor,fontname,ptsize,angle,x,y,string);
+	  err = gdImageStringFT(img,brect,fgcolor,fontname,ptsize,angle,x,y,string);
 	  if (err) {
 	    errormsg = perl_get_sv("@",0);
 	    if (errormsg != NULL)

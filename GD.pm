@@ -1231,7 +1231,7 @@ TrueType font to be installed on your system.
 The arguments are as follows:
 
   fgcolor    Color index to draw the string in
-  fontname   An absolute or relative path to the TrueType (.ttf) font file
+  fontname   An absolute path to the TrueType (.ttf) font file
   ptsize     The desired point size (may be fractional)
   angle      The rotation angle, in radians
   x,y        X and Y coordinates to start drawing the string
@@ -1256,7 +1256,8 @@ operations prior to drawing.
 
 For backward compatibility with older versions of the FreeType
 library, the alias stringTTF() is also recognized.  Also be aware that
-(for some reason) relative font paths are not recognized.
+relative font paths are not recognized due to problems in the libgd
+library.
 
 =back
 
