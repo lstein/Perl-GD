@@ -22,7 +22,7 @@ charmap($im, gdLargeFont, "LargeFont 8x16", 120, 16);
 charmap($im, gdMediumBoldFont, "gdMediumBoldFont 7x13b", 220, 13);
 charmap($im, gdSmallFont, "gdSmallFont 6x13", 320, 13);
 charmap($im, gdTinyFont, "gdTinyFont 5x8", 420, 8);
-
+binmode(STDOUT);
 print $im->png;
 
 sub charmap
