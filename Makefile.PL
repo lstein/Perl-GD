@@ -1,6 +1,8 @@
 use ExtUtils::MakeMaker qw(prompt WriteMakefile);
 
 warn "NOTICE: This module requires libgd 2.0.1 or higher.\n";
+warn "        For earlier versions of libgd, use GD version 1.43.\n";
+
 
 # =====> PATHS: CHECK AND ADJUST <=====
 my @INC     = qw(-I/usr/local/include -I/usr/local/include/gd);
@@ -13,7 +15,6 @@ warn "\nPlease choose the features that match how libgd was built:\n";
 my $JPEG    = lc prompt('Build JPEG support?','y') eq 'y';
 my $FT      = lc prompt('Build FreeType support?','y') eq 'y';
 my $XPM     = $^O !~ /^freebsd|MSWin32$/ && lc prompt('Build XPM support?','y') eq 'y';
-my $GIF		= lc prompt('Build GIF support (for patched versions of gd)?','n') eq 'y';
 
 my $FCGI    = 0;   # set to 1 to build compatability with fastCGI
 
@@ -36,7 +37,6 @@ my $DEFINES = '';
 $DEFINES    .= ' -DHAVE_JPEG' if $JPEG;
 $DEFINES    .= ' -DHAVE_FT'   if $FT;
 $DEFINES    .= ' -DHAVE_XPM'  if $XPM;
-$DEFINES    .= ' -DHAVE_GIF'  if $GIF;
 $DEFINES    .= ' -DFCGI'      if $FCGI;
 
 WriteMakefile(

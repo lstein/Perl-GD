@@ -157,14 +157,6 @@ sub GD::Image::newPalette {
   return $pack->_new(@_, 0);
 }
 
-sub GD::Image::newFromGif {
-    croak("Usage: newFromGif(class,filehandle)") unless @_==2;
-    my($class,$f) = @_;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromGif($fh);
-}
-
 sub GD::Image::newFromPng {
     croak("Usage: newFromPng(class,filehandle,[truecolor])") unless @_>=2;
     my($class) = shift;
@@ -419,9 +411,6 @@ GD.pm - Interface to Gd Graphics Library
     # make sure we are writing to a binary stream
     binmode STDOUT;
 
-    # Convert the image to GIF and print it on standard output
-    print $im->gif;
-
     # Convert the image to PNG and print it on standard output
     print $im->png;
 
@@ -484,9 +473,6 @@ A Simple Example:
 	# make sure we are writing to a binary stream
 	binmode STDOUT;
 
-	# Convert the image to GIF and print it on standard output
-	print $im->gif;
-
 	# Convert the image to PNG and print it on standard output
 	print $im->png;
 
@@ -498,7 +484,7 @@ Notes:
 To create a new, empty image, send a new() message to GD::Image, passing
 it the width and height of the image you want to create.  An image
 object will be returned.  Other class methods allow you to initialize
-an image from a preexisting GIF, JPG, PNG, GD, GD2 or XBM file.
+an image from a preexisting JPG, PNG, GD, GD2 or XBM file.
 
 =item 2.
 Next you will ordinarily add colors to the image's color table.
@@ -561,7 +547,7 @@ compatibility with older versions of libgd.
 Alternatively, you may create a GD::Image object based on an existing
 image by providing an open filehandle, a filename, or the image data
 itself.  The image formats automatically recognized and accepted are:
-PNG, JPEG, XPM and GD2.  Other formats, including GIF, WBMP, and GD
+PNG, JPEG, XPM and GD2.  Other formats, including WBMP, and GD
 version 1, cannot be recognized automatically at this time.
 
 If something goes wrong (e.g. insufficient memory), this call will
@@ -696,13 +682,6 @@ example:
 This reads a 100x100 square portion of the image starting from
 position (10,20).
 
-=item B<$image = GD::Image-E<gt>newFromGif($file)>
-
-=item B<$image = GD::Image-E<gt>newFromGifData($data)>
-
-This works in exactly the same way as C<newFromGd()> and
-newFromGdData, but use the GIF image format.
-
 =item B<$image = GD::Image-E<gt>newFromXpm($filename)>
 
 This creates a new GD::Image object starting from a B<filename>.  This
@@ -743,11 +722,6 @@ pipe it to a display program, or write it to a file.  Example:
 
 Note the use of C<binmode()>.  This is crucial for portability to
 DOSish platforms.
-
-=item B<$gifdata = $image-E<gt>gif>
-
-This returns the image data in GIF format.  You can then print it,
-pipe it to a display program, or write it to a file. 
 
 =item B<$jpegdata = $image-E<gt>jpeg([$quality])>
 
@@ -889,7 +863,7 @@ Example:
 This marks the color at the specified index as being transparent.
 Portions of the image drawn in this color will be invisible.  This is
 useful for creating paintbrushes of odd shapes, as well as for
-making GIF & PNG backgrounds transparent for displaying on the Web.  Only
+making PNG backgrounds transparent for displaying on the Web.  Only
 one color can be transparent at any time. To disable transparency, 
 specify -1 for the index.  
 
@@ -1255,7 +1229,7 @@ to preserving colors as well as possible. This does not work as well as
 might be hoped. It is usually best to simply produce a truecolor
 output image instead, which guarantees the highest output quality.
 Both the dithering (0/1, default=0) and maximum number of colors used
-(<=256, default = 256) can be specified.
+(<=256, default = gdMaxColors) can be specified.
 
 =back
 

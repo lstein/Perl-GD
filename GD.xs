@@ -250,7 +250,6 @@ extern	gdFontPtr	gdFontTiny;
 
 #ifdef PERL_OBJECT
 #  ifdef WIN32
-#define GDIMAGECREATEFROMGIF(x) gdImageCreateFromGif((FILE*)x)
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng((FILE*)x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm((FILE*)x)
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg((FILE*)x)
@@ -261,7 +260,6 @@ extern	gdFontPtr	gdFontTiny;
 #  endif
 #else
 #  ifdef USE_PERLIO
-#define GDIMAGECREATEFROMGIF(x) gdImageCreateFromGif(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(PerlIO_findFILE(x))
@@ -270,7 +268,6 @@ extern	gdFontPtr	gdFontTiny;
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part(PerlIO_findFILE(x),a,b,c,d)
 #  else
-#define GDIMAGECREATEFROMGIF(x) gdImageCreateFromGif(x)
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng(x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm(x)
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(x)
@@ -413,9 +410,6 @@ static int truecolor_default = 0;
 /* Check the image format being returned */
 void
 gd_chkimagefmt(GD__Image image, int truecolor) {
-  if (truecolor == -1) {		/* if no override specified */
-     truecolor = truecolor_default;	/* use the global default */
-  }
   if (!truecolor) {			/* return a palette image */
      if (gdImageTrueColor(image)) {
 	gdImageTrueColorToPalette(image,1,gdMaxColors);
@@ -543,30 +537,6 @@ gdnewFromGd2Data(packname="GD::Image", imageData)
 	RETVAL
 
 GD::Image
-gdnewFromGifData(packname="GD::Image", imageData)
-	char *	packname
-	SV *	imageData
-	PROTOTYPE: $$
-        PREINIT:
-	  gdIOCtx* ctx;
-          char*    data;
-          STRLEN   len;
-          SV* errormsg;
-	CODE:
-#ifdef HAVE_GIF
-	data = SvPV(imageData,len);
-        ctx = newDynamicCtx(data,len);
-	RETVAL = (GD__Image) gdImageCreateFromGifCtx(ctx);
-        ctx->free(ctx);
-#else
-    errormsg = perl_get_sv("@",0);
-    sv_setpv(errormsg,"libgd was not built with gif support\n");
-    XSRETURN_EMPTY;
-#endif
-	OUTPUT:
-	RETVAL
-
-GD::Image
 gdnewFromJpegData(packname="GD::Image", imageData, ...)
 	char *	packname
 	SV *    imageData
@@ -610,24 +580,6 @@ gdnewFromWBMPData(packname="GD::Image", imageData, ...)
         (ctx->free)(ctx);
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
-	OUTPUT:
-	RETVAL
-
-GD::Image
-gd_newFromGif(packname="GD::Image", filehandle)
-	char *	packname
-	InputStream	filehandle
-	PROTOTYPE: $$
-	PREINIT:
-		SV* errormsg;
-	CODE:
-#ifdef HAVE_GIF
-	RETVAL = (GD__Image) GDIMAGECREATEFROMGIF(filehandle);
-#else
-    errormsg = perl_get_sv("@",0);
-    sv_setpv(errormsg,"libgd was not built with gif support\n");
-    XSRETURN_EMPTY;
-#endif
 	OUTPUT:
 	RETVAL
 
@@ -775,29 +727,6 @@ gdpng(image)
     RETVAL
 
 SV*
-gdgif(image)
-  GD::Image	image
-  PROTOTYPE: $
-  PREINIT:
-    SV* errormsg;
-  CODE:
-  {
-	void*         data;
-	int           size;
-#ifdef HAVE_GIF
-	data = (void *) gdImageGifPtr(image,&size);
-	RETVAL = newSVpv((char*) data,size);
-	free(data);
-#else
-	errormsg = perl_get_sv("@",0);
-	sv_setpv(errormsg,"libgd was not built with gif support\n");
-	XSRETURN_EMPTY;
-#endif
-  }
-  OUTPUT:
-    RETVAL
-
-SV*
 gdjpeg(image,quality=-1)
   GD::Image	image
   int           quality
@@ -923,7 +852,7 @@ gdisTrueColor(image)
 		RETVAL
 
 void
-gdtrueColorToPalette(image, dither=0, colors=256)
+gdtrueColorToPalette(image, dither=0, colors=gdMaxColors)
 	GD::Image	image
 	int		dither
 	int		colors

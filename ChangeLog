@@ -1,5 +1,6 @@
 2.00    Folded in support for gd version 2.0 from Dan Palermo
 	Folded in support for splines (GD::Polyline) from Dan Harasty.
+	Removed all GIF support.
 1.43    Added demo of Type1 fonts to truetype demo from Slaven Rezic.
 1.42	Fixed the patch_gd.pl file
 	Version 2.0 is coming.
