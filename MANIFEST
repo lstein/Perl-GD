@@ -33,7 +33,8 @@ t/frog.jpg
 t/frog.xpm
 t/palettemap.png
 t/test.out.1.png
-t/test.out.10.png
+t/test.out.10.png-1
+t/test.out.10.png-2
 t/test.out.2.png
 t/test.out.3.png
 t/test.out.4.png

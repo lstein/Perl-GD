@@ -120,7 +120,7 @@ my $PREFIX = $lib_gd_path;
 if( ! defined($lib_gd_path) )
 {
   warn "\n";
-  $PREFIX = lc prompt('Where is libgd installed?','/usr/lib');
+  $PREFIX = prompt('Where is libgd installed?','/usr/lib');
 }
 
 unless ($PREFIX eq '/usr/lib') {

@@ -38,8 +38,6 @@ covered by the Perl "Artistic License", which allows for free usage
 and redistribution.  See the Artistic License in the Perl source
 package for details.
 
-THE LATEST VERSION IS 2.06
-
 INSTALLATION:
 
 Read these instructions all the way through before you start!
@@ -49,7 +47,7 @@ Read these instructions all the way through before you start!
 	a. Perl 5.004 or higher:
 		http://www.perl.com/
 
-	b. The gd graphics library, version 2.0.1 or higher:
+	b. The gd graphics library:
 		http://www.boutell.com/gd/
 
 	c. The PNG graphics library:
@@ -69,8 +67,6 @@ Read these instructions all the way through before you start!
         g. The XPM library, a standard part of modern X Windows 
 	   distributions.  If you don't have a modern
            version of X, don't try to get XPM working.
-
-NOTE: This version of GD requires libgd version 2.0.5 or higher.
 
 If this module fails to compile and link, you are probably using an
 older version of libgd.  Symptoms of this problem include errors about
