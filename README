@@ -37,7 +37,7 @@ covered by the Perl "Artistic License", which allows for free usage
 and redistribution.  See the Artistic License in the Perl source
 package for details.
 
-THE LATEST VERSION IS 1.30
+THE LATEST VERSION IS 1.33
 
 INSTALLATION:
 
@@ -75,12 +75,12 @@ Some users have had trouble getting GD to link correctly.  Part of the
 problem is that Perl's Makefile.PL system prefers dynamically-linked
 shared libraries, but libgd builds a static library file by default.
 The file C<patch_gd.pl>, included with this distribution, will patch
-libgd version 1.8.3 to make it possible to compile it as a shared
+libgd version 1.8.4 to make it possible to compile it as a shared
 library.
 
 This file is a perl script which runs GNU patch and then makes a few
 other adjustments.  To use it, copy it into the top level of a
-B<virgin> copy of the gd-1.8.3 directory.  Then run it like this:
+B<virgin> copy of the gd-1.8.4 directory.  Then run it like this:
 
   % perl patch_gd.pl
 
@@ -93,8 +93,9 @@ listed at http://www.gnu.org/order/ftp.html).  Solaris systems do
 *not* have a suitable version of patch.  You must install GNU patch
 yourself.
 
-It is possible that this patch will work with later version of libgd,
-but this is not guaranteed. 
+This patch will *not* work with earlier versions of libgd.  It is
+possible that this patch will work with later version of libgd, but
+this is not guaranteed.
 
 3.  Unpack the tar file:
 
