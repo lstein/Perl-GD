@@ -1337,6 +1337,11 @@ case it doesn't do any actual drawing, but returns the bounding box
 using an inexpensive operation.  You can use this to perform layout
 operations prior to drawing.
 
+Using a negative color index will disable anti-aliasing, as described
+in the libgd manual page at
+L<http://www.boutell.com/gd/manual2.0.9.html#gdImageStringFT>.
+
+
 For backward compatibility with older versions of the FreeType
 library, the alias stringTTF() is also recognized.  Also be aware that
 relative font paths are not recognized due to problems in the libgd
@@ -1347,7 +1352,17 @@ library.
 =head2 Alpha channels
 
 The alpha channel methods allow you to control the way drawings are
-processed according to the alpha channel.
+processed according to the alpha channel. When true color is turned
+on, colors are encoded as four bytes, in which the last three bytes
+are the RGB color values, and the first byte is the alpha channel.
+Therefore the hexadecimal representation of a non transparent RGB
+color will be: C=0x00(rr)(bb)(bb)
+
+When alpha blending is turned on, you can use the first byte of the
+color to control the transparency, meaning that a rectangle painted
+with color 0x00(rr)(bb)(bb) will be opaque, and another one painted
+with 0x7f(rr)(gg)(bb) will be transparent. The Alpha value must be >=
+0 and <= 0x7f.
 
 =over 4
 
