@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'	=> 'GD',
-    'VERSION'	=> '1.12',
+    'VERSION'	=> '1.13',
     'MYEXTLIB'  => 'libgd/libgd$(LIB_EXT)',
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'}
@@ -15,8 +15,7 @@ WriteMakefile(
 sub MY::postamble{
 '
 $(MYEXTLIB): libgd/Makefile
-	DEFINE=\'$(DEFINE)\';
-	export DEFINE INC; \
+	DEFINE=\'$(DEFINE)\'; export DEFINE INC; \
 	cd libgd && $(MAKE) -e
 
 html: GD.pm

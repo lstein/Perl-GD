@@ -27,6 +27,7 @@ gdImagePtr gdImageCreate(int sx, int sy)
 		im->pixels[i] = (unsigned char *) calloc(
 			sy, sizeof(unsigned char));
 	}	
+	/* make sure that the colors are zeroed out */
 	for (i=0; i < gdMaxColors; i++) {
 	  im->red[i]=0;
 	  im->green[i]=0;
@@ -43,8 +44,10 @@ gdImagePtr gdImageCreate(int sx, int sy)
 void gdImageDestroy(gdImagePtr im)
 {
 	int i;
+
+	if (im == NULL) return;
 	for (i=0; (i<im->sx); i++) {
-		free(im->pixels[i]);
+	    free(im->pixels[i]);
 	}	
 	free(im->pixels);
 	if (im->polyInts) {
@@ -840,7 +843,7 @@ void* gdImageGifPtr(gdImagePtr im, int* size) {
 
   dp = gdImageGifData(im);
   if (dp == NULL)
-    return NULL;
+    return;
 
   *size = dp->logicalSize;
   data = dp->data;
@@ -2693,7 +2696,6 @@ allocDynamic (dynamicPtr* dp,int initialSize) {
 static int
 appendDynamic (dynamicPtr* dp, const void* src, int size) {
   int bytesNeeded;
-  char* tmp;
 
   if (!dp->dataGood) return FALSE;
 
@@ -2707,9 +2709,7 @@ appendDynamic (dynamicPtr* dp, const void* src, int size) {
 
   /* if we get here, we can be sure that we have enough bytes
      to copy safely */
-  tmp = (char*) dp->data;
-  tmp += dp->logicalSize;
-  memcpy((void*)tmp,src,size);
+  memcpy(((void*)((char*)dp->data)+dp->logicalSize),src,size);
   dp->logicalSize += size;
   return TRUE;
 }

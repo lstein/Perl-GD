@@ -3,11 +3,14 @@
 use GD;
 
 $im = new GD::Image(300,300);
-$white = $im->colorAllocate(255, 255, 255);        
-$black = $im->colorAllocate(0, 0, 0);
-$red = $im->colorAllocate(255, 0, 0);      
-$blue = $im->colorAllocate(0,0,255);
-$yellow = $im->colorAllocate(255,250,205);
+($white,$black,$red,$blue,$yellow) = 
+    (
+     $im->colorAllocate(255, 255, 255),
+     $im->colorAllocate(0, 0, 0),
+     $im->colorAllocate(255, 0, 0),
+     $im->colorAllocate(0,0,255),
+     $im->colorAllocate(255,250,205)
+     );
 $im->transparent($white);	# white color is transparent
 $im->interlaced(1);		# cool venetian blinds effect
 

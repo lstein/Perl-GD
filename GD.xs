@@ -196,7 +196,7 @@ char* style;
   dSP ;
   int count ;
   FILE* file;
-  int fd;
+  int fd,newfd;
   
   ENTER ;
   SAVETMPS;
@@ -212,7 +212,8 @@ char* style;
   FREETMPS ;
   LEAVE ;
 
-  file = fdopen(fd,style);
+  newfd = dup(fd);
+  file = fdopen(newfd,style);
   return file;
 }
 
@@ -256,6 +257,7 @@ gdnewFromGif(packname="GD::Image", filehandle)
 		  theImage = gdImageCreateFromGif(theFile);
 		  RETVAL = theImage;
 		}
+		fclose(theFile);
 	}
 	OUTPUT:
 		RETVAL
@@ -276,6 +278,7 @@ gdnewFromXbm(packname="GD::Image", filehandle)
 			theImage = gdImageCreateFromXbm(theFile);
 			RETVAL = theImage;
 		}
+		fclose(theFile);
 	}
 	OUTPUT:
 		RETVAL
@@ -296,6 +299,7 @@ gdnewFromGd(packname="GD::Image", filehandle)
 			theImage = gdImageCreateFromGd(theFile);
 			RETVAL = theImage;
 		}
+		fclose(theFile);
 	}
 	OUTPUT:
 		RETVAL
