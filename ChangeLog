@@ -1,3 +1,6 @@
+2.15	Brought back GIF support (requires libgd 2.0.28 or higher).
+	Takes advantage of gdlib-config support in libgd 2.0.27 or higher.
+2.14	Support for AMD64 libraries.
 2.12	Fixed regression test 10 to succeed when used with
 		libgd 2.0.22
 2.11	More alpha functions from Cory Watson

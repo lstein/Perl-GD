@@ -335,12 +335,13 @@ extern	gdFontPtr	gdFontTiny;
 
 #ifdef PERL_OBJECT
 #  ifdef WIN32
-#define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng((FILE*)x)
-#define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm((FILE*)x)
+#define GDIMAGECREATEFROMPNG(x)  gdImageCreateFromPng((FILE*)x)
+#define GDIMAGECREATEFROMXBM(x)  gdImageCreateFromXbm((FILE*)x)
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg((FILE*)x)
+#define GDIMAGECREATEFROMGIF(x)  gdImageCreateFromGif((FILE*)x)
 #define GDIMAGECREATEFROMWBMP(x) gdImageCreateFromWBMP((FILE*)x)
-#define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd((FILE*)x)
-#define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2((FILE*)x)
+#define GDIMAGECREATEFROMGD(x)   gdImageCreateFromGd((FILE*)x)
+#define GDIMAGECREATEFROMGD2(x)  gdImageCreateFromGd2((FILE*)x)
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part((FILE*)x,a,b,c,d)
 #  endif
 #else
@@ -348,6 +349,7 @@ extern	gdFontPtr	gdFontTiny;
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(PerlIO_findFILE(x))
+#define GDIMAGECREATEFROMGIF(x)  gdImageCreateFromGif(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMWBMP(x) gdImageCreateFromWBMP(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(PerlIO_findFILE(x))
@@ -356,12 +358,16 @@ extern	gdFontPtr	gdFontTiny;
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng(x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm(x)
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(x)
+#define GDIMAGECREATEFROMGIF(x) gdImageCreateFromJpeg(x)
 #define GDIMAGECREATEFROMWBMP(x) gdImageCreateFromWBMP(x)
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd(x)
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(x)
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part(x,a,b,c,d)
 #  endif
 #endif
+
+#define bigendian(a) \
+    (a[3]<<24)+(a[2]<<16)+(a[1]<<8)+a[0]
 
 /* definitions required to create images from in-memory buffers */
 		     
@@ -495,7 +501,8 @@ static int truecolor_default = 0;
 /* Check the image format being returned */
 void
 gd_chkimagefmt(GD__Image image, int truecolor) {
-  if (!truecolor) {			/* return a palette image */
+  if ((image != NULL)
+      && !truecolor) {			/* return a palette image */
      if (gdImageTrueColor(image)) {
 	gdImageTrueColorToPalette(image,1,gdMaxColors);
      }
@@ -787,6 +794,62 @@ gd_newFromGd2Part(packname="GD::Image", filehandle,srcX,srcY,width,height)
 	OUTPUT:
 	RETVAL
 
+GD::Image
+gd_newFromGif(packname="GD::Image", filehandle, ...)
+	char *	packname
+	InputStream	filehandle
+	PROTOTYPE: $$;$
+        PREINIT:
+	  gdImagePtr img;
+	  SV* errormsg;
+          int     truecolor = truecolor_default;
+	CODE:
+#ifdef HAVE_GIF
+	img = GDIMAGECREATEFROMGIF(filehandle);
+        if (img == NULL) {
+          errormsg = perl_get_sv("@",0);
+	  if (errormsg != NULL)
+	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+	  XSRETURN_EMPTY;
+        }
+        RETVAL = img;
+        if (items > 2) truecolor = (int)SvIV(ST(2));
+	gd_chkimagefmt(RETVAL, truecolor);
+#else
+        errormsg = perl_get_sv("@",0);
+        sv_setpv(errormsg,"libgd was not built with gif support\n");
+        XSRETURN_EMPTY;
+#endif
+	OUTPUT:
+        RETVAL
+
+GD::Image
+gdnewFromGifData(packname="GD::Image", imageData, ...)
+	char *	packname
+	SV *    imageData
+	PROTOTYPE: $$;$
+        PREINIT:
+	  gdIOCtx* ctx;
+          char*    data;
+          STRLEN   len;
+	  SV* errormsg;
+          int     truecolor = truecolor_default;
+	CODE:
+#ifdef HAVE_JPEG
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+	RETVAL = (GD__Image) gdImageCreateFromGifCtx(ctx);
+        (ctx->gd_free)(ctx);
+        if (items > 2) truecolor = (int)SvIV(ST(2));
+	gd_chkimagefmt(RETVAL, truecolor);
+#else
+        errormsg = perl_get_sv("@",0);
+        sv_setpv(errormsg,"libgd was not built with GIF support\n");
+        XSRETURN_EMPTY;
+#endif
+	OUTPUT:
+	RETVAL
+
 void
 gdDESTROY(image)
 	GD::Image	image
@@ -867,6 +930,35 @@ gdwbmp(image,fg)
         }
 	RETVAL = newSVpv((char*) data,size);
 	gdFree(data);
+  }
+  OUTPUT:
+    RETVAL
+
+SV*
+gdgif(image)
+  GD::Image	image
+  PROTOTYPE: $
+  PREINIT:
+  SV* errormsg;
+  CODE:
+  {
+	void*         data;
+	int           size;
+#ifdef HAVE_GIF
+	data = (void *) gdImageGifPtr(image,&size);
+        if (data == NULL) {
+          errormsg = perl_get_sv("@",0);
+	  if (errormsg != NULL)
+	    sv_setpv(errormsg,"libgd was not built with gif support\n");
+	  XSRETURN_EMPTY;
+        }
+	RETVAL = newSVpv((char*) data,size);
+	gdFree(data);
+#else
+        errormsg = perl_get_sv("@",0);
+        sv_setpv(errormsg,"libgd was not built with gif support\n");
+        XSRETURN_EMPTY;
+#endif
   }
   OUTPUT:
     RETVAL
@@ -1639,7 +1731,9 @@ colorsTotal(image)
 	PROTOTYPE: $
 	CODE:
 	{
-		RETVAL = gdImageColorsTotal(image);
+	   if (gdImageTrueColor(image))
+ 	     XSRETURN_UNDEF;
+	   RETVAL = gdImageColorsTotal(image);
 	}
 	OUTPUT:
 		RETVAL
@@ -1979,6 +2073,80 @@ CODE:
 
 
 MODULE = GD		PACKAGE = GD::Font	PREFIX=gd
+
+GD::Font
+gdload(packname="GD::Font",fontpath)
+     char * packname
+     char * fontpath
+     PROTOTYPE: $$
+     PREINIT:
+       int       fontfile;
+       int       datasize;
+       SV*       errormsg;
+       char      errstr[256];
+       gdFontPtr font;
+       char      word[4];
+       char*     fontdata;
+     CODE:
+     {
+       fontfile = open(fontpath,O_RDONLY);
+       if (fontfile < 0) {
+         errormsg = perl_get_sv("@",0);
+	 snprintf(errstr,256,"could not open font file %s: %s",fontpath,strerror(errno));
+         sv_setpv(errormsg,errstr);
+ 	 XSRETURN_EMPTY;
+       }
+       font = (gdFontPtr)safemalloc(sizeof(gdFont));
+       if (font == NULL)
+	 croak("safemalloc() returned NULL while trying to allocate font struct.\n");
+       /* read header from font - note that the file is assumed to be bigendian*/
+       if (read(fontfile,word,4) < 4)
+	 croak(strerror(errno));
+       font->nchars = bigendian(word);
+
+       if (read(fontfile,word,4) < 4)
+	 croak(strerror(errno));
+       font->offset = bigendian(word);
+
+       if (read(fontfile,word,4) < 4)
+	 croak(strerror(errno));
+       font->w = bigendian(word);
+
+       if (read(fontfile,word,4) < 4)
+	 croak(strerror(errno));
+       font->h = bigendian(word);
+
+       datasize = font->nchars * font->w * font->h;
+       fontdata = (char*)safemalloc(datasize);
+       if (fontdata == NULL)
+	 croak("safemalloc() returned NULL while trying to allocate font bitmap.\n");
+
+       if (read(fontfile,fontdata,datasize) < datasize)
+	 croak(strerror(errno));
+
+       font->data = fontdata;
+
+       close(fontfile); /* please don't leak file descriptors! */
+       RETVAL = font;
+     }
+     OUTPUT:
+            RETVAL
+
+void
+gdDESTROY(self)
+     GD::Font      self
+     PROTOTYPE: $
+     CODE:
+     {
+       if (self == gdFontSmall ||
+	   self == gdFontLarge ||
+	   self == gdFontGiant ||
+	   self == gdFontMediumBold ||
+	   self == gdFontTiny)
+	 XSRETURN_EMPTY;
+       safefree(self->data);
+       safefree(self);
+     }
 
 GD::Font
 gdSmall(packname="GD::Font")

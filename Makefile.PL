@@ -3,23 +3,37 @@ use ExtUtils::MakeMaker qw(prompt WriteMakefile);
 require 5.6.0;
 
 unless (@ARGV) {
-warn "\nNOTICE: This module requires libgd 2.0.12 or higher.\n";
-warn "        it will NOT work with earlier versions.\n";
-warn "        See www.cpan.org for versions of GD that are compatible\n";
-warn "        with earlier versions of libgd.\n";
-warn "\n";
-warn "        If you are using Math::Trig 1.01 or lower, it has a bug that\n";
-warn "        causes a \"prerequisite not found\" warning to be issued.  You may\n";
-warn "        safely ignore this warning.\n";
-warn "\n";
-warn "Type perl Makefile.PL -h for command-line option summary\n";
+warn <<END;
+NOTICE: This module requires libgd 2.0.12 or higher.
+        it will NOT work with earlier versions.
+        See www.cpan.org for versions of GD that are compatible
+        with earlier versions of libgd.
+
+        If you are using Math::Trig 1.01 or lower, it has a bug that
+        causes a "prerequisite not found" warning to be issued.  You may
+        safely ignore this warning.
+
+        Type perl Makefile.PL -h for command-line option summary
+
+END
 }
 
 
 # =====> PATHS: CHECK AND ADJUST <=====
-my @INC     = qw(-I/usr/local/include -I/usr/local/include/gd);
-my @LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/local/lib);
-my @LIBS    = qw(-lgd -lpng -lz);
+my (@INC,@LIBPATH,@LIBS);
+my $AUTOCONFIG = 0;      # global set by try_to_autoconfigure() below
+
+try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS);
+
+@INC     = qw(-I/usr/include -I/usr/include/gd) unless @INC;
+@LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/lib) unless @LIBPATH;
+@LIBS    = qw(-lgd -lpng -lz) unless @LIBS;
+
+# support for AMD64 libraries
+if (-d '/usr/lib64') {
+  my @libs64 = map {my $a = $_; $a=~ s/lib$/lib64/; $a} @LIBPATH;
+  @LIBPATH = (@LIBPATH,@libs64);
+}
 
 #############################################################################################
 # Build options passed in to script to support reproducible builds via Makefiles
@@ -49,37 +63,40 @@ Configure GD module.
      -lib_zlib_path path            path to libpng
 
 If no options are passed on the command line.  The program will
-prompt for these values interactively.
+attempt to autoconfigure itself with the gdlib-config program (present
+in GD versions 2.0.27 or later).  Otherwise it will prompt for these
+values interactively.
 END
 }
+
 if( defined($options) )
 {
-    print "\nIncluded Features:          $options\n";
+    print "Included Features:          $options\n";
 }
 if( defined($lib_gd_path) )
 {
     print "GD library used from:       $lib_gd_path\n";   
 }
 if( defined($lib_ft_path) )
-{  
+{
     print "FreeType library used from: $lib_ft_path\n";
     @INC     = ("-I$lib_ft_path/include", @INC);
-    @LIBPATH = ("-L$lib_ft_path/lib", @LIBPATH);               
+    @LIBPATH = ("-L$lib_ft_path/lib", @LIBPATH);
 }
 if( defined($lib_png_path) )  
-{  
+{
     print "PNG library used from:      $lib_png_path\n";
     @INC     = ("-I$lib_png_path/include", @INC);
     @LIBPATH = ("-L$lib_png_path/lib", @LIBPATH); 
 }
 if( defined($lib_jpeg_path) )  
-{  
+{
     print "JPEG library used from:      $lib_jpeg_path\n";
     @INC     = ("-I$lib_jpeg_path/include", @INC);
     @LIBPATH = ("-L$lib_jpeg_path/lib", @LIBPATH); 
 }
 if( defined($lib_xpm_path) )  
-{  
+{
     print "XPM library used from:      $lib_xpm_path\n";
     @INC     = ("-I$lib_xpm_path/include", @INC);
     @LIBPATH = ("-L$lib_xpm_path/lib", @LIBPATH); 
@@ -123,7 +140,7 @@ if( ! defined($lib_gd_path) )
   $PREFIX = prompt('Where is libgd installed?','/usr/lib');
 }
 
-unless ($PREFIX eq '/usr/lib') {
+unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
   $PREFIX =~ s!/lib$!!;
   unshift @INC,"-I$PREFIX/include";
   unshift @LIBPATH,"-L$PREFIX/lib";
@@ -134,12 +151,13 @@ unless ($PREFIX eq '/usr/lib') {
 ##################################################################################################################
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
-my ($JPEG, $FT, $XPM) = (undef, undef, undef);
+my ($JPEG, $FT, $XPM, $GIF) = (undef, undef, undef, undef);
 if( defined($options) )
 {
-    if( $options =~ m/JPEG/i )  {  $JPEG = 1;  }  else  {  $JPEG = 0;  }
-    if( $options =~ m/FT/i )    {  $FT   = 1;  }  else  {  $FT   = 0;  }
-    if( $options =~ m/XPM/i )   {  $XPM  = 1;  }  else  {  $XPM  = 0;  }
+  $JPEG = $options =~ m/JPEG/i;
+  $FT   = $options =~ m/FT|FREETYPE/i;
+  $XPM  = $options =~ m/XPM/i;
+  $GIF  = $options =~ m/GIF/i;
 }
 else
 {
@@ -157,16 +175,18 @@ warn "\nIf you experience compile problems, please check the \@INC, \@LIBPATH an
 
 #### no user-serviceable parts below #####
 
-push @LIBS,'-lfreetype' if $FT;
-push @LIBS,'-ljpeg' if $JPEG;
-push @LIBS, '-lm' unless $^O eq 'MSWin32';
-push @INC, '-I/lib_root/libjpeg' if ($JPEG && $^O eq 'VMS');
-push @INC, '-I/lib_root/ft2/include/freetype' if ($FT && $^O eq 'VMS');
-push @INC, '-I/X11' if ($XPM && $^O eq 'VMS');
+if (!$AUTOCONFIG) {
+  push @LIBS,'-lfreetype' if $FT;
+  push @LIBS,'-ljpeg'     if $JPEG;
+  push @LIBS, '-lm'       unless $^O eq 'MSWin32';
+  push @INC, '-I/lib_root/libjpeg' if ($JPEG && $^O eq 'VMS');
+  push @INC, '-I/lib_root/ft2/include/freetype' if ($FT && $^O eq 'VMS');
+  push @INC, '-I/X11' if ($XPM && $^O eq 'VMS');
 
-# FreeBSD 3.3 with libgd built from ports croaks if -lXpm is specified 
-if ($^O ne 'freebsd' && $^O ne 'MSWin32') { 
-  push @LIBS,'-lX11','-lXpm' if $XPM; 
+  # FreeBSD 3.3 with libgd built from ports croaks if -lXpm is specified 
+  if ($^O ne 'freebsd' && $^O ne 'MSWin32') { 
+    push @LIBS,'-lX11','-lXpm' if $XPM; 
+  }
 }
 
 my $CAPI = defined $ExtUtils::MakeMaker::CAPI_support;
@@ -174,6 +194,7 @@ my $DEFINES = '';
 $DEFINES    .= ' -DHAVE_JPEG' if $JPEG;
 $DEFINES    .= ' -DHAVE_FT'   if $FT;
 $DEFINES    .= ' -DHAVE_XPM'  if $XPM;
+$DEFINES    .= ' -DHAVE_GIF'  if $GIF;
 $DEFINES    .= ' -DFCGI'      if $FCGI;
 
 WriteMakefile(
@@ -191,6 +212,31 @@ WriteMakefile(
      $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
 );
+
+sub try_to_autoconfigure {
+  my ($options,$lib_gd_path,$INC,$LIBPATH,$LIBS) = @_;
+  my $config = `gdlib-config --all`;
+  return unless $config;
+  $AUTOCONFIG++;
+
+  my ($version) = $config =~ /^GD library\s+(\S+)/m;
+  warn "Configuring for libgd version $version.\n";
+
+  my ($cflags)   = $config =~ /^cflags:\s+(.+)/m;
+  my ($ldflags)  = $config =~ /^ldflags:\s+(.+)/m;
+  my ($libs)     = $config =~ /^libs:\s+(.+)/m;
+  my ($libdir)   = $config =~ /^libdir:\s+(.+)/m;
+  my ($features) = $config =~ /^features:\s+(.+)/m;
+
+  @$INC          = map {s/^-I// && "-I$_"} split /\s+/,$cflags;
+  @$LIBPATH      = map {s/^-L// && "-L$_"} split /\s+/,$ldflags;
+  @$LIBS         = split /\s+/,$libs;
+
+  push @$LIBS,"-lgd";
+  push @$LIBPATH,"-L$libdir";
+  ($$lib_gd_path = $libdir) =~ s!/[^/]+$!!;
+  $$options      = $features;
+}
 
 sub MY::postamble {
     my $postamble = <<'END';

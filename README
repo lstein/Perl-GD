@@ -13,6 +13,8 @@ c.  the use of arbitrary images as brushes and as tiled fill patterns
 d.  line styling (dashed lines and the like)
 e.  horizontal and vertical text rendering
 f.  support for transparency and interlacing
+g.  support for TrueType font rendering, via libfreetype.
+h.  support for spline curves, via GD::Polyline
 
 For full information on usage, see the accompanying man and html
 documentation.
@@ -24,16 +26,12 @@ documentation.
 ===> applies to users of Linux systems.  Older versions of GD are
 ===> available at http://www.cpan.org.
 
-===> This version of GD no longer supports GIF output because of
-===> threats from the legal department at Unisys.  Source code
-===> that calls $image->gif will have to be changed to call either
-===> $image->jpg or $image->png to output in JPEG or PNG formats.
-===> The last version of GD that supported GIF output was version 
-===> 1.19.
+===> This version of GD again supports GIF output, thanks to the
+===> expiration of the related US and international patents.
 
 COPYRIGHT INFO
 
-The GD.pm interface is copyright 1995-2000, Lincoln D. Stein.  It is
+The GD.pm interface is copyright 1995-2004, Lincoln D. Stein.  It is
 covered by the Perl "Artistic License", which allows for free usage
 and redistribution.  See the Artistic License in the Perl source
 package for details.
@@ -44,7 +42,7 @@ Read these instructions all the way through before you start!
 
 1.  Make sure you have downloaded and installed the following packages:
 
-	a. Perl 5.004 or higher:
+	a. Perl 5.6.0 or higher:
 		http://www.perl.com/
 
 	b. The gd graphics library:
@@ -89,10 +87,6 @@ Use GD 1.41 for libgd versions 1.8.4 and lower.
 
 	a.  cd GD-2.XX
 	b.  perl Makefile.PL
-            Please choose the features that match how libgd was built:
-            Build JPEG support? [y] 
-            Build FreeType support? [y] 
-            Build XPM support? [y] 
 	c.  make
         d.  make test (optional)
 	e.  make html (optional)
@@ -102,7 +96,9 @@ Use GD 1.41 for libgd versions 1.8.4 and lower.
     the system-wide Perl library directory.  You'll need root
     privileges to do the install step.  If you don't have them, see below.
 
-    During step (b), Makefile.PL will ask you whether to build support for
+    During step (b), Makefile.PL will look for the program gdlib-config that
+    newer versions of libgd install for you.  If this program is not present, the
+    Makefile.PL script will ask you whether to build support for
     JPEG, FreeType and/or XPM image formats.  Please answer "y" (the default) 
     if libgd was built with the feature, and "n" if it was not.  Failure
     to answer correctly will lead to link errors.

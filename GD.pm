@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "2.12";
+$VERSION = "2.15";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -184,6 +184,15 @@ sub GD::Image::newFromJpeg {
     $class->_newFromJpeg($fh,@_);
 }
 
+sub GD::Image::newFromGif {
+    croak("Usage: newFromJpeg(class,filehandle,[truecolor])") unless @_>=2;
+    my($class) = shift;
+    my($f)     = shift;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromGif($fh,@_);
+}
+
 sub GD::Image::newFromXbm {
     croak("Usage: newFromXbm(class,filehandle)") unless @_==2;
     my($class,$f) = @_;
@@ -228,6 +237,7 @@ sub _image_type {
   return 'Jpeg' if $magic eq "\377\330\377\340";
   return 'Jpeg' if $magic eq "\377\330\377\341";
   return 'Jpeg' if $magic eq "\377\330\377\356";
+  return 'Gif'  if $magic eq "GIF8";
   return 'Gd2'  if $magic eq "gd2\000";
   return 'Xpm'  if substr($data,0,9) eq "/* XPM */";
   return;
@@ -643,8 +653,19 @@ The optional $truecolor (0/1) value can be used to override the global
 setting of trueColor() to specify if the return image should be
 palette-based or truecolor.
 
-Bear in mind that JPEG is a 24-bit format, while GD is 8-bit.  This
-means that photographic images will become posterized.
+=item B<$image = GD::Image-E<gt>newFromGif($file, [$truecolor])>
+
+=item B<$image = GD::Image-E<gt>newFromGif($data, [$truecolor])>
+
+These methods will create an image from a GIF file.  They work just
+like newFromPng() and newFromPngData(), and will accept the same
+filehandle and pathname arguments.
+The optional $truecolor (0/1) value can be used to override the global
+setting of trueColor() to specify if the return image should be
+palette-based or truecolor.
+
+Bear in mind that GIF is an 8-bit format, so there will initially be
+at most 256 colors even if you specify truecolor. 
 
 =item B<$image = GD::Image-E<gt>newFromXbm($file)>
 
@@ -657,11 +678,6 @@ contents of an X Bitmap (black & white) file:
 
 There is no newFromXbmData() function, because there is no
 corresponding function in the gd library.
-
-=item B<$image = GD::Image-E<gt>newFromWMP($file)>
-
-This creates a new GD::Image object starting from a WBMP-format file
-or filehandle.  There is currently no newFromWMPData() method.
 
 =item B<$image = GD::Image-E<gt>newFromGd($file)>
 
@@ -757,6 +773,11 @@ optional quality score to jpeg() in order to control the JPEG quality.
 This should be an integer between 0 and 100.  Higher quality scores
 give larger files and better image quality.  If you don't specify the
 quality, jpeg() will choose a good default.
+
+=item B<$gifdata = $image-E<gt>gif()>.
+
+This returns the image data in GIF format.  You can then print it,
+pipe it to a display program, or write it to a file.
 
 =item B<$gddata = $image-E<gt>gd>
 
@@ -877,6 +898,8 @@ color table and returns its index.
 This returns the total number of colors allocated in the object.
 
 	$maxColors = $myImage->colorsTotal;
+
+In the case of a TrueColor image, this call will return undef.
 
 =item B<$index = $image-E<gt>getPixel(x,y)> I<object method>
 
