@@ -58,7 +58,7 @@ if (GD::Image->newFromXpm('frog.xpm')) {
 }
 
 if (GD::Image->newFromJpeg('frog.jpg')) {
-  compare(test10('frog.jpg'),10);
+  multicompare(test10('frog.jpg'),10);
 } elsif ($@ =~/not built with jpeg support/) {
   print "ok ",10," # Skip, no JPEG support\n";
 } else {

@@ -1,3 +1,5 @@
+2.12	Fixed regression test 10 to succeed when used with
+		libgd 2.0.22
 2.11	More alpha functions from Cory Watson
 2.10	Suppress CAPI warning.
 	Warn about Math::Trig warning
