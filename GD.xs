@@ -5,6 +5,11 @@
 #include "perl.h"
 #include "XSUB.h"
 #include <gd.h>
+#include <gdfontg.h>
+#include <gdfontl.h>
+#include <gdfontmb.h>
+#include <gdfonts.h>
+#include <gdfontt.h>
 #ifdef FCGI
  #include <fcgi_stdio.h>
 #else
@@ -331,11 +336,6 @@ not_there:
 typedef gdImagePtr	GD__Image;
 typedef gdFontPtr	GD__Font;
 typedef PerlIO          * InputStream;
-extern 	gdFontPtr	gdFontGiant;
-extern 	gdFontPtr	gdFontLarge;
-extern	gdFontPtr	gdFontSmall;
-extern	gdFontPtr	gdFontMediumBold;
-extern	gdFontPtr	gdFontTiny;
 
 #ifdef PERL_OBJECT
 #  ifdef WIN32
@@ -2142,11 +2142,11 @@ gdDESTROY(self)
      PROTOTYPE: $
      CODE:
      {
-       if (self == gdFontSmall ||
-	   self == gdFontLarge ||
-	   self == gdFontGiant ||
-	   self == gdFontMediumBold ||
-	   self == gdFontTiny)
+       if (self == gdFontGetSmall()      ||
+	   self == gdFontGetLarge()      ||
+	   self == gdFontGetGiant()      ||
+	   self == gdFontGetMediumBold() ||
+	   self == gdFontGetTiny() )
 	 XSRETURN_EMPTY;
        safefree(self->data);
        safefree(self);
@@ -2158,7 +2158,7 @@ gdSmall(packname="GD::Font")
         PROTOTYPE: $
 	CODE:
 	{
-		RETVAL = gdFontSmall;
+		RETVAL = gdFontGetSmall();
 	}
 	OUTPUT:
 		RETVAL
@@ -2169,7 +2169,7 @@ gdLarge(packname="GD::Font")
 	PROTOTYPE: $
 	CODE:
 	{
-		RETVAL = gdFontLarge;
+		RETVAL = gdFontGetLarge();
 	}
 	OUTPUT:
 		RETVAL
@@ -2180,7 +2180,7 @@ gdGiant(packname="GD::Font")
 	PROTOTYPE: $
 	CODE:
 	{
-		RETVAL = gdFontGiant;
+		RETVAL = gdFontGetGiant();
 	}
 	OUTPUT:
 		RETVAL
@@ -2191,7 +2191,7 @@ gdMediumBold(packname="GD::Font")
 	PROTOTYPE: $
 	CODE:
 	{
-		RETVAL = gdFontMediumBold;
+		RETVAL = gdFontGetMediumBold();
 	}
 	OUTPUT:
 		RETVAL
@@ -2202,7 +2202,7 @@ gdTiny(packname="GD::Font")
 	PROTOTYPE: $
 	CODE:
 	{
-		RETVAL = gdFontTiny;
+		RETVAL = gdFontGetTiny();
 	}
 	OUTPUT:
 		RETVAL
