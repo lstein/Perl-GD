@@ -96,7 +96,7 @@ if ($^O eq 'VMS'){
   if ($ENV{"LIB_ROOT"} eq "") {
     warn "Define lib_root as a concealed logical pointing to the\n";
     warn "Top directory where you have your libraries installed\n";
-    warn "E.g. define/job/trans=conc lib_root public$device:[public.util.libs.]\n";
+    warn "E.g. define/job/trans=conc lib_root public\$device:[public.util.libs.]\n";
     warn "Also define the logical pubbin to point to the location\n";
     warn "of the object libraries\n";
     warn "Then re-invoke Makefile.PL\n";
