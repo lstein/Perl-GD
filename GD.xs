@@ -498,7 +498,8 @@ static int truecolor_default = 0;
 /* Check the image format being returned */
 void
 gd_chkimagefmt(GD__Image image, int truecolor) {
-  if (!truecolor) {			/* return a palette image */
+  if ((image != NULL)
+      && !truecolor) {			/* return a palette image */
      if (gdImageTrueColor(image)) {
 	gdImageTrueColorToPalette(image,1,gdMaxColors);
      }
