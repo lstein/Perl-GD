@@ -17,11 +17,18 @@ f.  support for transparency and interlacing
 For full information on usage, see the accompanying man and html
 documentation.
 
-===> NOTE: This version of GD REQUIRES libgd 1.7.3 or higher.  If you
+===> NOTE: This version of GD REQUIRES libgd 1.8.1 or higher.  If you
 ===> have an older version of libgd installed you must remove libgd.a,
 ===> libgd.so (if present) and gd.h.  Then install the new version of
-===> libgd from boutell.com (see below).  This particularly applies to
-===> users of RedHat Linux systems.
+===> libgd from www.boutell.com (see below).  This particularly
+===> applies to users of Linux systems.
+
+===> This version of GD no longer supports GIF output because of
+===> threats from the legal department at Unisys.  Source code
+===> that calls $image->gif will have to be changed to call either
+===> $image->jpg or $image->png to output in JPEG or PNG formats.
+===> The last version of GD that supported GIF output was version 
+===> 1.19.
 
 COPYRIGHT INFO
 
@@ -34,76 +41,11 @@ Code from the gd graphics library is covered separately, under a 1994
 copyright by Quest Protein Database Center, Cold Spring Harbor Labs,
 and by Thomas Boutell.
 
-THE LATEST VERSION IS 1.25
-
-WHAT'S NEW IN 1.25
-	- more makefile tweaks...
-
-WHAT'S NEW IN 1.24
-	- added more help in compiling and installing to docs
-
-WHAT'S NEW IN 1.23
-	- added some more libraries to link in, might help unresolved symbol problems
-	- if Tom Boutell would provide support for linking libgd dynamically,
-	 none of these unresolved symbol problems would be occurring!!!!!
-
-WHAT'S NEW IN 1.22
-	- added support for statically linked libgd.a, which is
-		now default for libgd 1.7.3 (grrrr)
-	- added newFromGd2Part() and newFromXPM() methods
-
-WHAT'S NEW IN 1.21
-	- fix to regression test so that all tests pass when truetype support
-	not enabled
-	- removed GD.html from distribution
-
-WHAT'S NEW IN 1.20
-
-	- uses libgd 1.6.3, allowing it to
-		1. create png images
-		2. render TrueType Fonts
-	- SUPPORT FOR GIF OUTPUT HAS BEEN REMOVED DUE TO UNISYS PATENT RESTRICTIONS
-	- Fixes to compile correctly on VMS systems
-	- Patches from ActiveState for Windows/DOS systems.
-	- bdftogd fix from Honza Pazdziora to handle non-fixed width fonts better
-
-WHAT'S NEW IN 1.19
-	
-	- Fixes to compile correctly on Win32 systems
-
-WHAT'S NEW IN 1.18
-
-	- New "Giant" font.
-
-WHAT'S NEW IN 1.17
-
-	- Patches from Gurusamy Sarathy <gsar@engin.umich.edu> that allow GD 
-	  to compile correctly on Win32 systems.
-	- Patches from Jan Pazdziora <adelton@fi.muni.cz> to handle the 
-          full ISO-Latin-2 alphabet, along with some bug fixes.
-
-WHAT'S NEW IN 1.16
-
-	- Patches from Andreas Koenig <koenig@kulturbox.de> to use 
-          FileHandle correctly (also fixes problems with mod_perl).
-
-WHAT'S NEW IN 1.15
-
-	- Patches from Ulrich Pfeifer to allow to compile
-	  correctly with FastCGI
-	- Patches from Douglas Wegscheid to avoid multiple defined
-	  symbol problems under NetBSD
-	- Patches from Weinfriend Koenig to fix problems in filled polygons,
-	  plus new routines for scaling, translating and rotating polygons.
-	
-WHAT'S NEW IN 1.14
-
-	- Modified gd library now included in the package.
-	- Performance improvements.
-	- Extensive code cleanup.
-	- Runs correctly with FastCGI.
+THE LATEST VERSION IS 1.26
 
 INSTALLATION:
+
+Read these instructions all the way through before you start!
 
 1.  Make sure you have downloaded and installed the following packages:
 
@@ -120,17 +62,45 @@ INSTALLATION:
 		http://www.cdrom.com/pub/infozip/zlib/
 
 	e. The FreeType font rendering library for TrueType fonts
-	(optional):
+	   (optional):
 		http://www.freetype.org/
 
-2.  Unpack the tar file:
+        f. The JPEG library, version 6b or later (optional):
+                ftp://ftp.uu.net/graphics/jpeg/
+
+        g. The XPM library, a standard part of modern X Windows 
+	   distributions (optional).  If you don't have a modern
+           version of X, don't try to get XPM working.
+
+2. OPTIONAL -- patch the libgd distribution
+
+Some users have had trouble getting GD to link correctly.  Part of the
+problem is that Perl's Makefile.PL system prefers dynamically-linked
+shared libraries, but libgd builds a static library file by default.
+The file C<patch_gd.sh>, included with this distribution, will patch
+libgd version 1.8.1 to make it possible to compile it as a shared
+library.
+
+This file is a shell script.  To use it, copy it into the top level of
+a B<virgin> copy of the gd-1.8.1 directory.  Then run it like this:
+
+  % sh patch_gd.sh
+
+This will patch the libgd distribution so that it works with the GNU
+autoconfiguration system.  Read the README and INSTALL files that were
+created by the script and follow the directions.
+
+It is possible that this patch will work with later version of libgd,
+but this is not guaranteed by any means.
+
+3.  Unpack the tar file:
 
 	zcat GD-1.XX.tar.gz | tar xvf -
 
     (Where "XX" is the most recent revision number.)  This will create
     the directory GD-1.XX.
 
-3.  To compile GD.pm on a system that supports dynamic linking:
+4.  To compile GD.pm on a system that supports dynamic linking:
 
 	a.  cd GD-1.XX
 	b.  perl Makefile.PL
@@ -153,13 +123,14 @@ INSTALLATION:
     that call these routines will fail (check the $@ variable for the
     exact error message).  If you get a link error while loading the
     module, then you be able to recover the situation by changing
-    the library search path specified by the @extrasearch variable 
-    in Makefile.PL
+    the library search path specified by the @extrainc and
+    @extrasearch variables    in Makefile.PL.  See "Frequently Asked
+    Questions" for more details.
  
     If you see notes about any other missing libraries (-lz, -lgd, -lpng) then
     this module will not compile and install correctly.
 
-4.  To compile GD.pm statically on systems that do not support dynamic
+5.  To compile GD.pm statically on systems that do not support dynamic
     linking:
 
 	a.  cd GD-1.XX
@@ -170,7 +141,7 @@ INSTALLATION:
      This will create a new version of Perl and install it in your system
      binaries directory, under the name "gdperl".  
 
-5.  Before you install GD, you may want to run the regression tests.  You
+6.  Before you install GD, you may want to run the regression tests.  You
     can do this after the "make" step by typing:
 
 	make test
@@ -179,7 +150,7 @@ INSTALLATION:
 
         make test TEST_VERBOSE=1
 
-6.  There are some demos you can run in ext/GD/demos.  They print PNG
+7.  There are some demos you can run in ext/GD/demos.  They print PNG
     files to standard output.  To view the files, pipe their
     output to "display" or "xv" in this way:
 
@@ -193,13 +164,13 @@ INSTALLATION:
     temporary file and display with recent versions of Netscape or
     Internet Explorer.
 
-7.  A program named fonttest is included in this package under demos.  This 
+8.  A program named fonttest is included in this package under demos.  This 
     generates an image showing all the built-in fonts available.  If you have
     built libgd with TrueType support, and you have a directory containing
     some TrueType fonts, you can create a simple font listing by running
     the program truetype_test, also located in demos.
 
-8.  See demos/gd_example.cgi for an example of how to use GD to create
+9.  See demos/gd_example.cgi for an example of how to use GD to create
     a picture dynamically with a CGI script.  It's intended to be run
     under a Web server.  To see it work, install it in your server's
     cgi-bin/ directory and invoke it from a browser by fetching a URL like:
@@ -272,7 +243,9 @@ symbol gdFontSmall" when you try to run a script that uses GD, you may
 have problems with dynamic linking.  Check whether other
 dynamically-linked Perl modules such as POSIX and DB_File run
 correctly.  If not, then you'll have to link Perl statically, as
-described above.
+described above.  Other problems may be fixed by compiling libgd as a
+shared library, as described in step (2) of the installation
+instructions.
 
 If you are trying to compile and link GD on a Windows or Macintosh
 machine and fail, please verify that you are able to build the Perl
@@ -320,19 +293,36 @@ FREQUENTLY ASKED QUESTIONS
 3. Does GD run with MacPerl/Win32 Perl?
 
    Yes.  The latest MacPerl and ActiveState binaries come with GD
-   already compiled in and ready to go.
+   already compiled in and ready to go.  I don't own any Win32 systems,
+   and cannot provide you with help in compiling GD from scratch on such 
+   systems.
 
 4. GD won't compile on system XX.
 
-   The most frequent problem is missing or redundant symbols during the link.
-   If you get an error about missing math symbols (usually "floor"), then
-   uncomment the line in Makefile.PL that starts with 'LIBS'.  If you get an
-   error about multiple redundant symbols, then comment out the line.
+   Because libgd relies on multiple external libraries, GD does as well.  
+   Unfortunately, different systems place their libraries in different
+   places and sometimes are picky about the order in which libraries 
+   are linked.  If you are having problems with compiling GD, first make
+   sure that you have removed all vestiges of old libgd installations,
+   including both library and header files (e.g. gd.h).  If that doesn't
+   help matters, examine the following lines in Makefile.PL:
+
+   my @extrainc    = qw(-I/usr/local/include -I/usr/local/include/gd); 
+   my @extrasearch = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/local/lib );
+   my @extralibs   = qw(-lgd -lpng -lttf -lz -ljpeg);
+
+   Try adjusting the pathnames in @extrainc and @extrasearch, and/or the
+   link order in @extralibs.  In a few cases, people who haven't had any
+   luck at all have been able to get GD to compile by first reinstalling
+   Perl from scratch.  Perhaps this reflects a situation in which Perl
+   was initially built with one set of system libraries, and then the
+   libraries were updated (or Perl was moved to a different machine).
 
 5. When I try to load an XPM file, all I get is blackness!
 
-   I can't get the libgd createFromXpm() function to work, either.  
-   There may be a bug in the library.
+   The libgd createFromXpm() function works with some XPM files, and
+   not with others.  The problem is buried deep in the libXpm library
+   somewhere.
 
 BUG REPORTS
 
@@ -344,6 +334,79 @@ demonstrates the bug.
 Do NOT contact me for issues involving compilation failures on
 Windows, VMS, or Macintosh systems.  I do not have any such systems on
 hand, and cannot help you out.
+
+WHAT'S NEW IN 1.26
+	- updated for compatibility with libgd 1.8.1
+	- JPEG support
+	- the newFromXXX() functions now accept pathnames
+	- patchfile for building libgd as a shared library
+
+WHAT'S NEW IN 1.25
+	- improvements to the Makefile to help with compilation
+
+WHAT'S NEW IN 1.24
+	- added more help in compiling and installing to docs
+
+WHAT'S NEW IN 1.23
+	- added some more libraries to link in, might help unresolved symbol problems
+	- if Tom Boutell would provide support for linking libgd dynamically,
+	 none of these unresolved symbol problems would be occurring!!!!!
+
+WHAT'S NEW IN 1.22
+	- added support for statically linked libgd.a, which is
+		now default for libgd 1.7.3 (grrrr)
+	- added newFromGd2Part() and newFromXPM() methods
+
+WHAT'S NEW IN 1.21
+	- fix to regression test so that all tests pass when truetype support
+	  not enabled
+	- removed GD.html from distribution
+
+WHAT'S NEW IN 1.20
+
+	- uses libgd 1.6.3, allowing it to
+		1. create png images
+		2. render TrueType Fonts
+	- SUPPORT FOR GIF OUTPUT HAS BEEN REMOVED DUE TO UNISYS PATENT RESTRICTIONS
+	- Fixes to compile correctly on VMS systems
+	- Patches from ActiveState for Windows/DOS systems.
+	- bdftogd fix from Honza Pazdziora to handle non-fixed width fonts better
+
+WHAT'S NEW IN 1.19
+	
+	- Fixes to compile correctly on Win32 systems
+
+WHAT'S NEW IN 1.18
+
+	- New "Giant" font.
+
+WHAT'S NEW IN 1.17
+
+	- Patches from Gurusamy Sarathy <gsar@engin.umich.edu> that allow GD 
+	  to compile correctly on Win32 systems.
+	- Patches from Jan Pazdziora <adelton@fi.muni.cz> to handle the 
+          full ISO-Latin-2 alphabet, along with some bug fixes.
+
+WHAT'S NEW IN 1.16
+
+	- Patches from Andreas Koenig <koenig@kulturbox.de> to use 
+          FileHandle correctly (also fixes problems with mod_perl).
+
+WHAT'S NEW IN 1.15
+
+	- Patches from Ulrich Pfeifer to allow to compile
+	  correctly with FastCGI
+	- Patches from Douglas Wegscheid to avoid multiple defined
+	  symbol problems under NetBSD
+	- Patches from Weinfriend Koenig to fix problems in filled polygons,
+	  plus new routines for scaling, translating and rotating polygons.
+	
+WHAT'S NEW IN 1.14
+
+	- Modified gd library now included in the package.
+	- Performance improvements.
+	- Extensive code cleanup.
+	- Runs correctly with FastCGI.
 
 ACKNOWLEDGEMENTS:
 

@@ -5,7 +5,7 @@ use FileHandle;
 use constant FONT=>'./Generic.ttf';
 
 my $loaded;
-BEGIN {$| = 1; $loaded = 0; print "1..9\n"; }
+BEGIN {$| = 1; $loaded = 0; print "1..10\n"; }
 END {print "not ok 1\n" unless $loaded;}
 
 use GD qw(:DEFAULT GD_CMP_IMAGE);
@@ -25,7 +25,8 @@ if (defined $arg && $arg eq '--write') {
   compare(&test5,6,'write');
   compare(&test6,7,'write');
   compare(&test7,8,'write');
-  compare(&test8('earth.xpm'),9,'write');
+  compare(&test8('frog.xpm'),9,'write');
+  compare(&test9('frog.jpg'),10,'write');
 }
 
 compare(test1(),++$loaded);
@@ -44,10 +45,18 @@ if (GD::Image->stringTTF(0,FONT,12.0,0.0,20,20,"Hello world!")) {
   print "not ok ",++$loaded,"\n";
 }
 
-if (GD::Image->newFromXpm('earth.xpm')) {
-  compare(test8('earth.xpm'),++$loaded);
+if (GD::Image->newFromXpm('frog.xpm')) {
+  compare(test8('frog.xpm'),++$loaded);
 } elsif ($@ =~/not built with xpm support/) {
   print "ok ",++$loaded," # Skip, no XPM support\n";
+} else {
+  print "not ok ",++$loaded,"\n";
+}
+
+if (GD::Image->newFromJpeg('frog.jpg')) {
+  compare(test9('frog.jpg'),++$loaded);
+} elsif ($@ =~/not built with jpeg support/) {
+  print "ok ",++$loaded," # Skip, no JPEG support\n";
 } else {
   print "not ok ",++$loaded,"\n";
 }
@@ -243,5 +252,11 @@ sub test7 {
 sub test8 {
   my $fn = shift;
   my $im = GD::Image->newFromXpm($fn);
+  $im->png;
+}
+
+sub test9 {
+  my $fn = shift;
+  my $im = GD::Image->newFromJpeg($fn);
   $im->png;
 }

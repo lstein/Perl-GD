@@ -1,3 +1,4 @@
+1.24-1.25 More tweaks to Makefile.PL.
 1.23    Added a bunch more libraries and includes... might or might not port
 	to other platforms now
 1.22	Fix to Makefile.PL to accomodate linking static libraries.

@@ -1,31 +1,61 @@
-If you are having compile and/or "make test" problems....
-
-NOTE 1: This version of GD REQUIRES libgd 1.7.3 or higher.  If you
-have an older version of libgd installed you must remove libgd.a,
-libgd.so (if present) and gd.h.  Then install the new version of
-libgd from boutell.com (see below).  This particularly applies to
-users of RedHat Linux systems.
-
-NOTE 2: Some preinstalled versions of Perl were built incorrectly and
-will fail during the link stage with a "undefined Symbol: SetCPerlObj"
-error.  To fix this error, you must get rid of the old version of Perl
-and rebuild a new one from source.
-
-NOTE 3: Because libgd is statically linked, the library include paths
-have to be just right.  If you can't get GD to link properly, try
-adjusting the @extrasearch, @extralibs and @extrainc variables in
-Makefile.PL.  Alternatively, you could relink libgd to be shared,
-using a magic invocation like this one:
-
-	% cd <libgd-directory>
-	( add -fPIC to the CFLAGS in the libgd makefile )
-	( recompile )
-	% gcc -shared -o libgd.so.1.7.3 -Wl,-soname,libgd.so.1 *.o
-
-NOTE 4: If you don't want this hassle, just go back to using GD
-version 1.19 (still on CPAN), which supports GIF and builds its own
-libgd library.
-
-Good luck!
+To: Thomas Schachner <Thomas.Schachner@awd.at>
+Subject: GD.pm
+In-Reply-To: <387B1B0E.653A6BA7@awd.at>
+References: <387B1B0E.653A6BA7@awd.at>
+X-Mailer: VM 6.71 under 21.1 "20 Minutes to Nikko" XEmacs Lucid (patch 2)
+Reply-To: lstein@cshl.org
+--text follows this line--
+This problem has been reported under some versions of SuSE and RedHat
+Linux (it appears to be related to a partcular RPM distribution of
+Perl).  Perl was built incorrectly, causing some but not all loadable
+modules to fail.  The only solution I know of is to rebuild Perl
+correctly from scratch and reinstall all previously-installed modules.
 
 Lincoln
+
+Thomas Schachner writes:
+ > HI!
+ > 
+ > Sorry for writing directly, but
+ > we have tried all to get GD-1.23 to work ( because we need it urgent )
+ > but the following:
+ > 
+ > when run make NO! errors
+ > 
+ > but when make test the following:
+ > 
+ > PERL_DL_NONLAZY=1 /usr/bin/perl -Iblib/arch -Iblib/lib
+ > -I/usr/lib/perl5/5.00502/
+ > i586-linux -I/usr/lib/perl5/5.00502 -e 'use Test::Harness qw(&runtests
+ > $verbose)
+ > ; $verbose=0; runtests @ARGV;' t/*.t
+ > t/GD................Can't load './blib/arch/auto/GD/GD.so' for module
+ > GD: ./blib
+ > /arch/auto/GD/GD.so: undefined symbol: SetCPerlObj at
+ > /usr/lib/perl5/5.00502/i58
+ > 6-linux/DynaLoader.pm line 168.
+ > 
+ >  at t/GD.t line 11
+ > BEGIN failed--compilation aborted at t/GD.t line 11.
+ > dubious
+ >         Test returned status 2 (wstat 512, 0x200)
+ > DIED. FAILED tests 1-9
+ >         Failed 9/9 tests, 0.00% okay
+ > Failed Test  Status Wstat Total Fail  Failed  List of failed
+ > -------------------------------------------------------------------------------
+ > t/GD.t            2   512     9    9 100.00%  1-9
+ > Failed 1/1 test scripts, 0.00% okay. 9/9 subtests failed, 0.00% okay.
+ > make: *** [test_dynamic] Error 2
+ > 
+ > Any Hints?
+ > 
+ > all nessecary libraries are compiled with the same compiler ( libpng &
+ > libz )!!
+ > 
+ > Thanks Thomas
+
+-- 
+========================================================================
+Lincoln D. Stein                           Cold Spring Harbor Laboratory
+lstein@cshl.org			                  Cold Spring Harbor, NY
+========================================================================

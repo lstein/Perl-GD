@@ -18,10 +18,6 @@
 /* Copyright 1995 - 1998, Lincoln D. Stein.  See accompanying README file for
 	usage restrictions */
 
-#ifndef gdImageCreateFromXpm
-gdImagePtr gdImageCreateFromXpm(char *filename) { return NULL; };
-#endif
-
 static int
 not_here(char *s)
 {
@@ -250,6 +246,7 @@ extern	gdFontPtr	gdFontTiny;
 #  ifdef WIN32
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng((FILE*)x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm((FILE*)x)
+#define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg((FILE*)x)
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd((FILE*)x)
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2((FILE*)x)
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part((FILE*)x,a,b,c,d)
@@ -257,6 +254,7 @@ extern	gdFontPtr	gdFontTiny;
 #else
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng(x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm(x)
+#define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(x)
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd(x)
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(x)
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part(x,a,b,c,d)
@@ -328,6 +326,26 @@ gd_newFromGd2(packname="GD::Image", filehandle)
 	RETVAL
 
 GD::Image
+gd_newFromJpeg(packname="GD::Image", filehandle)
+	char *	packname
+	InputStream	filehandle
+	PROTOTYPE: $$
+        PREINIT:
+	  gdImagePtr img;
+	  SV* errormsg;
+	CODE:
+	img = GDIMAGECREATEFROMJPEG(filehandle);
+        if (img == NULL) {
+          errormsg = perl_get_sv("@",0);
+	  if (errormsg != NULL)
+	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+	  XSRETURN_EMPTY;
+        }
+        RETVAL = img;
+	OUTPUT:
+        RETVAL
+
+GD::Image
 gdnewFromXpm(packname="GD::Image", filename)
 	char *	packname
 	char * filename
@@ -379,6 +397,30 @@ gdpng(image)
 	void*         data;
 	int           size;
 	data = (void *) gdImagePngPtr(image,&size);
+	RETVAL = newSVpv((char*) data,size);
+	free(data);
+  }
+  OUTPUT:
+    RETVAL
+
+SV*
+gdjpeg(image,quality=-1)
+  GD::Image	image
+  int           quality
+  PROTOTYPE: $
+  PREINIT:
+  SV* errormsg;
+  CODE:
+  {
+	void*         data;
+	int           size;
+	data = (void *) gdImageJpegPtr(image,&size,quality);
+        if (data == NULL) {
+          errormsg = perl_get_sv("@",0);
+	  if (errormsg != NULL)
+	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+	  XSRETURN_EMPTY;
+        }
 	RETVAL = newSVpv((char*) data,size);
 	free(data);
   }

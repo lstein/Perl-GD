@@ -8,10 +8,11 @@ require FileHandle;
 require Exporter;
 require DynaLoader;
 require AutoLoader;
+use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "1.25";
+$VERSION = "1.26";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -103,63 +104,69 @@ sub GD::gdGiantFont {
     return &GD::Font::Giant;
 }
 
-# This is a C callback
+sub GD::gif {
+  croak("GIF support has been disabled for legal reasons. Use PNG or JPEG output");
+}
+
+sub GD::Image::_make_filehandle {
+  shift;  # get rid of class
+  my $thing = shift;
+  return $thing if defined(fileno $thing);
+
+  # otherwise try qualifying it into caller's package
+  my $fh = qualify_to_ref($thing,caller(2));
+  return $fh if defined(fileno $fh);
+
+  # otherwise treat it as a file to open
+  $fh = gensym;
+  open($fh,$thing) || return;
+  return $fh;
+}
+
 sub GD::Image::newFromPng {
     croak("Usage: newFromPng(class,filehandle)") unless @_==2;
-    my($class,$fh) = @_;
-    unless (ref $fh or ref(\$fh) eq 'GLOB') {
-	my($package) = caller;
-	no strict;
-	$fh = *{"$package\::$fh"};
-    }
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromPng($fh);
 }
 
+sub GD::Image::newFromJpeg {
+    croak("Usage: newFromJpeg(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromJpeg($fh);
+}
+
 sub GD::Image::newFromXbm {
     croak("Usage: newFromXbm(class,filehandle)") unless @_==2;
-    my($class,$fh) = @_;
-    unless (ref $fh or ref(\$fh) eq 'GLOB') {
-	my($package) = caller;
-	no strict;
-	$fh = *{"$package\::$fh"};
-    }
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromXbm($fh);
 }
 
 sub GD::Image::newFromGd {
     croak("Usage: newFromGd(class,filehandle)") unless @_==2;
-    my($class,$fh) = @_;
-    unless (ref $fh or ref(\$fh) eq 'GLOB') {
-	my($package) = caller;
-	no strict;
-	$fh = *{"$package\::$fh"};
-    }
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromGd($fh);
 }
 
 sub GD::Image::newFromGd2 {
     croak("Usage: newFromGd2(class,filehandle)") unless @_==2;
-    my($class,$fh) = @_;
-    unless (ref $fh or ref(\$fh) eq 'GLOB') {
-	my($package) = caller;
-	no strict;
-	$fh = *{"$package\::$fh"};
-    }
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromGd2($fh);
 }
 
 sub GD::Image::newFromGd2Part {
     croak("Usage: newFromGd2(class,filehandle,srcX,srcY,width,height)") unless @_==6;
-    my($class,$fh) = splice(@_,0,2);
-    unless (ref $fh or ref(\$fh) eq 'GLOB') {
-	my($package) = caller;
-	no strict;
-	$fh = *{"$package\::$fh"};
-    }
+    my($class,$f) = splice(@_,0,2);
+    my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromGd2Part($fh,@_);
 }
@@ -481,7 +488,6 @@ specify the dimensions, a default of 64 x 64 will be chosen. If
 something goes wrong (e.g. insufficient memory), this call will
 return undef.
 
-
 =item C<newFromPng>
 
 C<GD::Image-E<gt>newFromPng(FILEHANDLE)> I<class method>
@@ -496,15 +502,39 @@ that the call doesn't automatically close the filehandle for you.
 But it does call C<binmode(FILEHANDLE)> for you, on platforms where
 this matters.
 
+You may pass any of the following as the filehandle argument:
+
+  1) a simple filehandle, such as STDIN
+  2) a filehandle glob, such as *PNG
+  3) a reference to a glob, such as \*PNG
+  4) an IO::File object
+  5) the pathname of a file
+
+In the latter case, newFromPng() will attempt to open the file for you
+and read the PNG information from it.
+
+  Example1:
+
+  open (PNG,"barnswallow.png") || die;
+  $myImage = newFromPng GD::Image(\*PNG) || die;
+  close PNG;
+
+  Example2:
+  $myImage = newFromPng GD::Image('barnswallow.png');
+
 To get information about the size and color usage of the information,
 you can call the image query methods described below.
 
-	Example usage:
+=item C<newFromJpeg>
 
-	open (PNG,"barnswallow.png") || die;
-	$myImage = newFromPng GD::Image(PNG) || die;
-	close PNG;
+C<GD::Image-E<gt>newFromJpeg(FILEHANDLE)> I<class method>
 
+This will create an image from a JPEG file.  It works just like
+newFromPng(), and will accept the same filehandle and pathname
+arguments.
+
+Bear in mind that JPEG is a 24-bit format, while GD is 8-bit.  This
+means that photographic images will become posterized.
 
 =item C<newFromXbm>
 
@@ -520,7 +550,6 @@ contents of an X Bitmap (black & white) file:
 Note that this function also calls C<binmode(FILEHANDLE)> before
 reading from the filehandle.
 
-
 =item C<newFromXpm>
 
 C<GD::Image-E<gt>newFromXpm($filename)> I<class method>
@@ -535,9 +564,8 @@ underlying gd library.
 This function is only available if libgd was compiled with XPM
 support.  
 
-NOTE: As of version 1.7.3 of the libgd library, I can't get the
-underlying createFromXpm() function to return a valid image -- I just
-get black.
+NOTE: The libgd library is unable to read certain XPM files, returning
+an all-black image instead.
 
 =item C<newFromGd2>
 
@@ -604,6 +632,16 @@ pipe it to a display program, or write it to a file.  Example:
 Note the use of C<binmode()>.  This is crucial for portability to
 DOSish platforms.
 
+=item C<jpeg>
+
+C<$image-E<gt>jpeg([$quality])> I<object method>
+
+This returns the image data in JPEG format.  You can then print it,
+pipe it to a display program, or write it to a file.  You may pass an
+optional quality score to jpeg() in order to control the JPEG quality.
+This should be an integer between 0 and 100.  Higher quality scores
+give larger files and better image quality.  If you don't specify the
+quality, jpeg() will choose a good default.
 
 =item C<gd>
 
@@ -911,8 +949,7 @@ with a pattern.
 Example:
 
 	# read in a fill pattern and set it
-	open(PNG,"happyface.png") || die;
-	$tile = newFromPng GD::Image(PNG);
+	$tile = newFromPng GD::Image('happyface.png');
 	$myImage->setTile($tile); 
 
 	# draw the rectangle, filling it with the pattern
