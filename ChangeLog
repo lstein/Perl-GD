@@ -1,13 +1,11 @@
-1.38	Updated test #8 to prevent it from failing.
-1.37	$gd->can('gif') and $gd->can('newFromGif') now return false if the
-	GIF patch is not installed.
-	Patch from Jeremy Wadsack to prevent compilation errors when
-	Freetype is not installed.
-1.36	Recovered GD after the theft of my CVS server.  Current version
-	folds in GIF-restoration patches, TTF->Freetype transition, and
-	a new color lookup routine.
-1.31	Added support for GD 1.8.4, and libfreetype.  Must upgrade to
-	1.8.4 and libfreetype for GD to compile correctly.
+1.39	Fixed FreeType test, at least on some platforms.
+	Added patches from Stephen Clouse to allow to build on 5.8.0rc1.
+1.35	Patches to support Philip Warner's GIF-reinstating library
+	maintained at http://www.rime.com.au/gd/
+1.34	Fixed problems that arise when compiling against older versions of
+	libgd that do not have XPM support.
+1.33	Updated patch file for gd 1.8.4
+1.32	Added support for Tru64 UNIX v5.0
 1.29	Fixed a corrupted .xpm file in the regression suite
 		(caused test 9 to fail)
 1.28    Added support for gd 1.8.3

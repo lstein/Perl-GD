@@ -37,7 +37,7 @@ covered by the Perl "Artistic License", which allows for free usage
 and redistribution.  See the Artistic License in the Perl source
 package for details.
 
-THE LATEST VERSION IS 1.31
+THE LATEST VERSION IS 1.39
 
 INSTALLATION:
 
@@ -355,6 +355,16 @@ Also do NOT contact me for issues involving the images looking
 distorted, having the wrong color tables, or other such low-level
 issues.  These problems should be referred to Tom Boutell because they
 pertain to the underlying libgd library.
+
+WHAT'S NEW IN 1.31-1.39 (see ChangeLog for details)
+	-Fixed FreeType test (#8), at least on some platforms.
+	-Added patches from Stephen Clouse to allow to build on 5.8.0rc1.
+	-Patches to support Philip Warner's GIF-reinstating library
+	maintained at http://www.rime.com.au/gd/
+	-Fixed problems that arise when compiling against older versions of
+		libgd that do not have XPM support.
+	-Updated patch file for gd 1.8.4
+	-Added support for Tru64 UNIX v5.0
 
 WHAT'S NEW IN 1.30
 	- now you can create GD::Image objects directly from image DATA

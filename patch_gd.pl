@@ -15,7 +15,7 @@ open PATCH,'| patch -Np1' or die "Can't run patch: $!\n";
 print PATCH <<'END_OF_PATCH';
 diff -Naur gd-1.8.4/AUTHORS gd-1.8.4.patch/AUTHORS
 --- gd-1.8.4/AUTHORS	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/AUTHORS	Tue Sep 25 22:51:57 2001
++++ gd-1.8.4.patch/AUTHORS	Sat Mar 31 22:52:12 2001
 @@ -0,0 +1,57 @@
 +
 +  Credits and license terms
@@ -76,7 +76,7 @@ diff -Naur gd-1.8.4/AUTHORS gd-1.8.4.patch/AUTHORS
 +
 diff -Naur gd-1.8.4/COPYING gd-1.8.4.patch/COPYING
 --- gd-1.8.4/COPYING	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/COPYING	Tue Sep 25 22:51:57 2001
++++ gd-1.8.4.patch/COPYING	Sat Mar 31 22:52:12 2001
 @@ -0,0 +1,38 @@
 +COPYRIGHT STATEMENT FOLLOWS THIS LINE
 +
@@ -118,7 +118,7 @@ diff -Naur gd-1.8.4/COPYING gd-1.8.4.patch/COPYING
 +
 diff -Naur gd-1.8.4/ChangeLog gd-1.8.4.patch/ChangeLog
 --- gd-1.8.4/ChangeLog	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/ChangeLog	Tue Sep 25 22:52:07 2001
++++ gd-1.8.4.patch/ChangeLog	Sat Mar 31 22:52:12 2001
 @@ -0,0 +1,134 @@
 +000319 Lincoln Stein (LS)
 +	- Patches to compile under GNU autoconfig
@@ -256,7 +256,7 @@ diff -Naur gd-1.8.4/ChangeLog gd-1.8.4.patch/ChangeLog
 +
 diff -Naur gd-1.8.4/INSTALL gd-1.8.4.patch/INSTALL
 --- gd-1.8.4/INSTALL	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/INSTALL	Tue Sep 25 22:51:57 2001
++++ gd-1.8.4.patch/INSTALL	Sat Mar 31 22:52:12 2001
 @@ -0,0 +1,185 @@
 +Basic Installation
 +==================
@@ -312,7 +312,7 @@ diff -Naur gd-1.8.4/INSTALL gd-1.8.4.patch/INSTALL
 +Optional Features
 +=================
 +
-+   This package has two optional features which can be enabled at
++   This package has three optional features which can be enabled at
 +configure time:
 +
 +   ./configure --enable-jpeg           Enable JPEG support
@@ -605,29 +605,28 @@ diff -Naur gd-1.8.4/Makefile gd-1.8.4.patch/Makefile
 -
 diff -Naur gd-1.8.4/Makefile.am gd-1.8.4.patch/Makefile.am
 --- gd-1.8.4/Makefile.am	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/Makefile.am	Wed Sep 26 00:08:05 2001
-@@ -0,0 +1,62 @@
++++ gd-1.8.4.patch/Makefile.am	Sat Mar 31 23:44:55 2001
+@@ -0,0 +1,64 @@
 +## Process this file with automake to produce Makefile.in
 +
 +AUTOMAKE_OPTIONS = 1.3
 +
-+# library interface 4.0, gd release 1.8.3
++# library interface 4.0, gd release 1.8.4
 +libgd_la_LDFLAGS = -version-info 4:0
 +
 +noinst_HEADERS = gdcache.h 
 +
 +lib_LTLIBRARIES = libgd.la
 +
-+include_HEADERS = gd.h gd_io.h gdfontt.h gdfonts.h \
-+	gdfontmb.h gdfontl.h gdfontg.h wbmp.h jisx0208.h \
-+	gdhelpers.h
++include_HEADERS = gd.h gd_io.h gdfontt.h gdfonts.h gdhelpers.h \
++	gdfontmb.h gdfontl.h gdfontg.h wbmp.h jisx0208.h
 +
-+libgd_la_SOURCES = gd.c gd_io.c gd_io_file.c gd_io_dp.c gd_io_ss.c \
++libgd_la_SOURCES = gd.c gd_io.c gd_io_file.c gd_io_dp.c gd_io_ss.c gdhelpers.c \
 +	gd_png.c gd_ss.c gd_gd.c gd_gd2.c gdfontt.c gdfonts.c gdfontmb.c \
-+	gdfontl.c gdfontg.c gdft.c gdcache.c gdxpm.c gdtables.c gdkanji.c \
-+	gd_jpeg.c gd_wbmp.c wbmp.c gdhelpers.c
++	gdfontl.c gdfontg.c gdttf.c gdcache.c gdxpm.c gdtables.c gdkanji.c \
++	gd_jpeg.c gd_wbmp.c wbmp.c
 +
-+bin_PROGRAMS = pngtogd pngtogd2 gdtopng gd2topng gd2copypal gdparttopng webpng
++bin_PROGRAMS = pngtogd pngtogd2 gdtopng gdtojpeg gd2topng gd2copypal gdparttopng webpng
 +
 +pngtogd_LDADD = libgd.la
 +
@@ -647,6 +646,9 @@ diff -Naur gd-1.8.4/Makefile.am gd-1.8.4.patch/Makefile.am
 +
 +pngtogd2_SOURCES = pngtogd2.c gd.h
 +pngtogd2_LDADD = libgd.la
++
++gdtojpeg_SOURCES = gdtojpeg.c gd.h
++gdtojpeg_LDADD = libgd.la
 +
 +gdtopng_SOURCES = gdtopng.c gd.h
 +gdtopng_LDADD = libgd.la
@@ -671,8 +673,8 @@ diff -Naur gd-1.8.4/Makefile.am gd-1.8.4.patch/Makefile.am
 +CLEANFILES = demoout.png
 diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 --- gd-1.8.4/Makefile.in	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/Makefile.in	Wed Sep 26 00:25:57 2001
-@@ -0,0 +1,587 @@
++++ gd-1.8.4.patch/Makefile.in	Sat Mar 31 23:45:21 2001
+@@ -0,0 +1,569 @@
 +# Makefile.in generated automatically by automake 1.4 from Makefile.am
 +
 +# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
@@ -734,32 +736,34 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +POST_UNINSTALL = :
 +host_alias = @host_alias@
 +host_triplet = @host@
++AS = @AS@
 +CC = @CC@
-+LD = @LD@
++DLLTOOL = @DLLTOOL@
 +LIBTOOL = @LIBTOOL@
 +LN_S = @LN_S@
++MAINT = @MAINT@
 +MAKEINFO = @MAKEINFO@
-+NM = @NM@
++OBJDUMP = @OBJDUMP@
 +PACKAGE = @PACKAGE@
 +RANLIB = @RANLIB@
 +VERSION = @VERSION@
 +
 +AUTOMAKE_OPTIONS = 1.3
 +
-+# library interface 4.0, gd release 1.8.3
++# library interface 4.0, gd release 1.8.4
 +libgd_la_LDFLAGS = -version-info 4:0
 +
 +noinst_HEADERS = gdcache.h 
 +
 +lib_LTLIBRARIES = libgd.la
 +
-+include_HEADERS = gd.h gd_io.h gdfontt.h gdfonts.h 	gdfontmb.h gdfontl.h gdfontg.h wbmp.h jisx0208.h 	gdhelpers.h
++include_HEADERS = gd.h gd_io.h gdfontt.h gdfonts.h gdhelpers.h 	gdfontmb.h gdfontl.h gdfontg.h wbmp.h jisx0208.h
 +
 +
-+libgd_la_SOURCES = gd.c gd_io.c gd_io_file.c gd_io_dp.c gd_io_ss.c 	gd_png.c gd_ss.c gd_gd.c gd_gd2.c gdfontt.c gdfonts.c gdfontmb.c 	gdfontl.c gdfontg.c gdft.c gdcache.c gdxpm.c gdtables.c gdkanji.c 	gd_jpeg.c gd_wbmp.c wbmp.c gdhelpers.c
++libgd_la_SOURCES = gd.c gd_io.c gd_io_file.c gd_io_dp.c gd_io_ss.c gdhelpers.c 	gd_png.c gd_ss.c gd_gd.c gd_gd2.c gdfontt.c gdfonts.c gdfontmb.c 	gdfontl.c gdfontg.c gdttf.c gdcache.c gdxpm.c gdtables.c gdkanji.c 	gd_jpeg.c gd_wbmp.c wbmp.c
 +
 +
-+bin_PROGRAMS = pngtogd pngtogd2 gdtopng gd2topng gd2copypal gdparttopng webpng
++bin_PROGRAMS = pngtogd pngtogd2 gdtopng gdtojpeg gd2topng gd2copypal gdparttopng webpng
 +pngtogd_LDADD = libgd.la
 +
 +noinst_PROGRAMS = gdtest gddemo gd2time gdtestttf
@@ -777,6 +781,9 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +
 +pngtogd2_SOURCES = pngtogd2.c gd.h
 +pngtogd2_LDADD = libgd.la
++
++gdtojpeg_SOURCES = gdtojpeg.c gd.h
++gdtojpeg_LDADD = libgd.la
 +
 +gdtopng_SOURCES = gdtopng.c gd.h
 +gdtopng_LDADD = libgd.la
@@ -811,9 +818,9 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +LIBS = @LIBS@
 +libgd_la_LIBADD = 
 +libgd_la_OBJECTS =  gd.lo gd_io.lo gd_io_file.lo gd_io_dp.lo gd_io_ss.lo \
-+gd_png.lo gd_ss.lo gd_gd.lo gd_gd2.lo gdfontt.lo gdfonts.lo gdfontmb.lo \
-+gdfontl.lo gdfontg.lo gdft.lo gdcache.lo gdxpm.lo gdtables.lo \
-+gdkanji.lo gd_jpeg.lo gd_wbmp.lo wbmp.lo gdhelpers.lo
++gdhelpers.lo gd_png.lo gd_ss.lo gd_gd.lo gd_gd2.lo gdfontt.lo \
++gdfonts.lo gdfontmb.lo gdfontl.lo gdfontg.lo gdttf.lo gdcache.lo \
++gdxpm.lo gdtables.lo gdkanji.lo gd_jpeg.lo gd_wbmp.lo wbmp.lo
 +PROGRAMS =  $(bin_PROGRAMS) $(noinst_PROGRAMS)
 +
 +pngtogd_OBJECTS =  pngtogd.o
@@ -825,6 +832,9 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +gdtopng_OBJECTS =  gdtopng.o
 +gdtopng_DEPENDENCIES =  libgd.la
 +gdtopng_LDFLAGS = 
++gdtojpeg_OBJECTS =  gdtojpeg.o
++gdtojpeg_DEPENDENCIES =  libgd.la
++gdtojpeg_LDFLAGS = 
 +gd2topng_OBJECTS =  gd2topng.o
 +gd2topng_DEPENDENCIES =  libgd.la
 +gd2topng_LDFLAGS = 
@@ -866,25 +876,16 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +
 +TAR = tar
 +GZIP_ENV = --best
-+DEP_FILES =  .deps/gd.P .deps/gd2copypal.P .deps/gd2time.P \
-+.deps/gd2topng.P .deps/gd_gd.P .deps/gd_gd2.P .deps/gd_io.P \
-+.deps/gd_io_dp.P .deps/gd_io_file.P .deps/gd_io_ss.P .deps/gd_jpeg.P \
-+.deps/gd_png.P .deps/gd_ss.P .deps/gd_wbmp.P .deps/gdcache.P \
-+.deps/gddemo.P .deps/gdfontg.P .deps/gdfontl.P .deps/gdfontmb.P \
-+.deps/gdfonts.P .deps/gdfontt.P .deps/gdft.P .deps/gdhelpers.P \
-+.deps/gdkanji.P .deps/gdparttopng.P .deps/gdtables.P .deps/gdtest.P \
-+.deps/gdtestttf.P .deps/gdtopng.P .deps/gdxpm.P .deps/pngtogd.P \
-+.deps/pngtogd2.P .deps/wbmp.P .deps/webpng.P
-+SOURCES = $(libgd_la_SOURCES) $(pngtogd_SOURCES) $(pngtogd2_SOURCES) $(gdtopng_SOURCES) $(gd2topng_SOURCES) $(gd2copypal_SOURCES) $(gdparttopng_SOURCES) $(webpng_SOURCES) $(gdtest_SOURCES) $(gddemo_SOURCES) $(gd2time_SOURCES) $(gdtestttf_SOURCES)
-+OBJECTS = $(libgd_la_OBJECTS) $(pngtogd_OBJECTS) $(pngtogd2_OBJECTS) $(gdtopng_OBJECTS) $(gd2topng_OBJECTS) $(gd2copypal_OBJECTS) $(gdparttopng_OBJECTS) $(webpng_OBJECTS) $(gdtest_OBJECTS) $(gddemo_OBJECTS) $(gd2time_OBJECTS) $(gdtestttf_OBJECTS)
++SOURCES = $(libgd_la_SOURCES) $(pngtogd_SOURCES) $(pngtogd2_SOURCES) $(gdtopng_SOURCES) $(gdtojpeg_SOURCES) $(gd2topng_SOURCES) $(gd2copypal_SOURCES) $(gdparttopng_SOURCES) $(webpng_SOURCES) $(gdtest_SOURCES) $(gddemo_SOURCES) $(gd2time_SOURCES) $(gdtestttf_SOURCES)
++OBJECTS = $(libgd_la_OBJECTS) $(pngtogd_OBJECTS) $(pngtogd2_OBJECTS) $(gdtopng_OBJECTS) $(gdtojpeg_OBJECTS) $(gd2topng_OBJECTS) $(gd2copypal_OBJECTS) $(gdparttopng_OBJECTS) $(webpng_OBJECTS) $(gdtest_OBJECTS) $(gddemo_OBJECTS) $(gd2time_OBJECTS) $(gdtestttf_OBJECTS)
 +
 +all: all-redirect
 +.SUFFIXES:
 +.SUFFIXES: .S .c .lo .o .s
 +$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-+	cd $(top_srcdir) && $(AUTOMAKE) --gnu Makefile
++	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps Makefile
 +
-+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
++Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 +	cd $(top_builddir) \
 +	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 +
@@ -921,6 +922,9 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
 +	done
 +
++.c.o:
++	$(COMPILE) -c $<
++
 +.s.o:
 +	$(COMPILE) -c $<
 +
@@ -936,6 +940,9 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +	-rm -f *.tab.c
 +
 +maintainer-clean-compile:
++
++.c.lo:
++	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 +
 +.s.lo:
 +	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
@@ -1001,6 +1008,10 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +gdtopng: $(gdtopng_OBJECTS) $(gdtopng_DEPENDENCIES)
 +	@rm -f gdtopng
 +	$(LINK) $(gdtopng_LDFLAGS) $(gdtopng_OBJECTS) $(gdtopng_LDADD) $(LIBS)
++
++gdtojpeg: $(gdtojpeg_OBJECTS) $(gdtojpeg_DEPENDENCIES)
++	@rm -f gdtojpeg
++	$(LINK) $(gdtojpeg_LDFLAGS) $(gdtojpeg_OBJECTS) $(gdtojpeg_LDADD) $(LIBS)
 +
 +gd2topng: $(gd2topng_OBJECTS) $(gd2topng_DEPENDENCIES)
 +	@rm -f gd2topng
@@ -1116,11 +1127,6 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +	-rm -rf $(distdir)
 +	mkdir $(distdir)
 +	-chmod 777 $(distdir)
-+	here=`cd $(top_builddir) && pwd`; \
-+	top_distdir=`cd $(distdir) && pwd`; \
-+	distdir=`cd $(distdir) && pwd`; \
-+	cd $(top_srcdir) \
-+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu Makefile
 +	$(mkinstalldirs) $(distdir)/test
 +	@for file in $(DISTFILES); do \
 +	  d=$(srcdir); \
@@ -1132,38 +1138,19 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 +	  fi; \
 +	done
++gd2copypal.o: gd2copypal.c gd.h gd_io.h
++gd2time.o: gd2time.c gd.h gd_io.h
++gd2topng.o: gd2topng.c gd.h gd_io.h
++gddemo.o: gddemo.c gd.h gd_io.h gdfontg.h gdfonts.h
++gdhelpers.lo gdhelpers.o : gdhelpers.c gd.h gd_io.h gdhelpers.h
++gdparttopng.o: gdparttopng.c gd.h gd_io.h
++gdtest.o: gdtest.c gd.h gd_io.h
++gdtestttf.o: gdtestttf.c gd.h gd_io.h
++gdtojpeg.o: gdtojpeg.c gd.h gd_io.h
++gdtopng.o: gdtopng.c gd.h gd_io.h
++pngtogd2.o: pngtogd2.c gd.h gd_io.h
++webpng.o: webpng.c gd.h gd_io.h
 +
-+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
-+
-+-include $(DEP_FILES)
-+
-+mostlyclean-depend:
-+
-+clean-depend:
-+
-+distclean-depend:
-+	-rm -rf .deps
-+
-+maintainer-clean-depend:
-+
-+%.o: %.c
-+	@echo '$(COMPILE) -c $<'; \
-+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
-+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
-+	tr ' ' '\012' < .deps/$(*F).pp \
-+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
-+	    >> .deps/$(*F).P; \
-+	rm .deps/$(*F).pp
-+
-+%.lo: %.c
-+	@echo '$(LTCOMPILE) -c $<'; \
-+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
-+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
-+	  < .deps/$(*F).pp > .deps/$(*F).P; \
-+	tr ' ' '\012' < .deps/$(*F).pp \
-+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
-+	    >> .deps/$(*F).P; \
-+	rm -f .deps/$(*F).pp
 +info-am:
 +info: info-am
 +dvi-am:
@@ -1206,20 +1193,20 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +mostlyclean-am:  mostlyclean-libLTLIBRARIES mostlyclean-compile \
 +		mostlyclean-libtool mostlyclean-binPROGRAMS \
 +		mostlyclean-noinstPROGRAMS mostlyclean-tags \
-+		mostlyclean-depend mostlyclean-generic
++		mostlyclean-generic
 +
 +mostlyclean: mostlyclean-am
 +
 +clean-am:  clean-libLTLIBRARIES clean-compile clean-libtool \
 +		clean-binPROGRAMS clean-noinstPROGRAMS clean-tags \
-+		clean-depend clean-generic mostlyclean-am
++		clean-generic mostlyclean-am
 +
 +clean: clean-am
 +
 +distclean-am:  distclean-libLTLIBRARIES distclean-compile \
 +		distclean-libtool distclean-binPROGRAMS \
 +		distclean-noinstPROGRAMS distclean-tags \
-+		distclean-depend distclean-generic clean-am
++		distclean-generic clean-am
 +	-rm -f libtool
 +
 +distclean: distclean-am
@@ -1229,8 +1216,7 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +		maintainer-clean-compile maintainer-clean-libtool \
 +		maintainer-clean-binPROGRAMS \
 +		maintainer-clean-noinstPROGRAMS maintainer-clean-tags \
-+		maintainer-clean-depend maintainer-clean-generic \
-+		distclean-am
++		maintainer-clean-generic distclean-am
 +	@echo "This command is intended for maintainers to use;"
 +	@echo "it deletes files that may require special tools to rebuild."
 +
@@ -1247,22 +1233,144 @@ diff -Naur gd-1.8.4/Makefile.in gd-1.8.4.patch/Makefile.in
 +install-binPROGRAMS mostlyclean-noinstPROGRAMS distclean-noinstPROGRAMS \
 +clean-noinstPROGRAMS maintainer-clean-noinstPROGRAMS \
 +uninstall-includeHEADERS install-includeHEADERS tags mostlyclean-tags \
-+distclean-tags clean-tags maintainer-clean-tags distdir \
-+mostlyclean-depend distclean-depend clean-depend \
-+maintainer-clean-depend info-am info dvi-am dvi check check-am \
-+installcheck-am installcheck install-exec-am install-exec \
-+install-data-am install-data install-am install uninstall-am uninstall \
-+all-redirect all-am all installdirs mostlyclean-generic \
-+distclean-generic clean-generic maintainer-clean-generic clean \
-+mostlyclean distclean maintainer-clean
++distclean-tags clean-tags maintainer-clean-tags distdir info-am info \
++dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
++install-exec install-data-am install-data install-am install \
++uninstall-am uninstall all-redirect all-am all installdirs \
++mostlyclean-generic distclean-generic clean-generic \
++maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 +
 +
 +# Tell versions [3.59,3.63) of GNU make to not export all variables.
 +# Otherwise a system limit (for SysV at least) may be exceeded.
 +.NOEXPORT:
+diff -Naur gd-1.8.4/Makefile.nt gd-1.8.4.patch/Makefile.nt
+--- gd-1.8.4/Makefile.nt	Tue Feb  6 14:44:02 2001
++++ gd-1.8.4.patch/Makefile.nt	Wed Dec 31 19:00:00 1969
+@@ -1,120 +0,0 @@
+-#NMAKE makefile for Windows 95/98/NT developers.
+-#Produces a static library (libgd.lib). Thanks to Joe Gregorio.
+-#This is out of date.
+-
+-COMPILER=cl
+-
+-#If the ar command fails on your system, consult the ar manpage
+-#for your system. 
+-AR=LIB
+-
+-#If the install command is not in your path, provide
+-#an explicit path for it here, or install manually.
+-INSTALL=install
+-
+-#If you don't have FreeType and/or Xpm installed, including the
+-#header files, uncomment this (default).
+-CFLAGS=-Ox -GX 
+-
+-#If you do have FreeType and/or Xpm fully installed, uncomment a
+-#variation of this and comment out the line above. See also LIBS below.
+-#CFLAGS=-O -DHAVE_LIBXPM -DHAVE_LIBJPEG -DHAVE_LIBPNG -DHAVE_LIBTTF
+-
+-# -DHAVE_LIBFREETYPE can be used instead of -DHAVE_TTF to use the
+-# newer FreeType2 libraries
+-
+-#Libraries required for applications 
+-LIBS=gd.lib libpng.lib zlib.lib 
+-#LIBS=gd.lib libpng.lib zlib.lib libjpeg.lib libttf.lib
+-
+-#Libraries required for gd.lib itself
+-GDLIBS=libpng.lib zlib.lib
+-#GDLIBS=libpng.lib zlib.lib libjpeg.lib libttf.lib
+-
+-#Typical install locations for freetype, zlib, jpeg, xpm and 
+-#libpng header files. If yours are somewhere else, change this. 
+-INCLUDEDIRS=-I d:\zlib -I d:\libpng -I d:\libjpeg -I d:\libttf
+-
+-#Typical install locations for freetype, zlib, xpm, libjpeg and 
+-#libpng libraries.
+-#
+-#If yours are somewhere else, other than a standard location
+-#such as /lib or /usr/lib, then change this. Be sure to keep
+-#-L. as this allows the gd library itself to be found.
+-#Put -L. first so that old versions of the gd library elsewhere
+-#on your system can't cause conflicts while building a new one.
+-LIB=d:\devstudio\vc\lib;d:\zlib;d:\libpng;d:\libjpeg;d:\libttf
+-
+-#Location where gd.lib should be installed by "make install".
+-INSTALL_LIB=/usr/local/lib
+-
+-#Location where .h files should be installed by "make install".
+-INSTALL_INCLUDE=/usr/local/include
+-
+-#Location where useful non-test programs should be installed by "make install".
+-INSTALL_BIN=/usr/local/bin
+-
+-#
+-#
+-# Changes should not be required below here.
+-#
+-#
+-
+-VERSION=1.8.1
+-
+-CC=$(COMPILER) $(INCLUDEDIRS)
+-LINK=$(CC) $(LIBS)
+-
+-PROGRAMS=$(BIN_PROGRAMS) $(TEST_PROGRAMS)
+-
+-BIN_PROGRAMS=pngtogd.exe pngtogd2.exe gdtopng.exe gd2topng.exe gd2copypal.exe gdparttopng.exe webpng.exe
+-TEST_PROGRAMS=gdtest.exe gddemo.exe gd2time.exe gdtestttf.exe gdtestft.exe
+-
+-all: gd.lib $(PROGRAMS)
+-
+-gddemo.exe: gddemo.c gd.lib
+-	$(CC) gddemo.c $(LIBDIRS) $(LIBS)
+-
+-pngtogd.exe: pngtogd.c gd.lib
+-	$(CC) pngtogd.c $(LIBDIRS) $(LIBS) 
+-
+-webpng.exe: webpng.c gd.lib
+-	$(CC) webpng.c 	$(LIBDIRS) $(LIBS)
+-
+-pngtogd2.exe: pngtogd2.c gd.lib
+-	$(CC) pngtogd2.c	$(LIBDIRS) $(LIBS)
+-
+-gdtopng.exe: gdtopng.c gd.lib
+-	$(CC) gdtopng.c 	$(LIBDIRS) $(LIBS)
+-
+-gd2topng.exe: gd2topng.c gd.lib
+-	$(CC) gd2topng.c	$(LIBDIRS) $(LIBS)
+-
+-gd2copypal.exe: gd2copypal.c gd.lib
+-	$(CC) gd2copypal.c	$(LIBDIRS) $(LIBS)
+-
+-gdparttopng.exe: gdparttopng.c gd.lib
+-	$(CC) gdparttopng.c	$(LIBDIRS) $(LIBS)
+-
+-gdtest.exe: gdtest.c gd.lib
+-	$(CC) gdtest.c 	$(LIBDIRS) $(LIBS)
+-
+-gd2time.exe: gd2time.c gd.lib
+-	$(CC) gd2time.c	$(LIBDIRS) $(LIBS)
+-
+-gdtestttf.exe: gdtestttf.c gd.lib
+-	$(CC) gdtestttf.c 	$(LIBDIRS) $(LIBS)
+-
+-gdtestft.exe: gdtestft.c gd.lib
+-	$(CC) gdtestft.c 	$(LIBDIRS) $(LIBS)
+-
+-OBJS=gd.obj gd_gd.obj gd_gd2.obj gd_io.obj gd_io_dp.obj gd_io_file.obj gd_ss.obj \
+-	gd_io_ss.obj gd_png.obj gdxpm.obj gdfontt.obj gdfonts.obj gdfontmb.obj gdfontl.obj \
+-	gdfontg.obj gdtables.obj gdttf.obj gdft.c gdcache.obj gdkanji.obj gd_jpeg.obj
+-
+-gd.lib:  $(OBJS) gd.h gdfontt.h gdfonts.h gdfontmb.h gdfontl.h gdfontg.h	
+-	$(AR) $(OBJS) $(GDLIBS) 
+-
+-clean:
+-	del *.obj *.lib $(PROGRAMS)
+-
 diff -Naur gd-1.8.4/NEWS gd-1.8.4.patch/NEWS
 --- gd-1.8.4/NEWS	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/NEWS	Tue Sep 25 22:51:57 2001
++++ gd-1.8.4.patch/NEWS	Sat Mar 31 22:52:12 2001
 @@ -0,0 +1,132 @@
 +990729 Thomas Boutell (TBB)
 +	- It would probably be a good idea to free the 
@@ -1398,8 +1506,8 @@ diff -Naur gd-1.8.4/NEWS gd-1.8.4.patch/NEWS
 +
 diff -Naur gd-1.8.4/README gd-1.8.4.patch/README
 --- gd-1.8.4/README	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/README	Wed Sep 26 01:06:58 2001
-@@ -0,0 +1,24 @@
++++ gd-1.8.4.patch/README	Sat Mar 31 23:46:58 2001
+@@ -0,0 +1,25 @@
 +GD 1.8.4_patch
 +
 +This is a patched version of Tom Boutell's GD library version 1.8.4.
@@ -1408,16 +1516,17 @@ diff -Naur gd-1.8.4/README gd-1.8.4.patch/README
 +Compiling libgd as a shared library will make it easier to run the
 +Perl GD interface in some cases.
 +
-+I also fixed some minor bugs in the library itself.
-+
 +Please see INSTALL and readme.txt for full instructions.
 +
 +Installation Synopsis
 +---------------------
 +
-+ % ./configure
++ % ./configure --enable-jpeg --enable-freetype --enable-xpm
 + % make
 + % make install
++
++You may use the --x-includes option to tell configure about any .h files
++that may be installed in funny places, such as freetype.h
 +
 +Questions relating to the Perl GD module and to the functioning of
 +this patch should be directed to Lincoln Stein (lstein@cshl.org).  All
@@ -1426,13 +1535,13 @@ diff -Naur gd-1.8.4/README gd-1.8.4.patch/README
 +
 diff -Naur gd-1.8.4/acinclude.m4 gd-1.8.4.patch/acinclude.m4
 --- gd-1.8.4/acinclude.m4	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/acinclude.m4	Tue Sep 25 22:49:49 2001
++++ gd-1.8.4.patch/acinclude.m4	Sat Mar 31 22:52:12 2001
 @@ -0,0 +1 @@
 +#placeholder for a real acinclude.m4 (someday)
 diff -Naur gd-1.8.4/aclocal.m4 gd-1.8.4.patch/aclocal.m4
 --- gd-1.8.4/aclocal.m4	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/aclocal.m4	Wed Sep 26 00:25:54 2001
-@@ -0,0 +1,344 @@
++++ gd-1.8.4.patch/aclocal.m4	Sat Mar 31 23:13:49 2001
+@@ -0,0 +1,573 @@
 +dnl aclocal.m4 generated automatically by aclocal 1.4
 +
 +dnl Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
@@ -1445,7 +1554,418 @@ diff -Naur gd-1.8.4/aclocal.m4 gd-1.8.4.patch/aclocal.m4
 +dnl even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 +dnl PARTICULAR PURPOSE.
 +
-+#placeholder for a real acinclude.m4 (someday)
++
++# serial 40 AC_PROG_LIBTOOL
++AC_DEFUN(AC_PROG_LIBTOOL,
++[AC_REQUIRE([AC_LIBTOOL_SETUP])dnl
++
++# Save cache, so that ltconfig can load it
++AC_CACHE_SAVE
++
++# Actually configure libtool.  ac_aux_dir is where install-sh is found.
++CC="$CC" CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" \
++LD="$LD" LDFLAGS="$LDFLAGS" LIBS="$LIBS" \
++LN_S="$LN_S" NM="$NM" RANLIB="$RANLIB" \
++DLLTOOL="$DLLTOOL" AS="$AS" OBJDUMP="$OBJDUMP" \
++${CONFIG_SHELL-/bin/sh} $ac_aux_dir/ltconfig --no-reexec \
++$libtool_flags --no-verify $ac_aux_dir/ltmain.sh $lt_target \
++|| AC_MSG_ERROR([libtool configure failed])
++
++# Reload cache, that may have been modified by ltconfig
++AC_CACHE_LOAD
++
++# This can be used to rebuild libtool when needed
++LIBTOOL_DEPS="$ac_aux_dir/ltconfig $ac_aux_dir/ltmain.sh"
++
++# Always use our own libtool.
++LIBTOOL='$(SHELL) $(top_builddir)/libtool'
++AC_SUBST(LIBTOOL)dnl
++
++# Redirect the config.log output again, so that the ltconfig log is not
++# clobbered by the next message.
++exec 5>>./config.log
++])
++
++AC_DEFUN(AC_LIBTOOL_SETUP,
++[AC_PREREQ(2.13)dnl
++AC_REQUIRE([AC_ENABLE_SHARED])dnl
++AC_REQUIRE([AC_ENABLE_STATIC])dnl
++AC_REQUIRE([AC_ENABLE_FAST_INSTALL])dnl
++AC_REQUIRE([AC_CANONICAL_HOST])dnl
++AC_REQUIRE([AC_CANONICAL_BUILD])dnl
++AC_REQUIRE([AC_PROG_RANLIB])dnl
++AC_REQUIRE([AC_PROG_CC])dnl
++AC_REQUIRE([AC_PROG_LD])dnl
++AC_REQUIRE([AC_PROG_NM])dnl
++AC_REQUIRE([AC_PROG_LN_S])dnl
++dnl
++
++case "$target" in
++NONE) lt_target="$host" ;;
++*) lt_target="$target" ;;
++esac
++
++# Check for any special flags to pass to ltconfig.
++libtool_flags="--cache-file=$cache_file"
++test "$enable_shared" = no && libtool_flags="$libtool_flags --disable-shared"
++test "$enable_static" = no && libtool_flags="$libtool_flags --disable-static"
++test "$enable_fast_install" = no && libtool_flags="$libtool_flags --disable-fast-install"
++test "$ac_cv_prog_gcc" = yes && libtool_flags="$libtool_flags --with-gcc"
++test "$ac_cv_prog_gnu_ld" = yes && libtool_flags="$libtool_flags --with-gnu-ld"
++ifdef([AC_PROVIDE_AC_LIBTOOL_DLOPEN],
++[libtool_flags="$libtool_flags --enable-dlopen"])
++ifdef([AC_PROVIDE_AC_LIBTOOL_WIN32_DLL],
++[libtool_flags="$libtool_flags --enable-win32-dll"])
++AC_ARG_ENABLE(libtool-lock,
++  [  --disable-libtool-lock  avoid locking (might break parallel builds)])
++test "x$enable_libtool_lock" = xno && libtool_flags="$libtool_flags --disable-lock"
++test x"$silent" = xyes && libtool_flags="$libtool_flags --silent"
++
++# Some flags need to be propagated to the compiler or linker for good
++# libtool support.
++case "$lt_target" in
++*-*-irix6*)
++  # Find out which ABI we are using.
++  echo '[#]line __oline__ "configure"' > conftest.$ac_ext
++  if AC_TRY_EVAL(ac_compile); then
++    case "`/usr/bin/file conftest.o`" in
++    *32-bit*)
++      LD="${LD-ld} -32"
++      ;;
++    *N32*)
++      LD="${LD-ld} -n32"
++      ;;
++    *64-bit*)
++      LD="${LD-ld} -64"
++      ;;
++    esac
++  fi
++  rm -rf conftest*
++  ;;
++
++*-*-sco3.2v5*)
++  # On SCO OpenServer 5, we need -belf to get full-featured binaries.
++  SAVE_CFLAGS="$CFLAGS"
++  CFLAGS="$CFLAGS -belf"
++  AC_CACHE_CHECK([whether the C compiler needs -belf], lt_cv_cc_needs_belf,
++    [AC_TRY_LINK([],[],[lt_cv_cc_needs_belf=yes],[lt_cv_cc_needs_belf=no])])
++  if test x"$lt_cv_cc_needs_belf" != x"yes"; then
++    # this is probably gcc 2.8.0, egcs 1.0 or newer; no need for -belf
++    CFLAGS="$SAVE_CFLAGS"
++  fi
++  ;;
++
++ifdef([AC_PROVIDE_AC_LIBTOOL_WIN32_DLL],
++[*-*-cygwin* | *-*-mingw*)
++  AC_CHECK_TOOL(DLLTOOL, dlltool, false)
++  AC_CHECK_TOOL(AS, as, false)
++  AC_CHECK_TOOL(OBJDUMP, objdump, false)
++  ;;
++])
++esac
++])
++
++# AC_LIBTOOL_DLOPEN - enable checks for dlopen support
++AC_DEFUN(AC_LIBTOOL_DLOPEN, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])])
++
++# AC_LIBTOOL_WIN32_DLL - declare package support for building win32 dll's
++AC_DEFUN(AC_LIBTOOL_WIN32_DLL, [AC_BEFORE([$0], [AC_LIBTOOL_SETUP])])
++
++# AC_ENABLE_SHARED - implement the --enable-shared flag
++# Usage: AC_ENABLE_SHARED[(DEFAULT)]
++#   Where DEFAULT is either `yes' or `no'.  If omitted, it defaults to
++#   `yes'.
++AC_DEFUN(AC_ENABLE_SHARED, [dnl
++define([AC_ENABLE_SHARED_DEFAULT], ifelse($1, no, no, yes))dnl
++AC_ARG_ENABLE(shared,
++changequote(<<, >>)dnl
++<<  --enable-shared[=PKGS]  build shared libraries [default=>>AC_ENABLE_SHARED_DEFAULT],
++changequote([, ])dnl
++[p=${PACKAGE-default}
++case "$enableval" in
++yes) enable_shared=yes ;;
++no) enable_shared=no ;;
++*)
++  enable_shared=no
++  # Look at the argument we got.  We use all the common list separators.
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
++  for pkg in $enableval; do
++    if test "X$pkg" = "X$p"; then
++      enable_shared=yes
++    fi
++  done
++  IFS="$ac_save_ifs"
++  ;;
++esac],
++enable_shared=AC_ENABLE_SHARED_DEFAULT)dnl
++])
++
++# AC_DISABLE_SHARED - set the default shared flag to --disable-shared
++AC_DEFUN(AC_DISABLE_SHARED, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
++AC_ENABLE_SHARED(no)])
++
++# AC_ENABLE_STATIC - implement the --enable-static flag
++# Usage: AC_ENABLE_STATIC[(DEFAULT)]
++#   Where DEFAULT is either `yes' or `no'.  If omitted, it defaults to
++#   `yes'.
++AC_DEFUN(AC_ENABLE_STATIC, [dnl
++define([AC_ENABLE_STATIC_DEFAULT], ifelse($1, no, no, yes))dnl
++AC_ARG_ENABLE(static,
++changequote(<<, >>)dnl
++<<  --enable-static[=PKGS]  build static libraries [default=>>AC_ENABLE_STATIC_DEFAULT],
++changequote([, ])dnl
++[p=${PACKAGE-default}
++case "$enableval" in
++yes) enable_static=yes ;;
++no) enable_static=no ;;
++*)
++  enable_static=no
++  # Look at the argument we got.  We use all the common list separators.
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
++  for pkg in $enableval; do
++    if test "X$pkg" = "X$p"; then
++      enable_static=yes
++    fi
++  done
++  IFS="$ac_save_ifs"
++  ;;
++esac],
++enable_static=AC_ENABLE_STATIC_DEFAULT)dnl
++])
++
++# AC_DISABLE_STATIC - set the default static flag to --disable-static
++AC_DEFUN(AC_DISABLE_STATIC, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
++AC_ENABLE_STATIC(no)])
++
++
++# AC_ENABLE_FAST_INSTALL - implement the --enable-fast-install flag
++# Usage: AC_ENABLE_FAST_INSTALL[(DEFAULT)]
++#   Where DEFAULT is either `yes' or `no'.  If omitted, it defaults to
++#   `yes'.
++AC_DEFUN(AC_ENABLE_FAST_INSTALL, [dnl
++define([AC_ENABLE_FAST_INSTALL_DEFAULT], ifelse($1, no, no, yes))dnl
++AC_ARG_ENABLE(fast-install,
++changequote(<<, >>)dnl
++<<  --enable-fast-install[=PKGS]  optimize for fast installation [default=>>AC_ENABLE_FAST_INSTALL_DEFAULT],
++changequote([, ])dnl
++[p=${PACKAGE-default}
++case "$enableval" in
++yes) enable_fast_install=yes ;;
++no) enable_fast_install=no ;;
++*)
++  enable_fast_install=no
++  # Look at the argument we got.  We use all the common list separators.
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
++  for pkg in $enableval; do
++    if test "X$pkg" = "X$p"; then
++      enable_fast_install=yes
++    fi
++  done
++  IFS="$ac_save_ifs"
++  ;;
++esac],
++enable_fast_install=AC_ENABLE_FAST_INSTALL_DEFAULT)dnl
++])
++
++# AC_ENABLE_FAST_INSTALL - set the default to --disable-fast-install
++AC_DEFUN(AC_DISABLE_FAST_INSTALL, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
++AC_ENABLE_FAST_INSTALL(no)])
++
++# AC_PROG_LD - find the path to the GNU or non-GNU linker
++AC_DEFUN(AC_PROG_LD,
++[AC_ARG_WITH(gnu-ld,
++[  --with-gnu-ld           assume the C compiler uses GNU ld [default=no]],
++test "$withval" = no || with_gnu_ld=yes, with_gnu_ld=no)
++AC_REQUIRE([AC_PROG_CC])dnl
++AC_REQUIRE([AC_CANONICAL_HOST])dnl
++AC_REQUIRE([AC_CANONICAL_BUILD])dnl
++ac_prog=ld
++if test "$ac_cv_prog_gcc" = yes; then
++  # Check if gcc -print-prog-name=ld gives a path.
++  AC_MSG_CHECKING([for ld used by GCC])
++  ac_prog=`($CC -print-prog-name=ld) 2>&5`
++  case "$ac_prog" in
++    # Accept absolute paths.
++changequote(,)dnl
++    [\\/]* | [A-Za-z]:[\\/]*)
++      re_direlt='/[^/][^/]*/\.\./'
++changequote([,])dnl
++      # Canonicalize the path of ld
++      ac_prog=`echo $ac_prog| sed 's%\\\\%/%g'`
++      while echo $ac_prog | grep "$re_direlt" > /dev/null 2>&1; do
++	ac_prog=`echo $ac_prog| sed "s%$re_direlt%/%"`
++      done
++      test -z "$LD" && LD="$ac_prog"
++      ;;
++  "")
++    # If it fails, then pretend we aren't using GCC.
++    ac_prog=ld
++    ;;
++  *)
++    # If it is relative, then search for the first ld in PATH.
++    with_gnu_ld=unknown
++    ;;
++  esac
++elif test "$with_gnu_ld" = yes; then
++  AC_MSG_CHECKING([for GNU ld])
++else
++  AC_MSG_CHECKING([for non-GNU ld])
++fi
++AC_CACHE_VAL(ac_cv_path_LD,
++[if test -z "$LD"; then
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR-:}"
++  for ac_dir in $PATH; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f "$ac_dir/$ac_prog" || test -f "$ac_dir/$ac_prog$ac_exeext"; then
++      ac_cv_path_LD="$ac_dir/$ac_prog"
++      # Check to see if the program is GNU ld.  I'd rather use --version,
++      # but apparently some GNU ld's only accept -v.
++      # Break only if it was the GNU/non-GNU ld that we prefer.
++      if "$ac_cv_path_LD" -v 2>&1 < /dev/null | egrep '(GNU|with BFD)' > /dev/null; then
++	test "$with_gnu_ld" != no && break
++      else
++	test "$with_gnu_ld" != yes && break
++      fi
++    fi
++  done
++  IFS="$ac_save_ifs"
++else
++  ac_cv_path_LD="$LD" # Let the user override the test with a path.
++fi])
++LD="$ac_cv_path_LD"
++if test -n "$LD"; then
++  AC_MSG_RESULT($LD)
++else
++  AC_MSG_RESULT(no)
++fi
++test -z "$LD" && AC_MSG_ERROR([no acceptable ld found in \$PATH])
++AC_PROG_LD_GNU
++])
++
++AC_DEFUN(AC_PROG_LD_GNU,
++[AC_CACHE_CHECK([if the linker ($LD) is GNU ld], ac_cv_prog_gnu_ld,
++[# I'd rather use --version here, but apparently some GNU ld's only accept -v.
++if $LD -v 2>&1 </dev/null | egrep '(GNU|with BFD)' 1>&5; then
++  ac_cv_prog_gnu_ld=yes
++else
++  ac_cv_prog_gnu_ld=no
++fi])
++])
++
++# AC_PROG_NM - find the path to a BSD-compatible name lister
++AC_DEFUN(AC_PROG_NM,
++[AC_MSG_CHECKING([for BSD-compatible nm])
++AC_CACHE_VAL(ac_cv_path_NM,
++[if test -n "$NM"; then
++  # Let the user override the test.
++  ac_cv_path_NM="$NM"
++else
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR-:}"
++  for ac_dir in $PATH /usr/ccs/bin /usr/ucb /bin; do
++    test -z "$ac_dir" && ac_dir=.
++    if test -f $ac_dir/nm || test -f $ac_dir/nm$ac_exeext ; then
++      # Check to see if the nm accepts a BSD-compat flag.
++      # Adding the `sed 1q' prevents false positives on HP-UX, which says:
++      #   nm: unknown option "B" ignored
++      if ($ac_dir/nm -B /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
++	ac_cv_path_NM="$ac_dir/nm -B"
++	break
++      elif ($ac_dir/nm -p /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
++	ac_cv_path_NM="$ac_dir/nm -p"
++	break
++      else
++	ac_cv_path_NM=${ac_cv_path_NM="$ac_dir/nm"} # keep the first match, but
++	continue # so that we can try to find one that supports BSD flags
++      fi
++    fi
++  done
++  IFS="$ac_save_ifs"
++  test -z "$ac_cv_path_NM" && ac_cv_path_NM=nm
++fi])
++NM="$ac_cv_path_NM"
++AC_MSG_RESULT([$NM])
++])
++
++# AC_CHECK_LIBM - check for math library
++AC_DEFUN(AC_CHECK_LIBM,
++[AC_REQUIRE([AC_CANONICAL_HOST])dnl
++LIBM=
++case "$lt_target" in
++*-*-beos* | *-*-cygwin*)
++  # These system don't have libm
++  ;;
++*-ncr-sysv4.3*)
++  AC_CHECK_LIB(mw, _mwvalidcheckl, LIBM="-lmw")
++  AC_CHECK_LIB(m, main, LIBM="$LIBM -lm")
++  ;;
++*)
++  AC_CHECK_LIB(m, main, LIBM="-lm")
++  ;;
++esac
++])
++
++# AC_LIBLTDL_CONVENIENCE[(dir)] - sets LIBLTDL to the link flags for
++# the libltdl convenience library and INCLTDL to the include flags for
++# the libltdl header and adds --enable-ltdl-convenience to the
++# configure arguments.  Note that LIBLTDL and INCLTDL are not
++# AC_SUBSTed, nor is AC_CONFIG_SUBDIRS called.  If DIR is not
++# provided, it is assumed to be `libltdl'.  LIBLTDL will be prefixed
++# with '${top_builddir}/' and INCLTDL will be prefixed with
++# '${top_srcdir}/' (note the single quotes!).  If your package is not
++# flat and you're not using automake, define top_builddir and
++# top_srcdir appropriately in the Makefiles.
++AC_DEFUN(AC_LIBLTDL_CONVENIENCE, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
++  case "$enable_ltdl_convenience" in
++  no) AC_MSG_ERROR([this package needs a convenience libltdl]) ;;
++  "") enable_ltdl_convenience=yes
++      ac_configure_args="$ac_configure_args --enable-ltdl-convenience" ;;
++  esac
++  LIBLTDL='${top_builddir}/'ifelse($#,1,[$1],['libltdl'])/libltdlc.la
++  INCLTDL='-I${top_srcdir}/'ifelse($#,1,[$1],['libltdl'])
++])
++
++# AC_LIBLTDL_INSTALLABLE[(dir)] - sets LIBLTDL to the link flags for
++# the libltdl installable library and INCLTDL to the include flags for
++# the libltdl header and adds --enable-ltdl-install to the configure
++# arguments.  Note that LIBLTDL and INCLTDL are not AC_SUBSTed, nor is
++# AC_CONFIG_SUBDIRS called.  If DIR is not provided and an installed
++# libltdl is not found, it is assumed to be `libltdl'.  LIBLTDL will
++# be prefixed with '${top_builddir}/' and INCLTDL will be prefixed
++# with '${top_srcdir}/' (note the single quotes!).  If your package is
++# not flat and you're not using automake, define top_builddir and
++# top_srcdir appropriately in the Makefiles.
++# In the future, this macro may have to be called after AC_PROG_LIBTOOL.
++AC_DEFUN(AC_LIBLTDL_INSTALLABLE, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
++  AC_CHECK_LIB(ltdl, main,
++  [test x"$enable_ltdl_install" != xyes && enable_ltdl_install=no],
++  [if test x"$enable_ltdl_install" = xno; then
++     AC_MSG_WARN([libltdl not installed, but installation disabled])
++   else
++     enable_ltdl_install=yes
++   fi
++  ])
++  if test x"$enable_ltdl_install" = x"yes"; then
++    ac_configure_args="$ac_configure_args --enable-ltdl-install"
++    LIBLTDL='${top_builddir}/'ifelse($#,1,[$1],['libltdl'])/libltdl.la
++    INCLTDL='-I${top_srcdir}/'ifelse($#,1,[$1],['libltdl'])
++  else
++    ac_configure_args="$ac_configure_args --enable-ltdl-install=no"
++    LIBLTDL="-lltdl"
++    INCLTDL=
++  fi
++])
++
++dnl old names
++AC_DEFUN(AM_PROG_LIBTOOL, [indir([AC_PROG_LIBTOOL])])dnl
++AC_DEFUN(AM_ENABLE_SHARED, [indir([AC_ENABLE_SHARED], $@)])dnl
++AC_DEFUN(AM_ENABLE_STATIC, [indir([AC_ENABLE_STATIC], $@)])dnl
++AC_DEFUN(AM_DISABLE_SHARED, [indir([AC_DISABLE_SHARED], $@)])dnl
++AC_DEFUN(AM_DISABLE_STATIC, [indir([AC_DISABLE_STATIC], $@)])dnl
++AC_DEFUN(AM_PROG_LD, [indir([AC_PROG_LD])])dnl
++AC_DEFUN(AM_PROG_NM, [indir([AC_PROG_NM])])dnl
++
++dnl This is just to silence aclocal about the macro not being used
++ifelse([AC_DISABLE_FAST_INSTALL])dnl
 +
 +# Do all the work for Automake.  This macro actually does too much --
 +# some checks are only needed if your package does certain things.
@@ -1539,247 +2059,274 @@ diff -Naur gd-1.8.4/aclocal.m4 gd-1.8.4.patch/aclocal.m4
 +fi
 +AC_SUBST($1)])
 +
++# Like AC_CONFIG_HEADER, but automatically create stamp file.
 +
-+# serial 24 AM_PROG_LIBTOOL
-+AC_DEFUN(AM_PROG_LIBTOOL,
-+[AC_REQUIRE([AM_ENABLE_SHARED])dnl
-+AC_REQUIRE([AM_ENABLE_STATIC])dnl
-+AC_REQUIRE([AC_CANONICAL_HOST])dnl
-+AC_REQUIRE([AC_PROG_RANLIB])dnl
-+AC_REQUIRE([AC_PROG_CC])dnl
-+AC_REQUIRE([AM_PROG_LD])dnl
-+AC_REQUIRE([AM_PROG_NM])dnl
-+AC_REQUIRE([AC_PROG_LN_S])dnl
-+dnl
-+# Always use our own libtool.
-+LIBTOOL='$(SHELL) $(top_builddir)/libtool'
-+AC_SUBST(LIBTOOL)dnl
-+
-+# Check for any special flags to pass to ltconfig.
-+libtool_flags=
-+test "$enable_shared" = no && libtool_flags="$libtool_flags --disable-shared"
-+test "$enable_static" = no && libtool_flags="$libtool_flags --disable-static"
-+test "$silent" = yes && libtool_flags="$libtool_flags --silent"
-+test "$ac_cv_prog_gcc" = yes && libtool_flags="$libtool_flags --with-gcc"
-+test "$ac_cv_prog_gnu_ld" = yes && libtool_flags="$libtool_flags --with-gnu-ld"
-+
-+# Some flags need to be propagated to the compiler or linker for good
-+# libtool support.
-+case "$host" in
-+*-*-irix6*)
-+  # Find out which ABI we are using.
-+  echo '[#]line __oline__ "configure"' > conftest.$ac_ext
-+  if AC_TRY_EVAL(ac_compile); then
-+    case "`/usr/bin/file conftest.o`" in
-+    *32-bit*)
-+      LD="${LD-ld} -32"
-+      ;;
-+    *N32*)
-+      LD="${LD-ld} -n32"
-+      ;;
-+    *64-bit*)
-+      LD="${LD-ld} -64"
-+      ;;
-+    esac
-+  fi
-+  rm -rf conftest*
-+  ;;
-+
-+*-*-sco3.2v5*)
-+  # On SCO OpenServer 5, we need -belf to get full-featured binaries.
-+  CFLAGS="$CFLAGS -belf"
-+  ;;
-+esac
-+
-+# Actually configure libtool.  ac_aux_dir is where install-sh is found.
-+CC="$CC" CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" \
-+LD="$LD" NM="$NM" RANLIB="$RANLIB" LN_S="$LN_S" \
-+${CONFIG_SHELL-/bin/sh} $ac_aux_dir/ltconfig \
-+$libtool_flags --no-verify $ac_aux_dir/ltmain.sh $host \
-+|| AC_MSG_ERROR([libtool configure failed])
-+])
-+
-+# AM_ENABLE_SHARED - implement the --enable-shared flag
-+# Usage: AM_ENABLE_SHARED[(DEFAULT)]
-+#   Where DEFAULT is either `yes' or `no'.  If omitted, it defaults to
-+#   `yes'.
-+AC_DEFUN(AM_ENABLE_SHARED,
-+[define([AM_ENABLE_SHARED_DEFAULT], ifelse($1, no, no, yes))dnl
-+AC_ARG_ENABLE(shared,
-+changequote(<<, >>)dnl
-+<<  --enable-shared         build shared libraries [default=>>AM_ENABLE_SHARED_DEFAULT]
-+changequote([, ])dnl
-+[  --enable-shared=PKGS    only build shared libraries if the current package
-+                          appears as an element in the PKGS list],
-+[p=${PACKAGE-default}
-+case "$enableval" in
-+yes) enable_shared=yes ;;
-+no) enable_shared=no ;;
-+*)
-+  enable_shared=no
-+  # Look at the argument we got.  We use all the common list separators.
-+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
-+  for pkg in $enableval; do
-+    if test "X$pkg" = "X$p"; then
-+      enable_shared=yes
-+    fi
-+  done
-+  IFS="$ac_save_ifs"
-+  ;;
-+esac],
-+enable_shared=AM_ENABLE_SHARED_DEFAULT)dnl
-+])
-+
-+# AM_DISABLE_SHARED - set the default shared flag to --disable-shared
-+AC_DEFUN(AM_DISABLE_SHARED,
-+[AM_ENABLE_SHARED(no)])
-+
-+# AM_DISABLE_STATIC - set the default static flag to --disable-static
-+AC_DEFUN(AM_DISABLE_STATIC,
-+[AM_ENABLE_STATIC(no)])
-+
-+# AM_ENABLE_STATIC - implement the --enable-static flag
-+# Usage: AM_ENABLE_STATIC[(DEFAULT)]
-+#   Where DEFAULT is either `yes' or `no'.  If omitted, it defaults to
-+#   `yes'.
-+AC_DEFUN(AM_ENABLE_STATIC,
-+[define([AM_ENABLE_STATIC_DEFAULT], ifelse($1, no, no, yes))dnl
-+AC_ARG_ENABLE(static,
-+changequote(<<, >>)dnl
-+<<  --enable-static         build static libraries [default=>>AM_ENABLE_STATIC_DEFAULT]
-+changequote([, ])dnl
-+[  --enable-static=PKGS    only build shared libraries if the current package
-+                          appears as an element in the PKGS list],
-+[p=${PACKAGE-default}
-+case "$enableval" in
-+yes) enable_static=yes ;;
-+no) enable_static=no ;;
-+*)
-+  enable_static=no
-+  # Look at the argument we got.  We use all the common list separators.
-+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
-+  for pkg in $enableval; do
-+    if test "X$pkg" = "X$p"; then
-+      enable_static=yes
-+    fi
-+  done
-+  IFS="$ac_save_ifs"
-+  ;;
-+esac],
-+enable_static=AM_ENABLE_STATIC_DEFAULT)dnl
-+])
-+
-+
-+# AM_PROG_LD - find the path to the GNU or non-GNU linker
-+AC_DEFUN(AM_PROG_LD,
-+[AC_ARG_WITH(gnu-ld,
-+[  --with-gnu-ld           assume the C compiler uses GNU ld [default=no]],
-+test "$withval" = no || with_gnu_ld=yes, with_gnu_ld=no)
-+AC_REQUIRE([AC_PROG_CC])
-+ac_prog=ld
-+if test "$ac_cv_prog_gcc" = yes; then
-+  # Check if gcc -print-prog-name=ld gives a path.
-+  AC_MSG_CHECKING([for ld used by GCC])
-+  ac_prog=`($CC -print-prog-name=ld) 2>&5`
-+  case "$ac_prog" in
-+  # Accept absolute paths.
-+  /* | [A-Za-z]:\\*)
-+    test -z "$LD" && LD="$ac_prog"
-+    ;;
-+  "")
-+    # If it fails, then pretend we aren't using GCC.
-+    ac_prog=ld
-+    ;;
-+  *)
-+    # If it is relative, then search for the first ld in PATH.
-+    with_gnu_ld=unknown
++AC_DEFUN(AM_CONFIG_HEADER,
++[AC_PREREQ([2.12])
++AC_CONFIG_HEADER([$1])
++dnl When config.status generates a header, we must update the stamp-h file.
++dnl This file resides in the same directory as the config header
++dnl that is generated.  We must strip everything past the first ":",
++dnl and everything past the last "/".
++AC_OUTPUT_COMMANDS(changequote(<<,>>)dnl
++ifelse(patsubst(<<$1>>, <<[^ ]>>, <<>>), <<>>,
++<<test -z "<<$>>CONFIG_HEADERS" || echo timestamp > patsubst(<<$1>>, <<^\([^:]*/\)?.*>>, <<\1>>)stamp-h<<>>dnl>>,
++<<am_indx=1
++for am_file in <<$1>>; do
++  case " <<$>>CONFIG_HEADERS " in
++  *" <<$>>am_file "*<<)>>
++    echo timestamp > `echo <<$>>am_file | sed -e 's%:.*%%' -e 's%[^/]*$%%'`stamp-h$am_indx
 +    ;;
 +  esac
-+elif test "$with_gnu_ld" = yes; then
-+  AC_MSG_CHECKING([for GNU ld])
++  am_indx=`expr "<<$>>am_indx" + 1`
++done<<>>dnl>>)
++changequote([,]))])
++
++# Add --enable-maintainer-mode option to configure.
++# From Jim Meyering
++
++# serial 1
++
++AC_DEFUN(AM_MAINTAINER_MODE,
++[AC_MSG_CHECKING([whether to enable maintainer-specific portions of Makefiles])
++  dnl maintainer-mode is disabled by default
++  AC_ARG_ENABLE(maintainer-mode,
++[  --enable-maintainer-mode enable make rules and dependencies not useful
++                          (and sometimes confusing) to the casual installer],
++      USE_MAINTAINER_MODE=$enableval,
++      USE_MAINTAINER_MODE=no)
++  AC_MSG_RESULT($USE_MAINTAINER_MODE)
++  AM_CONDITIONAL(MAINTAINER_MODE, test $USE_MAINTAINER_MODE = yes)
++  MAINT=$MAINTAINER_MODE_TRUE
++  AC_SUBST(MAINT)dnl
++]
++)
++
++# Define a conditional.
++
++AC_DEFUN(AM_CONDITIONAL,
++[AC_SUBST($1_TRUE)
++AC_SUBST($1_FALSE)
++if $2; then
++  $1_TRUE=
++  $1_FALSE='#'
 +else
-+  AC_MSG_CHECKING([for non-GNU ld])
-+fi
-+AC_CACHE_VAL(ac_cv_path_LD,
-+[if test -z "$LD"; then
-+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-+  for ac_dir in $PATH; do
-+    test -z "$ac_dir" && ac_dir=.
-+    if test -f "$ac_dir/$ac_prog"; then
-+      ac_cv_path_LD="$ac_dir/$ac_prog"
-+      # Check to see if the program is GNU ld.  I'd rather use --version,
-+      # but apparently some GNU ld's only accept -v.
-+      # Break only if it was the GNU/non-GNU ld that we prefer.
-+      if "$ac_cv_path_LD" -v 2>&1 < /dev/null | egrep '(GNU|with BFD)' > /dev/null; then
-+	test "$with_gnu_ld" != no && break
-+      else
-+        test "$with_gnu_ld" != yes && break
-+      fi
-+    fi
-+  done
-+  IFS="$ac_save_ifs"
-+else
-+  ac_cv_path_LD="$LD" # Let the user override the test with a path.
++  $1_TRUE='#'
++  $1_FALSE=
 +fi])
-+LD="$ac_cv_path_LD"
-+if test -n "$LD"; then
-+  AC_MSG_RESULT($LD)
-+else
-+  AC_MSG_RESULT(no)
-+fi
-+test -z "$LD" && AC_MSG_ERROR([no acceptable ld found in \$PATH])
-+AC_SUBST(LD)
-+AM_PROG_LD_GNU
-+])
 +
-+AC_DEFUN(AM_PROG_LD_GNU,
-+[AC_CACHE_CHECK([if the linker ($LD) is GNU ld], ac_cv_prog_gnu_ld,
-+[# I'd rather use --version here, but apparently some GNU ld's only accept -v.
-+if $LD -v 2>&1 </dev/null | egrep '(GNU|with BFD)' 1>&5; then
-+  ac_cv_prog_gnu_ld=yes
-+else
-+  ac_cv_prog_gnu_ld=no
-+fi])
-+])
-+
-+# AM_PROG_NM - find the path to a BSD-compatible name lister
-+AC_DEFUN(AM_PROG_NM,
-+[AC_MSG_CHECKING([for BSD-compatible nm])
-+AC_CACHE_VAL(ac_cv_path_NM,
-+[case "$NM" in
-+/* | [A-Za-z]:\\*)
-+  ac_cv_path_NM="$NM" # Let the user override the test with a path.
-+  ;;
-+*)
-+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-+  for ac_dir in /usr/ucb /usr/ccs/bin $PATH /bin; do
-+    test -z "$ac_dir" && ac_dir=.
-+    if test -f $ac_dir/nm; then
-+      # Check to see if the nm accepts a BSD-compat flag.
-+      # Adding the `sed 1q' prevents false positives on HP-UX, which says:
-+      #   nm: unknown option "B" ignored
-+      if ($ac_dir/nm -B /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
-+        ac_cv_path_NM="$ac_dir/nm -B"
-+      elif ($ac_dir/nm -p /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
-+        ac_cv_path_NM="$ac_dir/nm -p"
-+      else
-+        ac_cv_path_NM="$ac_dir/nm"
-+      fi
-+      break
-+    fi
-+  done
-+  IFS="$ac_save_ifs"
-+  test -z "$ac_cv_path_NM" && ac_cv_path_NM=nm
-+  ;;
-+esac])
-+NM="$ac_cv_path_NM"
-+AC_MSG_RESULT([$NM])
-+AC_SUBST(NM)
-+])
-+
+diff -Naur gd-1.8.4/bdftogd gd-1.8.4.patch/bdftogd
+--- gd-1.8.4/bdftogd	Tue Feb  6 14:44:01 2001
++++ gd-1.8.4.patch/bdftogd	Wed Dec 31 19:00:00 1969
+@@ -1,205 +0,0 @@
+-#!/usr/bin/perl -w
+-
+-#
+-# Simple convertor from bdf to gd font format.
+-#
+-# Author: Jan Pazdziora, adelton@fi.muni.cz, http://www.fi.muni.cz/~adelton/
+-# at Faculty of Informatics, Masaryk University in Brno, Czech Republic.
+-#
+-# Example of use:
+-# fstobdf -s fontserverhost:7100 -fn 8x16 | ./bdftogd FontLarge gdfontl
+-#
+-
+-use strict;
+-
+-my $VERSION = '0.60';
+-my $now = localtime;
+-
+-if (@ARGV != 2)
+-	{ die "usage: bdftogd fontname filename, eg. bdftogd FontLarge gdfontl\n"; }
+-
+-my $gdname = shift;
+-$gdname = 'gd' . $gdname unless $gdname =~ /^gd/i;
+-
+-my $filename = shift;
+-$filename = 'gd' . $filename unless $filename =~ /^gd/i;
+-
+-if (-f "$filename.c") { die "File $filename.c already exists, won't overwrite\n"; }
+-if (-f "$filename.h") { die "File $filename.h already exists, won't overwrite\n"; }
+-
+-my ($width, $height);
+-my (@data, @left, @bottom);
+-my ($globalleft, $globaltop);
+-
+-my ($minchar, $maxchar);
+-
+-my ($copyright, $fontdef);
+-
+-my $currentchar;
+-my $gobitmap = 0;
+-
+-
+-while (<>)
+-	{
+-	chomp;
+-	s/\r$//;
+-	my ($tag, $value) = split / /, $_, 2;
+-	die "Font is not fixed width\n"
+-			if $tag eq 'SPACING' and not $value =~ /[CM]/i;
+-	
+-	$currentchar = $value if $tag eq 'ENCODING';
+-	$minchar = $currentchar if not defined $minchar
+-		or $currentchar < $minchar;
+-	$maxchar = $currentchar if not defined $maxchar
+-		or $currentchar > $maxchar;
+-	
+-	if ($tag eq 'ENDCHAR')
+-		{
+-		$gobitmap = 0;
+-		my $bottom = $globaltop - $bottom[$currentchar];
+-		
+-
+-		if ($bottom > 0)
+-			{ $data[$currentchar] = substr $data[$currentchar], 0, length($data[$currentchar]) - $bottom * $width; }
+-		else
+-			{ $data[$currentchar] .= '0' x (-$bottom * $width); }
+-		}
+-
+-	if ($tag eq 'FONTBOUNDINGBOX')
+-		{
+-		my ($tag, $wid, $hei, $left, $top) = split / /;
+-		if (defined $top)
+-			{
+-			$globalleft = $left;
+-			$globaltop = $top;
+-			$height = $hei;
+-			$width = $wid;
+-			}
+-		}
+-	if ($tag eq 'FONT' and not defined $fontdef)
+-		{ $fontdef = $value; }
+-	if ($tag eq 'COPYRIGHT' and not defined $copyright)
+-		{ $copyright = $value; }
+-	
+-	if ($tag eq 'BBX')
+-		{
+-		my ($tag, $wid, $hei, $left, $bottom) = split / /;
+-		if (defined $bottom)
+-			{
+-			$left[$currentchar] = $left;
+-			$bottom[$currentchar] = $bottom;
+-			}
+-		}
+-
+-	if ($gobitmap)
+-		{
+-		my $value = pack 'H*', $_;
+-		my $bits = unpack 'B*', $value;
+-		$bits = ('0' x $left[$currentchar]) . $bits;
+-		$bits .= '0' x ($width - length $bits);
+-		$bits = substr $bits, 0, $width;
+-		$data[$currentchar] .= $bits;
+-		}
+-	
+-	if ($tag eq 'BITMAP')
+-		{
+-		$gobitmap = 1;
+-		$data[$currentchar] = '';
+-		}
+-	}
+-
+-my $info = <<"EOF";
+-/*
+-	This is a header file for gd font, generated using
+-	bdftogd version $VERSION by Jan Pazdziora, adelton\@fi.muni.cz
+-	from bdf font
+-	$fontdef
+-	at $now.
+-EOF
+-
+-if (defined $copyright)
+-	{
+-	$info .= <<"EOF";
+-	The original bdf was holding following copyright:
+-	$copyright
+- */
+-EOF
+-	}
+-else
+-	{
+-	$info .= <<"EOF";
+-	No copyright info was found in the original bdf.
+- */
+-EOF
+-	}
+-
+-open FILEC, "> $filename.c" or die "Error writing $filename.c: $!\n";
+-open FILEH, "> $filename.h" or die "Error writing $filename.h: $!\n";
+-print FILEC <<"EOF";
+-
+-$info
+-
+-#include "$filename.h"
+-
+-char ${gdname}Data[] = {
+-EOF
+-
+-$minchar = 0 unless defined $minchar;
+-$maxchar = 255 unless defined $maxchar;
+-for (my $i = $minchar; $i <= $maxchar; $i++)
+-	{
+-	$data[$i] = '' unless defined $data[$i];
+-	$data[$i] = '0' x ($width * $height - length $data[$i]) . $data[$i];
+-	
+-	print FILEC "/* Char $i */\n";
+-	for my $line (0 .. $height - 1)
+-		{ print FILEC join ',', split(//, substr($data[$i], $line * $width, $width)), "\n"; }
+-
+-	print FILEC "\n";
+-
+-	next;
+-	
+-	for my $line (0 .. $height - 1)
+-		{ print substr($data[$i], $line * $width, $width), "\n"; }
+-	}
+-
+-my $capdef = "\U_${filename}_H_";
+-
+-print FILEC <<"EOF";
+-
+-};
+-
+-gdFont ${gdname}Rep = {
+-	@{[ $maxchar - $minchar + 1]},
+-	$minchar,
+-	$width,
+-	$height,
+-	${gdname}Data
+-};
+-
+-gdFontPtr ${gdname} = &${gdname}Rep;
+-
+-/* This file has not been truncated. */
+-
+-EOF
+-
+-
+-close FILEC;
+-
+-print FILEH <<"EOF";
+-
+-#ifndef $capdef
+-#define $capdef 1
+-
+-$info
+-
+-#include "gd.h"
+-
+-extern gdFontPtr $gdname;
+-
+-#endif
+-
+-EOF
+-
+-1;
+-
 diff -Naur gd-1.8.4/config.guess gd-1.8.4.patch/config.guess
 --- gd-1.8.4/config.guess	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/config.guess	Tue Sep 25 22:51:33 2001
++++ gd-1.8.4.patch/config.guess	Sat Mar 31 22:52:12 2001
 @@ -0,0 +1,883 @@
 +#! /bin/sh
 +# Attempt to guess a canonical system name.
@@ -2666,7 +3213,7 @@ diff -Naur gd-1.8.4/config.guess gd-1.8.4.patch/config.guess
 +exit 1
 diff -Naur gd-1.8.4/config.sub gd-1.8.4.patch/config.sub
 --- gd-1.8.4/config.sub	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/config.sub	Tue Sep 25 22:51:36 2001
++++ gd-1.8.4.patch/config.sub	Sat Mar 31 22:52:12 2001
 @@ -0,0 +1,954 @@
 +#! /bin/sh
 +# Configuration validation subroutine script, version 1.1.
@@ -3624,8 +4171,8 @@ diff -Naur gd-1.8.4/config.sub gd-1.8.4.patch/config.sub
 +echo $basic_machine$os
 diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 --- gd-1.8.4/configure	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/configure	Wed Sep 26 00:25:57 2001
-@@ -0,0 +1,2735 @@
++++ gd-1.8.4.patch/configure	Sat Mar 31 23:14:00 2001
+@@ -0,0 +1,2890 @@
 +#! /bin/sh
 +
 +# Guess values for system-dependent variables and create Makefiles.
@@ -3640,23 +4187,23 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +ac_default_prefix=/usr/local
 +# Any additions from configure.in:
 +ac_help="$ac_help
-+  --enable-shared         build shared libraries [default=yes]
-+  --enable-shared=PKGS    only build shared libraries if the current package
-+                          appears as an element in the PKGS list"
++  --enable-shared[=PKGS]  build shared libraries [default=yes]"
 +ac_help="$ac_help
-+  --enable-static         build static libraries [default=yes]
-+  --enable-static=PKGS    only build shared libraries if the current package
-+                          appears as an element in the PKGS list"
++  --enable-static[=PKGS]  build static libraries [default=yes]"
++ac_help="$ac_help
++  --enable-fast-install[=PKGS]  optimize for fast installation [default=yes]"
 +ac_help="$ac_help
 +  --with-gnu-ld           assume the C compiler uses GNU ld [default=no]"
 +ac_help="$ac_help
++  --disable-libtool-lock  avoid locking (might break parallel builds)"
++ac_help="$ac_help
 +  --with-x                use the X Window System"
 +ac_help="$ac_help
-+  --disable-jpeg          disable support for JPEG (default enabled)"
++  --enable-jpeg           enable support for JPEG [default=no]"
 +ac_help="$ac_help
-+  --disable-freetype      disable support for FreeType (default enabled)"
++  --enable-freetype       enable support for FreeType [default=no]"
 +ac_help="$ac_help
-+  --disable-xpm           disable support for XPM (default enabled)"
++  --enable-xpm            enable support for XPM [default=no]"
 +
 +# Initialize some variables set by options.
 +# The variables have the same names as the options, with
@@ -4337,7 +4884,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +
 +PACKAGE=gd
 +
-+VERSION=1.8.3
++VERSION=1.8.4
 +
 +if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
 +  { echo "configure: error: source directory already configured; run "make distclean" there first" 1>&2; exit 1; }
@@ -4709,6 +5256,29 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  enable_static=yes
 +fi
 +
++# Check whether --enable-fast-install or --disable-fast-install was given.
++if test "${enable_fast_install+set}" = set; then
++  enableval="$enable_fast_install"
++  p=${PACKAGE-default}
++case "$enableval" in
++yes) enable_fast_install=yes ;;
++no) enable_fast_install=no ;;
++*)
++  enable_fast_install=no
++  # Look at the argument we got.  We use all the common list separators.
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
++  for pkg in $enableval; do
++    if test "X$pkg" = "X$p"; then
++      enable_fast_install=yes
++    fi
++  done
++  IFS="$ac_save_ifs"
++  ;;
++esac
++else
++  enable_fast_install=yes
++fi
++
 +
 +# Make sure we can run config.sub.
 +if ${CONFIG_SHELL-/bin/sh} $ac_config_sub sun4 >/dev/null 2>&1; then :
@@ -4716,7 +5286,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +fi
 +
 +echo $ac_n "checking host system type""... $ac_c" 1>&6
-+echo "configure:1092: checking host system type" >&5
++echo "configure:1115: checking host system type" >&5
 +
 +host_alias=$host
 +case "$host_alias" in
@@ -4736,10 +5306,28 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +host_os=`echo $host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 +echo "$ac_t""$host" 1>&6
 +
++echo $ac_n "checking build system type""... $ac_c" 1>&6
++echo "configure:1136: checking build system type" >&5
++
++build_alias=$build
++case "$build_alias" in
++NONE)
++  case $nonopt in
++  NONE) build_alias=$host_alias ;;
++  *) build_alias=$nonopt ;;
++  esac ;;
++esac
++
++build=`${CONFIG_SHELL-/bin/sh} $ac_config_sub $build_alias`
++build_cpu=`echo $build | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\1/'`
++build_vendor=`echo $build | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\2/'`
++build_os=`echo $build | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
++echo "$ac_t""$build" 1>&6
++
 +# Extract the first word of "ranlib", so it can be a program name with args.
 +set dummy ranlib; ac_word=$2
 +echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-+echo "configure:1115: checking for $ac_word" >&5
++echo "configure:1156: checking for $ac_word" >&5
 +if eval "test \"`echo '$''{'ac_cv_prog_RANLIB'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
@@ -4774,18 +5362,23 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  with_gnu_ld=no
 +fi
 +
-+
 +ac_prog=ld
 +if test "$ac_cv_prog_gcc" = yes; then
 +  # Check if gcc -print-prog-name=ld gives a path.
 +  echo $ac_n "checking for ld used by GCC""... $ac_c" 1>&6
-+echo "configure:1155: checking for ld used by GCC" >&5
++echo "configure:1195: checking for ld used by GCC" >&5
 +  ac_prog=`($CC -print-prog-name=ld) 2>&5`
 +  case "$ac_prog" in
-+  # Accept absolute paths.
-+  /* | A-Za-z:\\*)
-+    test -z "$LD" && LD="$ac_prog"
-+    ;;
++    # Accept absolute paths.
++    [\\/]* | [A-Za-z]:[\\/]*)
++      re_direlt='/[^/][^/]*/\.\./'
++      # Canonicalize the path of ld
++      ac_prog=`echo $ac_prog| sed 's%\\\\%/%g'`
++      while echo $ac_prog | grep "$re_direlt" > /dev/null 2>&1; do
++	ac_prog=`echo $ac_prog| sed "s%$re_direlt%/%"`
++      done
++      test -z "$LD" && LD="$ac_prog"
++      ;;
 +  "")
 +    # If it fails, then pretend we aren't using GCC.
 +    ac_prog=ld
@@ -4797,19 +5390,19 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  esac
 +elif test "$with_gnu_ld" = yes; then
 +  echo $ac_n "checking for GNU ld""... $ac_c" 1>&6
-+echo "configure:1173: checking for GNU ld" >&5
++echo "configure:1219: checking for GNU ld" >&5
 +else
 +  echo $ac_n "checking for non-GNU ld""... $ac_c" 1>&6
-+echo "configure:1176: checking for non-GNU ld" >&5
++echo "configure:1222: checking for non-GNU ld" >&5
 +fi
 +if eval "test \"`echo '$''{'ac_cv_path_LD'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
 +  if test -z "$LD"; then
-+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR-:}"
 +  for ac_dir in $PATH; do
 +    test -z "$ac_dir" && ac_dir=.
-+    if test -f "$ac_dir/$ac_prog"; then
++    if test -f "$ac_dir/$ac_prog" || test -f "$ac_dir/$ac_prog$ac_exeext"; then
 +      ac_cv_path_LD="$ac_dir/$ac_prog"
 +      # Check to see if the program is GNU ld.  I'd rather use --version,
 +      # but apparently some GNU ld's only accept -v.
@@ -4817,7 +5410,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +      if "$ac_cv_path_LD" -v 2>&1 < /dev/null | egrep '(GNU|with BFD)' > /dev/null; then
 +	test "$with_gnu_ld" != no && break
 +      else
-+        test "$with_gnu_ld" != yes && break
++	test "$with_gnu_ld" != yes && break
 +      fi
 +    fi
 +  done
@@ -4834,9 +5427,8 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  echo "$ac_t""no" 1>&6
 +fi
 +test -z "$LD" && { echo "configure: error: no acceptable ld found in \$PATH" 1>&2; exit 1; }
-+
 +echo $ac_n "checking if the linker ($LD) is GNU ld""... $ac_c" 1>&6
-+echo "configure:1212: checking if the linker ($LD) is GNU ld" >&5
++echo "configure:1257: checking if the linker ($LD) is GNU ld" >&5
 +if eval "test \"`echo '$''{'ac_cv_prog_gnu_ld'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
@@ -4852,44 +5444,43 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +
 +
 +echo $ac_n "checking for BSD-compatible nm""... $ac_c" 1>&6
-+echo "configure:1228: checking for BSD-compatible nm" >&5
++echo "configure:1273: checking for BSD-compatible nm" >&5
 +if eval "test \"`echo '$''{'ac_cv_path_NM'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
-+  case "$NM" in
-+/* | A-Za-z:\\*)
-+  ac_cv_path_NM="$NM" # Let the user override the test with a path.
-+  ;;
-+*)
-+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-+  for ac_dir in /usr/ucb /usr/ccs/bin $PATH /bin; do
++  if test -n "$NM"; then
++  # Let the user override the test.
++  ac_cv_path_NM="$NM"
++else
++  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR-:}"
++  for ac_dir in $PATH /usr/ccs/bin /usr/ucb /bin; do
 +    test -z "$ac_dir" && ac_dir=.
-+    if test -f $ac_dir/nm; then
++    if test -f $ac_dir/nm || test -f $ac_dir/nm$ac_exeext ; then
 +      # Check to see if the nm accepts a BSD-compat flag.
 +      # Adding the `sed 1q' prevents false positives on HP-UX, which says:
 +      #   nm: unknown option "B" ignored
 +      if ($ac_dir/nm -B /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
-+        ac_cv_path_NM="$ac_dir/nm -B"
++	ac_cv_path_NM="$ac_dir/nm -B"
++	break
 +      elif ($ac_dir/nm -p /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
-+        ac_cv_path_NM="$ac_dir/nm -p"
++	ac_cv_path_NM="$ac_dir/nm -p"
++	break
 +      else
-+        ac_cv_path_NM="$ac_dir/nm"
++	ac_cv_path_NM=${ac_cv_path_NM="$ac_dir/nm"} # keep the first match, but
++	continue # so that we can try to find one that supports BSD flags
 +      fi
-+      break
 +    fi
 +  done
 +  IFS="$ac_save_ifs"
 +  test -z "$ac_cv_path_NM" && ac_cv_path_NM=nm
-+  ;;
-+esac
++fi
 +fi
 +
 +NM="$ac_cv_path_NM"
 +echo "$ac_t""$NM" 1>&6
 +
-+
 +echo $ac_n "checking whether ln -s works""... $ac_c" 1>&6
-+echo "configure:1265: checking whether ln -s works" >&5
++echo "configure:1309: checking whether ln -s works" >&5
 +if eval "test \"`echo '$''{'ac_cv_prog_LN_S'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
@@ -4909,24 +5500,37 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  echo "$ac_t""no" 1>&6
 +fi
 +
-+# Always use our own libtool.
-+LIBTOOL='$(SHELL) $(top_builddir)/libtool'
++
++case "$target" in
++NONE) lt_target="$host" ;;
++*) lt_target="$target" ;;
++esac
 +
 +# Check for any special flags to pass to ltconfig.
-+libtool_flags=
++libtool_flags="--cache-file=$cache_file"
 +test "$enable_shared" = no && libtool_flags="$libtool_flags --disable-shared"
 +test "$enable_static" = no && libtool_flags="$libtool_flags --disable-static"
-+test "$silent" = yes && libtool_flags="$libtool_flags --silent"
++test "$enable_fast_install" = no && libtool_flags="$libtool_flags --disable-fast-install"
 +test "$ac_cv_prog_gcc" = yes && libtool_flags="$libtool_flags --with-gcc"
 +test "$ac_cv_prog_gnu_ld" = yes && libtool_flags="$libtool_flags --with-gnu-ld"
 +
++
++# Check whether --enable-libtool-lock or --disable-libtool-lock was given.
++if test "${enable_libtool_lock+set}" = set; then
++  enableval="$enable_libtool_lock"
++  :
++fi
++
++test "x$enable_libtool_lock" = xno && libtool_flags="$libtool_flags --disable-lock"
++test x"$silent" = xyes && libtool_flags="$libtool_flags --silent"
++
 +# Some flags need to be propagated to the compiler or linker for good
 +# libtool support.
-+case "$host" in
++case "$lt_target" in
 +*-*-irix6*)
 +  # Find out which ABI we are using.
-+  echo '#line 1301 "configure"' > conftest.$ac_ext
-+  if { (eval echo configure:1302: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
++  echo '#line 1358 "configure"' > conftest.$ac_ext
++  if { (eval echo configure:1359: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
 +    case "`/usr/bin/file conftest.o`" in
 +    *32-bit*)
 +      LD="${LD-ld} -32"
@@ -4944,16 +5548,121 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +
 +*-*-sco3.2v5*)
 +  # On SCO OpenServer 5, we need -belf to get full-featured binaries.
++  SAVE_CFLAGS="$CFLAGS"
 +  CFLAGS="$CFLAGS -belf"
++  echo $ac_n "checking whether the C compiler needs -belf""... $ac_c" 1>&6
++echo "configure:1380: checking whether the C compiler needs -belf" >&5
++if eval "test \"`echo '$''{'lt_cv_cc_needs_belf'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 1385 "configure"
++#include "confdefs.h"
++
++int main() {
++
++; return 0; }
++EOF
++if { (eval echo configure:1392: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  lt_cv_cc_needs_belf=yes
++else
++  echo "configure: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  lt_cv_cc_needs_belf=no
++fi
++rm -f conftest*
++fi
++
++echo "$ac_t""$lt_cv_cc_needs_belf" 1>&6
++  if test x"$lt_cv_cc_needs_belf" != x"yes"; then
++    # this is probably gcc 2.8.0, egcs 1.0 or newer; no need for -belf
++    CFLAGS="$SAVE_CFLAGS"
++  fi
 +  ;;
++
++
 +esac
++
++
++# Save cache, so that ltconfig can load it
++cat > confcache <<\EOF
++# This file is a shell script that caches the results of configure
++# tests run on this system so they can be shared between configure
++# scripts and configure runs.  It is not useful on other systems.
++# If it contains results you don't want to keep, you may remove or edit it.
++#
++# By default, configure uses ./config.cache as the cache file,
++# creating it if it does not exist already.  You can give configure
++# the --cache-file=FILE option to use a different cache file; that is
++# what configure does when it calls configure scripts in
++# subdirectories, so they share the cache.
++# Giving --cache-file=/dev/null disables caching, for debugging configure.
++# config.status only pays attention to the cache file if you give it the
++# --recheck option to rerun configure.
++#
++EOF
++# The following way of writing the cache mishandles newlines in values,
++# but we know of no workaround that is simple, portable, and efficient.
++# So, don't put newlines in cache variables' values.
++# Ultrix sh set writes to stderr and can't be redirected directly,
++# and sets the high bit in the cache file unless we assign to the vars.
++(set) 2>&1 |
++  case `(ac_space=' '; set | grep ac_space) 2>&1` in
++  *ac_space=\ *)
++    # `set' does not quote correctly, so add quotes (double-quote substitution
++    # turns \\\\ into \\, and sed turns \\ into \).
++    sed -n \
++      -e "s/'/'\\\\''/g" \
++      -e "s/^\\([a-zA-Z0-9_]*_cv_[a-zA-Z0-9_]*\\)=\\(.*\\)/\\1=\${\\1='\\2'}/p"
++    ;;
++  *)
++    # `set' quotes correctly as required by POSIX, so do not add quotes.
++    sed -n -e 's/^\([a-zA-Z0-9_]*_cv_[a-zA-Z0-9_]*\)=\(.*\)/\1=${\1=\2}/p'
++    ;;
++  esac >> confcache
++if cmp -s $cache_file confcache; then
++  :
++else
++  if test -w $cache_file; then
++    echo "updating cache $cache_file"
++    cat confcache > $cache_file
++  else
++    echo "not updating unwritable cache $cache_file"
++  fi
++fi
++rm -f confcache
++
 +
 +# Actually configure libtool.  ac_aux_dir is where install-sh is found.
 +CC="$CC" CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" \
-+LD="$LD" NM="$NM" RANLIB="$RANLIB" LN_S="$LN_S" \
-+${CONFIG_SHELL-/bin/sh} $ac_aux_dir/ltconfig \
-+$libtool_flags --no-verify $ac_aux_dir/ltmain.sh $host \
++LD="$LD" LDFLAGS="$LDFLAGS" LIBS="$LIBS" \
++LN_S="$LN_S" NM="$NM" RANLIB="$RANLIB" \
++DLLTOOL="$DLLTOOL" AS="$AS" OBJDUMP="$OBJDUMP" \
++${CONFIG_SHELL-/bin/sh} $ac_aux_dir/ltconfig --no-reexec \
++$libtool_flags --no-verify $ac_aux_dir/ltmain.sh $lt_target \
 +|| { echo "configure: error: libtool configure failed" 1>&2; exit 1; }
++
++# Reload cache, that may have been modified by ltconfig
++if test -r "$cache_file"; then
++  echo "loading cache $cache_file"
++  . $cache_file
++else
++  echo "creating cache $cache_file"
++  > $cache_file
++fi
++
++
++# This can be used to rebuild libtool when needed
++LIBTOOL_DEPS="$ac_aux_dir/ltconfig $ac_aux_dir/ltmain.sh"
++
++# Always use our own libtool.
++LIBTOOL='$(SHELL) $(top_builddir)/libtool'
++
++# Redirect the config.log output again, so that the ltconfig log is not
++# clobbered by the next message.
++exec 5>>./config.log
 +
 +# Find a good install program.  We prefer a C program (faster),
 +# so one script is as good as another.  But avoid the broken or
@@ -4967,7 +5676,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +# SVR4 /usr/ucb/install, which tries to use the nonexistent group "staff"
 +# ./install, which can be erroneously created by make from ./install.sh.
 +echo $ac_n "checking for a BSD compatible install""... $ac_c" 1>&6
-+echo "configure:1343: checking for a BSD compatible install" >&5
++echo "configure:1505: checking for a BSD compatible install" >&5
 +if test -z "$INSTALL"; then
 +if eval "test \"`echo '$''{'ac_cv_path_install'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
@@ -5020,7 +5729,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 +
 +echo $ac_n "checking how to run the C preprocessor""... $ac_c" 1>&6
-+echo "configure:1396: checking how to run the C preprocessor" >&5
++echo "configure:1558: checking how to run the C preprocessor" >&5
 +# On Suns, sometimes $CPP names a directory.
 +if test -n "$CPP" && test -d "$CPP"; then
 +  CPP=
@@ -5035,13 +5744,13 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  # On the NeXT, cc -E runs the code through the compiler's parser,
 +  # not just through cpp.
 +  cat > conftest.$ac_ext <<EOF
-+#line 1411 "configure"
++#line 1573 "configure"
 +#include "confdefs.h"
 +#include <assert.h>
 +Syntax Error
 +EOF
 +ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-+{ (eval echo configure:1417: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++{ (eval echo configure:1579: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 +ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 +if test -z "$ac_err"; then
 +  :
@@ -5052,13 +5761,13 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  rm -rf conftest*
 +  CPP="${CC-cc} -E -traditional-cpp"
 +  cat > conftest.$ac_ext <<EOF
-+#line 1428 "configure"
++#line 1590 "configure"
 +#include "confdefs.h"
 +#include <assert.h>
 +Syntax Error
 +EOF
 +ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-+{ (eval echo configure:1434: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++{ (eval echo configure:1596: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 +ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 +if test -z "$ac_err"; then
 +  :
@@ -5069,13 +5778,13 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  rm -rf conftest*
 +  CPP="${CC-cc} -nologo -E"
 +  cat > conftest.$ac_ext <<EOF
-+#line 1445 "configure"
++#line 1607 "configure"
 +#include "confdefs.h"
 +#include <assert.h>
 +Syntax Error
 +EOF
 +ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-+{ (eval echo configure:1451: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++{ (eval echo configure:1613: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 +ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 +if test -z "$ac_err"; then
 +  :
@@ -5104,7 +5813,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +# Uses ac_ vars as temps to allow command line to override cache and checks.
 +# --without-x overrides everything else, but does not touch the cache.
 +echo $ac_n "checking for X""... $ac_c" 1>&6
-+echo "configure:1480: checking for X" >&5
++echo "configure:1642: checking for X" >&5
 +
 +# Check whether --with-x or --without-x was given.
 +if test "${with_x+set}" = set; then
@@ -5166,12 +5875,12 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +
 +  # First, try using that file with no special directory specified.
 +cat > conftest.$ac_ext <<EOF
-+#line 1542 "configure"
++#line 1704 "configure"
 +#include "confdefs.h"
 +#include <$x_direct_test_include>
 +EOF
 +ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-+{ (eval echo configure:1547: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++{ (eval echo configure:1709: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 +ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 +if test -z "$ac_err"; then
 +  rm -rf conftest*
@@ -5240,14 +5949,14 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  ac_save_LIBS="$LIBS"
 +  LIBS="-l$x_direct_test_library $LIBS"
 +cat > conftest.$ac_ext <<EOF
-+#line 1616 "configure"
++#line 1778 "configure"
 +#include "confdefs.h"
 +
 +int main() {
 +${x_direct_test_function}()
 +; return 0; }
 +EOF
-+if { (eval echo configure:1623: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++if { (eval echo configure:1785: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
 +  rm -rf conftest*
 +  LIBS="$ac_save_LIBS"
 +# We can link X programs with no special library path.
@@ -5338,7 +6047,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +CPPFLAGS="$CPPFLAGS -I$includedir -I$x_includes"
 +
 +echo $ac_n "checking for main in -lm""... $ac_c" 1>&6
-+echo "configure:1714: checking for main in -lm" >&5
++echo "configure:1876: checking for main in -lm" >&5
 +ac_lib_var=`echo m'_'main | sed 'y%./+-%__p_%'`
 +if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
@@ -5346,14 +6055,14 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  ac_save_LIBS="$LIBS"
 +LIBS="-lm  $LIBS"
 +cat > conftest.$ac_ext <<EOF
-+#line 1722 "configure"
++#line 1884 "configure"
 +#include "confdefs.h"
 +
 +int main() {
 +main()
 +; return 0; }
 +EOF
-+if { (eval echo configure:1729: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++if { (eval echo configure:1891: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
 +  rm -rf conftest*
 +  eval "ac_cv_lib_$ac_lib_var=yes"
 +else
@@ -5382,7 +6091,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +
 +
 +echo $ac_n "checking for deflate in -lz""... $ac_c" 1>&6
-+echo "configure:1758: checking for deflate in -lz" >&5
++echo "configure:1920: checking for deflate in -lz" >&5
 +ac_lib_var=`echo z'_'deflate | sed 'y%./+-%__p_%'`
 +if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
@@ -5390,7 +6099,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  ac_save_LIBS="$LIBS"
 +LIBS="-lz  $LIBS"
 +cat > conftest.$ac_ext <<EOF
-+#line 1766 "configure"
++#line 1928 "configure"
 +#include "confdefs.h"
 +/* Override any gcc2 internal prototype to avoid an error.  */
 +/* We use char because int might match the return type of a gcc2
@@ -5401,7 +6110,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +deflate()
 +; return 0; }
 +EOF
-+if { (eval echo configure:1777: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++if { (eval echo configure:1939: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
 +  rm -rf conftest*
 +  eval "ac_cv_lib_$ac_lib_var=yes"
 +else
@@ -5430,7 +6139,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +fi
 +
 +echo $ac_n "checking for png_check_sig in -lpng""... $ac_c" 1>&6
-+echo "configure:1806: checking for png_check_sig in -lpng" >&5
++echo "configure:1968: checking for png_check_sig in -lpng" >&5
 +ac_lib_var=`echo png'_'png_check_sig | sed 'y%./+-%__p_%'`
 +if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
@@ -5438,7 +6147,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  ac_save_LIBS="$LIBS"
 +LIBS="-lpng  $LIBS"
 +cat > conftest.$ac_ext <<EOF
-+#line 1814 "configure"
++#line 1976 "configure"
 +#include "confdefs.h"
 +/* Override any gcc2 internal prototype to avoid an error.  */
 +/* We use char because int might match the return type of a gcc2
@@ -5449,7 +6158,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +png_check_sig()
 +; return 0; }
 +EOF
-+if { (eval echo configure:1825: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++if { (eval echo configure:1987: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
 +  rm -rf conftest*
 +  eval "ac_cv_lib_$ac_lib_var=yes"
 +else
@@ -5481,24 +6190,22 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +# Check whether --enable-jpeg or --disable-jpeg was given.
 +if test "${enable_jpeg+set}" = set; then
 +  enableval="$enable_jpeg"
-+  echo "configure: warning: libgd will be built without support for JPEG." 1>&2
-+else
 +   
 +	  for ac_hdr in jpeglib.h
 +do
 +ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
 +echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
-+echo "configure:1864: checking for $ac_hdr" >&5
++echo "configure:2024: checking for $ac_hdr" >&5
 +if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
 +  cat > conftest.$ac_ext <<EOF
-+#line 1869 "configure"
++#line 2029 "configure"
 +#include "confdefs.h"
 +#include <$ac_hdr>
 +EOF
 +ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-+{ (eval echo configure:1874: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++{ (eval echo configure:2034: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 +ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 +if test -z "$ac_err"; then
 +  rm -rf conftest*
@@ -5526,7 +6233,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +done
 +
 +	  echo $ac_n "checking for jpeg_start_compress in -ljpeg""... $ac_c" 1>&6
-+echo "configure:1902: checking for jpeg_start_compress in -ljpeg" >&5
++echo "configure:2062: checking for jpeg_start_compress in -ljpeg" >&5
 +ac_lib_var=`echo jpeg'_'jpeg_start_compress | sed 'y%./+-%__p_%'`
 +if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
@@ -5534,7 +6241,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  ac_save_LIBS="$LIBS"
 +LIBS="-ljpeg  $LIBS"
 +cat > conftest.$ac_ext <<EOF
-+#line 1910 "configure"
++#line 2070 "configure"
 +#include "confdefs.h"
 +/* Override any gcc2 internal prototype to avoid an error.  */
 +/* We use char because int might match the return type of a gcc2
@@ -5545,7 +6252,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +jpeg_start_compress()
 +; return 0; }
 +EOF
-+if { (eval echo configure:1921: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++if { (eval echo configure:2081: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
 +  rm -rf conftest*
 +  eval "ac_cv_lib_$ac_lib_var=yes"
 +else
@@ -5580,24 +6287,22 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +# Check whether --enable-freetype or --disable-freetype was given.
 +if test "${enable_freetype+set}" = set; then
 +  enableval="$enable_freetype"
-+  echo "configure: warning: libgd will be built without support for FreeType." 1>&2
-+else
 +   
-+	  for ac_hdr in freetype/freetype.h
++	  for ac_hdr in freetype.h
 +do
 +ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
 +echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
-+echo "configure:1963: checking for $ac_hdr" >&5
++echo "configure:2121: checking for $ac_hdr" >&5
 +if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
 +  cat > conftest.$ac_ext <<EOF
-+#line 1968 "configure"
++#line 2126 "configure"
 +#include "confdefs.h"
 +#include <$ac_hdr>
 +EOF
 +ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-+{ (eval echo configure:1973: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++{ (eval echo configure:2131: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 +ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 +if test -z "$ac_err"; then
 +  rm -rf conftest*
@@ -5624,27 +6329,27 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +fi
 +done
 +
-+	  echo $ac_n "checking for FT_Init_FreeType in -lfreetype""... $ac_c" 1>&6
-+echo "configure:2001: checking for FT_Init_FreeType in -lfreetype" >&5
-+ac_lib_var=`echo freetype'_'FT_Init_FreeType | sed 'y%./+-%__p_%'`
++	  echo $ac_n "checking for TT_Init_FreeType in -lttf""... $ac_c" 1>&6
++echo "configure:2159: checking for TT_Init_FreeType in -lttf" >&5
++ac_lib_var=`echo ttf'_'TT_Init_FreeType | sed 'y%./+-%__p_%'`
 +if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
 +  ac_save_LIBS="$LIBS"
-+LIBS="-lfreetype  $LIBS"
++LIBS="-lttf  $LIBS"
 +cat > conftest.$ac_ext <<EOF
-+#line 2009 "configure"
++#line 2167 "configure"
 +#include "confdefs.h"
 +/* Override any gcc2 internal prototype to avoid an error.  */
 +/* We use char because int might match the return type of a gcc2
 +    builtin and then its argument prototype would still apply.  */
-+char FT_Init_FreeType();
++char TT_Init_FreeType();
 +
 +int main() {
-+FT_Init_FreeType()
++TT_Init_FreeType()
 +; return 0; }
 +EOF
-+if { (eval echo configure:2020: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++if { (eval echo configure:2178: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
 +  rm -rf conftest*
 +  eval "ac_cv_lib_$ac_lib_var=yes"
 +else
@@ -5659,13 +6364,13 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +fi
 +if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
 +  echo "$ac_t""yes" 1>&6
-+    ac_tr_lib=HAVE_LIB`echo freetype | sed -e 's/[^a-zA-Z0-9_]/_/g' \
++    ac_tr_lib=HAVE_LIB`echo ttf | sed -e 's/[^a-zA-Z0-9_]/_/g' \
 +    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
 +  cat >> confdefs.h <<EOF
 +#define $ac_tr_lib 1
 +EOF
 +
-+  LIBS="-lfreetype $LIBS"
++  LIBS="-lttf $LIBS"
 +
 +else
 +  echo "$ac_t""no" 1>&6
@@ -5679,24 +6384,22 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +# Check whether --enable-xpm or --disable-xpm was given.
 +if test "${enable_xpm+set}" = set; then
 +  enableval="$enable_xpm"
-+  echo "configure: warning: libgd will be built without support for XPM." 1>&2
-+else
 +   
 +	  for ac_hdr in X11/xpm.h
 +do
 +ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
 +echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
-+echo "configure:2062: checking for $ac_hdr" >&5
++echo "configure:2218: checking for $ac_hdr" >&5
 +if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
 +  cat > conftest.$ac_ext <<EOF
-+#line 2067 "configure"
++#line 2223 "configure"
 +#include "confdefs.h"
 +#include <$ac_hdr>
 +EOF
 +ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-+{ (eval echo configure:2072: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++{ (eval echo configure:2228: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 +ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 +if test -z "$ac_err"; then
 +  rm -rf conftest*
@@ -5724,7 +6427,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +done
 +
 +	  echo $ac_n "checking for XpmCreateImageFromData in -lXpm""... $ac_c" 1>&6
-+echo "configure:2100: checking for XpmCreateImageFromData in -lXpm" >&5
++echo "configure:2256: checking for XpmCreateImageFromData in -lXpm" >&5
 +ac_lib_var=`echo Xpm'_'XpmCreateImageFromData | sed 'y%./+-%__p_%'`
 +if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
@@ -5732,7 +6435,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  ac_save_LIBS="$LIBS"
 +LIBS="-lXpm -lX11 $LIBS"
 +cat > conftest.$ac_ext <<EOF
-+#line 2108 "configure"
++#line 2264 "configure"
 +#include "confdefs.h"
 +/* Override any gcc2 internal prototype to avoid an error.  */
 +/* We use char because int might match the return type of a gcc2
@@ -5743,7 +6446,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +XpmCreateImageFromData()
 +; return 0; }
 +EOF
-+if { (eval echo configure:2119: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++if { (eval echo configure:2275: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
 +  rm -rf conftest*
 +  eval "ac_cv_lib_$ac_lib_var=yes"
 +else
@@ -5764,10 +6467,6 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +#define HAVE_LIBXPM 1
 +EOF
 +
-+			       cat >> confdefs.h <<\EOF
-+#define HAVE_XPM 1
-+EOF
-+
 +			    
 +else
 +  echo "$ac_t""no" 1>&6
@@ -5779,12 +6478,12 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +
 +
 +echo $ac_n "checking for ANSI C header files""... $ac_c" 1>&6
-+echo "configure:2155: checking for ANSI C header files" >&5
++echo "configure:2307: checking for ANSI C header files" >&5
 +if eval "test \"`echo '$''{'ac_cv_header_stdc'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
 +  cat > conftest.$ac_ext <<EOF
-+#line 2160 "configure"
++#line 2312 "configure"
 +#include "confdefs.h"
 +#include <stdlib.h>
 +#include <stdarg.h>
@@ -5792,7 +6491,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +#include <float.h>
 +EOF
 +ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-+{ (eval echo configure:2168: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++{ (eval echo configure:2320: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 +ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 +if test -z "$ac_err"; then
 +  rm -rf conftest*
@@ -5809,7 +6508,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +if test $ac_cv_header_stdc = yes; then
 +  # SunOS 4.x string.h does not declare mem*, contrary to ANSI.
 +cat > conftest.$ac_ext <<EOF
-+#line 2185 "configure"
++#line 2337 "configure"
 +#include "confdefs.h"
 +#include <string.h>
 +EOF
@@ -5827,7 +6526,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +if test $ac_cv_header_stdc = yes; then
 +  # ISC 2.0.2 stdlib.h does not declare free, contrary to ANSI.
 +cat > conftest.$ac_ext <<EOF
-+#line 2203 "configure"
++#line 2355 "configure"
 +#include "confdefs.h"
 +#include <stdlib.h>
 +EOF
@@ -5848,7 +6547,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +  :
 +else
 +  cat > conftest.$ac_ext <<EOF
-+#line 2224 "configure"
++#line 2376 "configure"
 +#include "confdefs.h"
 +#include <ctype.h>
 +#define ISLOWER(c) ('a' <= (c) && (c) <= 'z')
@@ -5859,7 +6558,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +exit (0); }
 +
 +EOF
-+if { (eval echo configure:2235: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
++if { (eval echo configure:2387: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext} && (./conftest; exit) 2>/dev/null
 +then
 +  :
 +else
@@ -5886,17 +6585,17 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +do
 +ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
 +echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
-+echo "configure:2262: checking for $ac_hdr" >&5
++echo "configure:2414: checking for $ac_hdr" >&5
 +if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
 +  cat > conftest.$ac_ext <<EOF
-+#line 2267 "configure"
++#line 2419 "configure"
 +#include "confdefs.h"
 +#include <$ac_hdr>
 +EOF
 +ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-+{ (eval echo configure:2272: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++{ (eval echo configure:2424: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 +ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 +if test -z "$ac_err"; then
 +  rm -rf conftest*
@@ -5926,17 +6625,17 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +do
 +ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
 +echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
-+echo "configure:2302: checking for $ac_hdr" >&5
++echo "configure:2454: checking for $ac_hdr" >&5
 +if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
 +  cat > conftest.$ac_ext <<EOF
-+#line 2307 "configure"
++#line 2459 "configure"
 +#include "confdefs.h"
 +#include <$ac_hdr>
 +EOF
 +ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-+{ (eval echo configure:2312: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++{ (eval echo configure:2464: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 +ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 +if test -z "$ac_err"; then
 +  rm -rf conftest*
@@ -5967,17 +6666,17 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +do
 +ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
 +echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
-+echo "configure:2343: checking for $ac_hdr" >&5
++echo "configure:2495: checking for $ac_hdr" >&5
 +if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
 +  cat > conftest.$ac_ext <<EOF
-+#line 2348 "configure"
++#line 2500 "configure"
 +#include "confdefs.h"
 +#include <$ac_hdr>
 +EOF
 +ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-+{ (eval echo configure:2353: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++{ (eval echo configure:2505: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 +ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 +if test -z "$ac_err"; then
 +  rm -rf conftest*
@@ -6006,12 +6705,12 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +
 +
 +echo $ac_n "checking for working const""... $ac_c" 1>&6
-+echo "configure:2382: checking for working const" >&5
++echo "configure:2534: checking for working const" >&5
 +if eval "test \"`echo '$''{'ac_cv_c_const'+set}'`\" = set"; then
 +  echo $ac_n "(cached) $ac_c" 1>&6
 +else
 +  cat > conftest.$ac_ext <<EOF
-+#line 2387 "configure"
++#line 2539 "configure"
 +#include "confdefs.h"
 +
 +int main() {
@@ -6060,7 +6759,7 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +
 +; return 0; }
 +EOF
-+if { (eval echo configure:2436: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
++if { (eval echo configure:2588: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
 +  rm -rf conftest*
 +  ac_cv_c_const=yes
 +else
@@ -6243,9 +6942,12 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +s%@host_cpu@%$host_cpu%g
 +s%@host_vendor@%$host_vendor%g
 +s%@host_os@%$host_os%g
++s%@build@%$build%g
++s%@build_alias@%$build_alias%g
++s%@build_cpu@%$build_cpu%g
++s%@build_vendor@%$build_vendor%g
++s%@build_os@%$build_os%g
 +s%@RANLIB@%$RANLIB%g
-+s%@LD@%$LD%g
-+s%@NM@%$NM%g
 +s%@LN_S@%$LN_S%g
 +s%@LIBTOOL@%$LIBTOOL%g
 +s%@CPP@%$CPP%g
@@ -6363,11 +7065,11 @@ diff -Naur gd-1.8.4/configure gd-1.8.4.patch/configure
 +
 diff -Naur gd-1.8.4/configure.in gd-1.8.4.patch/configure.in
 --- gd-1.8.4/configure.in	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/configure.in	Wed Sep 26 00:25:35 2001
-@@ -0,0 +1,66 @@
++++ gd-1.8.4.patch/configure.in	Sat Mar 31 23:08:28 2001
+@@ -0,0 +1,62 @@
 +dnl Process this file with autoconf to produce a configure script.
 +AC_INIT(gd.c)
-+AM_INIT_AUTOMAKE(gd, 1.8.3)
++AM_INIT_AUTOMAKE(gd, 1.8.4)
 +
 +dnl Checks for programs.
 +AC_PROG_CC
@@ -6389,8 +7091,7 @@ diff -Naur gd-1.8.4/configure.in gd-1.8.4.patch/configure.in
 +
 +dnl User can select whether or not to support JPEG
 +AC_ARG_ENABLE(jpeg,
-+	[  --disable-jpeg          disable support for JPEG (default enabled)],
-+	[AC_MSG_WARN(libgd will be built without support for JPEG.)],
++	[  --enable-jpeg           enable support for JPEG [default=no]],
 +	[ 
 +	  AC_CHECK_HEADERS(jpeglib.h,,AC_MSG_WARN(libgd will be built without support for JPEG.))
 +	  AC_CHECK_LIB(jpeg,jpeg_start_compress,,AC_MSG_WARN(libgd will be built without support for JPEG.))
@@ -6398,24 +7099,21 @@ diff -Naur gd-1.8.4/configure.in gd-1.8.4.patch/configure.in
 +
 +dnl User can select whether or not to support FreeType
 +AC_ARG_ENABLE(freetype,
-+	[  --disable-freetype      disable support for FreeType (default enabled)],
-+	[AC_MSG_WARN(libgd will be built without support for FreeType.)],
++	[  --enable-freetype       enable support for FreeType [default=no]],
 +	[ 
-+	  AC_CHECK_HEADERS(freetype/freetype.h,,AC_MSG_WARN(libgd will be built without support for TrueType fonts.))
-+	  AC_CHECK_LIB(freetype,FT_Init_FreeType,,AC_MSG_WARN(libgd will be built without support for TrueType fonts.))
++	  AC_CHECK_HEADERS(freetype.h,,AC_MSG_WARN(libgd will be built without support for TrueType fonts.))
++	  AC_CHECK_LIB(ttf,TT_Init_FreeType,,AC_MSG_WARN(libgd will be built without support for TrueType fonts.))
 +	])
 +
 +dnl User can select whether or not to support Xpm
 +AC_ARG_ENABLE(xpm,
-+	[  --disable-xpm           disable support for XPM (default enabled)],
-+	[AC_MSG_WARN(libgd will be built without support for XPM.)],
++	[  --enable-xpm            enable support for XPM [default=no]],
 +	[ 
 +	  AC_CHECK_HEADERS(X11/xpm.h,,AC_MSG_WARN(libgd will be built without support for XPM images.))
 +	  AC_CHECK_LIB(Xpm,XpmCreateImageFromData,
 +	      		   [
 +			       LIBS="$LIBS -lX11 -lXpm"
 +			       AC_DEFINE(HAVE_LIBXPM)
-+			       AC_DEFINE(HAVE_XPM)
 +			    ],
 +	                    AC_MSG_WARN(libgd will be built without support for XPM images.),
 +                            -lX11)
@@ -6433,18 +7131,992 @@ diff -Naur gd-1.8.4/configure.in gd-1.8.4.patch/configure.in
 +AC_OUTPUT(Makefile)
 diff -Naur gd-1.8.4/gd.h gd-1.8.4.patch/gd.h
 --- gd-1.8.4/gd.h	Tue Feb  6 14:44:01 2001
-+++ gd-1.8.4.patch/gd.h	Wed Sep 26 00:31:57 2001
-@@ -99,6 +99,7 @@
- gdImagePtr gdImageCreateFromWBMPCtx(gdIOCtx *infile); 
- gdImagePtr gdImageCreateFromJpeg(FILE *infile);
- gdImagePtr gdImageCreateFromJpegCtx(gdIOCtx *infile);
-+gdImagePtr gdImageCreateFromXpm(char *filename);
++++ gd-1.8.4.patch/gd.h	Sat Mar 31 22:52:12 2001
+@@ -24,6 +24,18 @@
+ #include <stdio.h>
+ #include "gd_io.h"
  
- /* A custom data source. */
- /* The source function must return -1 on error, otherwise the number
++#if defined(HAVE_LIBJPEG) && defined(HAVE_JPEGLIB_H)
++#define HAVE_JPEG
++#endif 
++
++#if defined(HAVE_LIBTTF) && defined(HAVE_FREETYPE_H)
++#define HAVE_TTF
++#endif 
++
++#if defined(HAVE_LIBXPM) && defined(HAVE_X11_XPM_H)
++#define HAVE_XPM
++#endif 
++
+ /* This can't be changed in the current palette-only version of gd. */
+ 
+ #define gdMaxColors 256
+@@ -122,6 +134,7 @@
+ gdImagePtr gdImageCreateFromGd2PartCtx(gdIOCtxPtr in, int srcx, int srcy, int w, int h);
+ 
+ gdImagePtr gdImageCreateFromXbm(FILE *fd);
++gdImagePtr gdImageCreateFromXpm(char* filename);
+ 
+ void gdImageDestroy(gdImagePtr im);
+ void gdImageSetPixel(gdImagePtr im, int x, int y, int color);
+diff -Naur gd-1.8.4/gd_jpeg.c gd-1.8.4.patch/gd_jpeg.c
+--- gd-1.8.4/gd_jpeg.c	Tue Feb 13 15:05:32 2001
++++ gd-1.8.4.patch/gd_jpeg.c	Sat Mar 31 22:52:12 2001
+@@ -760,6 +760,30 @@
+   dest->pub.term_destination = term_destination;
+   dest->outfile = outfile;
+ }
+-
++#else  /* HAVE_JPEG */
++void gdImageJpeg(gdImagePtr im, FILE *outFile, int quality)
++{
++  fprintf(stderr,"libgd was not built with jpeg support\n");
++}
++void* gdImageJpegPtr(gdImagePtr im, int *size, int quality)
++{
++  fprintf(stderr,"libgd was not built with jpeg support\n");
++  return NULL;
++}
++void gdImageJpegCtx(gdImagePtr im, gdIOCtx *outfile, int quality)
++{
++  fprintf(stderr,"libgd was not built with jpeg support\n");
++}
++gdImagePtr gdImageCreateFromJpeg(FILE *inFile)
++{
++  fprintf(stderr,"libgd was not built with jpeg support\n");
++  return NULL;
++}
++gdImagePtr
++gdImageCreateFromJpegCtx(gdIOCtx *infile)
++{
++  fprintf(stderr,"libgd was not built with jpeg support\n");
++  return NULL;
++}
+ #endif /* HAVE_JPEG */
+ 
+diff -Naur gd-1.8.4/gdft.c gd-1.8.4.patch/gdft.c
+--- gd-1.8.4/gdft.c	Tue Feb  6 14:44:02 2001
++++ gd-1.8.4.patch/gdft.c	Wed Dec 31 19:00:00 1969
+@@ -1,762 +0,0 @@
+-/********************************************/
+-/* gd interface to freetype library         */
+-/*                                          */
+-/* John Ellson   ellson@lucent.com          */
+-/********************************************/
+-
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <math.h>
+-#include "gd.h"
+-#include "gdhelpers.h"
+-
+-#ifndef MSWIN32
+-#include <unistd.h>
+-#else
+-#define R_OK 2
+-#endif
+-
+-/* number of antialised colors for indexed bitmaps */
+-#define NUMCOLORS 8
+-
+-#ifndef HAVE_LIBFREETYPE
+-char * gdImageStringFT(gdImage *im, int *brect, int fg, char *fontlist,
+-	double ptsize, double angle, int x, int y, char *string)
+-{
+-#ifdef HAVE_LIBTTF
+-	return gdImageStringTTF(im,brect,fg,fontlist,ptsize,angle,x,y,string);
+-#else
+-	return "libgd was not built with FreeType font support\n";
+-#endif
+-}
+-#else
+-
+-#include "gdcache.h"
+-#include "freetype/freetype.h"
+-#include "freetype/ftglyph.h"
+-
+-/* number of fonts cached before least recently used is replaced */
+-#define FONTCACHESIZE 6
+-
+-/* number of antialias color lookups cached */
+-#define TWEENCOLORCACHESIZE 32
+-
+-/*
+- * Line separation as a factor of font height.  
+- *	No space between if LINESPACE = 1.00 
+- *	Line separation will be rounded up to next pixel row.
+- */
+-#define LINESPACE 1.05
+-
+-/*
+- * The character (space) used to separate alternate fonts in the
+- * fontlist parameter to gdImageStringFT.
+- */
+-#define LISTSEPARATOR " "
+-
+-/*
+- * DEFAULT_FONTPATH and PATHSEPARATOR are host type dependent and
+- * are normally set by configure in gvconfig.h.  These are just
+- * some last resort values that might match some Un*x system
+- * if building this version of gd separate from graphviz.
+- */
+-#ifndef DEFAULT_FONTPATH
+-#define DEFAULT_FONTPATH "/usr/share/fonts/truetype"
+-#endif
+-#ifndef PATHSEPARATOR
+-#define PATHSEPARATOR ":"
+-#endif
+-
+-#ifndef TRUE
+-#define FALSE 0
+-#define TRUE !FALSE
+-#endif
+-
+-#define MAX(a,b) ((a)>(b)?(a):(b))
+-#define MIN(a,b) ((a)<(b)?(a):(b))
+-
+-typedef struct {
+-	char		*fontlist;	/* key */
+-	FT_Library	*library;
+-	FT_Face		face;
+-	FT_Bool		have_char_map_unicode,
+-			have_char_map_big5,
+-			have_char_map_sjis,
+-			have_char_map_apple_roman;
+-	gdCache_head_t	*glyphCache;
+-} font_t;
+-
+-typedef struct {
+-	char		*fontlist;	/* key */
+-	FT_Library	*library;
+-} fontkey_t;
+-
+-typedef struct { 
+-    unsigned char       pixel;		/* key */
+-    unsigned char       bgcolor;	/* key */
+-    int			fgcolor;	/* key */ /* -ve means no antialias */
+-    gdImagePtr          im;		/* key */
+-    unsigned char       tweencolor;
+-} tweencolor_t;
+-
+-typedef struct {
+-    unsigned char       pixel;		/* key */
+-    unsigned char       bgcolor;	/* key */
+-    int			fgcolor;	/* key */ /* -ve means no antialias */
+-    gdImagePtr          im;		/* key */
+-} tweencolorkey_t;  
+-
+-/********************************************************************
+- * gdTcl_UtfToUniChar is borrowed from Tcl ...
+- */
+-/*
+- * tclUtf.c --
+- *
+- *	Routines for manipulating UTF-8 strings.
+- *
+- * Copyright (c) 1997-1998 Sun Microsystems, Inc.
+- *
+- * See the file "license.terms" for information on usage and redistribution
+- * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+- *
+- * SCCS: @(#) tclUtf.c 1.25 98/01/28 18:02:43
+- */
+-
+-/*
+- *---------------------------------------------------------------------------
+- *
+- * gdTcl_UtfToUniChar --
+- *
+- *	Extract the Tcl_UniChar represented by the UTF-8 string.  Bad
+- *	UTF-8 sequences are converted to valid Tcl_UniChars and processing
+- *	continues.  Equivalent to Plan 9 chartorune().
+- *
+- *	The caller must ensure that the source buffer is long enough that
+- *	this routine does not run off the end and dereference non-existent
+- *	memory looking for trail bytes.  If the source buffer is known to
+- *	be '\0' terminated, this cannot happen.  Otherwise, the caller
+- *	should call Tcl_UtfCharComplete() before calling this routine to
+- *	ensure that enough bytes remain in the string.
+- *
+- * Results:
+- *	*chPtr is filled with the Tcl_UniChar, and the return value is the
+- *	number of bytes from the UTF-8 string that were consumed.
+- *
+- * Side effects:
+- *	None.
+- *
+- *---------------------------------------------------------------------------
+- */
+-
+-#ifdef JISX0208
+-#include "jisx0208.h"
+-#endif
+- 
+-#define Tcl_UniChar int
+-#define TCL_UTF_MAX 3
+-static int
+-gdTcl_UtfToUniChar(char *str, Tcl_UniChar *chPtr)
+-/* str is the UTF8 next character pointer */
+-/* chPtr is the int for the result */
+-{
+-	int byte;
+-    
+-	/* HTML4.0 entities in decimal form, e.g. &#197; */
+-	byte = *((unsigned char *) str);
+-	if (byte == '&') {
+-		int i, n=0;
+-
+-		byte = *((unsigned char *) (str+1));
+-		if (byte == '#') {
+-			for (i = 2; i < 8; i++) {
+-				byte = *((unsigned char *) (str+i));
+-				if (byte >= '0' && byte <= '9') {
+-					n = (n * 10) + (byte - '0');
+-				} 
+-				else
+-					break;
+-			}
+-			if (byte == ';') {
+-				*chPtr = (Tcl_UniChar) n;
+-				return ++i;
+-			}
+-		}
+-	}
+-	 
+-	/*
+-	 * Unroll 1 to 3 byte UTF-8 sequences, use loop to handle longer ones.
+-	 */
+-
+-	byte = *((unsigned char *) str);
+-#ifdef JISX0208
+-	if (0xA1 <= byte && byte <= 0xFE) {
+-		int jiscode, ku, ten;
+-
+-		jiscode = 0x100 * (byte & 0x7F) + (str[1] & 0x7F);
+-		ku = (jiscode >> 8) - 0x20;
+-		ten = (jiscode % 256) - 0x20;
+-		if ( (ku < 1 || ku > 92) || (ten < 1 || ten > 94) ) {
+-			*chPtr = (Tcl_UniChar) byte;
+-			return 1;
+-		}
+-
+-		*chPtr = (Tcl_UniChar) UnicodeTbl[ku - 1][ten - 1];
+-		return 2;
+-	} else
+-#endif /* JISX0208 */
+-	if (byte < 0xC0) {
+-		/*
+-		 * Handles properly formed UTF-8 characters between
+-		 * 0x01 and 0x7F.  Also treats \0 and naked trail
+-		 * bytes 0x80 to 0xBF as valid characters representing
+-		 * themselves.
+-		 */
+-
+-		*chPtr = (Tcl_UniChar) byte;
+-		return 1;
+-	} else if (byte < 0xE0) {
+-		if ((str[1] & 0xC0) == 0x80) {
+-			/*
+-			 * Two-byte-character lead-byte followed
+-			 * by a trail-byte.
+-			 */
+-	     
+-			*chPtr = (Tcl_UniChar) (((byte & 0x1F) << 6)
+-				| (str[1] & 0x3F));
+-			return 2;
+-		}
+-		/*
+-	 	 * A two-byte-character lead-byte not followed by trail-byte
+-	 	 * represents itself.
+-	 	 */
+-	 	
+-		*chPtr = (Tcl_UniChar) byte;
+-		return 1;
+-    	} else if (byte < 0xF0) {
+-		if (((str[1] & 0xC0) == 0x80) && ((str[2] & 0xC0) == 0x80)) {
+-			/*
+-			 * Three-byte-character lead byte followed by
+-			 * two trail bytes.
+-			 */
+-	
+-	    		*chPtr = (Tcl_UniChar) (((byte & 0x0F) << 12) 
+-		    		| ((str[1] & 0x3F) << 6) | (str[2] & 0x3F));
+-	    		return 3;
+-		}
+-		/*
+-		 * A three-byte-character lead-byte not followed by
+-		 * two trail-bytes represents itself.
+-		 */
+-	
+-		*chPtr = (Tcl_UniChar) byte;
+-		return 1;
+-    	}
+-#if TCL_UTF_MAX > 3
+-	else {
+-		int ch, total, trail;
+-
+-		total = totalBytes[byte];
+-		trail = total - 1;
+-		if (trail > 0) {
+-			ch = byte & (0x3F >> trail);
+-			do {
+-				str++;
+-				if ((*str & 0xC0) != 0x80) {
+-					*chPtr = byte;
+-					return 1;
+-				}
+-				ch <<= 6;
+-				ch |= (*str & 0x3F);
+-				trail--;
+-			} while (trail > 0);
+-			*chPtr = ch;
+-			return total;
+-		}
+-	}
+-#endif
+-
+-	*chPtr = (Tcl_UniChar) byte;
+-	return 1;
+-}
+-
+-/********************************************************************/
+-/* font cache functions                                             */
+-
+-static int
+-fontTest ( void *element, void *key )
+-{
+-	font_t *a=(font_t *)element;
+-	fontkey_t *b=(fontkey_t *)key;
+-
+-	return (strcmp(a->fontlist, b->fontlist) == 0);
+-}
+-
+-static void *
+-fontFetch ( char **error, void *key )
+-{
+-	font_t			*a;
+-	fontkey_t		*b=(fontkey_t *)key;
+-	int			n;
+-	int			font_found=0;
+-	unsigned short		platform, encoding;
+-	char			*fontsearchpath, *fontpath, *fontlist;
+-	char			*fullname = NULL;
+-	char			*name, *path, *dir;
+-	char			*strtok_ptr;
+-	FT_Error		err;
+-	FT_CharMap		found=0;
+-	FT_CharMap		charmap;
+-
+-	a = (font_t *)gdMalloc(sizeof(font_t));
+-	a->fontlist = strdup(b->fontlist);
+-	a->library = b->library;
+-
+-	/*
+-	 * Search the pathlist for any of a list of font names.
+-	 */
+-	fontsearchpath = getenv("GDFONTPATH");
+-	if (! fontsearchpath ) fontsearchpath = DEFAULT_FONTPATH;
+-        path = strdup(fontsearchpath);
+-	fontlist = strdup(a->fontlist);
+-
+-	/*
+-	 * Must use gd_strtok_r else pointer corrupted by strtok in nested loop.
+-	 */
+-	for (name = gd_strtok_r(fontlist,LISTSEPARATOR,&strtok_ptr); name;
+-			name = gd_strtok_r(0,LISTSEPARATOR,&strtok_ptr)) {
+-
+-        	/*
+-		 * Allocate an oversized buffer that is guaranteed to be
+-		 * big enough for all paths to be tested.
+-		 */
+-		fullname = gdRealloc(fullname,
+-			strlen(fontsearchpath) + strlen(name) + 6);
+-		/* if name is an absolute filename then test directly */
+-		if (*name == '/') {
+-                	sprintf(fullname,"%s",name);
+-                	if (access(fullname,R_OK) == 0) {font_found++; break;}
+-		}
+-        	for (dir = strtok(path,PATHSEPARATOR); dir;
+-				dir = strtok(0,PATHSEPARATOR)) {
+-                	sprintf(fullname,"%s/%s.ttf",dir,name);
+-                	if (access(fullname,R_OK) == 0) {font_found++; break;}
+-        	}
+-		if (font_found) break;
+-	}
+-       	gdFree(path);
+-        gdFree(fontlist);
+-        if (! font_found) {
+-                *error = "Could not find/open font";
+-		return NULL;
+-        }
+-
+-	err = FT_New_Face(*b->library, fullname, 0, &a->face);
+-	if (err) {
+-		*error = "Could not read font";
+-		return NULL;
+-	}
+-       	gdFree(fullname);
+-	
+-/* FIXME - This mapping stuff is imcomplete - where is the spec? */
+-
+-	a->have_char_map_unicode = 0;
+-	a->have_char_map_big5 = 0;
+-	a->have_char_map_sjis = 0;
+-	a->have_char_map_apple_roman = 0;
+-	for (n = 0; n < a->face->num_charmaps; n++) {
+-		charmap = a->face->charmaps[n];
+-		platform = charmap->platform_id;
+-		encoding = charmap->encoding_id;
+-		if ((platform == 3 && encoding == 1)	/* Windows Unicode */
+-		 || (platform == 3 && encoding == 0)	/* Windows Symbol */
+-		 || (platform == 2 && encoding == 1)	/* ISO Unicode */
+-		 || (platform == 0)) {			/* Apple Unicode */
+-			a->have_char_map_unicode = 1;
+-			found = charmap;
+-		} else
+-		if (platform == 3 && encoding == 4) {	/* Windows Big5 */
+-			a->have_char_map_big5 = 1;
+-			found = charmap;
+-		} else
+-		if (platform == 3 && encoding == 2) {	/* Windows Sjis */
+-			a->have_char_map_sjis = 1;
+-			found = charmap;
+-		} else
+-		if ((platform == 1 && encoding == 0)	/* Apple Roman */
+-		 || (platform == 2 && encoding == 0)) {	/* ISO ASCII */
+-			a->have_char_map_apple_roman = 1;
+-			found = charmap;
+-		}
+-	}
+-	if (!found) {
+-		*error = "Unable to find a CharMap that I can handle";
+-		return NULL;
+-	}
+-
+-	return (void *)a;
+-}
+-
+-static void
+-fontRelease( void *element )
+-{
+-	font_t *a=(font_t *)element;
+-
+-	FT_Done_Face(a->face);
+-	gdFree(a->fontlist);
+-	gdFree( (char *)element );
+-}
+-
+-/********************************************************************/
+-/* tweencolor cache functions                                            */
+-
+-static int
+-tweenColorTest (void *element, void *key)
+-{ 
+-    tweencolor_t *a=(tweencolor_t *)element;
+-    tweencolorkey_t *b=(tweencolorkey_t *)key;
+-    
+-    return (a->pixel == b->pixel    
+-         && a->bgcolor == b->bgcolor
+-         && a->fgcolor == b->fgcolor
+-         && a->im == b->im);
+-} 
+-
+-/*
+- * Computes a color in im's color table that is part way between
+- * the background and foreground colors proportional to the gray
+- * pixel value in the range 0-NUMCOLORS. The fg and bg colors must already
+- * be in the color table.
+- */
+-static void *
+-tweenColorFetch (char **error, void *key)
+-{
+-	tweencolor_t *a;
+-	tweencolorkey_t *b=(tweencolorkey_t *)key;
+-	int pixel, npixel, bg, fg;
+-	gdImagePtr im;
+-   
+-	a = (tweencolor_t *)gdMalloc(sizeof(tweencolor_t));
+-	pixel = a->pixel = b->pixel;
+-	bg = a->bgcolor = b->bgcolor;
+-	fg = a->fgcolor = b->fgcolor;
+-	im = b->im;
+-
+-	/* if fg is specified by a negative color idx, then don't antialias */
+-	if (fg <0) {
+-		a->tweencolor = -fg;
+-	} else {
+-		npixel = NUMCOLORS - pixel;
+-		a->tweencolor = gdImageColorResolve(im,
+-			(pixel * im->red[fg] + npixel * im->red[bg]) / NUMCOLORS,
+-			(pixel * im->green[fg] + npixel * im->green[bg]) / NUMCOLORS,
+-			(pixel * im->blue[fg] + npixel * im->blue[bg]) / NUMCOLORS);
+-	}
+-	return (void *)a;
+-}   
+-        
+-static void
+-tweenColorRelease(void *element)
+-{   
+-    gdFree((char *)element);
+-}   
+-
+-/* draw_bitmap - transfers glyph bitmap to GD image */
+-static char *
+-gdft_draw_bitmap(gdImage *im, int fg, FT_Bitmap bitmap, int pen_x, int pen_y) {
+-	char			*pixel;
+-	int			x, y, row, col, pc;
+-
+-	tweencolor_t		*tc_elem;
+-	tweencolorkey_t		tc_key;
+-
+-	/* initialize tweenColorCache on first call */
+-	static gdCache_head_t	*tc_cache;
+-
+-	if ( ! tc_cache ) {
+-		tc_cache = gdCacheCreate(TWEENCOLORCACHESIZE,
+-			tweenColorTest, tweenColorFetch, tweenColorRelease);
+-	}
+-
+-	/* copy to gif, mapping colors */
+-	tc_key.fgcolor = fg;
+-	tc_key.im = im;
+-	for (row = 0; row < bitmap.rows; row++) {
+-		pc = row * bitmap.pitch;
+-		y = pen_y + row;
+-
+- 		/* clip if out of bounds */
+-		if (y >= im->sy || y < 0) continue;
+-
+-		for (col = 0; col < bitmap.width; col++, pc++) {
+-			if (bitmap.pixel_mode == ft_pixel_mode_grays) {
+-				/*
+-				 * Round to NUMCOLORS levels of antialiasing for
+-				 * index color images since only 256 colors are
+-				 * available.
+-				 */
+-				tc_key.pixel = ((bitmap.buffer[pc] * NUMCOLORS)
+-					 + bitmap.num_grays/2)
+-						/ (bitmap.num_grays - 1);
+-			} else
+-			if (bitmap.pixel_mode == ft_pixel_mode_mono) {
+-				tc_key.pixel = ((bitmap.buffer[pc/8]
+-					<< (pc%8)) & 128) ? NUMCOLORS : 0;
+-			} else {
+-				return "Unsupported ft_pixel_mode";
+-			}
+-
+-			if (tc_key.pixel > 0) { /* if not background */
+-				x = pen_x + col;
+-
+-				/* clip if out of bounds */
+-				if (x >= im->sx || x < 0) continue;
+-
+-				/* get pixel location in gd buffer */
+-				pixel = &im->pixels[y][x];
+-				if (tc_key.pixel == NUMCOLORS) {
+-					/* use fg color directly */
+-					*pixel = fg;
+-				} else {
+-					/* find antialised color */
+-					tc_key.bgcolor = *pixel;
+-					tc_elem = (tweencolor_t *)gdCacheGet(
+-						tc_cache, &tc_key);
+-					*pixel = tc_elem->tweencolor;
+-				}
+-			}
+-		}
+-	}
+-	return (char *)NULL;
+-}
+-
+-extern int any2eucjp(char *, char *, unsigned int);
+-
+-/********************************************************************/
+-/* gdImageStringFT -  render a utf8 string onto a gd image          */ 
+-
+-char * gdImageStringFT(gdImage *im, int *brect, int fg, char *fontlist,
+-		double ptsize, double angle, int x, int y, char *string)
+-{
+-	FT_F26Dot6	ur_x=0, ur_y=0, ll_x=0, ll_y=0;
+-	FT_F26Dot6	advance_x, advance_y;
+-	FT_BBox		bbox;
+-	FT_Matrix	matrix;
+-	FT_Vector	pen, delta;
+-	FT_Face		face;
+-	FT_Glyph	image;
+-	FT_GlyphSlot	slot;
+-	FT_Error	err;
+-	FT_Bool		use_kerning;
+-	FT_UInt		glyph_index, previous;
+-	double		sin_a = sin(angle);
+-	double		cos_a = cos(angle);
+-	int		len, i=0, ch;
+-	int		x1=0, y1=0;
+-	font_t		*font;
+-	fontkey_t	fontkey;
+-	char		*next;
+-	char		*tmpstr = 0;
+-
+-	/***** initialize font library and font cache on first call ******/
+-	static gdCache_head_t	*fontCache;
+-	static FT_Library 	library;
+-
+-	if (! fontCache) {
+-		if (FT_Init_FreeType(&library)) {
+-			return "Failure to initialize font library";
+-		}
+-		fontCache = gdCacheCreate( FONTCACHESIZE,
+-			fontTest, fontFetch, fontRelease);
+-	}
+-	/*****/
+-
+-	/* get the font (via font cache) */
+-	fontkey.fontlist = fontlist;
+-	fontkey.library = &library;
+-	font = (font_t *)gdCacheGet(fontCache, &fontkey);
+-	if (! font) {
+-		return fontCache->error;
+-	}
+-	face = font->face;		/* shortcut */
+-	slot = face->glyph;  		/* shortcut */
+-
+-	if (FT_Set_Char_Size(face, 0, (FT_F26Dot6)(ptsize*64),
+-			GD_RESOLUTION, GD_RESOLUTION)) {
+-		return "Could not set character size";
+-	}
+-
+-	matrix.xx = (FT_Fixed) (cos_a * (1<<16));
+-	matrix.yx = (FT_Fixed) (sin_a * (1<<16));
+-	matrix.xy = - matrix.yx;
+-	matrix.yy = matrix.xx;
+-
+-	pen.x = pen.y = 0;	   /* running position of rotated string */
+-
+-	use_kerning = FT_HAS_KERNING(face);
+-	previous = 0;
+-
+-	advance_x = advance_y = 0; /* running position (26.6) of right string */
+-
+-#ifndef JISX0208
+-	if (font->have_char_map_sjis) {
+-#endif
+-		if (tmpstr = (char *)gdMalloc(BUFSIZ)) {
+-			any2eucjp(tmpstr, string, BUFSIZ);
+-			next=tmpstr;
+-		} else {
+-			next=string;
+-		}
+-#ifndef JISX0208
+-	} else {
+-		next=string;
+-	}
+-#endif
+-	while (*next) {	  
+-		ch = *next;
+-
+-		/* carriage returns */
+-		if (ch == '\r') {
+-			advance_x = 0;
+-			x1 = (advance_x * cos_a - advance_y * sin_a + 32) / 64;
+-			y1 = (advance_x * sin_a + advance_y * cos_a + 32) / 64;
+-			pen.x = pen.y = 0;
+-			previous = 0; /* clear kerning flag */
+-			next++;
+-			continue;
+-		}
+-		/* newlines */
+-		if (ch == '\n') {
+-			advance_y -= face->size->metrics.height * LINESPACE;
+-			advance_y = (advance_y-32) & -64; /* round to next pixel row */
+-			x1 = (advance_x * cos_a - advance_y * sin_a + 32) / 64;
+-			y1 = (advance_x * sin_a + advance_y * cos_a + 32) / 64;
+-			pen.x = pen.y = 0;
+-			previous = 0; /* clear kerning flag */
+-			next++;
+-			continue;
+-		}
+-
+-		if (font->have_char_map_unicode) {
+-			/* use UTF-8 mapping from ASCII */
+-			len = gdTcl_UtfToUniChar(next, &ch);
+-			next += len;
+-		} else if (font->have_char_map_sjis) {
+-			unsigned char c;
+-			int jiscode;
+-	
+-			c = *next;
+-			if ( 0xA1 <= c && c <= 0xFE ) {
+-				next++;
+-				jiscode = 0x100 * (c & 0x7F) + ((*next) & 0x7F);
+-	
+-				ch = (jiscode >> 8) & 0xFF;
+-				jiscode &= 0xFF;
+-	
+-				if (ch & 1) jiscode += 0x40 - 0x21;
+-				else        jiscode += 0x9E - 0x21;
+-	
+-				if (jiscode >= 0x7F) jiscode++;
+-				ch = (ch - 0x21) / 2 + 0x81;
+-				if (ch >= 0xA0) ch += 0x40;
+-	
+-				ch = (ch << 8) + jiscode;
+-			} else {
+-				ch = c & 0xFF; /* don't extend sign */
+-			}
+-			next++;
+-		} else {
+-			/*
+-		 	 * Big 5 mapping:
+-		 	 * use "JIS-8 half-width katakana" coding from 8-bit characters. Ref:
+-		 	 * ftp://ftp.ora.com/pub/examples/nutshell/ujip/doc/japan.inf-032092.sjs
+-		 	 */
+-			ch = (*next) & 0xFF;	/* don't extend sign */
+-			next++;
+-			if (ch >= 161		/* first code of JIS-8 pair */
+-		 	    && *next) {		/* don't advance past '\0' */
+-				/* TBB: Fix from Kwok Wah On: & 255 needed */
+-				ch = (ch * 256) + ((*next) & 255);
+-				next++;
+-			}
+-		}
+-	
+-		FT_Set_Transform(face, &matrix, &pen);
+-	
+-		/* Convert character code to glyph index */
+-		glyph_index = FT_Get_Char_Index( face, ch );
+-
+-		/* retieve kerning distance and move pen position */
+-		if ( use_kerning && previous && glyph_index ) {
+-			FT_Get_Kerning( face, previous, glyph_index, 
+-				ft_kerning_default, &delta );
+-			pen.x += delta.x >> 6;
+-		}
+-
+-		/* load glyph image into the slot (erase previous one) */
+-		err = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
+-		if (err) {
+-			return "Problem loading glyph";
+-		}
+-
+-		/* if null *im, or invalid color,
+-			 then assume user just wants brect */
+-		if (im && fg <= 255 && fg >= -255) {
+-
+-        		/* now, draw to our target surface */
+-			gdft_draw_bitmap(im, fg, slot->bitmap,
+-				x + x1 + pen.x + slot->bitmap_left,
+-				y - y1 + pen.y - slot->bitmap_top);
+-		}
+-
+-       		/* increment pen position */
+-		pen.x += slot->advance.x >> 6;
+-		pen.y -= slot->advance.y >> 6;
+-
+-		/* record current glyph index for kerning */
+-		previous = glyph_index;
+-	
+-		if (brect) { /* only if need brect */
+-			if (! i++) { /* if first character, init BB corner values */
+-                                ll_x = slot->metrics.horiBearingX;
+-                                ll_y = slot->metrics.horiBearingY - slot->metrics.height;
+-                                ur_x = slot->metrics.horiBearingX + slot->metrics.width;
+-                                ur_y = slot->metrics.horiBearingY;
+-                        }
+-                        else {
+-                                if (! advance_x) ll_x = MIN(slot->metrics.horiBearingX, ll_x);
+-                                ll_y = MIN(advance_y + slot->metrics.horiBearingY - slot->metrics.height, ll_y);
+-                                ur_x = MAX(advance_x + slot->metrics.horiBearingX + slot->metrics.width, ur_x);
+-                                if (! advance_y) ur_y = MAX(slot->metrics.horiBearingY, ur_y);
+-                        }
+-		}
+-
+-		advance_x += slot->metrics.horiAdvance;
+-	}
+-
+-	if (brect) {  /* only if need brect */
+-		/* rotate bounding rectangle */
+-		brect[0] = (int)(ll_x * cos_a - ll_y * sin_a);
+-		brect[1] = (int)(ll_x * sin_a + ll_y * cos_a);
+-		brect[2] = (int)(ur_x * cos_a - ll_y * sin_a);
+-		brect[3] = (int)(ur_x * sin_a + ll_y * cos_a);
+-		brect[4] = (int)(ur_x * cos_a - ur_y * sin_a);
+-		brect[5] = (int)(ur_x * sin_a + ur_y * cos_a);
+-		brect[6] = (int)(ll_x * cos_a - ur_y * sin_a);
+-		brect[7] = (int)(ll_x * sin_a + ur_y * cos_a);
+-	
+-		/* scale, round and offset brect */
+-		i = 0;
+-		while (i<8) {
+-			brect[i] = x + (brect[i] + 32) / 64;
+-			i++;
+-			brect[i] = y - (brect[i] + 32) / 64;
+-			i++;
+-		}
+-	}
+-
+-	if ( tmpstr ) gdFree(tmpstr);
+-	return (char *)NULL;
+-}
+-
+-#endif /* HAVE_LIBFREETYPE */
+diff -Naur gd-1.8.4/gdtestft.c gd-1.8.4.patch/gdtestft.c
+--- gd-1.8.4/gdtestft.c	Tue Feb  6 14:44:02 2001
++++ gd-1.8.4.patch/gdtestft.c	Wed Dec 31 19:00:00 1969
+@@ -1,94 +0,0 @@
+-#include "gd.h"
+-#include <string.h>
+-
+-#define PI 3.141592
+-#define DEG2RAD(x) ((x)*PI/180.)
+-
+-#define MAX(x,y) ((x) > (y) ? (x) : (y))
+-#define MIN(x,y) ((x) < (y) ? (x) : (y))
+-
+-#define MAX4(x,y,z,w) \
+-	((MAX((x),(y))) > (MAX((z),(w))) ? (MAX((x),(y))) : (MAX((z),(w))))
+-#define MIN4(x,y,z,w) \
+-	((MIN((x),(y))) < (MIN((z),(w))) ? (MIN((x),(y))) : (MIN((z),(w))))
+-
+-#define MAXX(x) MAX4(x[0],x[2],x[4],x[6])
+-#define MINX(x) MIN4(x[0],x[2],x[4],x[6])
+-#define MAXY(x) MAX4(x[1],x[3],x[5],x[7])
+-#define MINY(x) MIN4(x[1],x[3],x[5],x[7])
+-
+-int main(int argc, char *argv[])
+-{
+-#ifndef HAVE_LIBFREETYPE
+-	fprintf(stderr, "gd was not compiled with HAVE_LIBFREETYPE defined.\n");
+-	fprintf(stderr, "Install the FreeType library, including the\n");
+-	fprintf(stderr, "header files. Then edit the gd Makefile, type\n");
+-	fprintf(stderr, "make clean, and type make again.\n");
+-	return 1;
+-#else
+-	gdImagePtr im;
+-	int black;
+-	int white;
+-	int brect[8];
+-	int x, y;
+-	char *err;
+-	FILE *out;
+-#ifdef JISX0208
+-	char *s = "Hello. ‚±‚ñ‚É‚¿‚Í Qyjpqg,"; /* String to draw. */
+-#else
+-	char *s = "Hello. Qyjpqg,"; /* String to draw. */
+-#endif
+-
+-	double sz = 40.;
+-
+-#if 0
+-	double angle = 0.;
+-#else
+-	double angle = DEG2RAD(-90);
+-#endif
+-
+-#ifdef JISX0208
+-	char *f = "/usr/openwin/lib/locale/ja/X11/fonts/TT/HG-MinchoL.ttf"; /* UNICODE */
+-	/* char *f = "/usr/local/lib/fonts/truetype/DynaFont/dfpop1.ttf"; */ /* SJIS */
+-#else
+-	char *f = "times"; /* TrueType font */
+-#endif
+-	
+-	/* obtain brect so that we can size the image */
+-	err = gdImageStringFT((gdImagePtr)NULL,&brect[0],0,f,sz,angle,0,0,s);
+-	if (err) {fprintf(stderr,err); return 1;}
+-
+-	/* create an image just big enough for the string */
+-	x = MAXX(brect) - MINX(brect) + 6;
+-	y = MAXY(brect) - MINY(brect) + 6;
+-#if 0
+-	im = gdImageCreate(500,500);
+-#else
+-	im = gdImageCreate(x,y);
+-#endif
+-
+-	/* Background color (first allocated) */
+-	white = gdImageColorResolve(im, 255, 255, 255);
+-	black = gdImageColorResolve(im, 0, 0, 0);
+-
+-	/* render the string, offset origin to center string*/
+-	x = 0 - MINX(brect) + 3;
+-	y = 0 - MINY(brect) + 3;
+-
+-	err = gdImageStringFT(im,NULL,black,f,sz,angle,x,y,s);
+-	if (err) {fprintf(stderr,err); return 1;}
+-	/* TBB: Write img to test/fttest.png */
+-	out = fopen("test/fttest.png", "wb");
+-	if (!out) {
+-		fprintf(stderr, "Can't create test/fttest.png\n");
+-		exit(1);
+-	}
+-	gdImagePng(im, out);
+-	fclose(out);
+-	fprintf(stderr, "Test image written to test/fttest.png\n");
+-	/* Destroy it */
+-	gdImageDestroy(im);
+-
+-	return 0;
+-#endif /* HAVE_FREETYPE */
+-}	
+diff -Naur gd-1.8.4/gdtojpeg.c gd-1.8.4.patch/gdtojpeg.c
+--- gd-1.8.4/gdtojpeg.c	Wed Dec 31 19:00:00 1969
++++ gd-1.8.4.patch/gdtojpeg.c	Sat Mar 31 22:52:12 2001
+@@ -0,0 +1,40 @@
++#include <stdio.h>
++#include "gd.h"
++
++/* A short program which converts a .gd file into a .jpeg file, for
++	your convenience in creating images on the fly from a
++	basis image that must be loaded quickly. The .gd format
++	is not intended to be a general-purpose format. */
++
++int main(int argc, char **argv)
++{
++	gdImagePtr im;
++	FILE *in, *out;
++	if (argc != 3) {
++		fprintf(stderr, "Usage: gdtopng filename.gd filename.jpeg\n");
++		exit(1);
++	}
++	in = fopen(argv[1], "rb");
++	if (!in) {
++		fprintf(stderr, "Input file does not exist!\n");
++		exit(1);
++	}
++	im = gdImageCreateFromGd(in);
++	fclose(in);
++	if (!im) {
++		fprintf(stderr, "Input is not in PNG format!\n");
++		exit(1);
++	}
++	out = fopen(argv[2], "wb");
++	if (!out) {
++		fprintf(stderr, "Output file cannot be written to!\n");
++		gdImageDestroy(im);
++		exit(1);	
++	}
++	gdImageJpeg(im, out, 50);
++	fclose(out);
++	gdImageDestroy(im);
++
++	return 0;
++}
++
+diff -Naur gd-1.8.4/gdttf.c gd-1.8.4.patch/gdttf.c
+--- gd-1.8.4/gdttf.c	Tue Feb  6 14:44:02 2001
++++ gd-1.8.4.patch/gdttf.c	Sat Mar 31 22:52:12 2001
+@@ -11,7 +11,7 @@
+ #include <string.h>
+ #include <math.h>
+ #include "gd.h"
+-#ifndef HAVE_LIBTTF
++#ifndef HAVE_TTF
+ char * gdImageStringTTF(gdImage *im, int *brect, int fg, char *fontname,
+                 double ptsize, double angle, int x, int y, char *string)
+ {
 diff -Naur gd-1.8.4/gdxpm.c gd-1.8.4.patch/gdxpm.c
 --- gd-1.8.4/gdxpm.c	Tue Feb  6 14:44:02 2001
-+++ gd-1.8.4.patch/gdxpm.c	Wed Sep 26 00:31:11 2001
++++ gd-1.8.4.patch/gdxpm.c	Sat Mar 31 22:52:12 2001
 @@ -18,7 +18,7 @@
  
  #else
@@ -6454,9 +8126,18 @@ diff -Naur gd-1.8.4/gdxpm.c gd-1.8.4.patch/gdxpm.c
  
  gdImagePtr gdImageCreateFromXpm(char *filename)
  	{
+diff -Naur gd-1.8.4/install-item gd-1.8.4.patch/install-item
+--- gd-1.8.4/install-item	Tue Feb  6 14:44:02 2001
++++ gd-1.8.4.patch/install-item	Wed Dec 31 19:00:00 1969
+@@ -1,5 +0,0 @@
+-#!/bin/sh
+-
+-cp $2 $3
+-chmod $1 $3
+-
 diff -Naur gd-1.8.4/install-sh gd-1.8.4.patch/install-sh
 --- gd-1.8.4/install-sh	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/install-sh	Tue Sep 25 22:50:50 2001
++++ gd-1.8.4.patch/install-sh	Sat Mar 31 22:52:12 2001
 @@ -0,0 +1,250 @@
 +#!/bin/sh
 +#
@@ -6710,13 +8391,13 @@ diff -Naur gd-1.8.4/install-sh gd-1.8.4.patch/install-sh
 +exit 0
 diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 --- gd-1.8.4/ltconfig	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/ltconfig	Tue Sep 25 22:51:28 2001
-@@ -0,0 +1,1512 @@
++++ gd-1.8.4.patch/ltconfig	Sat Mar 31 23:15:27 2001
+@@ -0,0 +1,3114 @@
 +#! /bin/sh
 +
 +# ltconfig - Create a system-specific libtool.
-+# Copyright (C) 1996-1998 Free Software Foundation, Inc.
-+# Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996
++# Copyright (C) 1996-1999 Free Software Foundation, Inc.
++# Originally by Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996
 +#
 +# This file is free software; you can redistribute it and/or modify it
 +# under the terms of the GNU General Public License as published by
@@ -6739,30 +8420,129 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +
 +# A lot of this script is taken from autoconf-2.10.
 +
++# Check that we are running under the correct shell.
++SHELL=${CONFIG_SHELL-/bin/sh}
++echo=echo
++if test "X$1" = X--no-reexec; then
++  # Discard the --no-reexec flag, and continue.
++  shift
++elif test "X$1" = X--fallback-echo; then
++  # Avoid inline document here, it may be left over
++  :
++elif test "X`($echo '\t') 2>/dev/null`" = 'X\t'; then
++  # Yippee, $echo works!
++  :
++else
++  # Restart under the correct shell.
++  exec "$SHELL" "$0" --no-reexec ${1+"$@"}
++fi
++
++if test "X$1" = X--fallback-echo; then
++  # used as fallback echo
++  shift
++  cat <<EOF
++$*
++EOF
++  exit 0
++fi
++
++# Find the correct PATH separator.  Usually this is `:', but
++# DJGPP uses `;' like DOS.
++if test "X${PATH_SEPARATOR+set}" != Xset; then
++  UNAME=${UNAME-`uname 2>/dev/null`}
++  case X$UNAME in
++    *-DOS) PATH_SEPARATOR=';' ;;
++    *)     PATH_SEPARATOR=':' ;;
++  esac
++fi
++
 +# The HP-UX ksh and POSIX shell print the target directory to stdout
 +# if CDPATH is set.
-+if test "${CDPATH+set}" = set; then CDPATH=; export CDPATH; fi
++if test "X${CDPATH+set}" = Xset; then CDPATH=:; export CDPATH; fi
 +
-+echo=echo
-+if test "X`($echo '\t') 2>/dev/null`" = 'X\t'; then :
-+else
-+  # The Solaris and AIX default echo program unquotes backslashes.
-+  # This makes it impossible to quote backslashes using
++if test "X${echo_test_string+set}" != Xset; then
++  # find a string as large as possible, as long as the shell can cope with it
++  for cmd in 'sed 50q "$0"' 'sed 20q "$0"' 'sed 10q "$0"' 'sed 2q "$0"' 'echo test'; do
++    # expected sizes: less than 2Kb, 1Kb, 512 bytes, 16 bytes, ...
++    if (echo_test_string="`eval $cmd`") 2>/dev/null &&
++       echo_test_string="`eval $cmd`" &&
++       (test "X$echo_test_string" = "X$echo_test_string") 2>/dev/null; then
++      break
++    fi
++  done
++fi
++
++if test "X`($echo '\t') 2>/dev/null`" != 'X\t' ||
++   test "X`($echo "$echo_test_string") 2>/dev/null`" != X"$echo_test_string"; then
++  # The Solaris, AIX, and Digital Unix default echo programs unquote
++  # backslashes.  This makes it impossible to quote backslashes using
 +  #   echo "$something" | sed 's/\\/\\\\/g'
-+  # So, we emulate echo with printf '%s\n'
-+  echo="printf %s\\n"
-+  if test "X`($echo '\t') 2>/dev/null`" = 'X\t'; then :
-+  else
-+    # Oops.  We have no working printf.  Try to find a not-so-buggy echo.
-+    echo=echo
-+    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}:"
-+    for dir in $PATH /usr/ucb; do
-+      if test -f $dir/echo && test "X`$dir/echo '\t'`" = 'X\t'; then
-+        echo="$dir/echo"
-+        break
++  #
++  # So, first we look for a working echo in the user's PATH.
++
++  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
++  for dir in $PATH /usr/ucb; do
++    if (test -f $dir/echo || test -f $dir/echo$ac_exeext) &&
++       test "X`($dir/echo '\t') 2>/dev/null`" = 'X\t' &&
++       test "X`($dir/echo "$echo_test_string") 2>/dev/null`" = X"$echo_test_string"; then
++      echo="$dir/echo"
++      break
++    fi
++  done
++  IFS="$save_ifs"
++
++  if test "X$echo" = Xecho; then
++    # We didn't find a better echo, so look for alternatives.
++    if test "X`(print -r '\t') 2>/dev/null`" = 'X\t' &&
++       test "X`(print -r "$echo_test_string") 2>/dev/null`" = X"$echo_test_string"; then
++      # This shell has a builtin print -r that does the trick.
++      echo='print -r'
++    elif (test -f /bin/ksh || test -f /bin/ksh$ac_exeext) &&
++	 test "X$CONFIG_SHELL" != X/bin/ksh; then
++      # If we have ksh, try running ltconfig again with it.
++      ORIGINAL_CONFIG_SHELL="${CONFIG_SHELL-/bin/sh}"
++      export ORIGINAL_CONFIG_SHELL
++      CONFIG_SHELL=/bin/ksh
++      export CONFIG_SHELL
++      exec "$CONFIG_SHELL" "$0" --no-reexec ${1+"$@"}
++    else
++      # Try using printf.
++      echo='printf "%s\n"'
++      if test "X`($echo '\t') 2>/dev/null`" = 'X\t' &&
++	 test "X`($echo "$echo_test_string") 2>/dev/null`" = X"$echo_test_string"; then
++	# Cool, printf works
++	:
++      elif test "X`("$ORIGINAL_CONFIG_SHELL" "$0" --fallback-echo '\t') 2>/dev/null`" = 'X\t' &&
++	   test "X`("$ORIGINAL_CONFIG_SHELL" "$0" --fallback-echo "$echo_test_string") 2>/dev/null`" = X"$echo_test_string"; then
++	CONFIG_SHELL="$ORIGINAL_CONFIG_SHELL"
++	export CONFIG_SHELL
++	SHELL="$CONFIG_SHELL"
++	export SHELL
++	echo="$CONFIG_SHELL $0 --fallback-echo"
++      elif test "X`("$CONFIG_SHELL" "$0" --fallback-echo '\t') 2>/dev/null`" = 'X\t' &&
++	   test "X`("$CONFIG_SHELL" "$0" --fallback-echo "$echo_test_string") 2>/dev/null`" = X"$echo_test_string"; then
++	echo="$CONFIG_SHELL $0 --fallback-echo"
++      else
++	# maybe with a smaller string...
++	prev=:
++
++	for cmd in 'echo test' 'sed 2q "$0"' 'sed 10q "$0"' 'sed 20q "$0"' 'sed 50q "$0"'; do
++	  if (test "X$echo_test_string" = "X`eval $cmd`") 2>/dev/null; then
++	    break
++	  fi
++	  prev="$cmd"
++	done
++
++	if test "$prev" != 'sed 50q "$0"'; then
++	  echo_test_string=`eval $prev`
++	  export echo_test_string
++	  exec "${ORIGINAL_CONFIG_SHELL}" "$0" ${1+"$@"}
++	else
++	  # Oops.  We lost completely, so just stick with echo.
++	  echo=echo
++	fi
 +      fi
-+    done
-+    IFS="$save_ifs"
++    fi
 +  fi
 +fi
 +
@@ -6774,24 +8554,34 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +# Same as above, but do not quote variable references.
 +double_quote_subst='s/\([\\"\\`\\\\]\)/\\\1/g'
 +
++# Sed substitution to delay expansion of an escaped shell variable in a
++# double_quote_subst'ed string.
++delay_variable_subst='s/\\\\\\\\\\\$/\\\\\\$/g'
++
 +# The name of this program.
 +progname=`$echo "X$0" | $Xsed -e 's%^.*/%%'`
 +
 +# Constants:
 +PROGRAM=ltconfig
 +PACKAGE=libtool
-+VERSION=1.2
-+ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.c 1>&5'
-+ac_link='${CC-cc} -o conftest $CFLAGS $CPPFLAGS $LDFLAGS conftest.c $LIBS 1>&5'
++VERSION=1.3.5
++TIMESTAMP=" (1.385.2.206 2000/05/27 11:12:27)"
++ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.$ac_ext 1>&5'
++ac_link='${CC-cc} -o conftest $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
 +rm="rm -f"
 +
 +help="Try \`$progname --help' for more information."
 +
 +# Global variables:
++default_ofile=libtool
 +can_build_shared=yes
 +enable_shared=yes
-+# All known linkers require a `.a' archive for static linking.
++# All known linkers require a `.a' archive for static linking (except M$VC,
++# which needs '.lib').
 +enable_static=yes
++enable_fast_install=yes
++enable_dlopen=unknown
++enable_win32_dll=no
 +ltmain=
 +silent=
 +srcdir=
@@ -6799,18 +8589,30 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +ac_config_sub=
 +host=
 +nonopt=
++ofile="$default_ofile"
 +verify_host=yes
 +with_gcc=no
 +with_gnu_ld=no
++need_locks=yes
++ac_ext=c
++objext=o
++libext=a
++exeext=
++cache_file=
 +
 +old_AR="$AR"
 +old_CC="$CC"
 +old_CFLAGS="$CFLAGS"
 +old_CPPFLAGS="$CPPFLAGS"
++old_LDFLAGS="$LDFLAGS"
 +old_LD="$LD"
 +old_LN_S="$LN_S"
++old_LIBS="$LIBS"
 +old_NM="$NM"
 +old_RANLIB="$RANLIB"
++old_DLLTOOL="$DLLTOOL"
++old_OBJDUMP="$OBJDUMP"
++old_AS="$AS"
 +
 +# Parse the command line options.
 +args=
@@ -6831,32 +8633,50 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +
 +  case "$option" in
 +  --help) cat <<EOM
-+Usage: $progname [OPTION]... LTMAIN [HOST]
++Usage: $progname [OPTION]... [HOST [LTMAIN]]
 +
 +Generate a system-specific libtool script.
 +
++    --debug                enable verbose shell tracing
 +    --disable-shared       do not build shared libraries
 +    --disable-static       do not build static libraries
++    --disable-fast-install do not optimize for fast installation
++    --enable-dlopen        enable dlopen support
++    --enable-win32-dll     enable building dlls on win32 hosts
 +    --help                 display this help and exit
 +    --no-verify            do not verify that HOST is a valid host type
++-o, --output=FILE          specify the output file [default=$default_ofile]
 +    --quiet                same as \`--silent'
 +    --silent               do not print informational messages
 +    --srcdir=DIR           find \`config.guess' in DIR
 +    --version              output version information and exit
 +    --with-gcc             assume that the GNU C compiler will be used
 +    --with-gnu-ld          assume that the C compiler uses the GNU linker
++    --disable-lock         disable file locking
++    --cache-file=FILE      configure cache file
 +
-+LTMAIN is the \`ltmain.sh' shell script fragment that provides basic libtool
-+functionality.
++LTMAIN is the \`ltmain.sh' shell script fragment or \`ltmain.c' program
++that provides basic libtool functionality.
 +
 +HOST is the canonical host system name [default=guessed].
 +EOM
 +  exit 0
 +  ;;
 +
++  --debug)
++    echo "$progname: enabling shell trace mode"
++    set -x
++    ;;
++
 +  --disable-shared) enable_shared=no ;;
 +
 +  --disable-static) enable_static=no ;;
++
++  --disable-fast-install) enable_fast_install=no ;;
++
++  --enable-dlopen) enable_dlopen=yes ;;
++
++  --enable-win32-dll) enable_win32_dll=yes ;;
 +
 +  --quiet | --silent) silent=yes ;;
 +
@@ -6865,10 +8685,17 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +
 +  --no-verify) verify_host=no ;;
 +
-+  --version) echo "$PROGRAM (GNU $PACKAGE) $VERSION"; exit 0 ;;
++  --output | -o) prev=ofile ;;
++  --output=*) ofile="$optarg" ;;
++
++  --version) echo "$PROGRAM (GNU $PACKAGE) $VERSION$TIMESTAMP"; exit 0 ;;
 +
 +  --with-gcc) with_gcc=yes ;;
 +  --with-gnu-ld) with_gnu_ld=yes ;;
++
++  --disable-lock) need_locks=no ;;
++
++  --cache-file=*) cache_file="$optarg" ;;
 +
 +  -*)
 +    echo "$progname: unrecognized option \`$option'" 1>&2
@@ -6899,8 +8726,7 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  exit 1
 +fi
 +
-+if test -f "$ltmain"; then :
-+else
++if test ! -f "$ltmain"; then
 +  echo "$progname: \`$ltmain' does not exist" 1>&2
 +  echo "$help" 1>&2
 +  exit 1
@@ -6938,8 +8764,13 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +# Only set LANG and LC_ALL to C if already set.
 +# These must not be set unconditionally because not all systems understand
 +# e.g. LANG=C (notably SCO).
-+if test "${LC_ALL+set}" = set; then LC_ALL=C; export LC_ALL; fi
-+if test "${LANG+set}"   = set; then LANG=C;   export LANG;   fi
++if test "X${LC_ALL+set}" = Xset; then LC_ALL=C; export LC_ALL; fi
++if test "X${LANG+set}"   = Xset; then LANG=C;   export LANG;   fi
++
++if test -n "$cache_file" && test -r "$cache_file"; then
++  echo "loading cache $cache_file within ltconfig"
++  . $cache_file
++fi
 +
 +if (echo "testing\c"; echo 1,2,3) | grep c >/dev/null; then
 +  # Stardent Vistra SVR4 grep lacks -e, says ghazi@caip.rutgers.edu.
@@ -6954,8 +8785,8 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +fi
 +
 +if test -z "$srcdir"; then
-+  # Assume the source directory is the same one as the path to ltmain.sh.
-+  srcdir=`$echo "$ltmain" | $Xsed -e 's%/[^/]*$%%'`
++  # Assume the source directory is the same one as the path to LTMAIN.
++  srcdir=`$echo "X$ltmain" | $Xsed -e 's%/[^/]*$%%'`
 +  test "$srcdir" = "$ltmain" && srcdir=.
 +fi
 +
@@ -6978,7 +8809,7 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  ac_config_sub=$ac_aux_dir/config.sub
 +
 +  # Make sure we can run config.sub.
-+  if $ac_config_sub sun4 >/dev/null 2>&1; then :
++  if $SHELL $ac_config_sub sun4 >/dev/null 2>&1; then :
 +  else
 +    echo "$progname: cannot run $ac_config_sub" 1>&2
 +    echo "$help" 1>&2
@@ -6990,14 +8821,14 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  host_alias=$host
 +  case "$host_alias" in
 +  "")
-+    if host_alias=`$ac_config_guess`; then :
++    if host_alias=`$SHELL $ac_config_guess`; then :
 +    else
 +      echo "$progname: cannot guess host type; you must specify one" 1>&2
 +      echo "$help" 1>&2
 +      exit 1
 +    fi ;;
 +  esac
-+  host=`$ac_config_sub $host_alias`
++  host=`$SHELL $ac_config_sub $host_alias`
 +  echo "$ac_t$host" 1>&6
 +
 +  # Make sure the host verified.
@@ -7026,7 +8857,7 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  # AIX sometimes has problems with the GCC collect2 program.  For some
 +  # reason, if we set the COLLECT_NAMES environment variable, the problems
 +  # vanish in a puff of smoke.
-+  if test "${COLLECT_NAMES+set}" != set; then
++  if test "X${COLLECT_NAMES+set}" != Xset; then
 +    COLLECT_NAMES=
 +    export COLLECT_NAMES
 +  fi
@@ -7041,15 +8872,18 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +# Set a sane default for `AR'.
 +test -z "$AR" && AR=ar
 +
++# Set a sane default for `OBJDUMP'.
++test -z "$OBJDUMP" && OBJDUMP=objdump
++
 +# If RANLIB is not set, then run the test.
 +if test "${RANLIB+set}" != "set"; then
 +  result=no
 +
 +  echo $ac_n "checking for ranlib... $ac_c" 1>&6
-+  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}:"
++  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
 +  for dir in $PATH; do
 +    test -z "$dir" && dir=.
-+    if test -f $dir/ranlib; then
++    if test -f $dir/ranlib || test -f $dir/ranlib$ac_exeext; then
 +      RANLIB="ranlib"
 +      result="ranlib"
 +      break
@@ -7061,20 +8895,24 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +fi
 +
 +if test -n "$RANLIB"; then
-+  old_archive_cmds="$old_archive_cmds;\$RANLIB \$oldlib"
-+  old_postinstall_cmds="\$RANLIB \$oldlib;$old_postinstall_cmds"
++  old_archive_cmds="$old_archive_cmds~\$RANLIB \$oldlib"
++  old_postinstall_cmds="\$RANLIB \$oldlib~$old_postinstall_cmds"
 +fi
++
++# Set sane defaults for `DLLTOOL', `OBJDUMP', and `AS', used on cygwin.
++test -z "$DLLTOOL" && DLLTOOL=dlltool
++test -z "$OBJDUMP" && OBJDUMP=objdump
++test -z "$AS" && AS=as
 +
 +# Check to see if we are using GCC.
 +if test "$with_gcc" != yes || test -z "$CC"; then
 +  # If CC is not set, then try to find GCC or a usable CC.
 +  if test -z "$CC"; then
 +    echo $ac_n "checking for gcc... $ac_c" 1>&6
-+    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}:"
++    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
 +    for dir in $PATH; do
-+      IFS="$save_ifs"
 +      test -z "$dir" && dir=.
-+      if test -f $dir/gcc; then
++      if test -f $dir/gcc || test -f $dir/gcc$ac_exeext; then
 +	CC="gcc"
 +	break
 +      fi
@@ -7091,11 +8929,11 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  # Not "gcc", so try "cc", rejecting "/usr/ucb/cc".
 +  if test -z "$CC"; then
 +    echo $ac_n "checking for cc... $ac_c" 1>&6
-+    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}:"
++    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
 +    cc_rejected=no
 +    for dir in $PATH; do
 +      test -z "$dir" && dir=.
-+      if test -f $dir/cc; then
++      if test -f $dir/cc || test -f $dir/cc$ac_exeext; then
 +	if test "$dir/cc" = "/usr/ucb/cc"; then
 +	  cc_rejected=yes
 +	  continue
@@ -7135,7 +8973,7 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  # Now see if the compiler is really GCC.
 +  with_gcc=no
 +  echo $ac_n "checking whether we are using GNU C... $ac_c" 1>&6
-+  echo "$progname:424: checking whether we are using GNU C" >&5
++  echo "$progname:581: checking whether we are using GNU C" >&5
 +
 +  $rm conftest.c
 +  cat > conftest.c <<EOF
@@ -7143,7 +8981,7 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  yes;
 +#endif
 +EOF
-+  if { ac_try='${CC-cc} -E conftest.c'; { (eval echo $progname:432: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
++  if { ac_try='${CC-cc} -E conftest.c'; { (eval echo $progname:589: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
 +    with_gcc=yes
 +  fi
 +  $rm conftest.c
@@ -7153,6 +8991,60 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +# Allow CC to be a program name with arguments.
 +set dummy $CC
 +compiler="$2"
++
++echo $ac_n "checking for object suffix... $ac_c" 1>&6
++$rm conftest*
++echo 'int i = 1;' > conftest.c
++echo "$progname:603: checking for object suffix" >& 5
++if { (eval echo $progname:604: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; }; then
++  # Append any warnings to the config.log.
++  cat conftest.err 1>&5
++
++  for ac_file in conftest.*; do
++    case $ac_file in
++    *.c) ;;
++    *) objext=`echo $ac_file | sed -e s/conftest.//` ;;
++    esac
++  done
++else
++  cat conftest.err 1>&5
++  echo "$progname: failed program was:" >&5
++  cat conftest.c >&5
++fi
++$rm conftest*
++echo "$ac_t$objext" 1>&6
++
++echo $ac_n "checking for executable suffix... $ac_c" 1>&6
++if eval "test \"`echo '$''{'ac_cv_exeext'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  ac_cv_exeext="no"
++  $rm conftest*
++  echo 'main () { return 0; }' > conftest.c
++  echo "$progname:629: checking for executable suffix" >& 5
++  if { (eval echo $progname:630: \"$ac_link\") 1>&5; (eval $ac_link) 2>conftest.err; }; then
++    # Append any warnings to the config.log.
++    cat conftest.err 1>&5
++
++    for ac_file in conftest.*; do
++      case $ac_file in
++      *.c | *.err | *.$objext ) ;;
++      *) ac_cv_exeext=.`echo $ac_file | sed -e s/conftest.//` ;;
++      esac
++    done
++  else
++    cat conftest.err 1>&5
++    echo "$progname: failed program was:" >&5
++    cat conftest.c >&5
++  fi
++  $rm conftest*
++fi
++if test "X$ac_cv_exeext" = Xno; then
++  exeext=""
++else
++  exeext="$ac_cv_exeext"
++fi
++echo "$ac_t$ac_cv_exeext" 1>&6
 +
 +echo $ac_n "checking for $compiler option to produce PIC... $ac_c" 1>&6
 +pic_flag=
@@ -7164,13 +9056,21 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +if test "$with_gcc" = yes; then
 +  wl='-Wl,'
 +  link_static_flag='-static'
-+  no_builtin_flag=' -fno-builtin'
 +
 +  case "$host_os" in
-+  aix3* | aix4* | irix5* | irix6* | osf3* | osf4*)
++  beos* | irix5* | irix6* | osf3* | osf4* | osf5*)
 +    # PIC is the default for these OSes.
 +    ;;
-+  os2*)
++  aix*)
++    # Below there is a dirty hack to force normal static linking with -ldl
++    # The problem is because libdl dynamically linked with both libc and
++    # libC (AIX C++ library), which obviously doesn't included in libraries
++    # list by gcc. This cause undefined symbols with -static flags.
++    # This hack allows C programs to be linked with "-static -ldl", but
++    # we not sure about C++ programs.
++    link_static_flag="$link_static_flag ${wl}-lC"
++    ;;
++  cygwin* | mingw* | os2*)
 +    # We can build DLLs from non-PIC.
 +    ;;
 +  amigaos*)
@@ -7178,6 +9078,11 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +    # adding the `-m68020' flag to GCC prevents building anything better,
 +    # like `-m68040'.
 +    pic_flag='-m68020 -resident32 -malways-restore-a4'
++    ;;
++  sysv4*MP*)
++    if test -d /usr/nec; then
++       pic_flag=-Kconform_pic
++    fi
 +    ;;
 +  *)
 +    pic_flag='-fPIC'
@@ -7191,7 +9096,7 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +    link_static_flag='-bnso -bI:/lib/syscalls.exp'
 +    ;;
 +
-+  hpux9* | hpux10*)
++  hpux9* | hpux10* | hpux11*)
 +    # Is there a better link_static_flag that works with the bundled CC?
 +    wl='-Wl,'
 +    link_static_flag="${wl}-a ${wl}archive"
@@ -7204,11 +9109,11 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +    # PIC (with -KPIC) is the default.
 +    ;;
 +
-+  os2*)
++  cygwin* | mingw* | os2*)
 +    # We can build DLLs from non-PIC.
 +    ;;
 +
-+  osf3* | osf4*)
++  osf3* | osf4* | osf5*)
 +    # All OSF/1 code is PIC.
 +    wl='-Wl,'
 +    link_static_flag='-non_shared'
@@ -7220,7 +9125,7 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +    special_shlib_compile_flags='-belf'
 +    ;;
 +
-+  solaris2*)
++  solaris*)
 +    pic_flag='-KPIC'
 +    link_static_flag='-Bstatic'
 +    wl='-Wl,'
@@ -7232,7 +9137,7 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +    wl='-Qoption ld '
 +    ;;
 +
-+  sysv4.2uw2*)
++  sysv4 | sysv4.2uw2* | sysv4.3* | sysv5*)
 +    pic_flag='-KPIC'
 +    link_static_flag='-Bstatic'
 +    wl='-Wl,'
@@ -7242,7 +9147,12 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +    pic_flag='-pic'
 +    link_static_flag='-Bstatic'
 +    ;;
-+
++  sysv4*MP*)
++    if test -d /usr/nec ;then
++      pic_flag='-Kconform_pic'
++      link_static_flag='-Bstatic'
++    fi
++    ;;
 +  *)
 +    can_build_shared=no
 +    ;;
@@ -7255,25 +9165,33 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  # Check to make sure the pic_flag actually works.
 +  echo $ac_n "checking if $compiler PIC flag $pic_flag works... $ac_c" 1>&6
 +  $rm conftest*
-+  echo > conftest.c
++  echo "int some_variable = 0;" > conftest.c
 +  save_CFLAGS="$CFLAGS"
 +  CFLAGS="$CFLAGS $pic_flag -DPIC"
-+  echo "$progname:547: checking if $compiler PIC flag $pic_flag works" >&5
-+  if { (eval echo $progname:548: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.o; then
++  echo "$progname:776: checking if $compiler PIC flag $pic_flag works" >&5
++  if { (eval echo $progname:777: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.$objext; then
 +    # Append any warnings to the config.log.
 +    cat conftest.err 1>&5
-+
-+    # On HP-UX, both CC and GCC only warn that PIC is supported... then they
-+    # create non-PIC objects.  So, if there were any warnings, we assume that
-+    # PIC is not supported.
-+    if test -s conftest.err; then
-+      echo "$ac_t"no 1>&6
-+      can_build_shared=no
-+      pic_flag=
-+    else
++    
++    case "$host_os" in
++    hpux9* | hpux10* | hpux11*)
++      # On HP-UX, both CC and GCC only warn that PIC is supported... then they
++      # create non-PIC objects.  So, if there were any warnings, we assume that
++      # PIC is not supported.
++      if test -s conftest.err; then
++	echo "$ac_t"no 1>&6
++	can_build_shared=no
++	pic_flag=
++      else
++	echo "$ac_t"yes 1>&6
++	pic_flag=" $pic_flag"
++      fi
++      ;;
++    *)
 +      echo "$ac_t"yes 1>&6
 +      pic_flag=" $pic_flag"
-+    fi
++      ;;
++    esac
 +  else
 +    # Append any errors to the config.log.
 +    cat conftest.err 1>&5
@@ -7285,6 +9203,136 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  $rm conftest*
 +else
 +  echo "$ac_t"none 1>&6
++fi
++
++# Check to see if options -o and -c are simultaneously supported by compiler
++echo $ac_n "checking if $compiler supports -c -o file.o... $ac_c" 1>&6
++$rm -r conftest 2>/dev/null
++mkdir conftest
++cd conftest
++$rm conftest*
++echo "int some_variable = 0;" > conftest.c
++mkdir out
++# According to Tom Tromey, Ian Lance Taylor reported there are C compilers
++# that will create temporary files in the current directory regardless of
++# the output directory.  Thus, making CWD read-only will cause this test
++# to fail, enabling locking or at least warning the user not to do parallel
++# builds.
++chmod -w .
++save_CFLAGS="$CFLAGS"
++CFLAGS="$CFLAGS -o out/conftest2.o"
++echo "$progname:829: checking if $compiler supports -c -o file.o" >&5
++if { (eval echo $progname:830: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>out/conftest.err; } && test -s out/conftest2.o; then
++
++  # The compiler can only warn and ignore the option if not recognized
++  # So say no if there are warnings
++    if test -s out/conftest.err; then
++      echo "$ac_t"no 1>&6
++      compiler_c_o=no
++    else
++      echo "$ac_t"yes 1>&6
++      compiler_c_o=yes
++    fi
++else
++  # Append any errors to the config.log.
++  cat out/conftest.err 1>&5
++  compiler_c_o=no
++  echo "$ac_t"no 1>&6
++fi
++CFLAGS="$save_CFLAGS"
++chmod u+w .
++$rm conftest* out/*
++rmdir out
++cd ..
++rmdir conftest
++$rm -r conftest 2>/dev/null
++
++if test x"$compiler_c_o" = x"yes"; then
++  # Check to see if we can write to a .lo
++  echo $ac_n "checking if $compiler supports -c -o file.lo... $ac_c" 1>&6
++  $rm conftest*
++  echo "int some_variable = 0;" > conftest.c
++  save_CFLAGS="$CFLAGS"
++  CFLAGS="$CFLAGS -c -o conftest.lo"
++  echo "$progname:862: checking if $compiler supports -c -o file.lo" >&5
++if { (eval echo $progname:863: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.lo; then
++
++    # The compiler can only warn and ignore the option if not recognized
++    # So say no if there are warnings
++      if test -s conftest.err; then
++	echo "$ac_t"no 1>&6
++	compiler_o_lo=no
++      else
++	echo "$ac_t"yes 1>&6
++	compiler_o_lo=yes
++      fi
++  else
++    # Append any errors to the config.log.
++    cat conftest.err 1>&5
++    compiler_o_lo=no
++    echo "$ac_t"no 1>&6
++  fi
++  CFLAGS="$save_CFLAGS"
++  $rm conftest*
++else
++  compiler_o_lo=no
++fi
++
++# Check to see if we can do hard links to lock some files if needed
++hard_links="nottested"
++if test "$compiler_c_o" = no && test "$need_locks" != no; then
++  # do not overwrite the value of need_locks provided by the user
++  echo $ac_n "checking if we can lock with hard links... $ac_c" 1>&6
++  hard_links=yes
++  $rm conftest*
++  ln conftest.a conftest.b 2>/dev/null && hard_links=no
++  touch conftest.a
++  ln conftest.a conftest.b 2>&5 || hard_links=no
++  ln conftest.a conftest.b 2>/dev/null && hard_links=no
++  echo "$ac_t$hard_links" 1>&6
++  $rm conftest*
++  if test "$hard_links" = no; then
++    echo "*** WARNING: \`$CC' does not support \`-c -o', so \`make -j' may be unsafe" >&2
++    need_locks=warn
++  fi
++else
++  need_locks=no
++fi
++
++if test "$with_gcc" = yes; then
++  # Check to see if options -fno-rtti -fno-exceptions are supported by compiler
++  echo $ac_n "checking if $compiler supports -fno-rtti -fno-exceptions ... $ac_c" 1>&6
++  $rm conftest*
++  echo "int some_variable = 0;" > conftest.c
++  save_CFLAGS="$CFLAGS"
++  CFLAGS="$CFLAGS -fno-rtti -fno-exceptions -c conftest.c"
++  echo "$progname:914: checking if $compiler supports -fno-rtti -fno-exceptions" >&5
++  if { (eval echo $progname:915: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>conftest.err; } && test -s conftest.o; then
++
++    # The compiler can only warn and ignore the option if not recognized
++    # So say no if there are warnings
++      if test -s conftest.err; then
++	echo "$ac_t"no 1>&6
++	compiler_rtti_exceptions=no
++      else
++	echo "$ac_t"yes 1>&6
++	compiler_rtti_exceptions=yes
++      fi
++  else
++    # Append any errors to the config.log.
++    cat conftest.err 1>&5
++    compiler_rtti_exceptions=no
++    echo "$ac_t"no 1>&6
++  fi
++  CFLAGS="$save_CFLAGS"
++  $rm conftest*
++
++  if test "$compiler_rtti_exceptions" = "yes"; then
++    no_builtin_flag=' -fno-builtin -fno-rtti -fno-exceptions'
++  else
++    no_builtin_flag=' -fno-builtin'
++  fi
++  
 +fi
 +
 +# Check for any special shared library compilation flags.
@@ -7302,8 +9350,8 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +echo 'main(){return(0);}' > conftest.c
 +save_LDFLAGS="$LDFLAGS"
 +LDFLAGS="$LDFLAGS $link_static_flag"
-+echo "$progname:591: checking if $compiler static flag $link_static_flag works" >&5
-+if { (eval echo $progname:592: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
++echo "$progname:958: checking if $compiler static flag $link_static_flag works" >&5
++if { (eval echo $progname:959: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
 +  echo "$ac_t$link_static_flag" 1>&6
 +else
 +  echo "$ac_t"none 1>&6
@@ -7315,9 +9363,9 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +if test -z "$LN_S"; then
 +  # Check to see if we can use ln -s, or we need hard links.
 +  echo $ac_n "checking whether ln -s works... $ac_c" 1>&6
-+  $rm conftestdata
-+  if ln -s X conftestdata 2>/dev/null; then
-+    $rm conftestdata
++  $rm conftest.dat
++  if ln -s X conftest.dat 2>/dev/null; then
++    $rm conftest.dat
 +    LN_S="ln -s"
 +  else
 +    LN_S=ln
@@ -7335,11 +9383,17 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  if test "$with_gcc" = yes; then
 +    # Check if gcc -print-prog-name=ld gives a path.
 +    echo $ac_n "checking for ld used by GCC... $ac_c" 1>&6
-+    echo "$progname:624: checking for ld used by GCC" >&5
++    echo "$progname:991: checking for ld used by GCC" >&5
 +    ac_prog=`($CC -print-prog-name=ld) 2>&5`
 +    case "$ac_prog" in
 +    # Accept absolute paths.
-+    /* | [A-Za-z]:\\*)
++    [\\/]* | [A-Za-z]:[\\/]*)
++      re_direlt='/[^/][^/]*/\.\./'
++      # Canonicalize the path of ld
++      ac_prog=`echo $ac_prog| sed 's%\\\\%/%g'`
++      while echo $ac_prog | grep "$re_direlt" > /dev/null 2>&1; do
++	ac_prog=`echo $ac_prog| sed "s%$re_direlt%/%"`
++      done
 +      test -z "$LD" && LD="$ac_prog"
 +      ;;
 +    "")
@@ -7353,17 +9407,17 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +    esac
 +  elif test "$with_gnu_ld" = yes; then
 +    echo $ac_n "checking for GNU ld... $ac_c" 1>&6
-+    echo "$progname:642: checking for GNU ld" >&5
++    echo "$progname:1015: checking for GNU ld" >&5
 +  else
 +    echo $ac_n "checking for non-GNU ld""... $ac_c" 1>&6
-+    echo "$progname:645: checking for non-GNU ld" >&5
++    echo "$progname:1018: checking for non-GNU ld" >&5
 +  fi
 +
 +  if test -z "$LD"; then
-+    IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
++    IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
 +    for ac_dir in $PATH; do
 +      test -z "$ac_dir" && ac_dir=.
-+      if test -f "$ac_dir/$ac_prog"; then
++      if test -f "$ac_dir/$ac_prog" || test -f "$ac_dir/$ac_prog$ac_exeext"; then
 +	LD="$ac_dir/$ac_prog"
 +	# Check to see if the program is GNU ld.  I'd rather use --version,
 +	# but apparently some GNU ld's only accept -v.
@@ -7405,48 +9459,208 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +
 +allow_undefined_flag=
 +no_undefined_flag=
++need_lib_prefix=unknown
++need_version=unknown
++# when you set need_version to no, make sure it does not cause -set_version
++# flags to be left without arguments
 +archive_cmds=
++archive_expsym_cmds=
 +old_archive_from_new_cmds=
 +export_dynamic_flag_spec=
++whole_archive_flag_spec=
++thread_safe_flag_spec=
 +hardcode_libdir_flag_spec=
 +hardcode_libdir_separator=
 +hardcode_direct=no
 +hardcode_minus_L=no
 +hardcode_shlibpath_var=unsupported
 +runpath_var=
++always_export_symbols=no
++export_symbols_cmds='$NM $libobjs $convenience | $global_symbol_pipe | sed '\''s/.* //'\'' | sort | uniq > $export_symbols'
++# include_expsyms should be a list of space-separated symbols to be *always*
++# included in the symbol list
++include_expsyms=
++# exclude_expsyms can be an egrep regular expression of symbols to exclude
++# it will be wrapped by ` (' and `)$', so one must not match beginning or
++# end of line.  Example: `a|bc|.*d.*' will exclude the symbols `a' and `bc',
++# as well as any symbol that contains `d'.
++exclude_expsyms="_GLOBAL_OFFSET_TABLE_"
++# Although _GLOBAL_OFFSET_TABLE_ is a valid symbol C name, most a.out
++# platforms (ab)use it in PIC code, but their linkers get confused if
++# the symbol is explicitly referenced.  Since portable code cannot
++# rely on this symbol name, it's probably fine to never include it in
++# preloaded symbol tables.
 +
 +case "$host_os" in
-+amigaos* | sunos4*)
-+  # On these operating systems, we should treat GNU ld like the system ld.
-+  gnu_ld_acts_native=yes
++cygwin* | mingw*)
++  # FIXME: the MSVC++ port hasn't been tested in a loooong time
++  # When not using gcc, we currently assume that we are using
++  # Microsoft Visual C++.
++  if test "$with_gcc" != yes; then
++    with_gnu_ld=no
++  fi
 +  ;;
-+*)
-+  gnu_ld_acts_native=no
-+  ;;
++
 +esac
 +
 +ld_shlibs=yes
-+if test "$with_gnu_ld" = yes && test "$gnu_ld_acts_native" != yes; then
++if test "$with_gnu_ld" = yes; then
++  # If archive_cmds runs LD, not CC, wlarc should be empty
++  wlarc='${wl}'
 +
 +  # See if GNU ld supports shared libraries.
-+  if $LD --help 2>&1 | egrep ': supported targets:.* elf' > /dev/null; then
-+    archive_cmds='$CC -shared ${wl}-soname $wl$soname -o $lib$libobjs'
-+    runpath_var=LD_RUN_PATH
-+    ld_shlibs=yes
-+  else
++  case "$host_os" in
++  aix3* | aix4*)
++    # On AIX, the GNU linker is very broken
 +    ld_shlibs=no
-+  fi
++    cat <<EOF 1>&2
++
++*** Warning: the GNU linker, at least up to release 2.9.1, is reported
++*** to be unable to reliably create shared libraries on AIX.
++*** Therefore, libtool is disabling shared libraries support.  If you
++*** really care for shared libraries, you may want to modify your PATH
++*** so that a non-GNU linker is found, and then restart.
++
++EOF
++    ;;
++
++  amigaos*)
++    archive_cmds='$rm $objdir/a2ixlibrary.data~$echo "#define NAME $libname" > $objdir/a2ixlibrary.data~$echo "#define LIBRARY_ID 1" >> $objdir/a2ixlibrary.data~$echo "#define VERSION $major" >> $objdir/a2ixlibrary.data~$echo "#define REVISION $revision" >> $objdir/a2ixlibrary.data~$AR cru $lib $libobjs~$RANLIB $lib~(cd $objdir && a2ixlibrary -32)'
++    hardcode_libdir_flag_spec='-L$libdir'
++    hardcode_minus_L=yes
++
++    # Samuel A. Falvo II <kc5tja@dolphin.openprojects.net> reports
++    # that the semantics of dynamic libraries on AmigaOS, at least up
++    # to version 4, is to share data among multiple programs linked
++    # with the same dynamic library.  Since this doesn't match the
++    # behavior of shared libraries on other platforms, we can use
++    # them.
++    ld_shlibs=no
++    ;;
++
++  beos*)
++    if $LD --help 2>&1 | egrep ': supported targets:.* elf' > /dev/null; then
++      allow_undefined_flag=unsupported
++      # Joseph Beckenbach <jrb3@best.com> says some releases of gcc
++      # support --undefined.  This deserves some investigation.  FIXME
++      archive_cmds='$CC -nostart $libobjs $deplibs $linkopts ${wl}-soname $wl$soname -o $lib'
++    else
++      ld_shlibs=no
++    fi
++    ;;
++
++  cygwin* | mingw*)
++    # hardcode_libdir_flag_spec is actually meaningless, as there is
++    # no search path for DLLs.
++    hardcode_libdir_flag_spec='-L$libdir'
++    allow_undefined_flag=unsupported
++    always_export_symbols=yes
++
++    # Extract the symbol export list from an `--export-all' def file,
++    # then regenerate the def file from the symbol export list, so that
++    # the compiled dll only exports the symbol export list.
++    # Be careful not to strip the DATA tag left by newer dlltools.
++    export_symbols_cmds='test -f $objdir/$soname-ltdll.c || sed -e "/^# \/\* ltdll\.c starts here \*\//,/^# \/\* ltdll.c ends here \*\// { s/^# //; p; }" -e d < $0 > $objdir/$soname-ltdll.c~
++      test -f $objdir/$soname-ltdll.$objext || (cd $objdir && $CC -c $soname-ltdll.c)~
++      $DLLTOOL --export-all --exclude-symbols DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --output-def $objdir/$soname-def  $objdir/$soname-ltdll.$objext $libobjs $convenience~
++      sed -e "1,/EXPORTS/d" -e "s/ @ [0-9]*//" -e "s/ *;.*$//" < $objdir/$soname-def > $export_symbols'
++
++    # If DATA tags from a recent dlltool are present, honour them!
++    archive_expsym_cmds='echo EXPORTS > $objdir/$soname-def~
++      _lt_hint=1;
++      cat $export_symbols | while read symbol; do
++        set dummy \$symbol;
++        case \$# in
++          2) echo "	\$2 @ \$_lt_hint ; " >> $objdir/$soname-def;;
++          *) echo "     \$2 @ \$_lt_hint \$3 ; " >> $objdir/$soname-def;;
++        esac;
++	_lt_hint=`expr 1 + \$_lt_hint`;
++      done~
++      test -f $objdir/$soname-ltdll.c || sed -e "/^# \/\* ltdll\.c starts here \*\//,/^# \/\* ltdll.c ends here \*\// { s/^# //; p; }" -e d < $0 > $objdir/$soname-ltdll.c~
++      test -f $objdir/$soname-ltdll.$objext || (cd $objdir && $CC -c $soname-ltdll.c)~
++      $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts~
++      $DLLTOOL --as=$AS --dllname $soname --exclude-symbols DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
++      $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts~
++      $DLLTOOL --as=$AS --dllname $soname --exclude-symbols DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
++      $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,__cygwin_dll_entry@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts'
++
++      old_archive_from_new_cmds='$DLLTOOL --as=$AS --dllname $soname --def $objdir/$soname-def --output-lib $objdir/$libname.a' 
++    ;;
++
++  netbsd*)
++    if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
++      archive_cmds='$CC -shared $libobjs $deplibs $linkopts ${wl}-soname $wl$soname -o $lib'
++      archive_expsym_cmds='$CC -shared $libobjs $deplibs $linkopts ${wl}-soname $wl$soname ${wl}-retain-symbols-file $wl$export_symbols -o $lib'
++    else
++      archive_cmds='$LD -Bshareable $libobjs $deplibs $linkopts -o $lib'
++      # can we support soname and/or expsyms with a.out? -oliva
++    fi
++    ;;
++
++  solaris* | sysv5*)
++    if $LD -v 2>&1 | egrep 'BFD 2\.8' > /dev/null; then
++      ld_shlibs=no
++      cat <<EOF 1>&2
++
++*** Warning: The releases 2.8.* of the GNU linker cannot reliably
++*** create shared libraries on Solaris systems.  Therefore, libtool
++*** is disabling shared libraries support.  We urge you to upgrade GNU
++*** binutils to release 2.9.1 or newer.  Another option is to modify
++*** your PATH or compiler configuration so that the native linker is
++*** used, and then restart.
++
++EOF
++    elif $LD --help 2>&1 | egrep ': supported targets:.* elf' > /dev/null; then
++      archive_cmds='$CC -shared $libobjs $deplibs $linkopts ${wl}-soname $wl$soname -o $lib'
++      archive_expsym_cmds='$CC -shared $libobjs $deplibs $linkopts ${wl}-soname $wl$soname ${wl}-retain-symbols-file $wl$export_symbols -o $lib'
++    else
++      ld_shlibs=no
++    fi
++    ;;      
++
++  sunos4*)
++    archive_cmds='$LD -assert pure-text -Bshareable -o $lib $libobjs $deplibs $linkopts'
++    wlarc=
++    hardcode_direct=yes
++    hardcode_shlibpath_var=no
++    ;;
++
++  *)
++    if $LD --help 2>&1 | egrep ': supported targets:.* elf' > /dev/null; then
++      archive_cmds='$CC -shared $libobjs $deplibs $linkopts ${wl}-soname $wl$soname -o $lib'
++      archive_expsym_cmds='$CC -shared $libobjs $deplibs $linkopts ${wl}-soname $wl$soname ${wl}-retain-symbols-file $wl$export_symbols -o $lib'
++    else
++      ld_shlibs=no
++    fi
++    ;;
++  esac
 +
 +  if test "$ld_shlibs" = yes; then
++    runpath_var=LD_RUN_PATH
 +    hardcode_libdir_flag_spec='${wl}--rpath ${wl}$libdir'
 +    export_dynamic_flag_spec='${wl}--export-dynamic'
++    case $host_os in
++    cygwin* | mingw*)
++      # dlltool doesn't understand --whole-archive et. al.
++      whole_archive_flag_spec=
++      ;;
++    *)
++      # ancient GNU ld didn't support --whole-archive et. al.
++      if $LD --help 2>&1 | egrep 'no-whole-archive' > /dev/null; then
++        whole_archive_flag_spec="$wlarc"'--whole-archive$convenience '"$wlarc"'--no-whole-archive'
++      else
++        whole_archive_flag_spec=
++      fi
++      ;;
++    esac
 +  fi
 +else
 +  # PORTME fill in a description of your system's linker (not GNU ld)
 +  case "$host_os" in
 +  aix3*)
 +    allow_undefined_flag=unsupported
-+    archive_cmds='$NM$libobjs | $global_symbol_pipe | sed '\''s/.* //'\'' > $lib.exp;$LD -o $objdir/$soname$libobjs -bE:$lib.exp -T512 -H512 -bM:SRE;$AR cru $lib $objdir/$soname'
++    always_export_symbols=yes
++    archive_expsym_cmds='$LD -o $objdir/$soname $libobjs $deplibs $linkopts -bE:$export_symbols -T512 -H512 -bM:SRE~$AR cru $lib $objdir/$soname'
 +    # Note: this linker hardcodes the directories in LIBPATH if there
 +    # are no directories specified by -L.
 +    hardcode_minus_L=yes
@@ -7458,16 +9672,67 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +    ;;
 +
 +  aix4*)
-+    allow_undefined_flag=unsupported
-+    archive_cmds='$NM$libobjs | $global_symbol_pipe | sed '\''s/.* //'\'' > $lib.exp;$CC -o $objdir/$soname$libobjs ${wl}-bE:$lib.exp ${wl}-bM:SRE ${wl}-bnoentry;$AR cru $lib $objdir/$soname'
-+    hardcode_direct=yes
-+    hardcode_minus_L=yes
-+    ;;
++    hardcode_libdir_flag_spec='${wl}-b ${wl}nolibpath ${wl}-b ${wl}libpath:$libdir:/usr/lib:/lib'
++    hardcode_libdir_separator=':'
++    if test "$with_gcc" = yes; then
++      collect2name=`${CC} -print-prog-name=collect2`
++      if test -f "$collect2name" && \
++	 strings "$collect2name" | grep resolve_lib_name >/dev/null
++      then
++	# We have reworked collect2
++	hardcode_direct=yes
++      else
++	# We have old collect2
++	hardcode_direct=unsupported
++	# It fails to find uninstalled libraries when the uninstalled
++	# path is not listed in the libpath.  Setting hardcode_minus_L
++	# to unsupported forces relinking
++	hardcode_minus_L=yes
++	hardcode_libdir_flag_spec='-L$libdir'
++	hardcode_libdir_separator=
++      fi
++      shared_flag='-shared'
++    else
++      shared_flag='${wl}-bM:SRE'
++      hardcode_direct=yes
++    fi
++    allow_undefined_flag=' ${wl}-berok'
++    archive_cmds="\$CC $shared_flag"' -o $objdir/$soname $libobjs $deplibs $linkopts ${wl}-bexpall ${wl}-bnoentry${allow_undefined_flag}'
++    archive_expsym_cmds="\$CC $shared_flag"' -o $objdir/$soname $libobjs $deplibs $linkopts ${wl}-bE:$export_symbols ${wl}-bnoentry${allow_undefined_flag}'
++    case "$host_os" in aix4.[01]|aix4.[01].*)
++      # According to Greg Wooledge, -bexpall is only supported from AIX 4.2 on
++      always_export_symbols=yes ;;
++    esac
++   ;;
 +
 +  amigaos*)
-+    archive_cmds='$rm $objdir/a2ixlibrary.data;$echo "#define NAME $libname" > $objdir/a2ixlibrary.data;$echo "#define LIBRARY_ID 1" >> $objdir/a2ixlibrary.data;$echo "#define VERSION $major" >> $objdir/a2ixlibrary.data;$echo "#define REVISION $revision" >> $objdir/a2ixlibrary.data;$AR cru $lib$libobjs;$RANLIB $lib;(cd $objdir && a2ixlibrary -32)'
++    archive_cmds='$rm $objdir/a2ixlibrary.data~$echo "#define NAME $libname" > $objdir/a2ixlibrary.data~$echo "#define LIBRARY_ID 1" >> $objdir/a2ixlibrary.data~$echo "#define VERSION $major" >> $objdir/a2ixlibrary.data~$echo "#define REVISION $revision" >> $objdir/a2ixlibrary.data~$AR cru $lib $libobjs~$RANLIB $lib~(cd $objdir && a2ixlibrary -32)'
 +    hardcode_libdir_flag_spec='-L$libdir'
 +    hardcode_minus_L=yes
++    # see comment about different semantics on the GNU ld section
++    ld_shlibs=no
++    ;;
++
++  cygwin* | mingw*)
++    # When not using gcc, we currently assume that we are using
++    # Microsoft Visual C++.
++    # hardcode_libdir_flag_spec is actually meaningless, as there is
++    # no search path for DLLs.
++    hardcode_libdir_flag_spec=' '
++    allow_undefined_flag=unsupported
++    # Tell ltmain to make .lib files, not .a files.
++    libext=lib
++    # FIXME: Setting linknames here is a bad hack.
++    archive_cmds='$CC -o $lib $libobjs $linkopts `echo "$deplibs" | sed -e '\''s/ -lc$//'\''` -link -dll~linknames='
++    # The linker will automatically build a .lib file if we build a DLL.
++    old_archive_from_new_cmds='true'
++    # FIXME: Should let the user specify the lib program.
++    old_archive_cmds='lib /OUT:$oldlib$oldobjs'
++    fix_srcfile_path='`cygpath -w $srcfile`'
++    ;;
++
++  freebsd1*)
++    ld_shlibs=no
 +    ;;
 +
 +  # FreeBSD 2.2.[012] allows us to include c++rt0.o to get C++ constructor
@@ -7475,61 +9740,64 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  # does not break anything, and helps significantly (at the cost of a little
 +  # extra space).
 +  freebsd2.2*)
-+    archive_cmds='$LD -Bshareable -o $lib$libobjs /usr/lib/c++rt0.o'
++    archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linkopts /usr/lib/c++rt0.o'
 +    hardcode_libdir_flag_spec='-R$libdir'
 +    hardcode_direct=yes
-+    hardcode_minus_L=yes
 +    hardcode_shlibpath_var=no
 +    ;;
 +
 +  # Unfortunately, older versions of FreeBSD 2 do not have this feature.
 +  freebsd2*)
-+    archive_cmds='$LD -Bshareable -o $lib$libobjs'
++    archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linkopts'
 +    hardcode_direct=yes
 +    hardcode_minus_L=yes
 +    hardcode_shlibpath_var=no
 +    ;;
 +
-+  # FreeBSD 3, at last, uses gcc -shared to do shared libraries.
-+  freebsd3*)
-+    archive_cmds='$CC -shared -o $lib$libobjs'
++  # FreeBSD 3 and greater uses gcc -shared to do shared libraries.
++  freebsd*)
++    archive_cmds='$CC -shared -o $lib $libobjs $deplibs $linkopts'
 +    hardcode_libdir_flag_spec='-R$libdir'
 +    hardcode_direct=yes
-+    hardcode_minus_L=yes
 +    hardcode_shlibpath_var=no
 +    ;;
 +
-+  hpux9*)
-+    archive_cmds='$rm $objdir/$soname;$LD -b +s +b $install_libdir -o $objdir/$soname$libobjs;mv $objdir/$soname $lib'
++  hpux9* | hpux10* | hpux11*)
++    case "$host_os" in
++    hpux9*) archive_cmds='$rm $objdir/$soname~$LD -b +b $install_libdir -o $objdir/$soname $libobjs $deplibs $linkopts~test $objdir/$soname = $lib || mv $objdir/$soname $lib' ;;
++    *) archive_cmds='$LD -b +h $soname +b $install_libdir -o $lib $libobjs $deplibs $linkopts' ;;
++    esac
 +    hardcode_libdir_flag_spec='${wl}+b ${wl}$libdir'
++    hardcode_libdir_separator=:
 +    hardcode_direct=yes
-+    hardcode_minus_L=yes
-+    export_dynamic_flag_spec='${wl}-E'
-+    ;;
-+
-+  hpux10*)
-+    archive_cmds='$LD -b +h $soname +s +b $install_libdir -o $lib$libobjs'
-+    hardcode_libdir_flag_spec='${wl}+b ${wl}$libdir'
-+    hardcode_direct=yes
-+    hardcode_minus_L=yes
++    hardcode_minus_L=yes # Not in the search PATH, but as the default
++			 # location of the library.
 +    export_dynamic_flag_spec='${wl}-E'
 +    ;;
 +
 +  irix5* | irix6*)
-+    archive_cmds='$LD -shared -o $lib -soname $soname -set_version $verstring$libobjs'
++    if test "$with_gcc" = yes; then
++      archive_cmds='$CC -shared $libobjs $deplibs $linkopts ${wl}-soname ${wl}$soname `test -n "$verstring" && echo ${wl}-set_version ${wl}$verstring` ${wl}-update_registry ${wl}${objdir}/so_locations -o $lib'
++    else
++      archive_cmds='$LD -shared $libobjs $deplibs $linkopts -soname $soname `test -n "$verstring" && echo -set_version $verstring` -update_registry ${objdir}/so_locations -o $lib'
++    fi
 +    hardcode_libdir_flag_spec='${wl}-rpath ${wl}$libdir'
++    hardcode_libdir_separator=:
 +    ;;
 +
 +  netbsd*)
-+    # Tested with NetBSD 1.2 ld
-+    archive_cmds='$LD -Bshareable -o $lib$libobjs'
-+    hardcode_libdir_flag_spec='-R$libdir'
++    if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
++      archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linkopts'  # a.out
++    else
++      archive_cmds='$LD -shared -o $lib $libobjs $deplibs $linkopts'      # ELF
++    fi
++    hardcode_libdir_flag_spec='${wl}-R$libdir'
 +    hardcode_direct=yes
 +    hardcode_shlibpath_var=no
 +    ;;
 +
 +  openbsd*)
-+    archive_cmds='$LD -Bshareable -o $lib$libobjs'
++    archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linkopts'
 +    hardcode_libdir_flag_spec='-R$libdir'
 +    hardcode_direct=yes
 +    hardcode_shlibpath_var=no
@@ -7539,88 +9807,169 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +    hardcode_libdir_flag_spec='-L$libdir'
 +    hardcode_minus_L=yes
 +    allow_undefined_flag=unsupported
-+    archive_cmds='$echo "LIBRARY $libname INITINSTANCE" > $objdir/$libname.def;$echo "DESCRIPTION \"$libname\"" >> $objdir/$libname.def;$echo DATA >> $objdir/$libname.def;$echo " SINGLE NONSHARED" >> $objdir/$libname.def;$echo EXPORTS >> $objdir/$libname.def;emxexp$libobjs >> $objdir/$libname.def;$CC -Zdll -Zcrtdll -o $lib$libobjs $objdir/$libname.def'
++    archive_cmds='$echo "LIBRARY $libname INITINSTANCE" > $objdir/$libname.def~$echo "DESCRIPTION \"$libname\"" >> $objdir/$libname.def~$echo DATA >> $objdir/$libname.def~$echo " SINGLE NONSHARED" >> $objdir/$libname.def~$echo EXPORTS >> $objdir/$libname.def~emxexp $libobjs >> $objdir/$libname.def~$CC -Zdll -Zcrtdll -o $lib $libobjs $deplibs $linkopts $objdir/$libname.def'
 +    old_archive_from_new_cmds='emximp -o $objdir/$libname.a $objdir/$libname.def'
 +    ;;
 +
-+  osf3* | osf4*)
-+    allow_undefined_flag=' -expect_unresolved \*'
-+    archive_cmds='$LD -shared${allow_undefined_flag} -o $lib -soname $soname -set_version $verstring$libobjs$deplibs'
++  osf3*)
++    if test "$with_gcc" = yes; then
++      allow_undefined_flag=' ${wl}-expect_unresolved ${wl}\*'
++      archive_cmds='$CC -shared${allow_undefined_flag} $libobjs $deplibs $linkopts ${wl}-soname ${wl}$soname `test -n "$verstring" && echo ${wl}-set_version ${wl}$verstring` ${wl}-update_registry ${wl}${objdir}/so_locations -o $lib'
++    else
++      allow_undefined_flag=' -expect_unresolved \*'
++      archive_cmds='$LD -shared${allow_undefined_flag} $libobjs $deplibs $linkopts -soname $soname `test -n "$verstring" && echo -set_version $verstring` -update_registry ${objdir}/so_locations -o $lib'
++    fi
 +    hardcode_libdir_flag_spec='${wl}-rpath ${wl}$libdir'
 +    hardcode_libdir_separator=:
 +    ;;
 +
-+  sco3.2v5*)
-+    archive_cmds='$LD -G -o $lib$libobjs'
++  osf4* | osf5*)  # As osf3* with the addition of the -msym flag
++    if test "$with_gcc" = yes; then
++      allow_undefined_flag=' ${wl}-expect_unresolved ${wl}\*'
++      archive_cmds='$CC -shared${allow_undefined_flag} $libobjs $deplibs $linkopts ${wl}-msym ${wl}-soname ${wl}$soname `test -n "$verstring" && echo ${wl}-set_version ${wl}$verstring` ${wl}-update_registry ${wl}${objdir}/so_locations -o $lib'
++    else
++      allow_undefined_flag=' -expect_unresolved \*'
++      archive_cmds='$LD -shared${allow_undefined_flag} $libobjs $deplibs $linkopts -msym -soname $soname `test -n "$verstring" && echo -set_version $verstring` -update_registry ${objdir}/so_locations -o $lib'
++    fi
++    hardcode_libdir_flag_spec='${wl}-rpath ${wl}$libdir'
++    hardcode_libdir_separator=:
++    ;;
++  rhapsody*)
++    archive_cmds='$CC -bundle -undefined suppress -o $lib $libobjs $deplibs $linkopts'
++    hardcode_libdir_flags_spec='-L$libdir'
 +    hardcode_direct=yes
++    hardcode_shlibpath_var=no
++    ;;
++                                       
++  sco3.2v5*)
++    archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs $linkopts'
++    hardcode_shlibpath_var=no
++    runpath_var=LD_RUN_PATH
++    hardcode_runpath_var=yes
 +    ;;
 +
-+  solaris2*)
++  solaris*)
 +    no_undefined_flag=' -z text'
-+    archive_cmds='$LD -G${allow_undefined_flag} -h $soname -o $lib$libobjs'
++    # $CC -shared without GNU ld will not create a library from C++
++    # object files and a static libstdc++, better avoid it by now
++    archive_cmds='$LD -G${allow_undefined_flag} -h $soname -o $lib $libobjs $deplibs $linkopts'
++    archive_expsym_cmds='$echo "{ global:" > $lib.exp~cat $export_symbols | sed -e "s/\(.*\)/\1;/" >> $lib.exp~$echo "local: *; };" >> $lib.exp~
++		$LD -G${allow_undefined_flag} -M $lib.exp -h $soname -o $lib $libobjs $deplibs $linkopts~$rm $lib.exp'
 +    hardcode_libdir_flag_spec='-R$libdir'
 +    hardcode_shlibpath_var=no
-+
-+    # Solaris 2 before 2.5 hardcodes -L paths.
 +    case "$host_os" in
-+    solaris2.[0-4]*)
-+      hardcode_minus_L=yes
-+      ;;
++    solaris2.[0-5] | solaris2.[0-5].*) ;;
++    *) # Supported since Solaris 2.6 (maybe 2.5.1?)
++      whole_archive_flag_spec='-z allextract$convenience -z defaultextract' ;;
 +    esac
 +    ;;
 +
 +  sunos4*)
-+    if test "$with_gcc" = yes; then
-+      archive_cmds='$CC -shared -o $lib$libobjs'
-+    else
-+      archive_cmds='$LD -assert pure-text -Bstatic -o $lib$libobjs'
-+    fi
-+
-+    if test "$with_gnu_ld" = yes; then
-+      export_dynamic_flag_spec='${wl}-export-dynamic'
-+    fi
++    archive_cmds='$LD -assert pure-text -Bstatic -o $lib $libobjs $deplibs $linkopts'
 +    hardcode_libdir_flag_spec='-L$libdir'
 +    hardcode_direct=yes
 +    hardcode_minus_L=yes
 +    hardcode_shlibpath_var=no
 +    ;;
 +
++  sysv4)
++    if test "x$host_vendor" = xsequent; then
++      # Use $CC to link under sequent, because it throws in some extra .o 
++      # files that make .init and .fini sections work.
++      archive_cmds='$CC -G ${wl}-h $soname -o $lib $libobjs $deplibs $linkopts'
++    else
++      archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs $linkopts'
++    fi
++    runpath_var='LD_RUN_PATH'
++    hardcode_shlibpath_var=no
++    hardcode_direct=no #Motorola manual says yes, but my tests say they lie 
++    ;;  
++
++  sysv4.3*)
++    archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs $linkopts'
++    hardcode_shlibpath_var=no
++    export_dynamic_flag_spec='-Bexport'
++    ;;
++
++  sysv5*)
++    no_undefined_flag=' -z text'
++    # $CC -shared without GNU ld will not create a library from C++
++    # object files and a static libstdc++, better avoid it by now
++    archive_cmds='$LD -G${allow_undefined_flag} -h $soname -o $lib $libobjs $deplibs $linkopts'
++    archive_expsym_cmds='$echo "{ global:" > $lib.exp~cat $export_symbols | sed -e "s/\(.*\)/\1;/" >> $lib.exp~$echo "local: *; };" >> $lib.exp~
++		$LD -G${allow_undefined_flag} -M $lib.exp -h $soname -o $lib $libobjs $deplibs $linkopts~$rm $lib.exp'
++    hardcode_libdir_flag_spec=
++    hardcode_shlibpath_var=no
++    runpath_var='LD_RUN_PATH'
++    ;;
++
 +  uts4*)
-+    archive_cmds='$LD -G -h $soname -o $lib$libobjs'
++    archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs $linkopts'
 +    hardcode_libdir_flag_spec='-L$libdir'
-+    hardcode_direct=no
++    hardcode_shlibpath_var=no
++    ;;
++
++  dgux*)
++    archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs $linkopts'
++    hardcode_libdir_flag_spec='-L$libdir'
++    hardcode_shlibpath_var=no
++    ;;
++
++  sysv4*MP*)
++    if test -d /usr/nec; then
++      archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs $linkopts'
++      hardcode_shlibpath_var=no
++      runpath_var=LD_RUN_PATH
++      hardcode_runpath_var=yes
++      ld_shlibs=yes
++    fi
++    ;;
++
++  sysv4.2uw2*)
++    archive_cmds='$LD -G -o $lib $libobjs $deplibs $linkopts'
++    hardcode_direct=yes
 +    hardcode_minus_L=no
++    hardcode_shlibpath_var=no
++    hardcode_runpath_var=yes
++    runpath_var=LD_RUN_PATH
++    ;;
++
++  unixware7*)
++    archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs $linkopts'
++    runpath_var='LD_RUN_PATH'
 +    hardcode_shlibpath_var=no
 +    ;;
 +
 +  *)
 +    ld_shlibs=no
-+    can_build_shared=no
 +    ;;
 +  esac
 +fi
 +echo "$ac_t$ld_shlibs" 1>&6
++test "$ld_shlibs" = no && can_build_shared=no
 +
 +if test -z "$NM"; then
 +  echo $ac_n "checking for BSD-compatible nm... $ac_c" 1>&6
 +  case "$NM" in
-+  /* | [A-Za-z]:\\*) ;; # Let the user override the test with a path.
++  [\\/]* | [A-Za-z]:[\\/]*) ;; # Let the user override the test with a path.
 +  *)
-+    IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-+    for ac_dir in /usr/ucb /usr/ccs/bin $PATH /bin; do
++    IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR}"
++    for ac_dir in $PATH /usr/ucb /usr/ccs/bin /bin; do
 +      test -z "$ac_dir" && ac_dir=.
-+      if test -f $ac_dir/nm; then
-+        # Check to see if the nm accepts a BSD-compat flag.
-+        # Adding the `sed 1q' prevents false positives on HP-UX, which says:
-+        #   nm: unknown option "B" ignored
-+        if ($ac_dir/nm -B /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
-+          NM="$ac_dir/nm -B"
-+        elif ($ac_dir/nm -p /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
-+          NM="$ac_dir/nm -p"
++      if test -f $ac_dir/nm || test -f $ac_dir/nm$ac_exeext; then
++	# Check to see if the nm accepts a BSD-compat flag.
++	# Adding the `sed 1q' prevents false positives on HP-UX, which says:
++	#   nm: unknown option "B" ignored
++	if ($ac_dir/nm -B /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
++	  NM="$ac_dir/nm -B"
++	  break
++	elif ($ac_dir/nm -p /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
++	  NM="$ac_dir/nm -p"
++	  break
 +	else
-+          NM="$ac_dir/nm"
++	  NM=${NM="$ac_dir/nm"} # keep the first match, but
++	  continue # so that we can try to find one that supports BSD flags
 +	fi
-+        break
 +      fi
 +    done
 +    IFS="$ac_save_ifs"
@@ -7637,40 +9986,54 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +# [They come from Ultrix.  What could be older than Ultrix?!! ;)]
 +
 +# Character class describing NM global symbol codes.
-+symcode='[BCDEGRSTU]'
++symcode='[BCDEGRST]'
 +
 +# Regexp to match symbols that can be accessed directly from C.
 +sympat='\([_A-Za-z][_A-Za-z0-9]*\)'
 +
 +# Transform the above into a raw symbol and a C symbol.
-+symxfrm='\1 \1'
++symxfrm='\1 \2\3 \3'
++
++# Transform an extracted symbol line into a proper C declaration
++global_symbol_to_cdecl="sed -n -e 's/^. .* \(.*\)$/extern char \1;/p'"
 +
 +# Define system-specific variables.
 +case "$host_os" in
 +aix*)
-+  symcode='[BCDTU]'
++  symcode='[BCDT]'
++  ;;
++cygwin* | mingw*)
++  symcode='[ABCDGISTW]'
++  ;;
++hpux*) # Its linker distinguishes data from code symbols
++  global_symbol_to_cdecl="sed -n -e 's/^T .* \(.*\)$/extern char \1();/p' -e 's/^. .* \(.*\)$/extern char \1;/p'"
 +  ;;
 +irix*)
-+  # Cannot use undefined symbols on IRIX because inlined functions mess us up.
 +  symcode='[BCDEGRST]'
 +  ;;
-+solaris2*)
-+  symcode='[BDTU]'
++solaris*)
++  symcode='[BDT]'
++  ;;
++sysv4)
++  symcode='[DFNSTU]'
 +  ;;
 +esac
 +
 +# If we're using GNU nm, then use its standard symbol codes.
 +if $NM -V 2>&1 | egrep '(GNU|with BFD)' > /dev/null; then
-+  symcode='[ABCDGISTUW]'
++  symcode='[ABCDGISTW]'
 +fi
 +
-+# Write the raw and C identifiers.
-+global_symbol_pipe="sed -n -e 's/^.* $symcode $sympat$/$symxfrm/p'"
++# Try without a prefix undercore, then with it.
++for ac_symprfx in "" "_"; do
 +
-+# Check to see that the pipe works correctly.
-+pipe_works=no
-+$rm conftest*
-+cat > conftest.c <<EOF
++  # Write the raw and C identifiers.
++  global_symbol_pipe="sed -n -e 's/^.*[ 	]\($symcode\)[ 	][ 	]*\($ac_symprfx\)$sympat$/$symxfrm/p'"
++
++  # Check to see that the pipe works correctly.
++  pipe_works=no
++  $rm conftest*
++  cat > conftest.c <<EOF
 +#ifdef __cplusplus
 +extern "C" {
 +#endif
@@ -7682,93 +10045,100 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +main(){nm_test_var='a';nm_test_func();return(0);}
 +EOF
 +
-+echo "$progname:971: checking if global_symbol_pipe works" >&5
-+if { (eval echo $progname:972: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.o; then
-+  # Now try to grab the symbols.
-+  nlist=conftest.nm
-+  if { echo "$progname:975: eval \"$NM conftest.o | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.o | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
++  echo "$progname:1653: checking if global_symbol_pipe works" >&5
++  if { (eval echo $progname:1654: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; } && test -s conftest.$objext; then
++    # Now try to grab the symbols.
++    nlist=conftest.nm
++    if { echo "$progname:1657: eval \"$NM conftest.$objext | $global_symbol_pipe > $nlist\"" >&5; eval "$NM conftest.$objext | $global_symbol_pipe > $nlist 2>&5"; } && test -s "$nlist"; then
 +
-+    # Try sorting and uniquifying the output.
-+    if sort "$nlist" | uniq > "$nlist"T; then
-+      mv -f "$nlist"T "$nlist"
-+      wcout=`wc "$nlist" 2>/dev/null`
-+      count=`$echo "X$wcout" | $Xsed -e 's/^[ 	]*\([0-9][0-9]*\).*$/\1/'`
-+      (test "$count" -ge 0) 2>/dev/null || count=-1
-+    else
-+      rm -f "$nlist"T
-+      count=-1
-+    fi
++      # Try sorting and uniquifying the output.
++      if sort "$nlist" | uniq > "$nlist"T; then
++	mv -f "$nlist"T "$nlist"
++      else
++	rm -f "$nlist"T
++      fi
 +
-+    # Make sure that we snagged all the symbols we need.
-+    if egrep ' nm_test_var$' "$nlist" >/dev/null; then
-+      if egrep ' nm_test_func$' "$nlist" >/dev/null; then
-+	cat <<EOF > conftest.c
++      # Make sure that we snagged all the symbols we need.
++      if egrep ' nm_test_var$' "$nlist" >/dev/null; then
++	if egrep ' nm_test_func$' "$nlist" >/dev/null; then
++	  cat <<EOF > conftest.c
 +#ifdef __cplusplus
 +extern "C" {
 +#endif
 +
 +EOF
-+        # Now generate the symbol file.
-+        sed 's/^.* \(.*\)$/extern char \1;/' < "$nlist" >> conftest.c
++	  # Now generate the symbol file.
++	  eval "$global_symbol_to_cdecl"' < "$nlist" >> conftest.c'
 +
-+	cat <<EOF >> conftest.c
++	  cat <<EOF >> conftest.c
 +#if defined (__STDC__) && __STDC__
-+# define __ptr_t void *
++# define lt_ptr_t void *
 +#else
-+# define __ptr_t char *
++# define lt_ptr_t char *
++# define const
 +#endif
 +
-+/* The number of symbols in dld_preloaded_symbols, -1 if unsorted. */
-+int dld_preloaded_symbol_count = $count;
-+
 +/* The mapping between symbol names and symbols. */
-+struct {
-+  char *name;
-+  __ptr_t address;
++const struct {
++  const char *name;
++  lt_ptr_t address;
 +}
-+dld_preloaded_symbols[] =
++lt_preloaded_symbols[] =
 +{
 +EOF
-+        sed 's/^\(.*\) \(.*\)$/  {"\1", (__ptr_t) \&\2},/' < "$nlist" >> conftest.c
-+        cat <<\EOF >> conftest.c
-+  {0, (__ptr_t) 0}
++	  sed 's/^. \(.*\) \(.*\)$/  {"\2", (lt_ptr_t) \&\2},/' < "$nlist" >> conftest.c
++	  cat <<\EOF >> conftest.c
++  {0, (lt_ptr_t) 0}
 +};
 +
 +#ifdef __cplusplus
 +}
 +#endif
 +EOF
-+        # Now try linking the two files.
-+        mv conftest.o conftestm.o
-+	save_LIBS="$LIBS"
-+	save_CFLAGS="$CFLAGS"
-+        LIBS='conftestm.o'
-+	CFLAGS="$CFLAGS$no_builtin_flag"
-+        if { (eval echo $progname:1033: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
-+          pipe_works=yes
-+        else
-+          echo "$progname: failed program was:" >&5
-+          cat conftest.c >&5
-+        fi
-+        LIBS="$save_LIBS"
++	  # Now try linking the two files.
++	  mv conftest.$objext conftstm.$objext
++	  save_LIBS="$LIBS"
++	  save_CFLAGS="$CFLAGS"
++	  LIBS="conftstm.$objext"
++	  CFLAGS="$CFLAGS$no_builtin_flag"
++	  if { (eval echo $progname:1709: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
++	    pipe_works=yes
++	  else
++	    echo "$progname: failed program was:" >&5
++	    cat conftest.c >&5
++	  fi
++	  LIBS="$save_LIBS"
++	else
++	  echo "cannot find nm_test_func in $nlist" >&5
++	fi
 +      else
-+        echo "cannot find nm_test_func in $nlist" >&5
++	echo "cannot find nm_test_var in $nlist" >&5
 +      fi
 +    else
-+      echo "cannot find nm_test_var in $nlist" >&5
++      echo "cannot run $global_symbol_pipe" >&5
 +    fi
 +  else
-+    echo "cannot run $global_symbol_pipe" >&5
++    echo "$progname: failed program was:" >&5
++    cat conftest.c >&5
 +  fi
-+else
-+  echo "$progname: failed program was:" >&5
-+  cat conftest.c >&5
-+fi
-+$rm conftest*
++  $rm conftest* conftst*
 +
-+# Do not use the global_symbol_pipe unless it works.
-+echo "$ac_t$pipe_works" 1>&6
-+test "$pipe_works" = yes || global_symbol_pipe=
++  # Do not use the global_symbol_pipe unless it works.
++  if test "$pipe_works" = yes; then
++    break
++  else
++    global_symbol_pipe=
++  fi
++done
++if test "$pipe_works" = yes; then
++  echo "${ac_t}ok" 1>&6
++else
++  echo "${ac_t}failed" 1>&6
++fi
++
++if test -z "$global_symbol_pipe"; then
++  global_symbol_to_cdecl=
++fi
 +
 +# Check hardcoding attributes.
 +echo $ac_n "checking how to hardcode library paths into programs... $ac_c" 1>&6
@@ -7777,35 +10147,32 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +   test -n "$runpath_var"; then
 +
 +  # We can hardcode non-existant directories.
-+  if test "$hardcode_direct" != no && \
-+     test "$hardcode_minus_L" != no && \
-+     test "$hardcode_shlibpath_var" != no; then
-+
++  if test "$hardcode_direct" != no &&
++     # If the only mechanism to avoid hardcoding is shlibpath_var, we
++     # have to relink, otherwise we might link with an installed library
++     # when we should be linking with a yet-to-be-installed one
++     ## test "$hardcode_shlibpath_var" != no &&
++     test "$hardcode_minus_L" != no; then
 +    # Linking always hardcodes the temporary library directory.
 +    hardcode_action=relink
 +  else
 +    # We can link without hardcoding, and we can hardcode nonexisting dirs.
 +    hardcode_action=immediate
 +  fi
-+elif test "$hardcode_direct" != yes && \
-+     test "$hardcode_minus_L" != yes && \
-+     test "$hardcode_shlibpath_var" != yes; then
-+  # We cannot hardcode anything.
-+  hardcode_action=unsupported
 +else
-+  # We can only hardcode existing directories.
-+  hardcode_action=relink
++  # We cannot hardcode anything, or else we can only hardcode existing
++  # directories.
++  hardcode_action=unsupported
 +fi
 +echo "$ac_t$hardcode_action" 1>&6
-+test "$hardcode_action" = unsupported && can_build_shared=no
 +
 +
 +reload_flag=
 +reload_cmds='$LD$reload_flag -o $output$reload_objs'
 +echo $ac_n "checking for $LD option to reload object files... $ac_c" 1>&6
-+# PORTME Some linker may need a different reload flag.
++# PORTME Some linkers may need a different reload flag.
 +reload_flag='-r'
-+echo "$ac_t$reload_flag"
++echo "$ac_t$reload_flag" 1>&6
 +test -n "$reload_flag" && reload_flag=" $reload_flag"
 +
 +# PORTME Fill in your ld.so characteristics
@@ -7817,18 +10184,45 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +finish_cmds=
 +finish_eval=
 +shlibpath_var=
++shlibpath_overrides_runpath=unknown
 +version_type=none
 +dynamic_linker="$host_os ld.so"
-+
++sys_lib_dlsearch_path_spec="/lib /usr/lib"
++sys_lib_search_path_spec="/lib /usr/lib /usr/local/lib"
++file_magic_cmd=
++file_magic_test_file=
++deplibs_check_method='unknown'
++# Need to set the preceding variable on all platforms that support
++# interlibrary dependencies.
++# 'none' -- dependencies not supported.
++# `unknown' -- same as none, but documents that we really don't know.
++# 'pass_all' -- all dependencies passed with no checks.
++# 'test_compile' -- check by making test program.
++# 'file_magic [regex]' -- check by looking for files in library path
++# which responds to the $file_magic_cmd with a given egrep regex.
++# If you have `file' or equivalent on your system and you're not sure
++# whether `pass_all' will *always* work, you probably want this one.
 +echo $ac_n "checking dynamic linker characteristics... $ac_c" 1>&6
 +case "$host_os" in
-+aix3* | aix4*)
++aix3*)
 +  version_type=linux
-+  library_names_spec='${libname}${release}.so.$versuffix $libname.a'
++  library_names_spec='${libname}${release}.so$versuffix $libname.a'
 +  shlibpath_var=LIBPATH
 +
 +  # AIX has no versioning support, so we append a major version to the name.
-+  soname_spec='${libname}${release}.so.$major'
++  soname_spec='${libname}${release}.so$major'
++  ;;
++
++aix4*)
++  version_type=linux
++  # AIX has no versioning support, so currently we can not hardcode correct
++  # soname into executable. Probably we can add versioning support to
++  # collect2, so additional links can be useful in future.
++  # We preserve .a as extension for shared libraries though AIX4.2
++  # and later linker supports .so
++  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.a'
++  shlibpath_var=LIBPATH
++  deplibs_check_method=pass_all
 +  ;;
 +
 +amigaos*)
@@ -7837,36 +10231,145 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  finish_eval='for lib in `ls $libdir/*.ixlibrary 2>/dev/null`; do libname=`$echo "X$lib" | $Xsed -e '\''s%^.*/\([^/]*\)\.ixlibrary$%\1%'\''`; test $rm /sys/libs/${libname}_ixlibrary.a; $show "(cd /sys/libs && $LN_S $lib ${libname}_ixlibrary.a)"; (cd /sys/libs && $LN_S $lib ${libname}_ixlibrary.a) || exit 1; done'
 +  ;;
 +
-+freebsd2* | freebsd3*)
-+  version_type=sunos
-+  library_names_spec='${libname}${release}.so.$versuffix $libname.so'
-+  finish_cmds='PATH="$PATH:/sbin" ldconfig -m $libdir'
++beos*)
++  library_names_spec='${libname}.so'
++  dynamic_linker="$host_os ld.so"
++  shlibpath_var=LIBRARY_PATH
++  deplibs_check_method=pass_all
++  lt_cv_dlopen="load_add_on"
++  lt_cv_dlopen_libs=
++  lt_cv_dlopen_self=yes
++  ;;
++
++bsdi4*)
++  version_type=linux
++  need_version=no
++  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
++  soname_spec='${libname}${release}.so$major'
++  finish_cmds='PATH="\$PATH:/sbin" ldconfig $libdir'
 +  shlibpath_var=LD_LIBRARY_PATH
++  deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [ML]SB (shared object|dynamic lib)'
++  file_magic_cmd=/usr/bin/file
++  file_magic_test_file=/shlib/libc.so
++  sys_lib_search_path_spec="/shlib /usr/lib /usr/X11/lib /usr/contrib/lib /lib /usr/local/lib"
++  sys_lib_dlsearch_path_spec="/shlib /usr/lib /usr/local/lib"
++  export_dynamic_flag_spec=-rdynamic
++  # the default ld.so.conf also contains /usr/contrib/lib and
++  # /usr/X11R6/lib (/usr/X11 is a link to /usr/X11R6), but let us allow
++  # libtool to hard-code these into programs
++  ;;
++
++cygwin* | mingw*)
++  version_type=windows
++  need_version=no
++  need_lib_prefix=no
++  if test "$with_gcc" = yes; then
++    library_names_spec='${libname}`echo ${release} | sed -e 's/[.]/-/g'`${versuffix}.dll $libname.a'
++  else
++    library_names_spec='${libname}`echo ${release} | sed -e 's/[.]/-/g'`${versuffix}.dll $libname.lib'
++  fi
++  dynamic_linker='Win32 ld.exe'
++  deplibs_check_method='file_magic file format pei*-i386(.*architecture: i386)?'
++  file_magic_cmd='${OBJDUMP} -f'
++  # FIXME: first we should search . and the directory the executable is in
++  shlibpath_var=PATH
++  lt_cv_dlopen="LoadLibrary"
++  lt_cv_dlopen_libs=
++  ;;
++
++freebsd1*)
++  dynamic_linker=no
++  ;;
++  
++freebsd*)
++  objformat=`test -x /usr/bin/objformat && /usr/bin/objformat || echo aout`
++  version_type=freebsd-$objformat
++  case "$version_type" in
++    freebsd-elf*)
++      deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [LM]SB shared object'
++      file_magic_cmd=/usr/bin/file
++      file_magic_test_file=`echo /usr/lib/libc.so*`
++      library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so $libname.so'
++      need_version=no
++      need_lib_prefix=no
++      ;;
++    freebsd-*)
++      deplibs_check_method=unknown
++      library_names_spec='${libname}${release}.so$versuffix $libname.so$versuffix'
++      need_version=yes
++      ;;
++  esac
++  shlibpath_var=LD_LIBRARY_PATH
++  case "$host_os" in
++  freebsd2* | freebsd3.[01]* | freebsdelf3.[01]*)
++    shlibpath_overrides_runpath=yes
++    ;;
++  *) # from 3.2 on
++    shlibpath_overrides_runpath=no
++    ;;
++  esac
 +  ;;
 +
 +gnu*)
-+  version_type=sunos
-+  library_names_spec='${libname}${release}.so.$versuffix'
++  version_type=linux
++  need_lib_prefix=no
++  need_version=no
++  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so${major} ${libname}.so'
++  soname_spec='${libname}${release}.so$major'
 +  shlibpath_var=LD_LIBRARY_PATH
 +  ;;
 +
-+hpux9* | hpux10*)
++hpux9* | hpux10* | hpux11*)
 +  # Give a soname corresponding to the major version so that dld.sl refuses to
 +  # link against other versions.
 +  dynamic_linker="$host_os dld.sl"
 +  version_type=sunos
++  need_lib_prefix=no
++  need_version=no
 +  shlibpath_var=SHLIB_PATH
-+  library_names_spec='${libname}${release}.sl.$versuffix ${libname}${release}.sl.$major $libname.sl'
-+  soname_spec='${libname}${release}.sl.$major'
++  shlibpath_overrides_runpath=no # +s is required to enable SHLIB_PATH
++  library_names_spec='${libname}${release}.sl$versuffix ${libname}${release}.sl$major $libname.sl'
++  soname_spec='${libname}${release}.sl$major'
 +  # HP-UX runs *really* slowly unless shared libraries are mode 555.
 +  postinstall_cmds='chmod 555 $lib'
++  case "$host_os" in
++  hpux10.20*)
++    # TODO:  Does this work for hpux-11 too?
++    deplibs_check_method='file_magic (s[0-9][0-9][0-9]|PA-RISC[0-9].[0-9]) shared library'
++    file_magic_cmd=/usr/bin/file
++    file_magic_test_file=/usr/lib/libc.sl
++    ;;
++  esac
 +  ;;
 +
 +irix5* | irix6*)
-+  version_type=osf
-+  soname_spec='${libname}${release}.so'
-+  library_names_spec='${libname}${release}.so.$versuffix $libname.so'
-+  shlibpath_var=LD_LIBRARY_PATH
++  version_type=irix
++  need_lib_prefix=no
++  need_version=no
++  soname_spec='${libname}${release}.so.$major'
++  library_names_spec='${libname}${release}.so.$versuffix ${libname}${release}.so.$major ${libname}${release}.so $libname.so'
++  case "$host_os" in
++  irix5*)
++    libsuff= shlibsuff=
++    # this will be overridden with pass_all, but let us keep it just in case
++    deplibs_check_method="file_magic ELF 32-bit MSB dynamic lib MIPS - version 1"
++    ;;
++  *)
++    case "$LD" in # libtool.m4 will add one of these switches to LD
++    *-32|*"-32 ") libsuff= shlibsuff= libmagic=32-bit;;
++    *-n32|*"-n32 ") libsuff=32 shlibsuff=N32 libmagic=N32;;
++    *-64|*"-64 ") libsuff=64 shlibsuff=64 libmagic=64-bit;;
++    *) libsuff= shlibsuff= libmagic=never-match;;
++    esac
++    ;;
++  esac
++  shlibpath_var=LD_LIBRARY${shlibsuff}_PATH
++  shlibpath_overrides_runpath=no
++  sys_lib_search_path_spec="/usr/lib${libsuff} /lib${libsuff} /usr/local/lib${libsuff}"
++  sys_lib_dlsearch_path_spec="/usr/lib${libsuff} /lib${libsuff}"
++  file_magic_cmd=/usr/bin/file
++  file_magic_test_file=`echo /lib${libsuff}/libc.so*`
++  deplibs_check_method='pass_all'
 +  ;;
 +
 +# No shared lib support for Linux oldld, aout, or coff.
@@ -7877,10 +10380,14 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +# This must be Linux ELF.
 +linux-gnu*)
 +  version_type=linux
-+  library_names_spec='${libname}${release}.so.$versuffix ${libname}${release}.so.$major $libname.so'
-+  soname_spec='${libname}${release}.so.$major'
-+  finish_cmds='PATH="$PATH:/sbin" ldconfig -n $libdir'
++  need_lib_prefix=no
++  need_version=no
++  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
++  soname_spec='${libname}${release}.so$major'
++  finish_cmds='PATH="\$PATH:/sbin" ldconfig -n $libdir'
 +  shlibpath_var=LD_LIBRARY_PATH
++  shlibpath_overrides_runpath=no
++  deplibs_check_method=pass_all
 +
 +  if test -f /lib/ld.so.1; then
 +    dynamic_linker='GNU ld.so'
@@ -7893,71 +10400,190 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +  fi
 +  ;;
 +
-+netbsd* | openbsd*)
++netbsd*)
 +  version_type=sunos
-+  library_names_spec='${libname}${release}.so.$versuffix'
-+  finish_cmds='PATH="$PATH:/sbin" ldconfig -m $libdir'
++  if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
++    library_names_spec='${libname}${release}.so$versuffix ${libname}.so$versuffix'
++    finish_cmds='PATH="\$PATH:/sbin" ldconfig -m $libdir'
++    dynamic_linker='NetBSD (a.out) ld.so'
++  else
++    library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major ${libname}${release}.so ${libname}.so'
++    soname_spec='${libname}${release}.so$major'
++    dynamic_linker='NetBSD ld.elf_so'
++  fi
++  shlibpath_var=LD_LIBRARY_PATH
++  ;;
++
++openbsd*)
++  version_type=sunos
++  if test "$with_gnu_ld" = yes; then
++    need_lib_prefix=no
++    need_version=no
++  fi
++  library_names_spec='${libname}${release}.so$versuffix ${libname}.so$versuffix'
++  finish_cmds='PATH="\$PATH:/sbin" ldconfig -m $libdir'
 +  shlibpath_var=LD_LIBRARY_PATH
 +  ;;
 +
 +os2*)
 +  libname_spec='$name'
++  need_lib_prefix=no
 +  library_names_spec='$libname.dll $libname.a'
 +  dynamic_linker='OS/2 ld.exe'
 +  shlibpath_var=LIBPATH
 +  ;;
 +
-+osf3* | osf4*)
++osf3* | osf4* | osf5*)
 +  version_type=osf
++  need_version=no
 +  soname_spec='${libname}${release}.so'
-+  library_names_spec='${libname}${release}.so.$versuffix $libname.so'
++  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so $libname.so'
 +  shlibpath_var=LD_LIBRARY_PATH
++  # this will be overridden with pass_all, but let us keep it just in case
++  deplibs_check_method='file_magic COFF format alpha shared library'
++  file_magic_cmd=/usr/bin/file
++  file_magic_test_file=/shlib/libc.so
++  deplibs_check_method='pass_all'
++  sys_lib_search_path_spec="/usr/shlib /usr/ccs/lib /usr/lib/cmplrs/cc /usr/lib /usr/local/lib /var/shlib"
++  sys_lib_dlsearch_path_spec="$sys_lib_search_path_spec"
++  ;;
++
++rhapsody*)
++  version_type=sunos
++  library_names_spec='${libname}.so'
++  soname_spec='${libname}.so'
++  shlibpath_var=DYLD_LIBRARY_PATH
++  deplibs_check_method=pass_all
 +  ;;
 +
 +sco3.2v5*)
 +  version_type=osf
-+  soname_spec='${libname}${release}.so.$major'
-+  library_names_spec='${libname}${release}.so.$versuffix ${libname}${release}.so.$major $libname.so'
++  soname_spec='${libname}${release}.so$major'
++  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
 +  shlibpath_var=LD_LIBRARY_PATH
 +  ;;
 +
-+solaris2*)
++solaris*)
 +  version_type=linux
-+  library_names_spec='${libname}${release}.so.$versuffix ${libname}${release}.so.$major $libname.so'
-+  soname_spec='${libname}${release}.so.$major'
++  need_lib_prefix=no
++  need_version=no
++  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
++  soname_spec='${libname}${release}.so$major'
 +  shlibpath_var=LD_LIBRARY_PATH
++  shlibpath_overrides_runpath=yes
++  # ldd complains unless libraries are executable
++  postinstall_cmds='chmod +x $lib'
++  deplibs_check_method="file_magic ELF [0-9][0-9]-bit [LM]SB dynamic lib"
++  file_magic_cmd=/usr/bin/file
++  file_magic_test_file=/lib/libc.so
 +  ;;
 +
 +sunos4*)
 +  version_type=sunos
-+  library_names_spec='${libname}${release}.so.$versuffix'
-+  finish_cmds='PATH="$PATH:/usr/etc" ldconfig $libdir'
++  library_names_spec='${libname}${release}.so$versuffix ${libname}.so$versuffix'
++  finish_cmds='PATH="\$PATH:/usr/etc" ldconfig $libdir'
 +  shlibpath_var=LD_LIBRARY_PATH
++  shlibpath_overrides_runpath=yes
++  if test "$with_gnu_ld" = yes; then
++    need_lib_prefix=no
++  fi
++  need_version=yes
 +  ;;
 +
-+sysv4.2uw2*)
++sysv4 | sysv4.2uw2* | sysv4.3* | sysv5*)
 +  version_type=linux
-+  library_names_spec='${libname}${release}.so.$versuffix ${libname}${release}.so.$major $libname.so'
-+  soname_spec='${libname}${release}.so.$major'
++  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
++  soname_spec='${libname}${release}.so$major'
 +  shlibpath_var=LD_LIBRARY_PATH
++  case "$host_vendor" in
++    sequent)
++      file_magic_cmd='/bin/file'
++      deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [LM]SB (shared object|dynamic lib )'
++      ;;
++    ncr)
++      deplibs_check_method='pass_all'
++      ;;
++    motorola)
++      need_lib_prefix=no
++      need_version=no
++      shlibpath_overrides_runpath=no
++      sys_lib_search_path_spec='/lib /usr/lib /usr/ccs/lib'
++      deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [ML]SB (shared object|dynamic lib) M[0-9][0-9]* Version [0-9]'
++      file_magic_cmd=/usr/bin/file
++      file_magic_test_file=`echo /usr/lib/libc.so*`
++      ;;
++  esac
 +  ;;
 +
 +uts4*)
 +  version_type=linux
-+  library_names_spec='${libname}${release}.so.$versuffix ${libname}${release}.so.$major $libname.so'
-+  soname_spec='${libname}${release}.so.$major'
++  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
++  soname_spec='${libname}${release}.so$major'
 +  shlibpath_var=LD_LIBRARY_PATH
++  ;;
++
++dgux*)
++  version_type=linux
++  need_lib_prefix=no
++  need_version=no
++  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
++  soname_spec='${libname}${release}.so$major'
++  shlibpath_var=LD_LIBRARY_PATH
++  ;;
++
++sysv4*MP*)
++  if test -d /usr/nec ;then
++    version_type=linux
++    library_names_spec='$libname.so.$versuffix $libname.so.$major $libname.so'
++    soname_spec='$libname.so.$major'
++    shlibpath_var=LD_LIBRARY_PATH
++  fi
 +  ;;
 +
 +*)
 +  dynamic_linker=no
 +  ;;
 +esac
-+echo "$ac_t$dynamic_linker"
++echo "$ac_t$dynamic_linker" 1>&6
 +test "$dynamic_linker" = no && can_build_shared=no
 +
 +# Report the final consequences.
 +echo "checking if libtool supports shared libraries... $can_build_shared" 1>&6
++
++# Only try to build win32 dlls if AC_LIBTOOL_WIN32_DLL was used in
++# configure.in, otherwise build static only libraries.
++case "$host_os" in
++cygwin* | mingw* | os2*)
++  if test x$can_build_shared = xyes; then
++    test x$enable_win32_dll = xno && can_build_shared=no
++    echo "checking if package supports dlls... $can_build_shared" 1>&6
++  fi
++;;
++esac
++
++if test -n "$file_magic_test_file" && test -n "$file_magic_cmd"; then
++  case "$deplibs_check_method" in
++  "file_magic "*)
++    file_magic_regex="`expr \"$deplibs_check_method\" : \"file_magic \(.*\)\"`"
++    if eval $file_magic_cmd \$file_magic_test_file 2> /dev/null |
++       egrep "$file_magic_regex" > /dev/null; then
++      :
++    else
++      cat <<EOF 1>&2
++
++*** Warning: the command libtool uses to detect shared libraries,
++*** $file_magic_cmd, produces output that libtool cannot recognize.
++*** The result is that libtool may fail to recognize shared libraries
++*** as such.  This will affect the creation of libtool libraries that
++*** depend on shared libraries, but programs linked with such libtool
++*** libraries will work regardless of this problem.  Nevertheless, you
++*** may want to report the problem to your system manager and/or to
++*** bug-libtool@gnu.org
++
++EOF
++    fi ;;
++  esac
++fi
 +
 +echo $ac_n "checking whether to build shared libraries... $ac_c" 1>&6
 +test "$can_build_shared" = "no" && enable_shared=no
@@ -7965,12 +10591,16 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +# On AIX, shared libraries and static libraries use the same namespace, and
 +# are all built from PIC.
 +case "$host_os" in
-+aix*)
++aix3*)
 +  test "$enable_shared" = yes && enable_static=no
 +  if test -n "$RANLIB"; then
-+    archive_cmds="$archive_cmds;\$RANLIB \$lib"
++    archive_cmds="$archive_cmds~\$RANLIB \$lib"
 +    postinstall_cmds='$RANLIB $lib'
 +  fi
++  ;;
++
++aix4*)
++  test "$enable_shared" = yes && enable_static=no
 +  ;;
 +esac
 +
@@ -7980,6 +10610,15 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +test "$enable_shared" = yes || enable_static=yes
 +
 +echo "checking whether to build static libraries... $enable_static" 1>&6
++
++if test "$hardcode_action" = relink; then
++  # Fast installation is not supported
++  enable_fast_install=no
++elif test "$shlibpath_overrides_runpath" = yes ||
++     test "$enable_shared" = no; then
++  # Fast installation is not necessary
++  enable_fast_install=needless
++fi
 +
 +echo $ac_n "checking for objdir... $ac_c" 1>&6
 +rm -f .libs 2>/dev/null
@@ -7993,47 +10632,512 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +rmdir .libs 2>/dev/null
 +echo "$ac_t$objdir" 1>&6
 +
++if test "x$enable_dlopen" != xyes; then
++  enable_dlopen=unknown
++  enable_dlopen_self=unknown
++  enable_dlopen_self_static=unknown
++else
++if eval "test \"`echo '$''{'lt_cv_dlopen'+set}'`\" != set"; then
++  lt_cv_dlopen=no lt_cv_dlopen_libs=
++echo $ac_n "checking for dlopen in -ldl""... $ac_c" 1>&6
++echo "$progname:2248: checking for dlopen in -ldl" >&5
++ac_lib_var=`echo dl'_'dlopen | sed 'y%./+-%__p_%'`
++if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  ac_save_LIBS="$LIBS"
++LIBS="-ldl  $LIBS"
++cat > conftest.$ac_ext <<EOF
++#line 2256 "ltconfig"
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++#ifdef __cplusplus
++extern "C"
++#endif
++char dlopen();
++
++int main() {
++dlopen()
++; return 0; }
++EOF
++if { (eval echo $progname:2269: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=yes"
++else
++  echo "$progname: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=no"
++fi
++rm -f conftest*
++LIBS="$ac_save_LIBS"
++
++fi
++if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  lt_cv_dlopen="dlopen" lt_cv_dlopen_libs="-ldl"
++else
++  echo "$ac_t""no" 1>&6
++echo $ac_n "checking for dlopen""... $ac_c" 1>&6
++echo "$progname:2288: checking for dlopen" >&5
++if eval "test \"`echo '$''{'ac_cv_func_dlopen'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 2293 "ltconfig"
++/* System header to define __stub macros and hopefully few prototypes,
++    which can conflict with char dlopen(); below.  */
++#include <assert.h>
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++#ifdef __cplusplus
++extern "C"
++#endif
++char dlopen();
++
++int main() {
++
++/* The GNU C library defines this for functions which it implements
++    to always fail with ENOSYS.  Some functions are actually named
++    something starting with __ and the normal name is an alias.  */
++#if defined (__stub_dlopen) || defined (__stub___dlopen)
++choke me
++#else
++dlopen();
++#endif
++
++; return 0; }
++EOF
++if { (eval echo $progname:2318: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_func_dlopen=yes"
++else
++  echo "$progname: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_func_dlopen=no"
++fi
++rm -f conftest*
++fi
++if eval "test \"`echo '$ac_cv_func_'dlopen`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  lt_cv_dlopen="dlopen"
++else
++  echo "$ac_t""no" 1>&6
++echo $ac_n "checking for dld_link in -ldld""... $ac_c" 1>&6
++echo "$progname:2335: checking for dld_link in -ldld" >&5
++ac_lib_var=`echo dld'_'dld_link | sed 'y%./+-%__p_%'`
++if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  ac_save_LIBS="$LIBS"
++LIBS="-ldld  $LIBS"
++cat > conftest.$ac_ext <<EOF
++#line 2343 "ltconfig"
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++#ifdef __cplusplus
++extern "C"
++#endif
++char dld_link();
++
++int main() {
++dld_link()
++; return 0; }
++EOF
++if { (eval echo $progname:2356: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=yes"
++else
++  echo "$progname: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=no"
++fi
++rm -f conftest*
++LIBS="$ac_save_LIBS"
++
++fi
++if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  lt_cv_dlopen="dld_link" lt_cv_dlopen_libs="-ldld"
++else
++  echo "$ac_t""no" 1>&6
++echo $ac_n "checking for shl_load""... $ac_c" 1>&6
++echo "$progname:2375: checking for shl_load" >&5
++if eval "test \"`echo '$''{'ac_cv_func_shl_load'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 2380 "ltconfig"
++/* System header to define __stub macros and hopefully few prototypes,
++    which can conflict with char shl_load(); below.  */
++#include <assert.h>
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++#ifdef __cplusplus
++extern "C"
++#endif
++char shl_load();
++
++int main() {
++
++/* The GNU C library defines this for functions which it implements
++    to always fail with ENOSYS.  Some functions are actually named
++    something starting with __ and the normal name is an alias.  */
++#if defined (__stub_shl_load) || defined (__stub___shl_load)
++choke me
++#else
++shl_load();
++#endif
++
++; return 0; }
++EOF
++if { (eval echo $progname:2405: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_func_shl_load=yes"
++else
++  echo "$progname: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_func_shl_load=no"
++fi
++rm -f conftest*
++fi
++
++if eval "test \"`echo '$ac_cv_func_'shl_load`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  lt_cv_dlopen="shl_load"
++else
++  echo "$ac_t""no" 1>&6
++echo $ac_n "checking for shl_load in -ldld""... $ac_c" 1>&6
++echo "$progname:2423: checking for shl_load in -ldld" >&5
++ac_lib_var=`echo dld'_'shl_load | sed 'y%./+-%__p_%'`
++if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  ac_save_LIBS="$LIBS"
++LIBS="-ldld  $LIBS"
++cat > conftest.$ac_ext <<EOF
++#line 2431 "ltconfig"
++#include "confdefs.h"
++/* Override any gcc2 internal prototype to avoid an error.  */
++/* We use char because int might match the return type of a gcc2
++    builtin and then its argument prototype would still apply.  */
++#ifdef __cplusplus
++extern "C"
++#endif
++char shl_load();
++
++int main() {
++shl_load()
++; return 0; }
++EOF
++if { (eval echo $progname:2445: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=yes"
++else
++  echo "$progname: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_lib_$ac_lib_var=no"
++fi
++rm -f conftest*
++LIBS="$ac_save_LIBS"
++
++fi
++if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++  lt_cv_dlopen="shl_load" lt_cv_dlopen_libs="-ldld"
++else
++  echo "$ac_t""no" 1>&6
++fi
++
++
++fi
++
++    
++fi
++
++  
++fi
++
++
++fi
++
++fi
++
++  if test "x$lt_cv_dlopen" != xno; then
++    enable_dlopen=yes
++  fi
++
++  case "$lt_cv_dlopen" in
++  dlopen)
++for ac_hdr in dlfcn.h; do
++ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
++echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
++echo "$progname:2488: checking for $ac_hdr" >&5
++if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  cat > conftest.$ac_ext <<EOF
++#line 2493 "ltconfig"
++#include <$ac_hdr>
++int fnord = 0;
++EOF
++ac_try="$ac_compile >/dev/null 2>conftest.out"
++{ (eval echo $progname:2498: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
++ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
++if test -z "$ac_err"; then
++  rm -rf conftest*
++  eval "ac_cv_header_$ac_safe=yes"
++else
++  echo "$ac_err" >&5
++  echo "$progname: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -rf conftest*
++  eval "ac_cv_header_$ac_safe=no"
++fi
++rm -f conftest*
++fi
++if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
++  echo "$ac_t""yes" 1>&6
++else
++  echo "$ac_t""no" 1>&6
++fi
++done
++
++    if test "x$ac_cv_header_dlfcn_h" = xyes; then
++      CPPFLAGS="$CPPFLAGS -DHAVE_DLFCN_H"
++    fi
++    eval LDFLAGS=\"\$LDFLAGS $export_dynamic_flag_spec\"
++    LIBS="$lt_cv_dlopen_libs $LIBS"
++
++  echo $ac_n "checking whether a program can dlopen itself""... $ac_c" 1>&6
++echo "$progname:2526: checking whether a program can dlopen itself" >&5
++if test "${lt_cv_dlopen_self+set}" = set; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  if test "$cross_compiling" = yes; then
++    lt_cv_dlopen_self=cross
++  else
++    cat > conftest.c <<EOF
++#line 2534 "ltconfig"
++
++#if HAVE_DLFCN_H
++#include <dlfcn.h>
++#endif
++
++#include <stdio.h>
++
++#ifdef RTLD_GLOBAL
++# define LTDL_GLOBAL	RTLD_GLOBAL
++#else
++# ifdef DL_GLOBAL
++#  define LTDL_GLOBAL	DL_GLOBAL
++# else
++#  define LTDL_GLOBAL	0
++# endif
++#endif
++
++/* We may have to define LTDL_LAZY_OR_NOW in the command line if we
++   find out it does not work in some platform. */
++#ifndef LTDL_LAZY_OR_NOW
++# ifdef RTLD_LAZY
++#  define LTDL_LAZY_OR_NOW	RTLD_LAZY
++# else
++#  ifdef DL_LAZY
++#   define LTDL_LAZY_OR_NOW	DL_LAZY
++#  else
++#   ifdef RTLD_NOW
++#    define LTDL_LAZY_OR_NOW	RTLD_NOW
++#   else
++#    ifdef DL_NOW
++#     define LTDL_LAZY_OR_NOW	DL_NOW
++#    else
++#     define LTDL_LAZY_OR_NOW	0
++#    endif
++#   endif
++#  endif
++# endif
++#endif
++
++fnord() { int i=42;}
++main() { void *self, *ptr1, *ptr2; self=dlopen(0,LTDL_GLOBAL|LTDL_LAZY_OR_NOW);
++    if(self) { ptr1=dlsym(self,"fnord"); ptr2=dlsym(self,"_fnord");
++	       if(ptr1 || ptr2) { dlclose(self); exit(0); } } exit(1); } 
++
++EOF
++if { (eval echo $progname:2580: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest && (./conftest; exit) 2>/dev/null
++then
++  lt_cv_dlopen_self=yes
++else
++  echo "$progname: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -fr conftest*
++  lt_cv_dlopen_self=no
++fi
++rm -fr conftest*
++fi
++
++fi
++
++echo "$ac_t""$lt_cv_dlopen_self" 1>&6
++
++  if test "$lt_cv_dlopen_self" = yes; then
++    LDFLAGS="$LDFLAGS $link_static_flag"
++  echo $ac_n "checking whether a statically linked program can dlopen itself""... $ac_c" 1>&6
++echo "$progname:2599: checking whether a statically linked program can dlopen itself" >&5
++if test "${lt_cv_dlopen_self_static+set}" = set; then
++  echo $ac_n "(cached) $ac_c" 1>&6
++else
++  if test "$cross_compiling" = yes; then
++    lt_cv_dlopen_self_static=cross
++  else
++    cat > conftest.c <<EOF
++#line 2607 "ltconfig"
++
++#if HAVE_DLFCN_H
++#include <dlfcn.h>
++#endif
++
++#include <stdio.h>
++
++#ifdef RTLD_GLOBAL
++# define LTDL_GLOBAL	RTLD_GLOBAL
++#else
++# ifdef DL_GLOBAL
++#  define LTDL_GLOBAL	DL_GLOBAL
++# else
++#  define LTDL_GLOBAL	0
++# endif
++#endif
++
++/* We may have to define LTDL_LAZY_OR_NOW in the command line if we
++   find out it does not work in some platform. */
++#ifndef LTDL_LAZY_OR_NOW
++# ifdef RTLD_LAZY
++#  define LTDL_LAZY_OR_NOW	RTLD_LAZY
++# else
++#  ifdef DL_LAZY
++#   define LTDL_LAZY_OR_NOW	DL_LAZY
++#  else
++#   ifdef RTLD_NOW
++#    define LTDL_LAZY_OR_NOW	RTLD_NOW
++#   else
++#    ifdef DL_NOW
++#     define LTDL_LAZY_OR_NOW	DL_NOW
++#    else
++#     define LTDL_LAZY_OR_NOW	0
++#    endif
++#   endif
++#  endif
++# endif
++#endif
++
++fnord() { int i=42;}
++main() { void *self, *ptr1, *ptr2; self=dlopen(0,LTDL_GLOBAL|LTDL_LAZY_OR_NOW);
++    if(self) { ptr1=dlsym(self,"fnord"); ptr2=dlsym(self,"_fnord");
++    if(ptr1 || ptr2) { dlclose(self); exit(0); } } exit(1); } 
++
++EOF
++if { (eval echo $progname:2653: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest && (./conftest; exit) 2>/dev/null
++then
++  lt_cv_dlopen_self_static=yes
++else
++  echo "$progname: failed program was:" >&5
++  cat conftest.$ac_ext >&5
++  rm -fr conftest*
++  lt_cv_dlopen_self_static=no
++fi
++rm -fr conftest*
++fi
++
++fi
++
++echo "$ac_t""$lt_cv_dlopen_self_static" 1>&6
++fi
++    ;;
++  esac
++
++  case "$lt_cv_dlopen_self" in
++  yes|no) enable_dlopen_self=$lt_cv_dlopen_self ;;
++  *) enable_dlopen_self=unknown ;;
++  esac
++
++  case "$lt_cv_dlopen_self_static" in
++  yes|no) enable_dlopen_self_static=$lt_cv_dlopen_self_static ;;
++  *) enable_dlopen_self_static=unknown ;;
++  esac
++fi
++
 +# Copy echo and quote the copy, instead of the original, because it is
 +# used later.
 +ltecho="$echo"
++if test "X$ltecho" = "X$CONFIG_SHELL $0 --fallback-echo"; then
++   ltecho="$CONFIG_SHELL \$0 --fallback-echo"
++fi
++LTSHELL="$SHELL"
 +
-+# Now quote all the things that may contain metacharacters.
-+for var in ltecho old_CC old_CFLAGS old_CPPFLAGS old_LD old_NM old_RANLIB \
-+  old_LN_S AR CC LD LN_S NM reload_flag reload_cmds wl pic_flag \
-+  link_static_flag no_builtin_flag export_dynamic_flag_spec \
-+  libname_spec library_names_spec soname_spec RANLIB \
-+  old_archive_cmds old_archive_from_new_cmds old_postinstall_cmds \
-+  old_postuninstall_cmds archive_cmds postinstall_cmds postuninstall_cmds \
-+  allow_undefined_flag no_undefined_flag \
-+  finish_cmds finish_eval global_symbol_pipe \
-+  hardcode_libdir_flag_spec hardcode_libdir_separator; do
++LTCONFIG_VERSION="$VERSION"
 +
-+  case "$var" in
-+  reload_cmds | old_archive_cmds | old_archive_from_new_cmds | \
-+  old_postinstall_cmds | old_postuninstall_cmds | archive_cmds | \
-+  postinstall_cmds | postuninstall_cmds | finish_cmds)
-+    # Double-quote double-evaled strings.
-+    eval "$var=\`\$echo \"X\$$var\" | \$Xsed -e \"\$double_quote_subst\" -e \"\$sed_quote_subst\"\`"
-+    ;;
-+  *)
-+    eval "$var=\`\$echo \"X\$$var\" | \$Xsed -e \"\$sed_quote_subst\"\`"
++# Only quote variables if we're using ltmain.sh.
++case "$ltmain" in
++*.sh)
++  # Now quote all the things that may contain metacharacters.
++  for var in ltecho old_CC old_CFLAGS old_CPPFLAGS \
++    old_LD old_LDFLAGS old_LIBS \
++    old_NM old_RANLIB old_LN_S old_DLLTOOL old_OBJDUMP old_AS \
++    AR CC LD LN_S NM LTSHELL LTCONFIG_VERSION \
++    reload_flag reload_cmds wl \
++    pic_flag link_static_flag no_builtin_flag export_dynamic_flag_spec \
++    thread_safe_flag_spec whole_archive_flag_spec libname_spec \
++    library_names_spec soname_spec \
++    RANLIB old_archive_cmds old_archive_from_new_cmds old_postinstall_cmds \
++    old_postuninstall_cmds archive_cmds archive_expsym_cmds postinstall_cmds postuninstall_cmds \
++    file_magic_cmd export_symbols_cmds deplibs_check_method allow_undefined_flag no_undefined_flag \
++    finish_cmds finish_eval global_symbol_pipe global_symbol_to_cdecl \
++    hardcode_libdir_flag_spec hardcode_libdir_separator  \
++    sys_lib_search_path_spec sys_lib_dlsearch_path_spec \
++    compiler_c_o compiler_o_lo need_locks exclude_expsyms include_expsyms; do
++
++    case "$var" in
++    reload_cmds | old_archive_cmds | old_archive_from_new_cmds | \
++    old_postinstall_cmds | old_postuninstall_cmds | \
++    export_symbols_cmds | archive_cmds | archive_expsym_cmds | \
++    postinstall_cmds | postuninstall_cmds | \
++    finish_cmds | sys_lib_search_path_spec | sys_lib_dlsearch_path_spec)
++      # Double-quote double-evaled strings.
++      eval "$var=\\\"\`\$echo \"X\$$var\" | \$Xsed -e \"\$double_quote_subst\" -e \"\$sed_quote_subst\" -e \"\$delay_variable_subst\"\`\\\""
++      ;;
++    *)
++      eval "$var=\\\"\`\$echo \"X\$$var\" | \$Xsed -e \"\$sed_quote_subst\"\`\\\""
++      ;;
++    esac
++  done
++
++  case "$ltecho" in
++  *'\$0 --fallback-echo"')
++    ltecho=`$echo "X$ltecho" | $Xsed -e 's/\\\\\\\$0 --fallback-echo"$/$0 --fallback-echo"/'`
 +    ;;
 +  esac
-+done
 +
-+ofile=libtool
-+trap "$rm $ofile; exit 1" 1 2 15
-+echo creating $ofile
-+$rm $ofile
-+cat <<EOF > $ofile
-+#! /bin/sh
++  trap "$rm \"$ofile\"; exit 1" 1 2 15
++  echo "creating $ofile"
++  $rm "$ofile"
++  cat <<EOF > "$ofile"
++#! $SHELL
 +
-+# libtool - Provide generalized library-building support services.
-+# Generated automatically by $PROGRAM - GNU $PACKAGE $VERSION
++# `$echo "$ofile" | sed 's%^.*/%%'` - Provide generalized library-building support services.
++# Generated automatically by $PROGRAM (GNU $PACKAGE $VERSION$TIMESTAMP)
 +# NOTE: Changes made to this file will be lost: look at ltconfig or ltmain.sh.
 +#
-+# Copyright (C) 1996-1998 Free Software Foundation, Inc.
-+# Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996
++# Copyright (C) 1996-1999 Free Software Foundation, Inc.
++# Originally by Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996
 +#
 +# This program is free software; you can redistribute it and/or modify
 +# it under the terms of the GNU General Public License as published by
@@ -8054,120 +11158,208 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +# configuration script generated by Autoconf, you may include it under
 +# the same distribution terms that you use for the rest of that program.
 +
-+# This program was configured as follows,
-+# on host `(hostname || uname -n) 2>/dev/null | sed 1q`:
-+#
-+# CC="$old_CC" CFLAGS="$old_CFLAGS" CPPFLAGS="$old_CPPFLAGS" \\
-+# LD="$old_LD" NM="$old_NM" RANLIB="$old_RANLIB" LN_S="$old_LN_S" \\
-+#   $0$ltconfig_args
-+#
-+# Compiler and other test output produced by $progname, useful for
-+# debugging $progname, is in ./config.log if it exists.
-+
 +# Sed that helps us avoid accidentally triggering echo(1) options like -n.
 +Xsed="sed -e s/^X//"
 +
 +# The HP-UX ksh and POSIX shell print the target directory to stdout
 +# if CDPATH is set.
-+if test "\${CDPATH+set}" = set; then CDPATH=; export CDPATH; fi
++if test "X\${CDPATH+set}" = Xset; then CDPATH=:; export CDPATH; fi
 +
-+# An echo program that does not interpret backslashes.
-+echo="$ltecho"
++### BEGIN LIBTOOL CONFIG
++EOF
++  cfgfile="$ofile"
++  ;;
++
++*)
++  # Double-quote the variables that need it (for aesthetics).
++  for var in old_CC old_CFLAGS old_CPPFLAGS \
++    old_LD old_LDFLAGS old_LIBS \
++    old_NM old_RANLIB old_LN_S old_DLLTOOL old_OBJDUMP old_AS; do
++    eval "$var=\\\"\$var\\\""
++  done
++
++  # Just create a config file.
++  cfgfile="$ofile.cfg"
++  trap "$rm \"$cfgfile\"; exit 1" 1 2 15
++  echo "creating $cfgfile"
++  $rm "$cfgfile"
++  cat <<EOF > "$cfgfile"
++# `$echo "$cfgfile" | sed 's%^.*/%%'` - Libtool configuration file.
++# Generated automatically by $PROGRAM (GNU $PACKAGE $VERSION$TIMESTAMP)
++EOF
++  ;;
++esac
++
++cat <<EOF >> "$cfgfile"
++# Libtool was configured as follows, on host `(hostname || uname -n) 2>/dev/null | sed 1q`:
++#
++# CC=$old_CC CFLAGS=$old_CFLAGS CPPFLAGS=$old_CPPFLAGS \\
++# LD=$old_LD LDFLAGS=$old_LDFLAGS LIBS=$old_LIBS \\
++# NM=$old_NM RANLIB=$old_RANLIB LN_S=$old_LN_S \\
++# DLLTOOL=$old_DLLTOOL OBJDUMP=$old_OBJDUMP AS=$old_AS \\
++#   $0$ltconfig_args
++#
++# Compiler and other test output produced by $progname, useful for
++# debugging $progname, is in ./config.log if it exists.
 +
 +# The version of $progname that generated this script.
-+LTCONFIG_VERSION="$VERSION"
++LTCONFIG_VERSION=$LTCONFIG_VERSION
 +
 +# Shell to use when invoking shell scripts.
-+SHELL=${CONFIG_SHELL-/bin/sh}
++SHELL=$LTSHELL
 +
-+# Whether or not to build libtool libraries.
++# Whether or not to build shared libraries.
 +build_libtool_libs=$enable_shared
 +
-+# Whether or not to build old-style libraries.
++# Whether or not to build static libraries.
 +build_old_libs=$enable_static
 +
++# Whether or not to optimize for fast installation.
++fast_install=$enable_fast_install
++
 +# The host system.
-+host_alias="$host_alias"
-+host="$host"
++host_alias=$host_alias
++host=$host
++
++# An echo program that does not interpret backslashes.
++echo=$ltecho
 +
 +# The archiver.
-+AR="$AR"
++AR=$AR
 +
 +# The default C compiler.
-+CC="$CC"
++CC=$CC
 +
 +# The linker used to build libraries.
-+LD="$LD"
++LD=$LD
 +
 +# Whether we need hard or soft links.
-+LN_S="$LN_S"
++LN_S=$LN_S
 +
 +# A BSD-compatible nm program.
-+NM="$NM"
++NM=$NM
++
++# Used on cygwin: DLL creation program.
++DLLTOOL="$DLLTOOL"
++
++# Used on cygwin: object dumper.
++OBJDUMP="$OBJDUMP"
++
++# Used on cygwin: assembler.
++AS="$AS"
 +
 +# The name of the directory that contains temporary libtool files.
-+objdir="$objdir"
++objdir=$objdir
 +
 +# How to create reloadable object files.
-+reload_flag="$reload_flag"
-+reload_cmds="$reload_cmds"
++reload_flag=$reload_flag
++reload_cmds=$reload_cmds
 +
 +# How to pass a linker flag through the compiler.
-+wl="$wl"
++wl=$wl
++
++# Object file suffix (normally "o").
++objext="$objext"
++
++# Old archive suffix (normally "a").
++libext="$libext"
++
++# Executable file suffix (normally "").
++exeext="$exeext"
 +
 +# Additional compiler flags for building library objects.
-+pic_flag="$pic_flag"
++pic_flag=$pic_flag
++
++# Does compiler simultaneously support -c and -o options?
++compiler_c_o=$compiler_c_o
++
++# Can we write directly to a .lo ?
++compiler_o_lo=$compiler_o_lo
++
++# Must we lock files when doing compilation ?
++need_locks=$need_locks
++
++# Do we need the lib prefix for modules?
++need_lib_prefix=$need_lib_prefix
++
++# Do we need a version for libraries?
++need_version=$need_version
++
++# Whether dlopen is supported.
++dlopen=$enable_dlopen
++
++# Whether dlopen of programs is supported.
++dlopen_self=$enable_dlopen_self
++
++# Whether dlopen of statically linked programs is supported.
++dlopen_self_static=$enable_dlopen_self_static
 +
 +# Compiler flag to prevent dynamic linking.
-+link_static_flag="$link_static_flag"
++link_static_flag=$link_static_flag
 +
 +# Compiler flag to turn off builtin functions.
-+no_builtin_flag="$no_builtin_flag"
++no_builtin_flag=$no_builtin_flag
 +
 +# Compiler flag to allow reflexive dlopens.
-+export_dynamic_flag_spec="$export_dynamic_flag_spec"
++export_dynamic_flag_spec=$export_dynamic_flag_spec
++
++# Compiler flag to generate shared objects directly from archives.
++whole_archive_flag_spec=$whole_archive_flag_spec
++
++# Compiler flag to generate thread-safe objects.
++thread_safe_flag_spec=$thread_safe_flag_spec
 +
 +# Library versioning type.
 +version_type=$version_type
 +
 +# Format of library name prefix.
-+libname_spec="$libname_spec"
++libname_spec=$libname_spec
 +
 +# List of archive names.  First name is the real one, the rest are links.
 +# The last name is the one that the linker finds with -lNAME.
-+library_names_spec="$library_names_spec"
++library_names_spec=$library_names_spec
 +
 +# The coded name of the library, if different from the real name.
-+soname_spec="$soname_spec"
++soname_spec=$soname_spec
 +
 +# Commands used to build and install an old-style archive.
-+RANLIB="$RANLIB"
-+old_archive_cmds="$old_archive_cmds"
-+old_postinstall_cmds="$old_postinstall_cmds"
-+old_postuninstall_cmds="$old_postuninstall_cmds"
++RANLIB=$RANLIB
++old_archive_cmds=$old_archive_cmds
++old_postinstall_cmds=$old_postinstall_cmds
++old_postuninstall_cmds=$old_postuninstall_cmds
 +
 +# Create an old-style archive from a shared archive.
-+old_archive_from_new_cmds="$old_archive_from_new_cmds"
++old_archive_from_new_cmds=$old_archive_from_new_cmds
 +
 +# Commands used to build and install a shared archive.
-+archive_cmds="$archive_cmds"
-+postinstall_cmds="$postinstall_cmds"
-+postuninstall_cmds="$postuninstall_cmds"
++archive_cmds=$archive_cmds
++archive_expsym_cmds=$archive_expsym_cmds
++postinstall_cmds=$postinstall_cmds
++postuninstall_cmds=$postuninstall_cmds
++
++# Method to check whether dependent libraries are shared objects.
++deplibs_check_method=$deplibs_check_method
++
++# Command to use when deplibs_check_method == file_magic.
++file_magic_cmd=$file_magic_cmd
 +
 +# Flag that allows shared libraries with undefined symbols to be built.
-+allow_undefined_flag="$allow_undefined_flag"
++allow_undefined_flag=$allow_undefined_flag
 +
 +# Flag that forces no undefined symbols.
-+no_undefined_flag="$no_undefined_flag"
++no_undefined_flag=$no_undefined_flag
 +
 +# Commands used to finish a libtool library installation in a directory.
-+finish_cmds="$finish_cmds"
++finish_cmds=$finish_cmds
 +
 +# Same as above, but a single script fragment to be evaled but not shown.
-+finish_eval="$finish_eval"
++finish_eval=$finish_eval
 +
 +# Take the output of nm and produce a listing of raw symbols and C names.
-+global_symbol_pipe="$global_symbol_pipe"
++global_symbol_pipe=$global_symbol_pipe
++
++# Transform the output of nm in a proper C declaration
++global_symbol_to_cdecl=$global_symbol_to_cdecl
 +
 +# This is the shared library runtime path variable.
 +runpath_var=$runpath_var
@@ -8175,15 +11367,18 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +# This is the shared library path variable.
 +shlibpath_var=$shlibpath_var
 +
++# Is shlibpath searched before the hard-coded library search path?
++shlibpath_overrides_runpath=$shlibpath_overrides_runpath
++
 +# How to hardcode a shared library path into an executable.
 +hardcode_action=$hardcode_action
 +
 +# Flag to hardcode \$libdir into a binary during linking.
 +# This must work even if \$libdir does not exist.
-+hardcode_libdir_flag_spec="$hardcode_libdir_flag_spec"
++hardcode_libdir_flag_spec=$hardcode_libdir_flag_spec
 +
 +# Whether we need a single -rpath flag with a separated argument.
-+hardcode_libdir_separator="$hardcode_libdir_separator"
++hardcode_libdir_separator=$hardcode_libdir_separator
 +
 +# Set to yes if using DIR/libNAME.so during linking hardcodes DIR into the
 +# resulting binary.
@@ -8197,27 +11392,115 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +# the resulting binary.
 +hardcode_shlibpath_var=$hardcode_shlibpath_var
 +
++# Compile-time system search path for libraries
++sys_lib_search_path_spec=$sys_lib_search_path_spec
++
++# Run-time system search path for libraries
++sys_lib_dlsearch_path_spec=$sys_lib_dlsearch_path_spec
++
++# Fix the shell variable \$srcfile for the compiler.
++fix_srcfile_path="$fix_srcfile_path"
++
++# Set to yes if exported symbols are required.
++always_export_symbols=$always_export_symbols
++
++# The commands to list exported symbols.
++export_symbols_cmds=$export_symbols_cmds
++
++# Symbols that should not be listed in the preloaded symbols.
++exclude_expsyms=$exclude_expsyms
++
++# Symbols that must always be exported.
++include_expsyms=$include_expsyms
++
 +EOF
 +
-+case "$host_os" in
-+aix3*)
-+  cat <<\EOF >> $ofile
++case "$ltmain" in
++*.sh)
++  echo '### END LIBTOOL CONFIG' >> "$ofile"
++  echo >> "$ofile"
++  case "$host_os" in
++  aix3*)
++    cat <<\EOF >> "$ofile"
++
 +# AIX sometimes has problems with the GCC collect2 program.  For some
 +# reason, if we set the COLLECT_NAMES environment variable, the problems
 +# vanish in a puff of smoke.
-+if test "${COLLECT_NAMES+set}" != set; then
++if test "X${COLLECT_NAMES+set}" != Xset; then
 +  COLLECT_NAMES=
 +  export COLLECT_NAMES
 +fi
-+
 +EOF
++    ;;
++  esac
++
++  # Append the ltmain.sh script.
++  sed '$q' "$ltmain" >> "$ofile" || (rm -f "$ofile"; exit 1)
++  # We use sed instead of cat because bash on DJGPP gets confused if
++  # if finds mixed CR/LF and LF-only lines.  Since sed operates in
++  # text mode, it properly converts lines to CR/LF.  This bash problem
++  # is reportedly fixed, but why not run on old versions too?
++
++  chmod +x "$ofile"
++  ;;
++
++*)
++  # Compile the libtool program.
++  echo "FIXME: would compile $ltmain"
 +  ;;
 +esac
 +
-+# Append the ltmain.sh script.
-+cat "$ltmain" >> $ofile || (rm -f $ofile; exit 1)
++test -n "$cache_file" || exit 0
 +
-+chmod +x $ofile
++# AC_CACHE_SAVE
++trap '' 1 2 15
++cat > confcache <<\EOF
++# This file is a shell script that caches the results of configure
++# tests run on this system so they can be shared between configure
++# scripts and configure runs.  It is not useful on other systems.
++# If it contains results you don't want to keep, you may remove or edit it.
++#
++# By default, configure uses ./config.cache as the cache file,
++# creating it if it does not exist already.  You can give configure
++# the --cache-file=FILE option to use a different cache file; that is
++# what configure does when it calls configure scripts in
++# subdirectories, so they share the cache.
++# Giving --cache-file=/dev/null disables caching, for debugging configure.
++# config.status only pays attention to the cache file if you give it the
++# --recheck option to rerun configure.
++#
++EOF
++# The following way of writing the cache mishandles newlines in values,
++# but we know of no workaround that is simple, portable, and efficient.
++# So, don't put newlines in cache variables' values.
++# Ultrix sh set writes to stderr and can't be redirected directly,
++# and sets the high bit in the cache file unless we assign to the vars.
++(set) 2>&1 |
++  case `(ac_space=' '; set | grep ac_space) 2>&1` in
++  *ac_space=\ *)
++    # `set' does not quote correctly, so add quotes (double-quote substitution
++    # turns \\\\ into \\, and sed turns \\ into \).
++    sed -n \
++      -e "s/'/'\\\\''/g" \
++      -e "s/^\\([a-zA-Z0-9_]*_cv_[a-zA-Z0-9_]*\\)=\\(.*\\)/\\1=\${\\1='\\2'}/p"
++    ;;
++  *)
++    # `set' quotes correctly as required by POSIX, so do not add quotes.
++    sed -n -e 's/^\([a-zA-Z0-9_]*_cv_[a-zA-Z0-9_]*\)=\(.*\)/\1=${\1=\2}/p'
++    ;;
++  esac >> confcache
++if cmp -s $cache_file confcache; then
++  :
++else
++  if test -w $cache_file; then
++    echo "updating cache $cache_file"
++    cat confcache > $cache_file
++  else
++    echo "not updating unwritable cache $cache_file"
++  fi
++fi
++rm -f confcache
++
 +exit 0
 +
 +# Local Variables:
@@ -8226,13 +11509,13 @@ diff -Naur gd-1.8.4/ltconfig gd-1.8.4.patch/ltconfig
 +# End:
 diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 --- gd-1.8.4/ltmain.sh	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/ltmain.sh	Tue Sep 25 22:51:28 2001
-@@ -0,0 +1,2453 @@
++++ gd-1.8.4.patch/ltmain.sh	Sat Mar 31 23:15:55 2001
+@@ -0,0 +1,4024 @@
 +# ltmain.sh - Provide generalized library-building support services.
 +# NOTE: Changing this file will not affect anything until you rerun ltconfig.
 +#
-+# Copyright (C) 1996-1998 Free Software Foundation, Inc.
-+# Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996
++# Copyright (C) 1996-1999 Free Software Foundation, Inc.
++# Originally by Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996
 +#
 +# This program is free software; you can redistribute it and/or modify
 +# it under the terms of the GNU General Public License as published by
@@ -8253,6 +11536,30 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +# configuration script generated by Autoconf, you may include it under
 +# the same distribution terms that you use for the rest of that program.
 +
++# Check that we have a working $echo.
++if test "X$1" = X--no-reexec; then
++  # Discard the --no-reexec flag, and continue.
++  shift
++elif test "X$1" = X--fallback-echo; then
++  # Avoid inline document here, it may be left over
++  :
++elif test "X`($echo '\t') 2>/dev/null`" = 'X\t'; then
++  # Yippee, $echo works!
++  :
++else
++  # Restart under the correct shell, and then maybe $echo will work.
++  exec $SHELL "$0" --no-reexec ${1+"$@"}
++fi
++
++if test "X$1" = X--fallback-echo; then
++  # used as fallback echo
++  shift
++  cat <<EOF
++$*
++EOF
++  exit 0
++fi
++
 +# The name of this program.
 +progname=`$echo "$0" | sed 's%^.*/%%'`
 +modename="$progname"
@@ -8260,7 +11567,8 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +# Constants.
 +PROGRAM=ltmain.sh
 +PACKAGE=libtool
-+VERSION=1.2
++VERSION=1.3.5
++TIMESTAMP=" (1.385.2.206 2000/05/27 11:12:27)"
 +
 +default_mode=
 +help="Try \`$progname --help' for more information."
@@ -8271,15 +11579,22 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +# Sed substitution that helps us do robust quoting.  It backslashifies
 +# metacharacters that are still active within double-quoted strings.
-+Xsed='sed -e s/^X//'
++Xsed='sed -e 1s/^X//'
 +sed_quote_subst='s/\([\\`\\"$\\\\]\)/\\\1/g'
++SP2NL='tr \040 \012'
++NL2SP='tr \015\012 \040\040'
 +
 +# NLS nuisances.
 +# Only set LANG and LC_ALL to C if already set.
 +# These must not be set unconditionally because not all systems understand
 +# e.g. LANG=C (notably SCO).
-+if test "${LC_ALL+set}" = set; then LC_ALL=C; export LC_ALL; fi
-+if test "${LANG+set}"   = set; then LANG=C;   export LANG;   fi
++# We save the old values to restore during execute mode.
++if test "${LC_ALL+set}" = set; then
++  save_LC_ALL="$LC_ALL"; LC_ALL=C; export LC_ALL
++fi
++if test "${LANG+set}" = set; then
++  save_LANG="$LANG"; LANG=C; export LANG
++fi
 +
 +if test "$LTCONFIG_VERSION" != "$VERSION"; then
 +  echo "$modename: ltconfig version \`$LTCONFIG_VERSION' does not match $PROGRAM version \`$VERSION'" 1>&2
@@ -8302,6 +11617,8 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +show="$echo"
 +show_help=
 +execute_dlfiles=
++lo2o="s/\\.lo\$/.${objext}/"
++o2lo="s/\\.${objext}\$/.lo/"
 +
 +# Parse our command line options once, thoroughly.
 +while test $# -gt 0
@@ -8337,8 +11654,18 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +    ;;
 +
 +  --version)
-+    echo "$PROGRAM (GNU $PACKAGE) $VERSION"
++    echo "$PROGRAM (GNU $PACKAGE) $VERSION$TIMESTAMP"
 +    exit 0
++    ;;
++
++  --config)
++    sed -e '1,/^### BEGIN LIBTOOL CONFIG/d' -e '/^### END LIBTOOL CONFIG/,$d' $0
++    exit 0
++    ;;
++
++  --debug)
++    echo "$progname: enabling shell trace mode"
++    set -x
 +    ;;
 +
 +  --dry-run | -n)
@@ -8402,15 +11729,15 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +      mode=link
 +      for arg
 +      do
-+        case "$arg" in
-+        -c)
-+           mode=compile
-+           break
-+           ;;
-+        esac
++	case "$arg" in
++	-c)
++	   mode=compile
++	   break
++	   ;;
++	esac
 +      done
 +      ;;
-+    *db | *dbx)
++    *db | *dbx | *strace | *truss)
 +      mode=execute
 +      ;;
 +    *install*|cp|mv)
@@ -8425,11 +11752,11 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +      # Just use the default operation mode.
 +      if test -z "$mode"; then
-+        if test -n "$nonopt"; then
-+          $echo "$modename: warning: cannot infer operation mode from \`$nonopt'" 1>&2
-+        else
-+          $echo "$modename: warning: cannot infer operation mode without MODE-ARGS" 1>&2
-+        fi
++	if test -n "$nonopt"; then
++	  $echo "$modename: warning: cannot infer operation mode from \`$nonopt'" 1>&2
++	else
++	  $echo "$modename: warning: cannot infer operation mode without MODE-ARGS" 1>&2
++	fi
 +      fi
 +      ;;
 +    esac
@@ -8457,19 +11784,35 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +    srcfile="$nonopt"
 +    suppress_output=
 +
++    user_target=no
 +    for arg
 +    do
 +      # Accept any command-line options.
 +      case "$arg" in
 +      -o)
-+	$echo "$modename: you cannot specify the output filename with \`-o'" 1>&2
-+	$echo "$help" 1>&2
-+	exit 1
++	if test "$user_target" != "no"; then
++	  $echo "$modename: you cannot specify \`-o' more than once" 1>&2
++	  exit 1
++	fi
++	user_target=next
 +	;;
 +
 +      -static)
-+	build_libtool_libs=no
 +	build_old_libs=yes
++	continue
++	;;
++      esac
++
++      case "$user_target" in
++      next)
++	# The next one is the -o target name
++	user_target=yes
++	continue
++	;;
++      yes)
++	# We got the output file
++	user_target=set
++	libobj="$arg"
 +	continue
 +	;;
 +      esac
@@ -8502,11 +11845,22 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +      fi
 +    done
 +
-+    # Get the name of the library object.
-+    libobj=`$echo "X$srcfile" | $Xsed -e 's%^.*/%%'`
++    case "$user_target" in
++    set)
++      ;;
++    no)
++      # Get the name of the library object.
++      libobj=`$echo "X$srcfile" | $Xsed -e 's%^.*/%%'`
++      ;;
++    *)
++      $echo "$modename: you must specify a target with \`-o'" 1>&2
++      exit 1
++      ;;
++    esac
 +
 +    # Recognize several different file suffixes.
-+    xform='[cCFSfms]'
++    # If the user specifies -o file.o, it is replaced with file.lo
++    xform='[cCFSfmso]'
 +    case "$libobj" in
 +    *.ada) xform=ada ;;
 +    *.adb) xform=adb ;;
@@ -8523,9 +11877,9 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +    libobj=`$echo "X$libobj" | $Xsed -e "s/\.$xform$/.lo/"`
 +
 +    case "$libobj" in
-+    *.lo) obj=`$echo "X$libobj" | $Xsed -e 's/\.lo$/.o/'` ;;
++    *.lo) obj=`$echo "X$libobj" | $Xsed -e "$lo2o"` ;;
 +    *)
-+      $echo "$modename: cannot determine name of library object from \`$srcfile'" 1>&2
++      $echo "$modename: cannot determine name of library object from \`$libobj'" 1>&2
 +      exit 1
 +      ;;
 +    esac
@@ -8538,11 +11892,54 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +    # Delete any leftover library objects.
 +    if test "$build_old_libs" = yes; then
-+      $run $rm $obj $libobj
-+      trap "$run $rm $obj $libobj; exit 1" 1 2 15
++      removelist="$obj $libobj"
 +    else
-+      $run $rm $libobj
-+      trap "$run $rm $libobj; exit 1" 1 2 15
++      removelist="$libobj"
++    fi
++
++    $run $rm $removelist
++    trap "$run $rm $removelist; exit 1" 1 2 15
++
++    # Calculate the filename of the output object if compiler does
++    # not support -o with -c
++    if test "$compiler_c_o" = no; then
++      output_obj=`$echo "X$srcfile" | $Xsed -e 's%^.*/%%' -e 's%\..*$%%'`.${objext}
++      lockfile="$output_obj.lock"
++      removelist="$removelist $output_obj $lockfile"
++      trap "$run $rm $removelist; exit 1" 1 2 15
++    else
++      need_locks=no
++      lockfile=
++    fi
++
++    # Lock this critical section if it is needed
++    # We use this script file to make the link, it avoids creating a new file
++    if test "$need_locks" = yes; then
++      until ln "$0" "$lockfile" 2>/dev/null; do
++	$show "Waiting for $lockfile to be removed"
++	sleep 2
++      done
++    elif test "$need_locks" = warn; then
++      if test -f "$lockfile"; then
++	echo "\
++*** ERROR, $lockfile exists and contains:
++`cat $lockfile 2>/dev/null`
++
++This indicates that another process is trying to use the same
++temporary object file, and libtool could not work around it because
++your compiler does not support \`-c' and \`-o' together.  If you
++repeat this compilation, it may succeed, by chance, but you had better
++avoid parallel builds (make -j) in this platform, or get a better
++compiler."
++
++	$run $rm $removelist
++	exit 1
++      fi
++      echo $srcfile > "$lockfile"
++    fi
++
++    if test -n "$fix_srcfile_path"; then
++      eval srcfile=\"$fix_srcfile_path\"
 +    fi
 +
 +    # Only build a PIC object if we are building libtool libraries.
@@ -8551,23 +11948,110 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +      fbsd_hideous_sh_bug=$base_compile
 +
 +      # All platforms use -DPIC, to notify preprocessed assembler code.
-+      $show "$base_compile$pic_flag -DPIC $srcfile"
-+      if $run eval "$base_compile\$pic_flag -DPIC \$srcfile"; then :
++      command="$base_compile $srcfile $pic_flag -DPIC"
++      if test "$build_old_libs" = yes; then
++	lo_libobj="$libobj"
++	dir=`$echo "X$libobj" | $Xsed -e 's%/[^/]*$%%'`
++	if test "X$dir" = "X$libobj"; then
++	  dir="$objdir"
++	else
++	  dir="$dir/$objdir"
++	fi
++	libobj="$dir/"`$echo "X$libobj" | $Xsed -e 's%^.*/%%'`
++
++	if test -d "$dir"; then
++	  $show "$rm $libobj"
++	  $run $rm $libobj
++	else
++	  $show "$mkdir $dir"
++	  $run $mkdir $dir
++	  status=$?
++	  if test $status -ne 0 && test ! -d $dir; then
++	    exit $status
++	  fi
++	fi
++      fi
++      if test "$compiler_o_lo" = yes; then
++	output_obj="$libobj"
++	command="$command -o $output_obj"
++      elif test "$compiler_c_o" = yes; then
++	output_obj="$obj"
++	command="$command -o $output_obj"
++      fi
++
++      $run $rm "$output_obj"
++      $show "$command"
++      if $run eval "$command"; then :
 +      else
-+        test -n "$obj" && $run $rm $obj
-+        exit 1
++	test -n "$output_obj" && $run $rm $removelist
++	exit 1
++      fi
++
++      if test "$need_locks" = warn &&
++	 test x"`cat $lockfile 2>/dev/null`" != x"$srcfile"; then
++	echo "\
++*** ERROR, $lockfile contains:
++`cat $lockfile 2>/dev/null`
++
++but it should contain:
++$srcfile
++
++This indicates that another process is trying to use the same
++temporary object file, and libtool could not work around it because
++your compiler does not support \`-c' and \`-o' together.  If you
++repeat this compilation, it may succeed, by chance, but you had better
++avoid parallel builds (make -j) in this platform, or get a better
++compiler."
++
++	$run $rm $removelist
++	exit 1
++      fi
++
++      # Just move the object if needed, then go on to compile the next one
++      if test x"$output_obj" != x"$libobj"; then
++	$show "$mv $output_obj $libobj"
++	if $run $mv $output_obj $libobj; then :
++	else
++	  error=$?
++	  $run $rm $removelist
++	  exit $error
++	fi
 +      fi
 +
 +      # If we have no pic_flag, then copy the object into place and finish.
-+      if test -z "$pic_flag"; then
-+        $show "$LN_S $obj $libobj"
-+        $run $LN_S $obj $libobj
-+        exit $?
-+      fi
++      if test -z "$pic_flag" && test "$build_old_libs" = yes; then
++	# Rename the .lo from within objdir to obj
++	if test -f $obj; then
++	  $show $rm $obj
++	  $run $rm $obj
++	fi
 +
-+      # Just move the object, then go on to compile the next one
-+      $show "$mv $obj $libobj"
-+      $run $mv $obj $libobj || exit 1
++	$show "$mv $libobj $obj"
++	if $run $mv $libobj $obj; then :
++	else
++	  error=$?
++	  $run $rm $removelist
++	  exit $error
++	fi
++
++	xdir=`$echo "X$obj" | $Xsed -e 's%/[^/]*$%%'`
++	if test "X$xdir" = "X$obj"; then
++	  xdir="."
++	else
++	  xdir="$xdir"
++	fi
++	baseobj=`$echo "X$obj" | $Xsed -e "s%.*/%%"`
++	libobj=`$echo "X$baseobj" | $Xsed -e "$o2lo"`
++	# Now arrange that obj and lo_libobj become the same file
++	$show "(cd $xdir && $LN_S $baseobj $libobj)"
++	if $run eval '(cd $xdir && $LN_S $baseobj $libobj)'; then
++	  exit 0
++	else
++	  error=$?
++	  $run $rm $removelist
++	  exit $error
++	fi
++      fi
 +
 +      # Allow error messages only from the first compilation.
 +      suppress_output=' >/dev/null 2>&1'
@@ -8575,20 +12059,73 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +    # Only build a position-dependent object if we build old libraries.
 +    if test "$build_old_libs" = yes; then
++      command="$base_compile $srcfile"
++      if test "$compiler_c_o" = yes; then
++	command="$command -o $obj"
++	output_obj="$obj"
++      fi
++
 +      # Suppress compiler output if we already did a PIC compilation.
-+      $show "$base_compile $srcfile$suppress_output"
-+      if $run eval "$base_compile \$srcfile$suppress_output"; then :
++      command="$command$suppress_output"
++      $run $rm "$output_obj"
++      $show "$command"
++      if $run eval "$command"; then :
 +      else
-+        $run $rm $obj $libobj
-+        exit 1
++	$run $rm $removelist
++	exit 1
++      fi
++
++      if test "$need_locks" = warn &&
++	 test x"`cat $lockfile 2>/dev/null`" != x"$srcfile"; then
++	echo "\
++*** ERROR, $lockfile contains:
++`cat $lockfile 2>/dev/null`
++
++but it should contain:
++$srcfile
++
++This indicates that another process is trying to use the same
++temporary object file, and libtool could not work around it because
++your compiler does not support \`-c' and \`-o' together.  If you
++repeat this compilation, it may succeed, by chance, but you had better
++avoid parallel builds (make -j) in this platform, or get a better
++compiler."
++
++	$run $rm $removelist
++	exit 1
++      fi
++
++      # Just move the object if needed
++      if test x"$output_obj" != x"$obj"; then
++	$show "$mv $output_obj $obj"
++	if $run $mv $output_obj $obj; then :
++	else
++	  error=$?
++	  $run $rm $removelist
++	  exit $error
++	fi
++      fi
++
++      # Create an invalid libtool object if no PIC, so that we do not
++      # accidentally link it into a program.
++      if test "$build_libtool_libs" != yes; then
++	$show "echo timestamp > $libobj"
++	$run eval "echo timestamp > \$libobj" || exit $?
++      else
++	# Move the .lo from within objdir
++	$show "$mv $libobj $lo_libobj"
++	if $run $mv $libobj $lo_libobj; then :
++	else
++	  error=$?
++	  $run $rm $removelist
++	  exit $error
++	fi
 +      fi
 +    fi
 +
-+    # Create an invalid libtool object if no PIC, so that we do not
-+    # accidentally link it into a program.
-+    if test "$build_libtool_libs" != yes; then
-+      $show "echo timestamp > $libobj"
-+      $run eval "echo timestamp > \$libobj" || exit $?
++    # Unlock the critical section if it was locked
++    if test "$need_locks" != no; then
++      $rm "$lockfile"
 +    fi
 +
 +    exit 0
@@ -8597,28 +12134,238 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +  # libtool link mode
 +  link)
 +    modename="$modename: link"
-+    CC="$nonopt"
-+    allow_undefined=yes
-+    compile_command="$CC"
-+    finalize_command="$CC"
++    case "$host" in
++    *-*-cygwin* | *-*-mingw* | *-*-os2*)
++      # It is impossible to link a dll without this setting, and
++      # we shouldn't force the makefile maintainer to figure out
++      # which system we are compiling for in order to pass an extra
++      # flag for every libtool invokation.
++      # allow_undefined=no
 +
++      # FIXME: Unfortunately, there are problems with the above when trying
++      # to make a dll which has undefined symbols, in which case not
++      # even a static library is built.  For now, we need to specify
++      # -no-undefined on the libtool link line when we can be certain
++      # that all symbols are satisfied, otherwise we get a static library.
++      allow_undefined=yes
++
++      # This is a source program that is used to create dlls on Windows
++      # Don't remove nor modify the starting and closing comments
++# /* ltdll.c starts here */
++# #define WIN32_LEAN_AND_MEAN
++# #include <windows.h>
++# #undef WIN32_LEAN_AND_MEAN
++# #include <stdio.h>
++#
++# #ifndef __CYGWIN__
++# #  ifdef __CYGWIN32__
++# #    define __CYGWIN__ __CYGWIN32__
++# #  endif
++# #endif
++#
++# #ifdef __cplusplus
++# extern "C" {
++# #endif
++# BOOL APIENTRY DllMain (HINSTANCE hInst, DWORD reason, LPVOID reserved);
++# #ifdef __cplusplus
++# }
++# #endif
++#
++# #ifdef __CYGWIN__
++# #include <cygwin/cygwin_dll.h>
++# DECLARE_CYGWIN_DLL( DllMain );
++# #endif
++# HINSTANCE __hDllInstance_base;
++#
++# BOOL APIENTRY
++# DllMain (HINSTANCE hInst, DWORD reason, LPVOID reserved)
++# {
++#   __hDllInstance_base = hInst;
++#   return TRUE;
++# }
++# /* ltdll.c ends here */
++      # This is a source program that is used to create import libraries
++      # on Windows for dlls which lack them. Don't remove nor modify the
++      # starting and closing comments
++# /* impgen.c starts here */
++# /*   Copyright (C) 1999 Free Software Foundation, Inc.
++# 
++#  This file is part of GNU libtool.
++# 
++#  This program is free software; you can redistribute it and/or modify
++#  it under the terms of the GNU General Public License as published by
++#  the Free Software Foundation; either version 2 of the License, or
++#  (at your option) any later version.
++# 
++#  This program is distributed in the hope that it will be useful,
++#  but WITHOUT ANY WARRANTY; without even the implied warranty of
++#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++#  GNU General Public License for more details.
++# 
++#  You should have received a copy of the GNU General Public License
++#  along with this program; if not, write to the Free Software
++#  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
++#  */
++# 
++#  #include <stdio.h>		/* for printf() */
++#  #include <unistd.h>		/* for open(), lseek(), read() */
++#  #include <fcntl.h>		/* for O_RDONLY, O_BINARY */
++#  #include <string.h>		/* for strdup() */
++# 
++#  static unsigned int
++#  pe_get16 (fd, offset)
++#       int fd;
++#       int offset;
++#  {
++#    unsigned char b[2];
++#    lseek (fd, offset, SEEK_SET);
++#    read (fd, b, 2);
++#    return b[0] + (b[1]<<8);
++#  }
++# 
++#  static unsigned int
++#  pe_get32 (fd, offset)
++#      int fd;
++#      int offset;
++#  {
++#    unsigned char b[4];
++#    lseek (fd, offset, SEEK_SET);
++#    read (fd, b, 4);
++#    return b[0] + (b[1]<<8) + (b[2]<<16) + (b[3]<<24);
++#  }
++# 
++#  static unsigned int
++#  pe_as32 (ptr)
++#       void *ptr;
++#  {
++#    unsigned char *b = ptr;
++#    return b[0] + (b[1]<<8) + (b[2]<<16) + (b[3]<<24);
++#  }
++# 
++#  int
++#  main (argc, argv)
++#      int argc;
++#      char *argv[];
++#  {
++#      int dll;
++#      unsigned long pe_header_offset, opthdr_ofs, num_entries, i;
++#      unsigned long export_rva, export_size, nsections, secptr, expptr;
++#      unsigned long name_rvas, nexp;
++#      unsigned char *expdata, *erva;
++#      char *filename, *dll_name;
++# 
++#      filename = argv[1];
++# 
++#      dll = open(filename, O_RDONLY|O_BINARY);
++#      if (!dll)
++#  	return 1;
++# 
++#      dll_name = filename;
++#    
++#      for (i=0; filename[i]; i++)
++#  	if (filename[i] == '/' || filename[i] == '\\'  || filename[i] == ':')
++#  	    dll_name = filename + i +1;
++# 
++#      pe_header_offset = pe_get32 (dll, 0x3c);
++#      opthdr_ofs = pe_header_offset + 4 + 20;
++#      num_entries = pe_get32 (dll, opthdr_ofs + 92);
++# 
++#      if (num_entries < 1) /* no exports */
++#  	return 1;
++# 
++#      export_rva = pe_get32 (dll, opthdr_ofs + 96);
++#      export_size = pe_get32 (dll, opthdr_ofs + 100);
++#      nsections = pe_get16 (dll, pe_header_offset + 4 +2);
++#      secptr = (pe_header_offset + 4 + 20 +
++#  	      pe_get16 (dll, pe_header_offset + 4 + 16));
++# 
++#      expptr = 0;
++#      for (i = 0; i < nsections; i++)
++#      {
++#  	char sname[8];
++#  	unsigned long secptr1 = secptr + 40 * i;
++#  	unsigned long vaddr = pe_get32 (dll, secptr1 + 12);
++#  	unsigned long vsize = pe_get32 (dll, secptr1 + 16);
++#  	unsigned long fptr = pe_get32 (dll, secptr1 + 20);
++#  	lseek(dll, secptr1, SEEK_SET);
++#  	read(dll, sname, 8);
++#  	if (vaddr <= export_rva && vaddr+vsize > export_rva)
++#  	{
++#  	    expptr = fptr + (export_rva - vaddr);
++#  	    if (export_rva + export_size > vaddr + vsize)
++#  		export_size = vsize - (export_rva - vaddr);
++#  	    break;
++#  	}
++#      }
++# 
++#      expdata = (unsigned char*)malloc(export_size);
++#      lseek (dll, expptr, SEEK_SET);
++#      read (dll, expdata, export_size);
++#      erva = expdata - export_rva;
++# 
++#      nexp = pe_as32 (expdata+24);
++#      name_rvas = pe_as32 (expdata+32);
++# 
++#      printf ("EXPORTS\n");
++#      for (i = 0; i<nexp; i++)
++#      {
++#  	unsigned long name_rva = pe_as32 (erva+name_rvas+i*4);
++#  	printf ("\t%s @ %ld ;\n", erva+name_rva, 1+ i);
++#      }
++# 
++#      return 0;
++#  }
++# /* impgen.c ends here */
++      ;;
++    *)
++      allow_undefined=yes
++      ;;
++    esac
++    compile_command="$nonopt"
++    finalize_command="$nonopt"
++
++    compile_rpath=
++    finalize_rpath=
 +    compile_shlibpath=
 +    finalize_shlibpath=
++    convenience=
++    old_convenience=
 +    deplibs=
++    linkopts=
++
++    if test -n "$shlibpath_var"; then
++      # get the directories listed in $shlibpath_var
++      eval lib_search_path=\`\$echo \"X \${$shlibpath_var}\" \| \$Xsed -e \'s/:/ /g\'\`
++    else
++      lib_search_path=
++    fi
++    # now prepend the system-specific ones
++    eval lib_search_path=\"$sys_lib_search_path_spec\$lib_search_path\"
++    eval sys_lib_dlsearch_path=\"$sys_lib_dlsearch_path_spec\"
++    
++    avoid_version=no
 +    dlfiles=
 +    dlprefiles=
++    dlself=no
 +    export_dynamic=no
-+    hardcode_libdirs=
++    export_symbols=
++    export_symbols_regex=
++    generated=
 +    libobjs=
 +    link_against_libtool_libs=
 +    ltlibs=
++    module=no
 +    objs=
++    prefer_static_libs=no
++    preload=no
 +    prev=
 +    prevarg=
 +    release=
 +    rpath=
++    xrpath=
 +    perm_rpath=
 +    temp_rpath=
++    thread_safe=no
 +    vinfo=
 +
 +    # We need to know -static, to get the right output filenames.
@@ -8626,13 +12373,23 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +    do
 +      case "$arg" in
 +      -all-static | -static)
-+        if test "X$arg" = "X-all-static" && test "$build_libtool_libs" = yes && test -z "$link_static_flag"; then
++	if test "X$arg" = "X-all-static"; then
++	  if test "$build_libtool_libs" = yes && test -z "$link_static_flag"; then
 +	    $echo "$modename: warning: complete static linking is impossible in this configuration" 1>&2
-+        fi
-+        build_libtool_libs=no
++	  fi
++	  if test -n "$link_static_flag"; then
++	    dlopen_self=$dlopen_self_static
++	  fi
++	else
++	  if test -z "$pic_flag" && test -n "$link_static_flag"; then
++	    dlopen_self=$dlopen_self_static
++	  fi
++	fi
++	build_libtool_libs=no
 +	build_old_libs=yes
-+        break
-+        ;;
++	prefer_static_libs=yes
++	break
++	;;
 +      esac
 +    done
 +
@@ -8640,44 +12397,107 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +    test -n "$old_archive_from_new_cmds" && build_old_libs=yes
 +
 +    # Go through the arguments, transforming them on the way.
-+    for arg
-+    do
++    while test $# -gt 0; do
++      arg="$1"
++      shift
++
 +      # If the previous option needs an argument, assign it.
 +      if test -n "$prev"; then
-+        case "$prev" in
-+        output)
-+          compile_command="$compile_command @OUTPUT@"
-+          finalize_command="$finalize_command @OUTPUT@"
-+          ;;
-+        esac
++	case "$prev" in
++	output)
++	  compile_command="$compile_command @OUTPUT@"
++	  finalize_command="$finalize_command @OUTPUT@"
++	  ;;
++	esac
 +
-+        case "$prev" in
-+        dlfiles|dlprefiles)
-+          case "$arg" in
-+          *.la | *.lo) ;;  # We handle these cases below.
-+          *)
-+            dlprefiles="$dlprefiles $arg"
-+            test "$prev" = dlfiles && dlfiles="$dlfiles $arg"
-+            prev=
-+            ;;
-+          esac
-+          ;;
++	case "$prev" in
++	dlfiles|dlprefiles)
++	  if test "$preload" = no; then
++	    # Add the symbol object into the linking commands.
++	    compile_command="$compile_command @SYMFILE@"
++	    finalize_command="$finalize_command @SYMFILE@"
++	    preload=yes
++	  fi
++	  case "$arg" in
++	  *.la | *.lo) ;;  # We handle these cases below.
++	  force)
++	    if test "$dlself" = no; then
++	      dlself=needless
++	      export_dynamic=yes
++	    fi
++	    prev=
++	    continue
++	    ;;
++	  self)
++	    if test "$prev" = dlprefiles; then
++	      dlself=yes
++	    elif test "$prev" = dlfiles && test "$dlopen_self" != yes; then
++	      dlself=yes
++	    else
++	      dlself=needless
++	      export_dynamic=yes
++	    fi
++	    prev=
++	    continue
++	    ;;
++	  *)
++	    if test "$prev" = dlfiles; then
++	      dlfiles="$dlfiles $arg"
++	    else
++	      dlprefiles="$dlprefiles $arg"
++	    fi
++	    prev=
++	    ;;
++	  esac
++	  ;;
++	expsyms)
++	  export_symbols="$arg"
++	  if test ! -f "$arg"; then
++	    $echo "$modename: symbol file \`$arg' does not exist"
++	    exit 1
++	  fi
++	  prev=
++	  continue
++	  ;;
++	expsyms_regex)
++	  export_symbols_regex="$arg"
++	  prev=
++	  continue
++	  ;;
 +	release)
 +	  release="-$arg"
 +	  prev=
 +	  continue
 +	  ;;
-+        rpath)
-+          rpath="$rpath $arg"
++	rpath | xrpath)
++	  # We need an absolute path.
++	  case "$arg" in
++	  [\\/]* | [A-Za-z]:[\\/]*) ;;
++	  *)
++	    $echo "$modename: only absolute run-paths are allowed" 1>&2
++	    exit 1
++	    ;;
++	  esac
++	  if test "$prev" = rpath; then
++	    case "$rpath " in
++	    *" $arg "*) ;;
++	    *) rpath="$rpath $arg" ;;
++	    esac
++	  else
++	    case "$xrpath " in
++	    *" $arg "*) ;;
++	    *) xrpath="$xrpath $arg" ;;
++	    esac
++	  fi
 +	  prev=
 +	  continue
 +	  ;;
-+        *)
-+          eval "$prev=\"\$arg\""
-+          prev=
-+          continue
-+          ;;
-+        esac
++	*)
++	  eval "$prev=\"\$arg\""
++	  prev=
++	  continue
++	  ;;
++	esac
 +      fi
 +
 +      prevarg="$arg"
@@ -8685,10 +12505,10 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +      case "$arg" in
 +      -all-static)
 +	if test -n "$link_static_flag"; then
-+          compile_command="$compile_command $link_static_flag"
++	  compile_command="$compile_command $link_static_flag"
 +	  finalize_command="$finalize_command $link_static_flag"
-+        fi
-+        continue
++	fi
++	continue
 +	;;
 +
 +      -allow-undefined)
@@ -8697,46 +12517,97 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +	continue
 +	;;
 +
++      -avoid-version)
++	avoid_version=yes
++	continue
++	;;
++
 +      -dlopen)
-+        prev=dlfiles
-+        continue
-+        ;;
++	prev=dlfiles
++	continue
++	;;
 +
 +      -dlpreopen)
-+        prev=dlprefiles
-+        continue
-+        ;;
++	prev=dlprefiles
++	continue
++	;;
 +
 +      -export-dynamic)
-+        if test "$export_dynamic" != yes; then
-+          export_dynamic=yes
-+	  if test -n "$export_dynamic_flag_spec"; then
-+	    eval arg=\"$export_dynamic_flag_spec\"
-+	  else
-+	    arg=
-+	  fi
++	export_dynamic=yes
++	continue
++	;;
 +
-+          # Add the symbol object into the linking commands.
-+	  compile_command="$compile_command @SYMFILE@"
-+	  finalize_command="$finalize_command @SYMFILE@"
-+        fi
-+        ;;
++      -export-symbols | -export-symbols-regex)
++	if test -n "$export_symbols" || test -n "$export_symbols_regex"; then
++	  $echo "$modename: not more than one -exported-symbols argument allowed"
++	  exit 1
++	fi
++	if test "X$arg" = "X-export-symbols"; then
++	  prev=expsyms
++	else
++	  prev=expsyms_regex
++	fi
++	continue
++	;;
 +
 +      -L*)
-+        dir=`$echo "X$arg" | $Xsed -e 's%^-L\(.*\)$%\1%'`
-+        case "$dir" in
-+        /* | [A-Za-z]:\\*)
-+	  # Add the corresponding hardcode_libdir_flag, if it is not identical.
-+          ;;
-+        *)
-+          $echo "$modename: \`-L$dir' cannot specify a relative directory" 1>&2
-+          exit 1
-+          ;;
-+        esac
-+        deplibs="$deplibs $arg"
-+        ;;
++	dir=`$echo "X$arg" | $Xsed -e 's/^-L//'`
++	# We need an absolute path.
++	case "$dir" in
++	[\\/]* | [A-Za-z]:[\\/]*) ;;
++	*)
++	  absdir=`cd "$dir" && pwd`
++	  if test -z "$absdir"; then
++	    $echo "$modename: warning: cannot determine absolute directory name of \`$dir'" 1>&2
++	    $echo "$modename: passing it literally to the linker, although it might fail" 1>&2
++	    absdir="$dir"
++	  fi
++	  dir="$absdir"
++	  ;;
++	esac
++	case " $deplibs " in
++	*" $arg "*) ;;
++	*) deplibs="$deplibs $arg";;
++	esac
++	case " $lib_search_path " in
++	*" $dir "*) ;;
++	*) lib_search_path="$lib_search_path $dir";;
++	esac
++	case "$host" in
++	*-*-cygwin* | *-*-mingw* | *-*-os2*)
++	  dllsearchdir=`cd "$dir" && pwd || echo "$dir"`
++	  case ":$dllsearchpath:" in
++	  ::) dllsearchpath="$dllsearchdir";;
++	  *":$dllsearchdir:"*) ;;
++	  *) dllsearchpath="$dllsearchpath:$dllsearchdir";;
++	  esac
++	  ;;
++	esac
++	;;
 +
-+      -l*) deplibs="$deplibs $arg" ;;
++      -l*)
++	if test "$arg" = "-lc"; then
++	  case "$host" in
++	  *-*-cygwin* | *-*-mingw* | *-*-os2* | *-*-beos*)
++	    # These systems don't actually have c library (as such)
++	    continue
++	    ;;
++	  esac
++	elif test "$arg" = "-lm"; then
++	  case "$host" in
++	  *-*-cygwin* | *-*-beos*)
++	    # These systems don't actually have math library (as such)
++	    continue
++	    ;;
++	  esac
++	fi
++	deplibs="$deplibs $arg"
++	;;
++
++      -module)
++	module=yes
++	continue
++	;;
 +
 +      -no-undefined)
 +	allow_undefined=no
@@ -8751,23 +12622,50 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +	;;
 +
 +      -rpath)
-+        prev=rpath
-+        continue
-+        ;;
++	prev=rpath
++	continue
++	;;
++
++      -R)
++	prev=xrpath
++	continue
++	;;
++
++      -R*)
++	dir=`$echo "X$arg" | $Xsed -e 's/^-R//'`
++	# We need an absolute path.
++	case "$dir" in
++	[\\/]* | [A-Za-z]:[\\/]*) ;;
++	*)
++	  $echo "$modename: only absolute run-paths are allowed" 1>&2
++	  exit 1
++	  ;;
++	esac
++	case "$xrpath " in
++	*" $dir "*) ;;
++	*) xrpath="$xrpath $dir" ;;
++	esac
++	continue
++	;;
 +
 +      -static)
 +	# If we have no pic_flag, then this is the same as -all-static.
 +	if test -z "$pic_flag" && test -n "$link_static_flag"; then
-+          compile_command="$compile_command $link_static_flag"
++	  compile_command="$compile_command $link_static_flag"
 +	  finalize_command="$finalize_command $link_static_flag"
-+        fi
++	fi
++	continue
++	;;
++
++      -thread-safe)
++	thread_safe=yes
 +	continue
 +	;;
 +
 +      -version-info)
-+        prev=vinfo
-+        continue
-+        ;;
++	prev=vinfo
++	continue
++	;;
 +
 +      # Some other compiler flag.
 +      -* | +*)
@@ -8779,18 +12677,18 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +	  arg="\"$arg\""
 +	  ;;
 +	esac
-+        ;;
++	;;
 +
-+      *.o | *.a)
-+        # A standard object.
-+        objs="$objs $arg"
-+        ;;
++      *.o | *.obj | *.a | *.lib)
++	# A standard object.
++	objs="$objs $arg"
++	;;
 +
 +      *.lo)
-+        # A library object.
++	# A library object.
 +	if test "$prev" = dlfiles; then
 +	  dlfiles="$dlfiles $arg"
-+	  if test "$build_libtool_libs" = yes; then
++	  if test "$build_libtool_libs" = yes && test "$dlopen" = yes; then
 +	    prev=
 +	    continue
 +	  else
@@ -8801,191 +12699,277 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +	if test "$prev" = dlprefiles; then
 +	  # Preload the old-style object.
-+	  dlprefiles="$dlprefiles "`$echo "X$arg" | $Xsed -e 's/\.lo$/\.o/'`
++	  dlprefiles="$dlprefiles "`$echo "X$arg" | $Xsed -e "$lo2o"`
 +	  prev=
 +	fi
 +	libobjs="$libobjs $arg"
-+        ;;
++	;;
 +
 +      *.la)
-+        # A libtool-controlled library.
++	# A libtool-controlled library.
 +
-+        dlname=
-+        libdir=
-+        library_names=
-+        old_library=
++	dlname=
++	libdir=
++	library_names=
++	old_library=
 +
-+        # Check to see that this really is a libtool archive.
-+        if (sed -e '2q' $arg | egrep '^# Generated by ltmain\.sh') >/dev/null 2>&1; then :
-+        else
-+          $echo "$modename: \`$arg' is not a valid libtool archive" 1>&2
-+          exit 1
-+        fi
++	# Check to see that this really is a libtool archive.
++	if (sed -e '2q' $arg | egrep "^# Generated by .*$PACKAGE") >/dev/null 2>&1; then :
++	else
++	  $echo "$modename: \`$arg' is not a valid libtool archive" 1>&2
++	  exit 1
++	fi
 +
-+        # If there is no directory component, then add one.
-+        case "$arg" in
-+        */* | *\\*) . $arg ;;
-+        *) . ./$arg ;;
-+        esac
++	# If the library was installed with an old release of libtool,
++	# it will not redefine variable installed.
++	installed=yes
 +
-+        if test -z "$libdir"; then
-+          $echo "$modename: \`$arg' contains no -rpath information" 1>&2
-+          exit 1
-+        fi
++	# Read the .la file
++	# If there is no directory component, then add one.
++	case "$arg" in
++	*/* | *\\*) . $arg ;;
++	*) . ./$arg ;;
++	esac
 +
-+        # Get the name of the library we link against.
-+        linklib=
-+        for l in $old_library $library_names; do
-+          linklib="$l"
-+        done
++	# Get the name of the library we link against.
++	linklib=
++	for l in $old_library $library_names; do
++	  linklib="$l"
++	done
 +
-+        if test -z "$linklib"; then
-+          $echo "$modename: cannot find name of link library for \`$arg'" 1>&2
-+          exit 1
-+        fi
++	if test -z "$linklib"; then
++	  $echo "$modename: cannot find name of link library for \`$arg'" 1>&2
++	  exit 1
++	fi
 +
-+        # Find the relevant object directory and library name.
-+        name=`$echo "X$arg" | $Xsed -e 's%^.*/%%' -e 's/\.la$//' -e 's/^lib//'`
-+        dir=`$echo "X$arg" | $Xsed -e 's%/[^/]*$%%'`
-+        if test "X$dir" = "X$arg"; then
-+          dir="$objdir"
-+        else
-+          dir="$dir/$objdir"
-+        fi
++	# Find the relevant object directory and library name.
++	name=`$echo "X$arg" | $Xsed -e 's%^.*/%%' -e 's/\.la$//' -e 's/^lib//'`
 +
-+        # This library was specified with -dlopen.
-+        if test "$prev" = dlfiles; then
-+          dlfiles="$dlfiles $arg"
-+          if test -z "$dlname"; then
-+            # If there is no dlname, we need to preload.
-+            prev=dlprefiles
-+          else
-+            # We should not create a dependency on this library, but we
++	if test "X$installed" = Xyes; then
++	  dir="$libdir"
++	else
++	  dir=`$echo "X$arg" | $Xsed -e 's%/[^/]*$%%'`
++	  if test "X$dir" = "X$arg"; then
++	    dir="$objdir"
++	  else
++	    dir="$dir/$objdir"
++	  fi
++	fi
++
++	if test -n "$dependency_libs"; then
++	  # Extract -R and -L from dependency_libs
++	  temp_deplibs=
++	  for deplib in $dependency_libs; do
++	    case "$deplib" in
++	    -R*) temp_xrpath=`$echo "X$deplib" | $Xsed -e 's/^-R//'`
++		 case " $rpath $xrpath " in
++		 *" $temp_xrpath "*) ;;
++		 *) xrpath="$xrpath $temp_xrpath";;
++		 esac;;
++	    -L*) case "$compile_command $temp_deplibs " in
++		 *" $deplib "*) ;;
++		 *) temp_deplibs="$temp_deplibs $deplib";;
++		 esac
++		 temp_dir=`$echo "X$deplib" | $Xsed -e 's/^-L//'`
++		 case " $lib_search_path " in
++		 *" $temp_dir "*) ;;
++		 *) lib_search_path="$lib_search_path $temp_dir";;
++		 esac
++		 ;;
++	    *) temp_deplibs="$temp_deplibs $deplib";;
++	    esac
++	  done
++	  dependency_libs="$temp_deplibs"
++	fi
++
++	if test -z "$libdir"; then
++	  # It is a libtool convenience library, so add in its objects.
++	  convenience="$convenience $dir/$old_library"
++	  old_convenience="$old_convenience $dir/$old_library"
++	  deplibs="$deplibs$dependency_libs"
++	  compile_command="$compile_command $dir/$old_library$dependency_libs"
++	  finalize_command="$finalize_command $dir/$old_library$dependency_libs"
++	  continue
++	fi
++
++	# This library was specified with -dlopen.
++	if test "$prev" = dlfiles; then
++	  dlfiles="$dlfiles $arg"
++	  if test -z "$dlname" || test "$dlopen" != yes || test "$build_libtool_libs" = no; then
++	    # If there is no dlname, no dlopen support or we're linking statically,
++	    # we need to preload.
++	    prev=dlprefiles
++	  else
++	    # We should not create a dependency on this library, but we
 +	    # may need any libraries it requires.
 +	    compile_command="$compile_command$dependency_libs"
 +	    finalize_command="$finalize_command$dependency_libs"
-+            prev=
-+            continue
-+          fi
-+        fi
++	    prev=
++	    continue
++	  fi
++	fi
 +
-+        # The library was specified with -dlpreopen.
-+        if test "$prev" = dlprefiles; then
-+          # Prefer using a static library (so that no silly _DYNAMIC symbols
-+          # are required to link).
-+          if test -n "$old_library"; then
-+            dlprefiles="$dlprefiles $dir/$old_library"
-+          else
-+            dlprefiles="$dlprefiles $dir/$linklib"
-+          fi
-+          prev=
-+        fi
++	# The library was specified with -dlpreopen.
++	if test "$prev" = dlprefiles; then
++	  # Prefer using a static library (so that no silly _DYNAMIC symbols
++	  # are required to link).
++	  if test -n "$old_library"; then
++	    dlprefiles="$dlprefiles $dir/$old_library"
++	  else
++	    dlprefiles="$dlprefiles $dir/$linklib"
++	  fi
++	  prev=
++	fi
 +
-+        if test "$build_libtool_libs" = yes && test -n "$library_names"; then
-+          link_against_libtool_libs="$link_against_libtool_libs $arg"
-+          if test -n "$shlibpath_var"; then
-+            # Make sure the rpath contains only unique directories.
-+            case "$temp_rpath " in
-+            *" $dir "*) ;;
-+            *) temp_rpath="$temp_rpath $dir" ;;
-+            esac
-+          fi
++	if test -n "$library_names" &&
++	   { test "$prefer_static_libs" = no || test -z "$old_library"; }; then
++	  link_against_libtool_libs="$link_against_libtool_libs $arg"
++	  if test -n "$shlibpath_var"; then
++	    # Make sure the rpath contains only unique directories.
++	    case "$temp_rpath " in
++	    *" $dir "*) ;;
++	    *) temp_rpath="$temp_rpath $dir" ;;
++	    esac
++	  fi
 +
++	  # We need an absolute path.
++	  case "$dir" in
++	  [\\/] | [A-Za-z]:[\\/]*) absdir="$dir" ;;
++	  *)
++	    absdir=`cd "$dir" && pwd`
++	    if test -z "$absdir"; then
++	      $echo "$modename: warning: cannot determine absolute directory name of \`$dir'" 1>&2
++	      $echo "$modename: passing it literally to the linker, although it might fail" 1>&2
++	      absdir="$dir"
++	    fi
++	    ;;
++	  esac
++	  
 +	  # This is the magic to use -rpath.
-+          if test -n "$hardcode_libdir_flag_spec"; then
-+            if test -n "$hardcode_libdir_separator"; then
-+              if test -z "$hardcode_libdirs"; then
-+                # Put the magic libdir with the hardcode flag.
-+                hardcode_libdirs="$libdir"
-+                libdir="@HARDCODE_LIBDIRS@"
-+              else
-+                # Just accumulate the unique libdirs.
-+		case "$hardcode_libdir_separator$hardcode_libdirs$hardcode_libdir_separator" in
-+		*"$hardcode_libdir_separator$libdir$hardcode_libdir_separator"*)
-+		  ;;
-+		*)
-+		  hardcode_libdirs="$hardcode_libdirs$hardcode_libdir_separator$libdir"
-+		  ;;
-+		esac
-+                libdir=
-+              fi
-+            fi
++	  # Skip directories that are in the system default run-time
++	  # search path, unless they have been requested with -R.
++	  case " $sys_lib_dlsearch_path " in
++	  *" $absdir "*) ;;
++	  *)
++	    case "$compile_rpath " in
++	    *" $absdir "*) ;;
++	    *) compile_rpath="$compile_rpath $absdir" 
++	    esac
++	    ;;
++	  esac
 +
-+            if test -n "$libdir"; then
-+              eval flag=\"$hardcode_libdir_flag_spec\"
++	  case " $sys_lib_dlsearch_path " in
++	  *" $libdir "*) ;;
++	  *)
++	    case "$finalize_rpath " in
++	    *" $libdir "*) ;;
++	    *) finalize_rpath="$finalize_rpath $libdir"
++	    esac
++	    ;;
++	  esac
 +
-+              compile_command="$compile_command $flag"
-+              finalize_command="$finalize_command $flag"
-+            fi
-+          elif test -n "$runpath_var"; then
-+            # Do the same for the permanent run path.
-+            case "$perm_rpath " in
-+            *" $libdir "*) ;;
-+            *) perm_rpath="$perm_rpath $libdir" ;;
-+            esac
-+          fi
++	  lib_linked=yes
++	  case "$hardcode_action" in
++	  immediate | unsupported)
++	    if test "$hardcode_direct" = no; then
++	      compile_command="$compile_command $dir/$linklib"
++	      deplibs="$deplibs $dir/$linklib"
++	      case "$host" in
++	      *-*-cygwin* | *-*-mingw* | *-*-os2*)
++		dllsearchdir=`cd "$dir" && pwd || echo "$dir"`
++		if test -n "$dllsearchpath"; then
++		  dllsearchpath="$dllsearchpath:$dllsearchdir"
++		else
++		  dllsearchpath="$dllsearchdir"
++		fi
++		;;
++	      esac
++	    elif test "$hardcode_minus_L" = no; then
++	      case "$host" in
++	      *-*-sunos*)
++		compile_shlibpath="$compile_shlibpath$dir:"
++		;;
++	      esac
++	      case "$compile_command " in
++	      *" -L$dir "*) ;;
++	      *) compile_command="$compile_command -L$dir";;
++	      esac
++	      compile_command="$compile_command -l$name"
++	      deplibs="$deplibs -L$dir -l$name"
++	    elif test "$hardcode_shlibpath_var" = no; then
++	      case ":$compile_shlibpath:" in
++	      *":$dir:"*) ;;
++	      *) compile_shlibpath="$compile_shlibpath$dir:";;
++	      esac
++	      compile_command="$compile_command -l$name"
++	      deplibs="$deplibs -l$name"
++	    else
++	      lib_linked=no
++	    fi
++	    ;;
 +
++	  relink)
++	    if test "$hardcode_direct" = yes; then
++	      compile_command="$compile_command $absdir/$linklib"
++	      deplibs="$deplibs $absdir/$linklib"
++	    elif test "$hardcode_minus_L" = yes; then
++	      case "$compile_command " in
++	      *" -L$absdir "*) ;;
++	      *) compile_command="$compile_command -L$absdir";;
++	      esac
++	      compile_command="$compile_command -l$name"
++	      deplibs="$deplibs -L$absdir -l$name"
++	    elif test "$hardcode_shlibpath_var" = yes; then
++	      case ":$compile_shlibpath:" in
++	      *":$absdir:"*) ;;
++	      *) compile_shlibpath="$compile_shlibpath$absdir:";;
++	      esac
++	      compile_command="$compile_command -l$name"
++	      deplibs="$deplibs -l$name"
++	    else
++	      lib_linked=no
++	    fi
++	    ;;
 +
-+          case "$hardcode_action" in
-+          immediate)
-+            if test "$hardcode_direct" = no; then
-+              compile_command="$compile_command $dir/$linklib"
-+            elif test "$hardcode_minus_L" = no; then
-+              compile_command="$compile_command -L$dir -l$name"
-+            elif test "$hardcode_shlibpath_var" = no; then
-+              compile_shlibpath="$compile_shlibpath$dir:"
-+              compile_command="$compile_command -l$name"
-+            fi
-+            ;;
++	  *)
++	    lib_linked=no
++	    ;;
++	  esac
 +
-+          relink)
-+            # We need an absolute path.
-+            case "$dir" in
-+            /* | [A-Za-z]:\\*) ;;
-+            *)
-+              absdir=`cd "$dir" && pwd`
-+              if test -z "$absdir"; then
-+                $echo "$modename: cannot determine absolute directory name of \`$dir'" 1>&2
-+                exit 1
-+              fi
-+              dir="$absdir"
-+              ;;
-+            esac
++	  if test "$lib_linked" != yes; then
++	    $echo "$modename: configuration error: unsupported hardcode properties"
++	    exit 1
++	  fi
 +
-+            if test "$hardcode_direct" = yes; then
-+              compile_command="$compile_command $dir/$linklib"
-+            elif test "$hardcode_minus_L" = yes; then
-+              compile_command="$compile_command -L$dir -l$name"
-+            elif test "$hardcode_shlibpath_var" = yes; then
-+              compile_shlibpath="$compile_shlibpath$dir:"
-+              compile_command="$compile_command -l$name"
-+            fi
-+            ;;
-+
-+          *)
-+            $echo "$modename: \`$hardcode_action' is an unknown hardcode action" 1>&2
-+            exit 1
-+            ;;
-+          esac
-+
-+          # Finalize command for both is simple: just hardcode it.
-+          if test "$hardcode_direct" = yes; then
-+            finalize_command="$finalize_command $libdir/$linklib"
-+          elif test "$hardcode_minus_L" = yes; then
-+            finalize_command="$finalize_command -L$libdir -l$name"
-+          elif test "$hardcode_shlibpath_var" = yes; then
-+            finalize_shlibpath="$finalize_shlibpath$libdir:"
-+            finalize_command="$finalize_command -l$name"
-+          else
-+            # We cannot seem to hardcode it, guess we'll fake it.
-+            finalize_command="$finalize_command -L$libdir -l$name"
-+          fi
-+        else
-+          # Transform directly to old archives if we don't build new libraries.
-+          if test -n "$pic_flag" && test -z "$old_library"; then
-+            $echo "$modename: cannot find static library for \`$arg'" 1>&2
-+            exit 1
-+          fi
++	  # Finalize command for both is simple: just hardcode it.
++	  if test "$hardcode_direct" = yes; then
++	    finalize_command="$finalize_command $libdir/$linklib"
++	  elif test "$hardcode_minus_L" = yes; then
++	    case "$finalize_command " in
++	    *" -L$libdir "*) ;;
++	    *) finalize_command="$finalize_command -L$libdir";;
++	    esac
++	    finalize_command="$finalize_command -l$name"
++	  elif test "$hardcode_shlibpath_var" = yes; then
++	    case ":$finalize_shlibpath:" in
++	    *":$libdir:"*) ;;
++	    *) finalize_shlibpath="$finalize_shlibpath$libdir:";;
++	    esac
++	    finalize_command="$finalize_command -l$name"
++	  else
++	    # We cannot seem to hardcode it, guess we'll fake it.
++	    case "$finalize_command " in
++	    *" -L$dir "*) ;;
++	    *) finalize_command="$finalize_command -L$libdir";;
++	    esac
++	    finalize_command="$finalize_command -l$name"
++	  fi
++	else
++	  # Transform directly to old archives if we don't build new libraries.
++	  if test -n "$pic_flag" && test -z "$old_library"; then
++	    $echo "$modename: cannot find static library for \`$arg'" 1>&2
++	    exit 1
++	  fi
 +
 +	  # Here we assume that one of hardcode_direct or hardcode_minus_L
 +	  # is not unsupported.  This is valid on all known static and
@@ -8995,16 +12979,24 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +	    compile_command="$compile_command $dir/$linklib"
 +	    finalize_command="$finalize_command $dir/$linklib"
 +	  else
-+	    compile_command="$compile_command -L$dir -l$name"
-+	    finalize_command="$finalize_command -L$dir -l$name"
++	    case "$compile_command " in
++	    *" -L$dir "*) ;;
++	    *) compile_command="$compile_command -L$dir";;
++	    esac
++	    compile_command="$compile_command -l$name"
++	    case "$finalize_command " in
++	    *" -L$dir "*) ;;
++	    *) finalize_command="$finalize_command -L$dir";;
++	    esac
++	    finalize_command="$finalize_command -l$name"
 +	  fi
-+        fi
++	fi
 +
 +	# Add in any libraries that this one depends upon.
 +	compile_command="$compile_command$dependency_libs"
 +	finalize_command="$finalize_command$dependency_libs"
 +	continue
-+        ;;
++	;;
 +
 +      # Some other compiler argument.
 +      *)
@@ -9016,7 +13008,7 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +	  arg="\"$arg\""
 +	  ;;
 +	esac
-+        ;;
++	;;
 +      esac
 +
 +      # Now actually substitute the argument into the commands.
@@ -9032,14 +13024,17 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +      exit 1
 +    fi
 +
-+    if test -n "$vinfo" && test -n "$release"; then
-+      $echo "$modename: you cannot specify both \`-version-info' and \`-release'" 1>&2
-+      $echo "$help" 1>&2
-+      exit 1
++    if test "$export_dynamic" = yes && test -n "$export_dynamic_flag_spec"; then
++      eval arg=\"$export_dynamic_flag_spec\"
++      compile_command="$compile_command $arg"
++      finalize_command="$finalize_command $arg"
 +    fi
 +
-+    oldlib=
-+    oldobjs=
++    oldlibs=
++    # calculate the name of the file, without its directory
++    outputname=`$echo "X$output" | $Xsed -e 's%^.*/%%'`
++    libobjs_save="$libobjs"
++
 +    case "$output" in
 +    "")
 +      $echo "$modename: you must specify an output file" 1>&2
@@ -9047,64 +13042,88 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +      exit 1
 +      ;;
 +
-+    */* | *\\*)
-+      $echo "$modename: output file \`$output' must have no directory components" 1>&2
-+      exit 1
-+      ;;
++    *.a | *.lib)
++      if test -n "$link_against_libtool_libs"; then
++	$echo "$modename: error: cannot link libtool libraries into archives" 1>&2
++	exit 1
++      fi
 +
-+    *.a)
++      if test -n "$deplibs"; then
++	$echo "$modename: warning: \`-l' and \`-L' are ignored for archives" 1>&2
++      fi
++
++      if test -n "$dlfiles$dlprefiles" || test "$dlself" != no; then
++	$echo "$modename: warning: \`-dlopen' is ignored for archives" 1>&2
++      fi
++
++      if test -n "$rpath"; then
++	$echo "$modename: warning: \`-rpath' is ignored for archives" 1>&2
++      fi
++
++      if test -n "$xrpath"; then
++	$echo "$modename: warning: \`-R' is ignored for archives" 1>&2
++      fi
++
++      if test -n "$vinfo"; then
++	$echo "$modename: warning: \`-version-info' is ignored for archives" 1>&2
++      fi
++
++      if test -n "$release"; then
++	$echo "$modename: warning: \`-release' is ignored for archives" 1>&2
++      fi
++
++      if test -n "$export_symbols" || test -n "$export_symbols_regex"; then
++	$echo "$modename: warning: \`-export-symbols' is ignored for archives" 1>&2
++      fi
++
 +      # Now set the variables for building old libraries.
 +      build_libtool_libs=no
-+      build_old_libs=yes
-+      oldlib="$output"
-+      $show "$rm $oldlib"
-+      $run $rm $oldlib
++      oldlibs="$output"
 +      ;;
 +
 +    *.la)
 +      # Make sure we only generate libraries of the form `libNAME.la'.
-+      case "$output" in
-+      lib*) ;;
++      case "$outputname" in
++      lib*)
++	name=`$echo "X$outputname" | $Xsed -e 's/\.la$//' -e 's/^lib//'`
++	eval libname=\"$libname_spec\"
++	;;
 +      *)
-+	$echo "$modename: libtool library \`$arg' must begin with \`lib'" 1>&2
-+	$echo "$help" 1>&2
-+	exit 1
++	if test "$module" = no; then
++	  $echo "$modename: libtool library \`$output' must begin with \`lib'" 1>&2
++	  $echo "$help" 1>&2
++	  exit 1
++	fi
++	if test "$need_lib_prefix" != no; then
++	  # Add the "lib" prefix for modules if required
++	  name=`$echo "X$outputname" | $Xsed -e 's/\.la$//'`
++	  eval libname=\"$libname_spec\"
++	else
++	  libname=`$echo "X$outputname" | $Xsed -e 's/\.la$//'`
++	fi
 +	;;
 +      esac
 +
-+      name=`$echo "X$output" | $Xsed -e 's/\.la$//' -e 's/^lib//'`
-+      eval libname=\"$libname_spec\"
-+
-+      # All the library-specific variables (install_libdir is set above).
-+      library_names=
-+      old_library=
-+      dlname=
-+      current=0
-+      revision=0
-+      age=0
++      output_objdir=`$echo "X$output" | $Xsed -e 's%/[^/]*$%%'`
++      if test "X$output_objdir" = "X$output"; then
++	output_objdir="$objdir"
++      else
++	output_objdir="$output_objdir/$objdir"
++      fi
 +
 +      if test -n "$objs"; then
-+        $echo "$modename: cannot build libtool library \`$output' from non-libtool objects:$objs" 2>&1
-+        exit 1
++	$echo "$modename: cannot build libtool library \`$output' from non-libtool objects:$objs" 2>&1
++	exit 1
 +      fi
 +
 +      # How the heck are we supposed to write a wrapper for a shared library?
 +      if test -n "$link_against_libtool_libs"; then
-+        $echo "$modename: libtool library \`$output' may not depend on uninstalled libraries:$link_against_libtool_libs" 1>&2
-+        exit 1
++	 $echo "$modename: error: cannot link shared libraries into libtool libraries" 1>&2
++	 exit 1
 +      fi
 +
-+      if test -n "$dlfiles$dlprefiles"; then
-+        $echo "$modename: warning: \`-dlopen' is ignored while creating libtool libraries" 1>&2
-+        # Nullify the symbol file.
-+        compile_command=`$echo "X$compile_command" | $Xsed -e "s% @SYMFILE@%%"`
-+        finalize_command=`$echo "X$finalize_command" | $Xsed -e "s% @SYMFILE@%%"`
-+      fi
-+
-+      if test -z "$rpath"; then
-+        $echo "$modename: you must specify an installation directory with \`-rpath'" 1>&2
-+	$echo "$help" 1>&2
-+        exit 1
++      if test -n "$dlfiles$dlprefiles" || test "$dlself" != no; then
++	$echo "$modename: warning: \`-dlopen' is ignored for libtool libraries" 1>&2
 +      fi
 +
 +      set dummy $rpath
@@ -9113,587 +13132,1220 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +      fi
 +      install_libdir="$2"
 +
-+      # Parse the version information argument.
-+      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=':'
-+      set dummy $vinfo
-+      IFS="$save_ifs"
++      oldlibs=
++      if test -z "$rpath"; then
++	if test "$build_libtool_libs" = yes; then
++	  # Building a libtool convenience library.
++	  libext=al
++	  oldlibs="$output_objdir/$libname.$libext $oldlibs"
++	  build_libtool_libs=convenience
++	  build_old_libs=yes
++	fi
++	dependency_libs="$deplibs"
 +
-+      if test -n "$5"; then
-+        $echo "$modename: too many parameters to \`-version-info'" 1>&2
-+        $echo "$help" 1>&2
-+        exit 1
++	if test -n "$vinfo"; then
++	  $echo "$modename: warning: \`-version-info' is ignored for convenience libraries" 1>&2
++	fi
++
++	if test -n "$release"; then
++	  $echo "$modename: warning: \`-release' is ignored for convenience libraries" 1>&2
++	fi
++      else
++
++	# Parse the version information argument.
++	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=':'
++	set dummy $vinfo 0 0 0
++	IFS="$save_ifs"
++
++	if test -n "$8"; then
++	  $echo "$modename: too many parameters to \`-version-info'" 1>&2
++	  $echo "$help" 1>&2
++	  exit 1
++	fi
++
++	current="$2"
++	revision="$3"
++	age="$4"
++
++	# Check that each of the things are valid numbers.
++	case "$current" in
++	0 | [1-9] | [1-9][0-9]*) ;;
++	*)
++	  $echo "$modename: CURRENT \`$current' is not a nonnegative integer" 1>&2
++	  $echo "$modename: \`$vinfo' is not valid version information" 1>&2
++	  exit 1
++	  ;;
++	esac
++
++	case "$revision" in
++	0 | [1-9] | [1-9][0-9]*) ;;
++	*)
++	  $echo "$modename: REVISION \`$revision' is not a nonnegative integer" 1>&2
++	  $echo "$modename: \`$vinfo' is not valid version information" 1>&2
++	  exit 1
++	  ;;
++	esac
++
++	case "$age" in
++	0 | [1-9] | [1-9][0-9]*) ;;
++	*)
++	  $echo "$modename: AGE \`$age' is not a nonnegative integer" 1>&2
++	  $echo "$modename: \`$vinfo' is not valid version information" 1>&2
++	  exit 1
++	  ;;
++	esac
++
++	if test $age -gt $current; then
++	  $echo "$modename: AGE \`$age' is greater than the current interface number \`$current'" 1>&2
++	  $echo "$modename: \`$vinfo' is not valid version information" 1>&2
++	  exit 1
++	fi
++
++	# Calculate the version variables.
++	major=
++	versuffix=
++	verstring=
++	case "$version_type" in
++	none) ;;
++
++	irix)
++	  major=`expr $current - $age + 1`
++	  versuffix="$major.$revision"
++	  verstring="sgi$major.$revision"
++
++	  # Add in all the interfaces that we are compatible with.
++	  loop=$revision
++	  while test $loop != 0; do
++	    iface=`expr $revision - $loop`
++	    loop=`expr $loop - 1`
++	    verstring="sgi$major.$iface:$verstring"
++	  done
++	  ;;
++
++	linux)
++	  major=.`expr $current - $age`
++	  versuffix="$major.$age.$revision"
++	  ;;
++
++	osf)
++	  major=`expr $current - $age`
++	  versuffix=".$current.$age.$revision"
++	  verstring="$current.$age.$revision"
++
++	  # Add in all the interfaces that we are compatible with.
++	  loop=$age
++	  while test $loop != 0; do
++	    iface=`expr $current - $loop`
++	    loop=`expr $loop - 1`
++	    verstring="$verstring:${iface}.0"
++	  done
++
++	  # Make executables depend on our current version.
++	  verstring="$verstring:${current}.0"
++	  ;;
++
++	sunos)
++	  major=".$current"
++	  versuffix=".$current.$revision"
++	  ;;
++
++	freebsd-aout)
++	  major=".$current"
++	  versuffix=".$current.$revision";
++	  ;;
++
++	freebsd-elf)
++	  major=".$current"
++	  versuffix=".$current";
++	  ;;
++
++	windows)
++	  # Like Linux, but with '-' rather than '.', since we only
++	  # want one extension on Windows 95.
++	  major=`expr $current - $age`
++	  versuffix="-$major-$age-$revision"
++	  ;;
++
++	*)
++	  $echo "$modename: unknown library version type \`$version_type'" 1>&2
++	  echo "Fatal configuration error.  See the $PACKAGE docs for more information." 1>&2
++	  exit 1
++	  ;;
++	esac
++
++	# Clear the version info if we defaulted, and they specified a release.
++	if test -z "$vinfo" && test -n "$release"; then
++	  major=
++	  verstring="0.0"
++	  if test "$need_version" = no; then
++	    versuffix=
++	  else
++	    versuffix=".0.0"
++	  fi
++	fi
++
++	# Remove version info from name if versioning should be avoided
++	if test "$avoid_version" = yes && test "$need_version" = no; then
++	  major=
++	  versuffix=
++	  verstring=""
++	fi
++	
++	# Check to see if the archive will have undefined symbols.
++	if test "$allow_undefined" = yes; then
++	  if test "$allow_undefined_flag" = unsupported; then
++	    $echo "$modename: warning: undefined symbols not allowed in $host shared libraries" 1>&2
++	    build_libtool_libs=no
++	    build_old_libs=yes
++	  fi
++	else
++	  # Don't allow undefined symbols.
++	  allow_undefined_flag="$no_undefined_flag"
++	fi
++
++	dependency_libs="$deplibs"
++	case "$host" in
++	*-*-cygwin* | *-*-mingw* | *-*-os2* | *-*-beos*)
++	  # these systems don't actually have a c library (as such)!
++	  ;;
++        *-*-rhapsody*)
++	  # rhapsody is a little odd...
++	  deplibs="$deplibs -framework System"
++	  ;;
++	*)
++	  # Add libc to deplibs on all other systems.
++	  deplibs="$deplibs -lc"
++	  ;;
++	esac
 +      fi
-+
-+      test -n "$2" && current="$2"
-+      test -n "$3" && revision="$3"
-+      test -n "$4" && age="$4"
-+
-+      # Check that each of the things are valid numbers.
-+      case "$current" in
-+      0 | [1-9] | [1-9][0-9]*) ;;
-+      *)
-+        $echo "$modename: CURRENT \`$current' is not a nonnegative integer" 1>&2
-+        $echo "$modename: \`$vinfo' is not valid version information" 1>&2
-+        exit 1
-+        ;;
-+      esac
-+
-+      case "$revision" in
-+      0 | [1-9] | [1-9][0-9]*) ;;
-+      *)
-+        $echo "$modename: REVISION \`$revision' is not a nonnegative integer" 1>&2
-+        $echo "$modename: \`$vinfo' is not valid version information" 1>&2
-+        exit 1
-+        ;;
-+      esac
-+
-+      case "$age" in
-+      0 | [1-9] | [1-9][0-9]*) ;;
-+      *)
-+        $echo "$modename: AGE \`$age' is not a nonnegative integer" 1>&2
-+        $echo "$modename: \`$vinfo' is not valid version information" 1>&2
-+        exit 1
-+        ;;
-+      esac
-+
-+      if test $age -gt $current; then
-+        $echo "$modename: AGE \`$age' is greater than the current interface number \`$current'" 1>&2
-+        $echo "$modename: \`$vinfo' is not valid version information" 1>&2
-+        exit 1
-+      fi
-+
-+      # Calculate the version variables.
-+      version_vars="version_type current age revision"
-+      case "$version_type" in
-+      none) ;;
-+
-+      linux)
-+        version_vars="$version_vars major versuffix"
-+        major=`expr $current - $age`
-+        versuffix="$major.$age.$revision"
-+        ;;
-+
-+      osf)
-+        version_vars="$version_vars versuffix verstring"
-+        major=`expr $current - $age`
-+        versuffix="$current.$age.$revision"
-+        verstring="$versuffix"
-+
-+        # Add in all the interfaces that we are compatible with.
-+        loop=$age
-+        while test $loop != 0; do
-+          iface=`expr $current - $loop`
-+          loop=`expr $loop - 1`
-+          verstring="$verstring:${iface}.0"
-+        done
-+
-+        # Make executables depend on our current version.
-+        verstring="$verstring:${current}.0"
-+        ;;
-+
-+      sunos)
-+        version_vars="$version_vars major versuffix"
-+        major="$current"
-+        versuffix="$current.$revision"
-+        ;;
-+
-+      *)
-+        $echo "$modename: unknown library version type \`$version_type'" 1>&2
-+        echo "Fatal configuration error.  See the $PACKAGE docs for more information." 1>&2
-+        exit 1
-+        ;;
-+      esac
 +
 +      # Create the output directory, or remove our outputs if we need to.
-+      if test -d $objdir; then
-+        $show "$rm $objdir/$output $objdir/$libname.* $objdir/${libname}${release}.*"
-+        $run $rm $objdir/$output $objdir/$libname.* $objdir/${libname}${release}.*
++      if test -d $output_objdir; then
++	$show "${rm}r $output_objdir/$outputname $output_objdir/$libname.* $output_objdir/${libname}${release}.*"
++	$run ${rm}r $output_objdir/$outputname $output_objdir/$libname.* $output_objdir/${libname}${release}.*
 +      else
-+        $show "$mkdir $objdir"
-+        $run $mkdir $objdir
++	$show "$mkdir $output_objdir"
++	$run $mkdir $output_objdir
 +	status=$?
-+	if test $status -eq 0 || test -d $objdir; then :
-+	else
++	if test $status -ne 0 && test ! -d $output_objdir; then
 +	  exit $status
 +	fi
 +      fi
 +
-+      # Check to see if the archive will have undefined symbols.
-+      if test "$allow_undefined" = yes; then
-+        if test "$allow_undefined_flag" = unsupported; then
-+          $echo "$modename: warning: undefined symbols not allowed in $host shared libraries" 1>&2
-+          build_libtool_libs=no
-+	  build_old_libs=yes
-+        fi
-+      else
-+        # Don't allow undefined symbols.
-+        allow_undefined_flag="$no_undefined_flag"
++      # Now set the variables for building old libraries.
++      if test "$build_old_libs" = yes && test "$build_libtool_libs" != convenience ; then
++	oldlibs="$oldlibs $output_objdir/$libname.$libext"
++
++	# Transform .lo files to .o files.
++	oldobjs="$objs "`$echo "X$libobjs" | $SP2NL | $Xsed -e '/\.'${libext}'$/d' -e "$lo2o" | $NL2SP`
 +      fi
 +
-+      # Add libc to deplibs on all systems.
-+      dependency_libs="$deplibs"
-+      deplibs="$deplibs -lc"
-+
 +      if test "$build_libtool_libs" = yes; then
-+        # Get the real and link names of the library.
-+        eval library_names=\"$library_names_spec\"
-+        set dummy $library_names
-+        realname="$2"
-+        shift; shift
++	# Transform deplibs into only deplibs that can be linked in shared.
++	name_save=$name
++	libname_save=$libname
++	release_save=$release
++	versuffix_save=$versuffix
++	major_save=$major
++	# I'm not sure if I'm treating the release correctly.  I think
++	# release should show up in the -l (ie -lgmp5) so we don't want to
++	# add it in twice.  Is that correct?
++	release=""
++	versuffix=""
++	major=""
++	newdeplibs=
++	droppeddeps=no
++	case "$deplibs_check_method" in
++	pass_all)
++	  # Don't check for shared/static.  Everything works.
++	  # This might be a little naive.  We might want to check
++	  # whether the library exists or not.  But this is on
++	  # osf3 & osf4 and I'm not really sure... Just
++	  # implementing what was already the behaviour.
++	  newdeplibs=$deplibs
++	  ;;
++	test_compile)
++	  # This code stresses the "libraries are programs" paradigm to its
++	  # limits. Maybe even breaks it.  We compile a program, linking it
++	  # against the deplibs as a proxy for the library.  Then we can check
++	  # whether they linked in statically or dynamically with ldd.
++	  $rm conftest.c
++	  cat > conftest.c <<EOF
++	  int main() { return 0; }
++EOF
++	  $rm conftest
++	  $CC -o conftest conftest.c $deplibs
++	  if test $? -eq 0 ; then
++	    ldd_output=`ldd conftest`
++	    for i in $deplibs; do
++	      name="`expr $i : '-l\(.*\)'`"
++	      # If $name is empty we are operating on a -L argument.
++	      if test "$name" != "" ; then
++		libname=`eval \\$echo \"$libname_spec\"`
++		deplib_matches=`eval \\$echo \"$library_names_spec\"`
++		set dummy $deplib_matches
++		deplib_match=$2
++		if test `expr "$ldd_output" : ".*$deplib_match"` -ne 0 ; then
++		  newdeplibs="$newdeplibs $i"
++		else
++		  droppeddeps=yes
++		  echo
++		  echo "*** Warning: This library needs some functionality provided by $i."
++		  echo "*** I have the capability to make that library automatically link in when"
++		  echo "*** you link to this library.  But I can only do this if you have a"
++		  echo "*** shared version of the library, which you do not appear to have."
++		fi
++	      else
++		newdeplibs="$newdeplibs $i"
++	      fi
++	    done
++	  else
++	    # Error occured in the first compile.  Let's try to salvage the situation:
++	    # Compile a seperate program for each library.
++	    for i in $deplibs; do
++	      name="`expr $i : '-l\(.*\)'`"
++	     # If $name is empty we are operating on a -L argument.
++	      if test "$name" != "" ; then
++		$rm conftest
++		$CC -o conftest conftest.c $i
++		# Did it work?
++		if test $? -eq 0 ; then
++		  ldd_output=`ldd conftest`
++		  libname=`eval \\$echo \"$libname_spec\"`
++		  deplib_matches=`eval \\$echo \"$library_names_spec\"`
++		  set dummy $deplib_matches
++		  deplib_match=$2
++		  if test `expr "$ldd_output" : ".*$deplib_match"` -ne 0 ; then
++		    newdeplibs="$newdeplibs $i"
++		  else
++		    droppeddeps=yes
++		    echo
++		    echo "*** Warning: This library needs some functionality provided by $i."
++		    echo "*** I have the capability to make that library automatically link in when"
++		    echo "*** you link to this library.  But I can only do this if you have a"
++		    echo "*** shared version of the library, which you do not appear to have."
++		  fi
++		else
++		  droppeddeps=yes
++		  echo
++		  echo "*** Warning!  Library $i is needed by this library but I was not able to"
++		  echo "***  make it link in!  You will probably need to install it or some"
++		  echo "*** library that it depends on before this library will be fully"
++		  echo "*** functional.  Installing it before continuing would be even better."
++		fi
++	      else
++		newdeplibs="$newdeplibs $i"
++	      fi
++	    done
++	  fi
++	  ;;
++	file_magic*)
++	  set dummy $deplibs_check_method
++	  file_magic_regex="`expr \"$deplibs_check_method\" : \"$2 \(.*\)\"`"
++	  for a_deplib in $deplibs; do
++	    name="`expr $a_deplib : '-l\(.*\)'`"
++	    # If $name is empty we are operating on a -L argument.
++	    if test "$name" != "" ; then
++	      libname=`eval \\$echo \"$libname_spec\"`
++	      for i in $lib_search_path; do
++		    potential_libs=`ls $i/$libname[.-]* 2>/dev/null`
++		    for potent_lib in $potential_libs; do
++		      # Follow soft links.
++		      if ls -lLd "$potent_lib" 2>/dev/null \
++			 | grep " -> " >/dev/null; then
++			continue 
++		      fi
++		      # The statement above tries to avoid entering an
++		      # endless loop below, in case of cyclic links.
++		      # We might still enter an endless loop, since a link
++		      # loop can be closed while we follow links,
++		      # but so what?
++		      potlib="$potent_lib"
++		      while test -h "$potlib" 2>/dev/null; do
++			potliblink=`ls -ld $potlib | sed 's/.* -> //'`
++			case "$potliblink" in
++			[\\/]* | [A-Za-z]:[\\/]*) potlib="$potliblink";;
++			*) potlib=`$echo "X$potlib" | $Xsed -e 's,[^/]*$,,'`"$potliblink";;
++			esac
++		      done
++		      if eval $file_magic_cmd \"\$potlib\" 2>/dev/null \
++			 | sed 10q \
++			 | egrep "$file_magic_regex" > /dev/null; then
++			newdeplibs="$newdeplibs $a_deplib"
++			a_deplib=""
++			break 2
++		      fi
++		    done
++	      done
++	      if test -n "$a_deplib" ; then
++		droppeddeps=yes
++		echo
++		echo "*** Warning: This library needs some functionality provided by $a_deplib."
++		echo "*** I have the capability to make that library automatically link in when"
++		echo "*** you link to this library.  But I can only do this if you have a"
++		echo "*** shared version of the library, which you do not appear to have."
++	      fi
++	    else
++	      # Add a -L argument.
++	      newdeplibs="$newdeplibs $a_deplib"
++	    fi
++	  done # Gone through all deplibs.
++	  ;;
++	none | unknown | *)
++	  newdeplibs=""
++	  if $echo "X $deplibs" | $Xsed -e 's/ -lc$//' \
++	       -e 's/ -[LR][^ ]*//g' -e 's/[ 	]//g' |
++	     grep . >/dev/null; then
++	    echo
++	    if test "X$deplibs_check_method" = "Xnone"; then
++	      echo "*** Warning: inter-library dependencies are not supported in this platform."
++	    else
++	      echo "*** Warning: inter-library dependencies are not known to be supported."
++	    fi
++	    echo "*** All declared inter-library dependencies are being dropped."
++	    droppeddeps=yes
++	  fi
++	  ;;
++	esac
++	versuffix=$versuffix_save
++	major=$major_save
++	release=$release_save
++	libname=$libname_save
++	name=$name_save
 +
-+        if test -n "$soname_spec"; then
-+          eval soname=\"$soname_spec\"
-+        else
-+          soname="$realname"
-+        fi
++	if test "$droppeddeps" = yes; then
++	  if test "$module" = yes; then
++	    echo
++	    echo "*** Warning: libtool could not satisfy all declared inter-library"
++	    echo "*** dependencies of module $libname.  Therefore, libtool will create"
++	    echo "*** a static module, that should work as long as the dlopening"
++	    echo "*** application is linked with the -dlopen flag."
++	    if test -z "$global_symbol_pipe"; then
++	      echo
++	      echo "*** However, this would only work if libtool was able to extract symbol"
++	      echo "*** lists from a program, using \`nm' or equivalent, but libtool could"
++	      echo "*** not find such a program.  So, this module is probably useless."
++	      echo "*** \`nm' from GNU binutils and a full rebuild may help."
++	    fi
++	    if test "$build_old_libs" = no; then
++	      oldlibs="$output_objdir/$libname.$libext"
++	      build_libtool_libs=module
++	      build_old_libs=yes
++	    else
++	      build_libtool_libs=no
++	    fi
++	  else
++	    echo "*** The inter-library dependencies that have been dropped here will be"
++	    echo "*** automatically added whenever a program is linked with this library"
++	    echo "*** or is declared to -dlopen it."
++	  fi
++	fi
++	# Done checking deplibs!
++	deplibs=$newdeplibs
++      fi
 +
-+        lib="$objdir/$realname"
++      # All the library-specific variables (install_libdir is set above).
++      library_names=
++      old_library=
++      dlname=
++      
++      # Test again, we may have decided not to build it any more
++      if test "$build_libtool_libs" = yes; then
++	# Get the real and link names of the library.
++	eval library_names=\"$library_names_spec\"
++	set dummy $library_names
++	realname="$2"
++	shift; shift
++
++	if test -n "$soname_spec"; then
++	  eval soname=\"$soname_spec\"
++	else
++	  soname="$realname"
++	fi
++
++	lib="$output_objdir/$realname"
 +	for link
 +	do
 +	  linknames="$linknames $link"
 +	done
 +
-+        # Use standard objects if they are PIC.
-+        test -z "$pic_flag" && libobjs=`$echo "X$libobjs " | $Xsed -e 's/\.lo /.o /g' -e 's/ $//g'`
++	# Ensure that we have .o objects for linkers which dislike .lo
++	# (e.g. aix) in case we are running --disable-static
++	for obj in $libobjs; do
++	  xdir=`$echo "X$obj" | $Xsed -e 's%/[^/]*$%%'`
++	  if test "X$xdir" = "X$obj"; then
++	    xdir="."
++	  else
++	    xdir="$xdir"
++	  fi
++	  baseobj=`$echo "X$obj" | $Xsed -e 's%^.*/%%'`
++	  oldobj=`$echo "X$baseobj" | $Xsed -e "$lo2o"`
++	  if test ! -f $xdir/$oldobj; then
++	    $show "(cd $xdir && ${LN_S} $baseobj $oldobj)"
++	    $run eval '(cd $xdir && ${LN_S} $baseobj $oldobj)' || exit $?
++	  fi
++	done
 +
-+        # Do each of the archive commands.
-+        eval cmds=\"$archive_cmds\"
-+        IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=';'
-+        for cmd in $cmds; do
-+          IFS="$save_ifs"
-+          $show "$cmd"
-+          $run eval "$cmd" || exit $?
-+        done
-+        IFS="$save_ifs"
++	# Use standard objects if they are pic
++	test -z "$pic_flag" && libobjs=`$echo "X$libobjs" | $SP2NL | $Xsed -e "$lo2o" | $NL2SP`
 +
-+        # Create links to the real library.
-+        for linkname in $linknames; do
-+          $show "(cd $objdir && $LN_S $realname $linkname)"
-+          $run eval '(cd $objdir && $LN_S $realname $linkname)' || exit $?
-+        done
++	# Prepare the list of exported symbols
++	if test -z "$export_symbols"; then
++	  if test "$always_export_symbols" = yes || test -n "$export_symbols_regex"; then
++	    $show "generating symbol list for \`$libname.la'"
++	    export_symbols="$output_objdir/$libname.exp"
++	    $run $rm $export_symbols
++	    eval cmds=\"$export_symbols_cmds\"
++	    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
++	    for cmd in $cmds; do
++	      IFS="$save_ifs"
++	      $show "$cmd"
++	      $run eval "$cmd" || exit $?
++	    done
++	    IFS="$save_ifs"
++	    if test -n "$export_symbols_regex"; then
++	      $show "egrep -e \"$export_symbols_regex\" \"$export_symbols\" > \"${export_symbols}T\""
++	      $run eval 'egrep -e "$export_symbols_regex" "$export_symbols" > "${export_symbols}T"'
++	      $show "$mv \"${export_symbols}T\" \"$export_symbols\""
++	      $run eval '$mv "${export_symbols}T" "$export_symbols"'
++	    fi
++	  fi
++	fi
 +
-+        # If -export-dynamic was specified, set the dlname.
-+        if test "$export_dynamic" = yes; then
-+          # On all known operating systems, these are identical.
-+          dlname="$soname"
-+        fi
++	if test -n "$export_symbols" && test -n "$include_expsyms"; then
++	  $run eval '$echo "X$include_expsyms" | $SP2NL >> "$export_symbols"'
++	fi
++
++	if test -n "$convenience"; then
++	  if test -n "$whole_archive_flag_spec"; then
++	    eval libobjs=\"\$libobjs $whole_archive_flag_spec\"
++	  else
++	    gentop="$output_objdir/${outputname}x"
++	    $show "${rm}r $gentop"
++	    $run ${rm}r "$gentop"
++	    $show "mkdir $gentop"
++	    $run mkdir "$gentop"
++	    status=$?
++	    if test $status -ne 0 && test ! -d "$gentop"; then
++	      exit $status
++	    fi
++	    generated="$generated $gentop"
++
++	    for xlib in $convenience; do
++	      # Extract the objects.
++	      case "$xlib" in
++	      [\\/]* | [A-Za-z]:[\\/]*) xabs="$xlib" ;;
++	      *) xabs=`pwd`"/$xlib" ;;
++	      esac
++	      xlib=`$echo "X$xlib" | $Xsed -e 's%^.*/%%'`
++	      xdir="$gentop/$xlib"
++
++	      $show "${rm}r $xdir"
++	      $run ${rm}r "$xdir"
++	      $show "mkdir $xdir"
++	      $run mkdir "$xdir"
++	      status=$?
++	      if test $status -ne 0 && test ! -d "$xdir"; then
++		exit $status
++	      fi
++	      $show "(cd $xdir && $AR x $xabs)"
++	      $run eval "(cd \$xdir && $AR x \$xabs)" || exit $?
++
++	      libobjs="$libobjs "`find $xdir -name \*.o -print -o -name \*.lo -print | $NL2SP`
++	    done
++	  fi
++	fi
++
++	if test "$thread_safe" = yes && test -n "$thread_safe_flag_spec"; then
++	  eval flag=\"$thread_safe_flag_spec\"
++	  linkopts="$linkopts $flag"
++	fi
++
++	# Do each of the archive commands.
++	if test -n "$export_symbols" && test -n "$archive_expsym_cmds"; then
++	  eval cmds=\"$archive_expsym_cmds\"
++	else
++	  eval cmds=\"$archive_cmds\"
++	fi
++	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
++	for cmd in $cmds; do
++	  IFS="$save_ifs"
++	  $show "$cmd"
++	  $run eval "$cmd" || exit $?
++	done
++	IFS="$save_ifs"
++
++	# Create links to the real library.
++	for linkname in $linknames; do
++	  if test "$realname" != "$linkname"; then
++	    $show "(cd $output_objdir && $rm $linkname && $LN_S $realname $linkname)"
++	    $run eval '(cd $output_objdir && $rm $linkname && $LN_S $realname $linkname)' || exit $?
++	  fi
++	done
++
++	# If -module or -export-dynamic was specified, set the dlname.
++	if test "$module" = yes || test "$export_dynamic" = yes; then
++	  # On all known operating systems, these are identical.
++	  dlname="$soname"
++	fi
 +      fi
-+
-+      # Now set the variables for building old libraries.
-+      oldlib="$objdir/$libname.a"
 +      ;;
 +
-+    *.lo | *.o)
++    *.lo | *.o | *.obj)
 +      if test -n "$link_against_libtool_libs"; then
-+        $echo "$modename: error: cannot link libtool libraries into reloadable objects" 1>&2
-+        exit 1
++	$echo "$modename: error: cannot link libtool libraries into objects" 1>&2
++	exit 1
 +      fi
 +
 +      if test -n "$deplibs"; then
-+        $echo "$modename: warning: \`-l' and \`-L' are ignored while creating objects" 1>&2
++	$echo "$modename: warning: \`-l' and \`-L' are ignored for objects" 1>&2
 +      fi
 +
-+      if test -n "$dlfiles$dlprefiles"; then
-+        $echo "$modename: warning: \`-dlopen' is ignored while creating objects" 1>&2
-+        # Nullify the symbol file.
-+        compile_command=`$echo "X$compile_command" | $Xsed -e "s% @SYMFILE@%%"`
-+        finalize_command=`$echo "X$finalize_command" | $Xsed -e "s% @SYMFILE@%%"`
++      if test -n "$dlfiles$dlprefiles" || test "$dlself" != no; then
++	$echo "$modename: warning: \`-dlopen' is ignored for objects" 1>&2
 +      fi
 +
 +      if test -n "$rpath"; then
-+        $echo "$modename: warning: \`-rpath' is ignored while creating objects" 1>&2
++	$echo "$modename: warning: \`-rpath' is ignored for objects" 1>&2
++      fi
++
++      if test -n "$xrpath"; then
++	$echo "$modename: warning: \`-R' is ignored for objects" 1>&2
 +      fi
 +
 +      if test -n "$vinfo"; then
-+        $echo "$modename: warning: \`-version-info' is ignored while creating objects" 1>&2
++	$echo "$modename: warning: \`-version-info' is ignored for objects" 1>&2
 +      fi
 +
 +      if test -n "$release"; then
-+        $echo "$modename: warning: \`-release' is ignored while creating objects" 1>&2
++	$echo "$modename: warning: \`-release' is ignored for objects" 1>&2
 +      fi
 +
 +      case "$output" in
 +      *.lo)
-+        if test -n "$objs"; then
-+          $echo "$modename: cannot build library object \`$output' from non-libtool objects" 1>&2
-+          exit 1
-+        fi
-+        libobj="$output"
-+        obj=`$echo "X$output" | $Xsed -e 's/\.lo$/.o/'`
-+        ;;
++	if test -n "$objs"; then
++	  $echo "$modename: cannot build library object \`$output' from non-libtool objects" 1>&2
++	  exit 1
++	fi
++	libobj="$output"
++	obj=`$echo "X$output" | $Xsed -e "$lo2o"`
++	;;
 +      *)
-+        libobj=
-+        obj="$output"
-+        ;;
++	libobj=
++	obj="$output"
++	;;
 +      esac
 +
 +      # Delete the old objects.
 +      $run $rm $obj $libobj
 +
++      # Objects from convenience libraries.  This assumes
++      # single-version convenience libraries.  Whenever we create
++      # different ones for PIC/non-PIC, this we'll have to duplicate
++      # the extraction.
++      reload_conv_objs=
++      gentop=
++      # reload_cmds runs $LD directly, so let us get rid of
++      # -Wl from whole_archive_flag_spec
++      wl= 
++
++      if test -n "$convenience"; then
++	if test -n "$whole_archive_flag_spec"; then
++	  eval reload_conv_objs=\"\$reload_objs $whole_archive_flag_spec\"
++	else
++	  gentop="$output_objdir/${obj}x"
++	  $show "${rm}r $gentop"
++	  $run ${rm}r "$gentop"
++	  $show "mkdir $gentop"
++	  $run mkdir "$gentop"
++	  status=$?
++	  if test $status -ne 0 && test ! -d "$gentop"; then
++	    exit $status
++	  fi
++	  generated="$generated $gentop"
++
++	  for xlib in $convenience; do
++	    # Extract the objects.
++	    case "$xlib" in
++	    [\\/]* | [A-Za-z]:[\\/]*) xabs="$xlib" ;;
++	    *) xabs=`pwd`"/$xlib" ;;
++	    esac
++	    xlib=`$echo "X$xlib" | $Xsed -e 's%^.*/%%'`
++	    xdir="$gentop/$xlib"
++
++	    $show "${rm}r $xdir"
++	    $run ${rm}r "$xdir"
++	    $show "mkdir $xdir"
++	    $run mkdir "$xdir"
++	    status=$?
++	    if test $status -ne 0 && test ! -d "$xdir"; then
++	      exit $status
++	    fi
++	    $show "(cd $xdir && $AR x $xabs)"
++	    $run eval "(cd \$xdir && $AR x \$xabs)" || exit $?
++
++	    reload_conv_objs="$reload_objs "`find $xdir -name \*.o -print -o -name \*.lo -print | $NL2SP`
++	  done
++	fi
++      fi
++
 +      # Create the old-style object.
-+      reload_objs="$objs"`$echo "X$libobjs " | $Xsed -e 's/[^       ]*\.a //g' -e 's/\.lo /.o /g' -e 's/ $//g'`
++      reload_objs="$objs "`$echo "X$libobjs" | $SP2NL | $Xsed -e '/\.'${libext}$'/d' -e '/\.lib$/d' -e "$lo2o" | $NL2SP`" $reload_conv_objs"
 +
 +      output="$obj"
 +      eval cmds=\"$reload_cmds\"
-+      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=';'
++      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
 +      for cmd in $cmds; do
-+        IFS="$save_ifs"
-+        $show "$cmd"
-+        $run eval "$cmd" || exit $?
++	IFS="$save_ifs"
++	$show "$cmd"
++	$run eval "$cmd" || exit $?
 +      done
 +      IFS="$save_ifs"
 +
 +      # Exit if we aren't doing a library object file.
-+      test -z "$libobj" && exit 0
++      if test -z "$libobj"; then
++	if test -n "$gentop"; then
++	  $show "${rm}r $gentop"
++	  $run ${rm}r $gentop
++	fi
++
++	exit 0
++      fi
 +
 +      if test "$build_libtool_libs" != yes; then
-+        # Create an invalid libtool object if no PIC, so that we don't
-+        # accidentally link it into a program.
-+        $show "echo timestamp > $libobj"
-+        $run eval "echo timestamp > $libobj" || exit $?
-+        exit 0
++	if test -n "$gentop"; then
++	  $show "${rm}r $gentop"
++	  $run ${rm}r $gentop
++	fi
++
++	# Create an invalid libtool object if no PIC, so that we don't
++	# accidentally link it into a program.
++	$show "echo timestamp > $libobj"
++	$run eval "echo timestamp > $libobj" || exit $?
++	exit 0
 +      fi
 +
 +      if test -n "$pic_flag"; then
-+        # Only do commands if we really have different PIC objects.
-+        reload_objs="$libobjs"
-+        output="$libobj"
-+        eval cmds=\"$reload_cmds\"
-+        IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=';'
-+        for cmd in $cmds; do
-+          IFS="$save_ifs"
-+          $show "$cmd"
-+          $run eval "$cmd" || exit $?
-+        done
-+        IFS="$save_ifs"
++	# Only do commands if we really have different PIC objects.
++	reload_objs="$libobjs $reload_conv_objs"
++	output="$libobj"
++	eval cmds=\"$reload_cmds\"
++	IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
++	for cmd in $cmds; do
++	  IFS="$save_ifs"
++	  $show "$cmd"
++	  $run eval "$cmd" || exit $?
++	done
++	IFS="$save_ifs"
 +      else
-+        # Just create a symlink.
-+        $show "$LN_S $obj $libobj"
-+        $run $LN_S $obj $libobj || exit 1
++	# Just create a symlink.
++	$show $rm $libobj
++	$run $rm $libobj
++	xdir=`$echo "X$libobj" | $Xsed -e 's%/[^/]*$%%'`
++	if test "X$xdir" = "X$libobj"; then
++	  xdir="."
++	else
++	  xdir="$xdir"
++	fi
++	baseobj=`$echo "X$libobj" | $Xsed -e 's%^.*/%%'`
++	oldobj=`$echo "X$baseobj" | $Xsed -e "$lo2o"`
++	$show "(cd $xdir && $LN_S $oldobj $baseobj)"
++	$run eval '(cd $xdir && $LN_S $oldobj $baseobj)' || exit $?
++      fi
++
++      if test -n "$gentop"; then
++	$show "${rm}r $gentop"
++	$run ${rm}r $gentop
 +      fi
 +
 +      exit 0
 +      ;;
 +
++    # Anything else should be a program.
 +    *)
 +      if test -n "$vinfo"; then
-+        $echo "$modename: warning: \`-version-info' is ignored while linking programs" 1>&2
++	$echo "$modename: warning: \`-version-info' is ignored for programs" 1>&2
 +      fi
 +
 +      if test -n "$release"; then
-+        $echo "$modename: warning: \`-release' is ignored while creating objects" 1>&2
++	$echo "$modename: warning: \`-release' is ignored for programs" 1>&2
 +      fi
 +
-+      if test -n "$rpath"; then
++      if test "$preload" = yes; then
++	if test "$dlopen" = unknown && test "$dlopen_self" = unknown &&
++	   test "$dlopen_self_static" = unknown; then
++	  $echo "$modename: warning: \`AC_LIBTOOL_DLOPEN' not used. Assuming no dlopen support."
++	fi 
++      fi
++    
++      if test -n "$rpath$xrpath"; then
 +	# If the user specified any rpath flags, then add them.
-+	for libdir in $rpath; do
-+          if test -n "$hardcode_libdir_flag_spec"; then
-+            if test -n "$hardcode_libdir_separator"; then
-+              if test -z "$hardcode_libdirs"; then
-+                # Put the magic libdir with the hardcode flag.
-+                hardcode_libdirs="$libdir"
-+                libdir="@HARDCODE_LIBDIRS@"
-+              else
-+                # Just accumulate the unique libdirs.
-+		case "$hardcode_libdir_separator$hardcode_libdirs$hardcode_libdir_separator" in
-+		*"$hardcode_libdir_separator$libdir$hardcode_libdir_separator"*)
-+		  ;;
-+		*)
-+		  hardcode_libdirs="$hardcode_libdirs$hardcode_libdir_separator$libdir"
-+		  ;;
-+		esac
-+                libdir=
-+              fi
-+            fi
-+
-+            if test -n "$libdir"; then
-+              eval flag=\"$hardcode_libdir_flag_spec\"
-+
-+              compile_command="$compile_command $flag"
-+              finalize_command="$finalize_command $flag"
-+            fi
-+          elif test -n "$runpath_var"; then
-+            case "$perm_rpath " in
-+            *" $libdir "*) ;;
-+            *) perm_rpath="$perm_rpath $libdir" ;;
-+            esac
-+          fi
++	for libdir in $rpath $xrpath; do
++	  # This is the magic to use -rpath.
++	  case "$compile_rpath " in
++	  *" $libdir "*) ;;
++	  *) compile_rpath="$compile_rpath $libdir" ;;
++	  esac
++	  case "$finalize_rpath " in
++	  *" $libdir "*) ;;
++	  *) finalize_rpath="$finalize_rpath $libdir" ;;
++	  esac
 +	done
 +      fi
 +
-+      # Substitute the hardcoded libdirs into the compile commands.
-+      if test -n "$hardcode_libdir_separator"; then
-+	compile_command=`$echo "X$compile_command" | $Xsed -e "s%@HARDCODE_LIBDIRS@%$hardcode_libdirs%g"`
-+	finalize_command=`$echo "X$finalize_command" | $Xsed -e "s%@HARDCODE_LIBDIRS@%$hardcode_libdirs%g"`
++      # Now hardcode the library paths
++      rpath=
++      hardcode_libdirs=
++      for libdir in $compile_rpath $finalize_rpath; do
++	if test -n "$hardcode_libdir_flag_spec"; then
++	  if test -n "$hardcode_libdir_separator"; then
++	    if test -z "$hardcode_libdirs"; then
++	      hardcode_libdirs="$libdir"
++	    else
++	      # Just accumulate the unique libdirs.
++	      case "$hardcode_libdir_separator$hardcode_libdirs$hardcode_libdir_separator" in
++	      *"$hardcode_libdir_separator$libdir$hardcode_libdir_separator"*)
++		;;
++	      *)
++		hardcode_libdirs="$hardcode_libdirs$hardcode_libdir_separator$libdir"
++		;;
++	      esac
++	    fi
++	  else
++	    eval flag=\"$hardcode_libdir_flag_spec\"
++	    rpath="$rpath $flag"
++	  fi
++	elif test -n "$runpath_var"; then
++	  case "$perm_rpath " in
++	  *" $libdir "*) ;;
++	  *) perm_rpath="$perm_rpath $libdir" ;;
++	  esac
++	fi
++      done
++      # Substitute the hardcoded libdirs into the rpath.
++      if test -n "$hardcode_libdir_separator" &&
++	 test -n "$hardcode_libdirs"; then
++	libdir="$hardcode_libdirs"
++	eval rpath=\" $hardcode_libdir_flag_spec\"
++      fi
++      compile_rpath="$rpath"
++
++      rpath=
++      hardcode_libdirs=
++      for libdir in $finalize_rpath; do
++	if test -n "$hardcode_libdir_flag_spec"; then
++	  if test -n "$hardcode_libdir_separator"; then
++	    if test -z "$hardcode_libdirs"; then
++	      hardcode_libdirs="$libdir"
++	    else
++	      # Just accumulate the unique libdirs.
++	      case "$hardcode_libdir_separator$hardcode_libdirs$hardcode_libdir_separator" in
++	      *"$hardcode_libdir_separator$libdir$hardcode_libdir_separator"*)
++		;;
++	      *)
++		hardcode_libdirs="$hardcode_libdirs$hardcode_libdir_separator$libdir"
++		;;
++	      esac
++	    fi
++	  else
++	    eval flag=\"$hardcode_libdir_flag_spec\"
++	    rpath="$rpath $flag"
++	  fi
++	elif test -n "$runpath_var"; then
++	  case "$finalize_perm_rpath " in
++	  *" $libdir "*) ;;
++	  *) finalize_perm_rpath="$finalize_perm_rpath $libdir" ;;
++	  esac
++	fi
++      done
++      # Substitute the hardcoded libdirs into the rpath.
++      if test -n "$hardcode_libdir_separator" &&
++	 test -n "$hardcode_libdirs"; then
++	libdir="$hardcode_libdirs"
++	eval rpath=\" $hardcode_libdir_flag_spec\"
++      fi
++      finalize_rpath="$rpath"
++
++      output_objdir=`$echo "X$output" | $Xsed -e 's%/[^/]*$%%'`
++      if test "X$output_objdir" = "X$output"; then
++	output_objdir="$objdir"
++      else
++	output_objdir="$output_objdir/$objdir"
++      fi
++
++      # Create the binary in the object directory, then wrap it.
++      if test ! -d $output_objdir; then
++	$show "$mkdir $output_objdir"
++	$run $mkdir $output_objdir
++	status=$?
++	if test $status -ne 0 && test ! -d $output_objdir; then
++	  exit $status
++	fi
 +      fi
 +
 +      if test -n "$libobjs" && test "$build_old_libs" = yes; then
-+        # Transform all the library objects into standard objects.
-+        compile_command=`$echo "X$compile_command " | $Xsed -e 's/\.lo /.o /g' -e 's/ $//'`
-+        finalize_command=`$echo "X$finalize_command " | $Xsed -e 's/\.lo /.o /g' -e 's/ $//'`
++	# Transform all the library objects into standard objects.
++	compile_command=`$echo "X$compile_command" | $SP2NL | $Xsed -e "$lo2o" | $NL2SP`
++	finalize_command=`$echo "X$finalize_command" | $SP2NL | $Xsed -e "$lo2o" | $NL2SP`
 +      fi
 +
-+      if test "$export_dynamic" = yes && test -n "$NM" && test -n "$global_symbol_pipe"; then
-+        dlsyms="${output}S.c"
-+      else
-+        dlsyms=
++      dlsyms=
++      if test -n "$dlfiles$dlprefiles" || test "$dlself" != no; then
++	if test -n "$NM" && test -n "$global_symbol_pipe"; then
++	  dlsyms="${outputname}S.c"
++	else
++	  $echo "$modename: not configured to extract global symbols from dlpreopened files" 1>&2
++	fi
 +      fi
 +
 +      if test -n "$dlsyms"; then
-+        # Add our own program objects to the preloaded list.
-+        dlprefiles=`$echo "X$objs$dlprefiles " | $Xsed -e 's/\.lo /.o /g' -e 's/ $//'`
++	case "$dlsyms" in
++	"") ;;
++	*.c)
++	  # Discover the nlist of each of the dlfiles.
++	  nlist="$output_objdir/${outputname}.nm"
 +
-+	# Discover the nlist of each of the dlfiles.
-+        nlist="$objdir/${output}.nm"
++	  $show "$rm $nlist ${nlist}S ${nlist}T"
++	  $run $rm "$nlist" "${nlist}S" "${nlist}T"
 +
-+	if test -d $objdir; then
-+	  $show "$rm $nlist ${nlist}T"
-+	  $run $rm "$nlist" "${nlist}T"
-+	else
-+	  $show "$mkdir $objdir"
-+	  $run $mkdir $objdir
-+	  status=$?
-+	  if test $status -eq 0 || test -d $objdir; then :
-+	  else
-+	    exit $status
-+	  fi
-+	fi
++	  # Parse the name list into a source file.
++	  $show "creating $output_objdir/$dlsyms"
 +
-+        for arg in $dlprefiles; do
-+	  $show "extracting global C symbols from \`$arg'"
-+	  $run eval "$NM $arg | $global_symbol_pipe >> '$nlist'"
-+        done
-+
-+        # Parse the name list into a source file.
-+        $show "creating $objdir/$dlsyms"
-+        if test -z "$run"; then
-+	  # Make sure we at least have an empty file.
-+	  test -f "$nlist" || : > "$nlist"
-+
-+	  # Try sorting and uniquifying the output.
-+	  if sort "$nlist" | uniq > "$nlist"T; then
-+	    mv -f "$nlist"T "$nlist"
-+	    wcout=`wc "$nlist" 2>/dev/null`
-+	    count=`echo "X$wcout" | $Xsed -e 's/^[ 	]*\([0-9][0-9]*\).*$/\1/'`
-+	    (test "$count" -ge 0) 2>/dev/null || count=-1
-+	  else
-+	    $rm "$nlist"T
-+	    count=-1
-+	  fi
-+
-+	  case "$dlsyms" in
-+	  "") ;;
-+	  *.c)
-+	    $echo > "$objdir/$dlsyms" "\
-+/* $dlsyms - symbol resolution table for \`$output' dlsym emulation. */
-+/* Generated by $PROGRAM - GNU $PACKAGE $VERSION */
++	  test -z "$run" && $echo > "$output_objdir/$dlsyms" "\
++/* $dlsyms - symbol resolution table for \`$outputname' dlsym emulation. */
++/* Generated by $PROGRAM - GNU $PACKAGE $VERSION$TIMESTAMP */
 +
 +#ifdef __cplusplus
 +extern \"C\" {
 +#endif
 +
 +/* Prevent the only kind of declaration conflicts we can make. */
-+#define dld_preloaded_symbol_count some_other_symbol
-+#define dld_preloaded_symbols some_other_symbol
++#define lt_preloaded_symbols some_other_symbol
 +
 +/* External symbol declarations for the compiler. */\
 +"
 +
-+	    if test -f "$nlist"; then
-+	      sed -e 's/^.* \(.*\)$/extern char \1;/' < "$nlist" >> "$objdir/$dlsyms"
-+	    else
-+	      echo '/* NONE */' >> "$objdir/$dlsyms"
++	  if test "$dlself" = yes; then
++	    $show "generating symbol list for \`$output'"
++
++	    test -z "$run" && $echo ': @PROGRAM@ ' > "$nlist"
++
++	    # Add our own program objects to the symbol list.
++	    progfiles=`$echo "X$objs" | $SP2NL | $Xsed -e "$lo2o" | $NL2SP`
++	    for arg in $progfiles; do
++	      $show "extracting global C symbols from \`$arg'"
++	      $run eval "$NM $arg | $global_symbol_pipe >> '$nlist'"
++	    done
++
++	    if test -n "$exclude_expsyms"; then
++	      $run eval 'egrep -v " ($exclude_expsyms)$" "$nlist" > "$nlist"T'
++	      $run eval '$mv "$nlist"T "$nlist"'
++	    fi
++	    
++	    if test -n "$export_symbols_regex"; then
++	      $run eval 'egrep -e "$export_symbols_regex" "$nlist" > "$nlist"T'
++	      $run eval '$mv "$nlist"T "$nlist"'
 +	    fi
 +
-+	    $echo >> "$objdir/$dlsyms" "\
++	    # Prepare the list of exported symbols
++	    if test -z "$export_symbols"; then
++	      export_symbols="$output_objdir/$output.exp"
++	      $run $rm $export_symbols
++	      $run eval "sed -n -e '/^: @PROGRAM@$/d' -e 's/^.* \(.*\)$/\1/p' "'< "$nlist" > "$export_symbols"'
++	    else
++	      $run eval "sed -e 's/\([][.*^$]\)/\\\1/g' -e 's/^/ /' -e 's/$/$/'"' < "$export_symbols" > "$output_objdir/$output.exp"'
++	      $run eval 'grep -f "$output_objdir/$output.exp" < "$nlist" > "$nlist"T'
++	      $run eval 'mv "$nlist"T "$nlist"'
++	    fi
++	  fi
 +
-+#undef dld_preloaded_symbol_count
-+#undef dld_preloaded_symbols
++	  for arg in $dlprefiles; do
++	    $show "extracting global C symbols from \`$arg'"
++	    name=`echo "$arg" | sed -e 's%^.*/%%'`
++	    $run eval 'echo ": $name " >> "$nlist"'
++	    $run eval "$NM $arg | $global_symbol_pipe >> '$nlist'"
++	  done
++
++	  if test -z "$run"; then
++	    # Make sure we have at least an empty file.
++	    test -f "$nlist" || : > "$nlist"
++
++	    if test -n "$exclude_expsyms"; then
++	      egrep -v " ($exclude_expsyms)$" "$nlist" > "$nlist"T
++	      $mv "$nlist"T "$nlist"
++	    fi
++
++	    # Try sorting and uniquifying the output.
++	    if grep -v "^: " < "$nlist" | sort +2 | uniq > "$nlist"S; then
++	      :
++	    else
++	      grep -v "^: " < "$nlist" > "$nlist"S
++	    fi
++
++	    if test -f "$nlist"S; then
++	      eval "$global_symbol_to_cdecl"' < "$nlist"S >> "$output_objdir/$dlsyms"'
++	    else
++	      echo '/* NONE */' >> "$output_objdir/$dlsyms"
++	    fi
++
++	    $echo >> "$output_objdir/$dlsyms" "\
++
++#undef lt_preloaded_symbols
 +
 +#if defined (__STDC__) && __STDC__
-+# define __ptr_t void *
++# define lt_ptr_t void *
 +#else
-+# define __ptr_t char *
++# define lt_ptr_t char *
++# define const
 +#endif
 +
-+/* The number of symbols in dld_preloaded_symbols, -1 if unsorted. */
-+int dld_preloaded_symbol_count = $count;
-+
 +/* The mapping between symbol names and symbols. */
-+struct {
-+  char *name;
-+  __ptr_t address;
++const struct {
++  const char *name;
++  lt_ptr_t address;
 +}
-+dld_preloaded_symbols[] =
++lt_preloaded_symbols[] =
 +{\
 +"
 +
-+	    if test -f "$nlist"; then
-+	      sed 's/^\(.*\) \(.*\)$/  {"\1", (__ptr_t) \&\2},/' < "$nlist" >> "$objdir/$dlsyms"
-+	    fi
++	    sed -n -e 's/^: \([^ ]*\) $/  {\"\1\", (lt_ptr_t) 0},/p' \
++		-e 's/^. \([^ ]*\) \([^ ]*\)$/  {"\2", (lt_ptr_t) \&\2},/p' \
++		  < "$nlist" >> "$output_objdir/$dlsyms"
 +
-+	    $echo >> "$objdir/$dlsyms" "\
-+  {0, (__ptr_t) 0}
++	    $echo >> "$output_objdir/$dlsyms" "\
++  {0, (lt_ptr_t) 0}
 +};
++
++/* This works around a problem in FreeBSD linker */
++#ifdef FREEBSD_WORKAROUND
++static const void *lt_preloaded_setup() {
++  return lt_preloaded_symbols;
++}
++#endif
 +
 +#ifdef __cplusplus
 +}
 +#endif\
 +"
-+	    ;;
++	  fi
 +
-+	  *)
-+	    $echo "$modename: unknown suffix for \`$dlsyms'" 1>&2
-+	    exit 1
-+	    ;;
++	  pic_flag_for_symtable=
++	  case "$host" in
++	  # compiling the symbol table file with pic_flag works around
++	  # a FreeBSD bug that causes programs to crash when -lm is
++	  # linked before any other PIC object.  But we must not use
++	  # pic_flag when linking with -static.  The problem exists in
++	  # FreeBSD 2.2.6 and is fixed in FreeBSD 3.1.
++	  *-*-freebsd2*|*-*-freebsd3.0*|*-*-freebsdelf3.0*)
++	    case "$compile_command " in
++	    *" -static "*) ;;
++	    *) pic_flag_for_symtable=" $pic_flag -DPIC -DFREEBSD_WORKAROUND";;
++	    esac;;
++	  *-*-hpux*)
++	    case "$compile_command " in
++	    *" -static "*) ;;
++	    *) pic_flag_for_symtable=" $pic_flag -DPIC";;
++	    esac
 +	  esac
-+        fi
 +
-+        # Now compile the dynamic symbol file.
-+        $show "(cd $objdir && $CC -c$no_builtin_flag \"$dlsyms\")"
-+        $run eval '(cd $objdir && $CC -c$no_builtin_flag "$dlsyms")' || exit $?
++	  # Now compile the dynamic symbol file.
++	  $show "(cd $output_objdir && $CC -c$no_builtin_flag$pic_flag_for_symtable \"$dlsyms\")"
++	  $run eval '(cd $output_objdir && $CC -c$no_builtin_flag$pic_flag_for_symtable "$dlsyms")' || exit $?
 +
-+        # Transform the symbol file into the correct name.
-+        compile_command=`$echo "X$compile_command" | $Xsed -e "s%@SYMFILE@%$objdir/${output}S.o%"`
-+        finalize_command=`$echo "X$finalize_command" | $Xsed -e "s%@SYMFILE@%$objdir/${output}S.o%"`
-+      elif test "$export_dynamic" != yes; then
-+        test -n "$dlfiles$dlprefiles" && $echo "$modename: warning: \`-dlopen' and \`-dlpreopen' are ignored without \`-export-dynamic'" 1>&2
++	  # Clean up the generated files.
++	  $show "$rm $output_objdir/$dlsyms $nlist ${nlist}S ${nlist}T"
++	  $run $rm "$output_objdir/$dlsyms" "$nlist" "${nlist}S" "${nlist}T"
++
++	  # Transform the symbol file into the correct name.
++	  compile_command=`$echo "X$compile_command" | $Xsed -e "s%@SYMFILE@%$output_objdir/${outputname}S.${objext}%"`
++	  finalize_command=`$echo "X$finalize_command" | $Xsed -e "s%@SYMFILE@%$output_objdir/${outputname}S.${objext}%"`
++	  ;;
++	*)
++	  $echo "$modename: unknown suffix for \`$dlsyms'" 1>&2
++	  exit 1
++	  ;;
++	esac
 +      else
-+        # We keep going just in case the user didn't refer to
-+        # dld_preloaded_symbols.  The linker will fail if global_symbol_pipe
-+        # really was required.
-+        $echo "$modename: not configured to extract global symbols from dlpreopened files" 1>&2
++	# We keep going just in case the user didn't refer to
++	# lt_preloaded_symbols.  The linker will fail if global_symbol_pipe
++	# really was required.
 +
-+        # Nullify the symbol file.
-+        compile_command=`$echo "X$compile_command" | $Xsed -e "s% @SYMFILE@%%"`
-+        finalize_command=`$echo "X$finalize_command" | $Xsed -e "s% @SYMFILE@%%"`
++	# Nullify the symbol file.
++	compile_command=`$echo "X$compile_command" | $Xsed -e "s% @SYMFILE@%%"`
++	finalize_command=`$echo "X$finalize_command" | $Xsed -e "s% @SYMFILE@%%"`
 +      fi
 +
 +      if test -z "$link_against_libtool_libs" || test "$build_libtool_libs" != yes; then
-+        # Replace the output file specification.
-+        compile_command=`$echo "X$compile_command" | $Xsed -e 's%@OUTPUT@%'"$output"'%g'`
-+        finalize_command=`$echo "X$finalize_command" | $Xsed -e 's%@OUTPUT@%'"$output"'%g'`
++	# Replace the output file specification.
++	compile_command=`$echo "X$compile_command" | $Xsed -e 's%@OUTPUT@%'"$output"'%g'`
++	link_command="$compile_command$compile_rpath"
 +
-+        # We have no uninstalled library dependencies, so finalize right now.
-+        $show "$compile_command"
-+        $run eval "$compile_command"
-+        exit $?
-+      fi
-+
-+      # Replace the output file specification.
-+      compile_command=`$echo "X$compile_command" | $Xsed -e 's%@OUTPUT@%'"$objdir/$output"'%g'`
-+      finalize_command=`$echo "X$finalize_command" | $Xsed -e 's%@OUTPUT@%'"$objdir/$output"'T%g'`
-+
-+      # Create the binary in the object directory, then wrap it.
-+      if test -d $objdir; then :
-+      else
-+        $show "$mkdir $objdir"
-+	$run $mkdir $objdir
++	# We have no uninstalled library dependencies, so finalize right now.
++	$show "$link_command"
++	$run eval "$link_command"
 +	status=$?
-+	if test $status -eq 0 || test -d $objdir; then :
-+	else
-+	  exit $status
++	
++	# Delete the generated files.
++	if test -n "$dlsyms"; then
++	  $show "$rm $output_objdir/${outputname}S.${objext}"
++	  $run $rm "$output_objdir/${outputname}S.${objext}"
 +	fi
++
++	exit $status
 +      fi
 +
 +      if test -n "$shlibpath_var"; then
-+        # We should set the shlibpath_var
-+        rpath=
-+        for dir in $temp_rpath; do
-+          case "$dir" in
-+          /* | [A-Za-z]:\\*)
-+            # Absolute path.
-+            rpath="$rpath$dir:"
-+            ;;
-+          *)
-+            # Relative path: add a thisdir entry.
-+            rpath="$rpath\$thisdir/$dir:"
-+            ;;
-+          esac
-+        done
-+        temp_rpath="$rpath"
++	# We should set the shlibpath_var
++	rpath=
++	for dir in $temp_rpath; do
++	  case "$dir" in
++	  [\\/]* | [A-Za-z]:[\\/]*)
++	    # Absolute path.
++	    rpath="$rpath$dir:"
++	    ;;
++	  *)
++	    # Relative path: add a thisdir entry.
++	    rpath="$rpath\$thisdir/$dir:"
++	    ;;
++	  esac
++	done
++	temp_rpath="$rpath"
 +      fi
 +
-+      # Delete the old output file.
-+      $run $rm $output
-+
-+      if test -n "$compile_shlibpath"; then
-+        compile_command="$shlibpath_var=\"$compile_shlibpath\$$shlibpath_var\" $compile_command"
++      if test -n "$compile_shlibpath$finalize_shlibpath"; then
++	compile_command="$shlibpath_var=\"$compile_shlibpath$finalize_shlibpath\$$shlibpath_var\" $compile_command"
 +      fi
 +      if test -n "$finalize_shlibpath"; then
-+        finalize_command="$shlibpath_var=\"$finalize_shlibpath\$$shlibpath_var\" $finalize_command"
++	finalize_command="$shlibpath_var=\"$finalize_shlibpath\$$shlibpath_var\" $finalize_command"
 +      fi
 +
-+      if test -n "$runpath_var" && test -n "$perm_rpath"; then
-+        # We should set the runpath_var.
-+        rpath=
-+        for dir in $perm_rpath; do
-+          rpath="$rpath$dir:"
-+        done
-+        compile_command="$runpath_var=\"$rpath\$$runpath_var\" $compile_command"
-+        finalize_command="$runpath_var=\"$rpath\$$runpath_var\" $finalize_command"
++      compile_var=
++      finalize_var=
++      if test -n "$runpath_var"; then
++	if test -n "$perm_rpath"; then
++	  # We should set the runpath_var.
++	  rpath=
++	  for dir in $perm_rpath; do
++	    rpath="$rpath$dir:"
++	  done
++	  compile_var="$runpath_var=\"$rpath\$$runpath_var\" "
++	fi
++	if test -n "$finalize_perm_rpath"; then
++	  # We should set the runpath_var.
++	  rpath=
++	  for dir in $finalize_perm_rpath; do
++	    rpath="$rpath$dir:"
++	  done
++	  finalize_var="$runpath_var=\"$rpath\$$runpath_var\" "
++	fi
 +      fi
 +
-+      case "$hardcode_action" in
-+      relink)
-+        # AGH! Flame the AIX and HP-UX people for me, will ya?
-+        $echo "$modename: warning: using a buggy system linker" 1>&2
-+        $echo "$modename: relinking will be required before \`$output' can be installed" 1>&2
-+        ;;
-+      esac
++      if test "$hardcode_action" = relink; then
++	# Fast installation is not supported
++	link_command="$compile_var$compile_command$compile_rpath"
++	relink_command="$finalize_var$finalize_command$finalize_rpath"
++	
++	$echo "$modename: warning: this platform does not like uninstalled shared libraries" 1>&2
++	$echo "$modename: \`$output' will be relinked during installation" 1>&2
++      else
++	if test "$fast_install" != no; then
++	  link_command="$finalize_var$compile_command$finalize_rpath"
++	  if test "$fast_install" = yes; then
++	    relink_command=`$echo "X$compile_var$compile_command$compile_rpath" | $Xsed -e 's%@OUTPUT@%\$progdir/\$file%g'`
++	  else
++	    # fast_install is set to needless
++	    relink_command=
++	  fi
++	else
++	  link_command="$compile_var$compile_command$compile_rpath"
++	  relink_command="$finalize_var$finalize_command$finalize_rpath"
++	fi
++      fi
 +
-+      $show "$compile_command"
-+      $run eval "$compile_command" || exit $?
++      # Replace the output file specification.
++      link_command=`$echo "X$link_command" | $Xsed -e 's%@OUTPUT@%'"$output_objdir/$outputname"'%g'`
++      
++      # Delete the old output files.
++      $run $rm $output $output_objdir/$outputname $output_objdir/lt-$outputname
++
++      $show "$link_command"
++      $run eval "$link_command" || exit $?
 +
 +      # Now create the wrapper script.
 +      $show "creating $output"
 +
-+      # Quote the finalize command for shipping.
-+      finalize_command=`$echo "X$finalize_command" | $Xsed -e "$sed_quote_subst"`
++      # Quote the relink command for shipping.
++      if test -n "$relink_command"; then
++	relink_command=`$echo "X$relink_command" | $Xsed -e "$sed_quote_subst"`
++      fi
 +
 +      # Quote $echo for shipping.
-+      qecho=`$echo "X$echo" | $Xsed -e "$sed_quote_subst"`
++      if test "X$echo" = "X$SHELL $0 --fallback-echo"; then
++	case "$0" in
++	[\\/]* | [A-Za-z]:[\\/]*) qecho="$SHELL $0 --fallback-echo";;
++	*) qecho="$SHELL `pwd`/$0 --fallback-echo";;
++	esac
++	qecho=`$echo "X$qecho" | $Xsed -e "$sed_quote_subst"`
++      else
++	qecho=`$echo "X$echo" | $Xsed -e "$sed_quote_subst"`
++      fi
 +
 +      # Only actually do things if our run command is non-null.
 +      if test -z "$run"; then
-+        $rm $output
-+        trap "$rm $output; exit 1" 1 2 15
++	# win32 will think the script is a binary if it has
++	# a .exe suffix, so we strip it off here.
++	case $output in
++	  *.exe) output=`echo $output|sed 's,.exe$,,'` ;;
++	esac
++	$rm $output
++	trap "$rm $output; exit 1" 1 2 15
 +
-+        $echo > $output "\
-+#! /bin/sh
++	$echo > $output "\
++#! $SHELL
 +
-+# $output - temporary wrapper script for $objdir/$output
-+# Generated by ltmain.sh - GNU $PACKAGE $VERSION
++# $output - temporary wrapper script for $objdir/$outputname
++# Generated by $PROGRAM - GNU $PACKAGE $VERSION$TIMESTAMP
 +#
 +# The $output program cannot be directly executed until all the libtool
 +# libraries that it depends on are installed.
 +#
-+# This wrapper script should never be moved out of \``pwd`'.
++# This wrapper script should never be moved out of the build directory.
 +# If it is, it will not operate correctly.
 +
 +# Sed substitution that helps us do robust quoting.  It backslashifies
 +# metacharacters that are still active within double-quoted strings.
-+Xsed='sed -e s/^X//'
++Xsed='sed -e 1s/^X//'
 +sed_quote_subst='$sed_quote_subst'
 +
 +# The HP-UX ksh and POSIX shell print the target directory to stdout
 +# if CDPATH is set.
-+if test \"\${CDPATH+set}\" = set; then CDPATH=; export CDPATH; fi
++if test \"\${CDPATH+set}\" = set; then CDPATH=:; export CDPATH; fi
++
++relink_command=\"$relink_command\"
 +
 +# This environment variable determines our operation mode.
 +if test \"\$libtool_install_magic\" = \"$magic\"; then
-+  # install mode needs the following variables:
++  # install mode needs the following variable:
 +  link_against_libtool_libs='$link_against_libtool_libs'
-+  finalize_command=\"$finalize_command\"
 +else
 +  # When we are sourced in execute mode, \$file and \$echo are already set.
-+  if test \"\$libtool_execute_magic\" = \"$magic\"; then :
-+  else
++  if test \"\$libtool_execute_magic\" != \"$magic\"; then
 +    echo=\"$qecho\"
 +    file=\"\$0\"
++    # Make sure echo works.
++    if test \"X\$1\" = X--no-reexec; then
++      # Discard the --no-reexec flag, and continue.
++      shift
++    elif test \"X\`(\$echo '\t') 2>/dev/null\`\" = 'X\t'; then
++      # Yippee, \$echo works!
++      :
++    else
++      # Restart under the correct shell, and then maybe \$echo will work.
++      exec $SHELL \"\$0\" --no-reexec \${1+\"\$@\"}
++    fi
 +  fi\
 +"
-+        $echo >> $output "\
++	$echo >> $output "\
 +
 +  # Find the directory that this script lives in.
 +  thisdir=\`\$echo \"X\$file\" | \$Xsed -e 's%/[^/]*$%%'\`
@@ -9707,7 +14359,7 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +    # If there was a directory component, then change thisdir.
 +    if test \"x\$destdir\" != \"x\$file\"; then
 +      case \"\$destdir\" in
-+      /* | [A-Za-z]:\\*) thisdir=\"\$destdir\" ;;
++      [\\/]* | [A-Za-z]:[\\/]*) thisdir=\"\$destdir\" ;;
 +      *) thisdir=\"\$thisdir/\$destdir\" ;;
 +      esac
 +    fi
@@ -9719,35 +14371,105 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +  # Try to get the absolute directory name.
 +  absdir=\`cd \"\$thisdir\" && pwd\`
 +  test -n \"\$absdir\" && thisdir=\"\$absdir\"
++"
 +
++	if test "$fast_install" = yes; then
++	  echo >> $output "\
++  program=lt-'$outputname'
 +  progdir=\"\$thisdir/$objdir\"
-+  program='$output'
++  
++  if test ! -f \"\$progdir/\$program\" || \\
++     { file=\`ls -1dt \"\$progdir/\$program\" \"\$progdir/../\$program\" 2>/dev/null | sed 1q\`; \\
++       test \"X\$file\" != \"X\$progdir/\$program\"; }; then
++
++    file=\"\$\$-\$program\"
++
++    if test ! -d \"\$progdir\"; then
++      $mkdir \"\$progdir\"
++    else
++      $rm \"\$progdir/\$file\"
++    fi"
++
++	  echo >> $output "\
++
++    # relink executable if necessary
++    if test -n \"\$relink_command\"; then
++      if (cd \"\$thisdir\" && eval \$relink_command); then :
++      else
++	$rm \"\$progdir/\$file\"
++	exit 1
++      fi
++    fi
++
++    $mv \"\$progdir/\$file\" \"\$progdir/\$program\" 2>/dev/null ||
++    { $rm \"\$progdir/\$program\";
++      $mv \"\$progdir/\$file\" \"\$progdir/\$program\"; }
++    $rm \"\$progdir/\$file\"
++  fi"
++	else
++	  echo >> $output "\
++  program='$outputname'
++  progdir=\"\$thisdir/$objdir\"
++"
++	fi
++
++	echo >> $output "\
 +
 +  if test -f \"\$progdir/\$program\"; then"
 +
-+        # Export our shlibpath_var if we have one.
-+        if test -n "$shlibpath_var" && test -n "$temp_rpath"; then
-+          $echo >> $output "\
++	# Export our shlibpath_var if we have one.
++	if test "$shlibpath_overrides_runpath" = yes && test -n "$shlibpath_var" && test -n "$temp_rpath"; then
++	  $echo >> $output "\
 +    # Add our own library path to $shlibpath_var
 +    $shlibpath_var=\"$temp_rpath\$$shlibpath_var\"
 +
 +    # Some systems cannot cope with colon-terminated $shlibpath_var
-+    $shlibpath_var=\`\$echo \"X\$$shlibpath_var\" | \$Xsed -e 's/:*\$//'\`
++    # The second colon is a workaround for a bug in BeOS R4 sed
++    $shlibpath_var=\`\$echo \"X\$$shlibpath_var\" | \$Xsed -e 's/::*\$//'\`
 +
 +    export $shlibpath_var
 +"
-+        fi
++	fi
 +
-+        $echo >> $output "\
++	# fixup the dll searchpath if we need to.
++	if test -n "$dllsearchpath"; then
++	  $echo >> $output "\
++    # Add the dll search path components to the executable PATH
++    PATH=$dllsearchpath:\$PATH
++"
++	fi
++
++	$echo >> $output "\
 +    if test \"\$libtool_execute_magic\" != \"$magic\"; then
 +      # Run the actual program with our arguments.
++"
++	case $host in
++	  # win32 systems need to use the prog path for dll
++	  # lookup to work
++	*-*-cygwin*)
++	  $echo >> $output "\
++      exec \$progdir/\$program \${1+\"\$@\"}
++"
++	  ;;
 +
++	# Backslashes separate directories on plain windows
++	*-*-mingw | *-*-os2*)
++	  $echo >> $output "\
++      exec \$progdir\\\\\$program \${1+\"\$@\"}
++"
++	  ;;
++
++	*)
++	  $echo >> $output "\
 +      # Export the path to the program.
 +      PATH=\"\$progdir:\$PATH\"
 +      export PATH
 +
 +      exec \$program \${1+\"\$@\"}
-+
++"
++	  ;;
++	esac
++	$echo >> $output "\
 +      \$echo \"\$0: cannot exec \$program \${1+\"\$@\"}\"
 +      exit 1
 +    fi
@@ -9760,45 +14482,135 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +  fi
 +fi\
 +"
-+        chmod +x $output
++	chmod +x $output
 +      fi
 +      exit 0
 +      ;;
 +    esac
 +
 +    # See if we need to build an old-fashioned archive.
-+    if test "$build_old_libs" = "yes"; then
-+      # Transform .lo files to .o files.
-+      oldobjs="$objs"`$echo "X$libobjs " | $Xsed -e 's/[^   ]*\.a //g' -e 's/\.lo /.o /g' -e 's/ $//g'`
++    for oldlib in $oldlibs; do
++
++      if test "$build_libtool_libs" = convenience; then
++	oldobjs="$libobjs_save"
++	addlibs="$convenience"
++	build_libtool_libs=no
++      else
++	if test "$build_libtool_libs" = module; then
++	  oldobjs="$libobjs_save"
++	  build_libtool_libs=no
++	else
++	  oldobjs="$objs "`$echo "X$libobjs_save" | $SP2NL | $Xsed -e '/\.'${libext}'$/d' -e '/\.lib$/d' -e "$lo2o" | $NL2SP`
++	fi
++	addlibs="$old_convenience"
++      fi
++
++      if test -n "$addlibs"; then
++	gentop="$output_objdir/${outputname}x"
++	$show "${rm}r $gentop"
++	$run ${rm}r "$gentop"
++	$show "mkdir $gentop"
++	$run mkdir "$gentop"
++	status=$?
++	if test $status -ne 0 && test ! -d "$gentop"; then
++	  exit $status
++	fi
++	generated="$generated $gentop"
++	  
++	# Add in members from convenience archives.
++	for xlib in $addlibs; do
++	  # Extract the objects.
++	  case "$xlib" in
++	  [\\/]* | [A-Za-z]:[\\/]*) xabs="$xlib" ;;
++	  *) xabs=`pwd`"/$xlib" ;;
++	  esac
++	  xlib=`$echo "X$xlib" | $Xsed -e 's%^.*/%%'`
++	  xdir="$gentop/$xlib"
++
++	  $show "${rm}r $xdir"
++	  $run ${rm}r "$xdir"
++	  $show "mkdir $xdir"
++	  $run mkdir "$xdir"
++	  status=$?
++	  if test $status -ne 0 && test ! -d "$xdir"; then
++	    exit $status
++	  fi
++	  $show "(cd $xdir && $AR x $xabs)"
++	  $run eval "(cd \$xdir && $AR x \$xabs)" || exit $?
++
++	  oldobjs="$oldobjs "`find $xdir -name \*.${objext} -print -o -name \*.lo -print | $NL2SP`
++	done
++      fi
 +
 +      # Do each command in the archive commands.
 +      if test -n "$old_archive_from_new_cmds" && test "$build_libtool_libs" = yes; then
 +	eval cmds=\"$old_archive_from_new_cmds\"
 +      else
++	# Ensure that we have .o objects in place in case we decided
++	# not to build a shared library, and have fallen back to building
++	# static libs even though --disable-static was passed!
++	for oldobj in $oldobjs; do
++	  if test ! -f $oldobj; then
++	    xdir=`$echo "X$oldobj" | $Xsed -e 's%/[^/]*$%%'`
++	    if test "X$xdir" = "X$oldobj"; then
++	      xdir="."
++	    else
++	      xdir="$xdir"
++	    fi
++	    baseobj=`$echo "X$oldobj" | $Xsed -e 's%^.*/%%'`
++	    obj=`$echo "X$baseobj" | $Xsed -e "$o2lo"`
++	    $show "(cd $xdir && ${LN_S} $obj $baseobj)"
++	    $run eval '(cd $xdir && ${LN_S} $obj $baseobj)' || exit $?
++	  fi
++	done
++
 +	eval cmds=\"$old_archive_cmds\"
 +      fi
-+      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=';'
++      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
 +      for cmd in $cmds; do
-+        IFS="$save_ifs"
-+        $show "$cmd"
-+        $run eval "$cmd" || exit $?
++	IFS="$save_ifs"
++	$show "$cmd"
++	$run eval "$cmd" || exit $?
 +      done
 +      IFS="$save_ifs"
++    done
++
++    if test -n "$generated"; then
++      $show "${rm}r$generated"
++      $run ${rm}r$generated
 +    fi
 +
 +    # Now create the libtool archive.
 +    case "$output" in
 +    *.la)
 +      old_library=
-+      test "$build_old_libs" = yes && old_library="$libname.a"
-+
++      test "$build_old_libs" = yes && old_library="$libname.$libext"
 +      $show "creating $output"
++
++      if test -n "$xrpath"; then
++	temp_xrpath=
++	for libdir in $xrpath; do
++	  temp_xrpath="$temp_xrpath -R$libdir"
++	done
++	dependency_libs="$temp_xrpath $dependency_libs"
++      fi
 +
 +      # Only create the output if not a dry run.
 +      if test -z "$run"; then
-+        $echo > $output "\
-+# $output - a libtool library file
-+# Generated by ltmain.sh - GNU $PACKAGE $VERSION
++	for installed in no yes; do
++	  if test "$installed" = yes; then
++	    if test -z "$install_libdir"; then
++	      break
++	    fi
++	    output="$output_objdir/$outputname"i
++	  fi
++	  $rm $output
++	  $echo > $output "\
++# $outputname - a libtool library file
++# Generated by $PROGRAM - GNU $PACKAGE $VERSION$TIMESTAMP
++#
++# Please DO NOT delete this file!
++# It is necessary for linking the library.
 +
 +# The name that we can dlopen(3).
 +dlname='$dlname'
@@ -9817,15 +14629,19 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +age=$age
 +revision=$revision
 +
++# Is this an already installed library?
++installed=$installed
++
 +# Directory that this library needs to be installed in:
 +libdir='$install_libdir'\
 +"
++	done
 +      fi
 +
 +      # Do a symbolic link so that the libtool archive can be found in
 +      # LD_LIBRARY_PATH before the program is installed.
-+      $show "(cd $objdir && $LN_S ../$output $output)"
-+      $run eval "(cd $objdir && $LN_S ../$output $output)" || exit 1
++      $show "(cd $output_objdir && $rm $outputname && $LN_S ../$outputname $outputname)"
++      $run eval "(cd $output_objdir && $rm $outputname && $LN_S ../$outputname $outputname)" || exit $?
 +      ;;
 +    esac
 +    exit 0
@@ -9835,9 +14651,9 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +  install)
 +    modename="$modename: install"
 +
-+    # There may be an optional /bin/sh argument at the beginning of
++    # There may be an optional sh(1) argument at the beginning of
 +    # install_prog (especially on Windows NT).
-+    if test "$nonopt" = "$SHELL"; then
++    if test "$nonopt" = "$SHELL" || test "$nonopt" = /bin/sh; then
 +      # Aesthetically quote it.
 +      arg=`$echo "X$nonopt" | $Xsed -e "$sed_quote_subst"`
 +      case "$arg" in
@@ -9869,14 +14685,14 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +    opts=
 +    prev=
 +    install_type=
-+    isdir=
++    isdir=no
 +    stripme=
 +    for arg
 +    do
 +      if test -n "$dest"; then
-+        files="$files $dest"
-+        dest="$arg"
-+        continue
++	files="$files $dest"
++	dest="$arg"
++	continue
 +      fi
 +
 +      case "$arg" in
@@ -9886,20 +14702,20 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +      -m) prev="-m" ;;
 +      -o) prev="-o" ;;
 +      -s)
-+        stripme=" -s"
-+        continue
-+        ;;
++	stripme=" -s"
++	continue
++	;;
 +      -*) ;;
 +
 +      *)
-+        # If the previous option needed an argument, then skip it.
-+        if test -n "$prev"; then
-+          prev=
-+        else
-+          dest="$arg"
-+          continue
-+        fi
-+        ;;
++	# If the previous option needed an argument, then skip it.
++	if test -n "$prev"; then
++	  prev=
++	else
++	  dest="$arg"
++	  continue
++	fi
++	;;
 +      esac
 +
 +      # Aesthetically quote the argument.
@@ -9926,9 +14742,9 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +    if test -z "$files"; then
 +      if test -z "$dest"; then
-+        $echo "$modename: no file or destination specified" 1>&2
++	$echo "$modename: no file or destination specified" 1>&2
 +      else
-+        $echo "$modename: you must specify a destination" 1>&2
++	$echo "$modename: you must specify a destination" 1>&2
 +      fi
 +      $echo "$help" 1>&2
 +      exit 1
@@ -9939,7 +14755,7 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +    # Check to see that the destination is a directory.
 +    test -d "$dest" && isdir=yes
-+    if test -n "$isdir"; then
++    if test "$isdir" = yes; then
 +      destdir="$dest"
 +      destname=
 +    else
@@ -9950,23 +14766,23 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +      # Not a directory, so check to see that there is only one file specified.
 +      set dummy $files
 +      if test $# -gt 2; then
-+        $echo "$modename: \`$dest' is not a directory" 1>&2
-+        $echo "$help" 1>&2
-+        exit 1
++	$echo "$modename: \`$dest' is not a directory" 1>&2
++	$echo "$help" 1>&2
++	exit 1
 +      fi
 +    fi
 +    case "$destdir" in
-+    /* | [A-Za-z]:\\*) ;;
++    [\\/]* | [A-Za-z]:[\\/]*) ;;
 +    *)
 +      for file in $files; do
-+        case "$file" in
-+        *.lo) ;;
-+        *)
-+          $echo "$modename: \`$destdir' must be an absolute directory name" 1>&2
-+          $echo "$help" 1>&2
-+          exit 1
-+          ;;
-+        esac
++	case "$file" in
++	*.lo) ;;
++	*)
++	  $echo "$modename: \`$destdir' must be an absolute directory name" 1>&2
++	  $echo "$help" 1>&2
++	  exit 1
++	  ;;
++	esac
 +      done
 +      ;;
 +    esac
@@ -9982,209 +14798,214 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +      # Do each installation.
 +      case "$file" in
-+      *.a)
-+        # Do the static libraries later.
-+        staticlibs="$staticlibs $file"
-+        ;;
++      *.a | *.lib)
++	# Do the static libraries later.
++	staticlibs="$staticlibs $file"
++	;;
 +
 +      *.la)
-+        # Check to see that this really is a libtool archive.
-+        if (sed -e '2q' $file | egrep '^# Generated by ltmain\.sh') >/dev/null 2>&1; then :
-+        else
-+          $echo "$modename: \`$file' is not a valid libtool archive" 1>&2
-+          $echo "$help" 1>&2
-+          exit 1
-+        fi
++	# Check to see that this really is a libtool archive.
++	if (sed -e '2q' $file | egrep "^# Generated by .*$PACKAGE") >/dev/null 2>&1; then :
++	else
++	  $echo "$modename: \`$file' is not a valid libtool archive" 1>&2
++	  $echo "$help" 1>&2
++	  exit 1
++	fi
 +
-+        library_names=
-+        old_library=
-+        # If there is no directory component, then add one.
-+        case "$file" in
-+        */* | *\\*) . $file ;;
-+        *) . ./$file ;;
-+        esac
++	library_names=
++	old_library=
++	# If there is no directory component, then add one.
++	case "$file" in
++	*/* | *\\*) . $file ;;
++	*) . ./$file ;;
++	esac
 +
-+        # Add the libdir to current_libdirs if it is the destination.
-+        if test "X$destdir" = "X$libdir"; then
-+          case "$current_libdirs " in
-+          *" $libdir "*) ;;
-+          *) current_libdirs="$current_libdirs $libdir" ;;
-+          esac
-+        else
-+          # Note the libdir as a future libdir.
-+          case "$future_libdirs " in
-+          *" $libdir "*) ;;
-+          *) future_libdirs="$future_libdirs $libdir" ;;
-+          esac
-+        fi
++	# Add the libdir to current_libdirs if it is the destination.
++	if test "X$destdir" = "X$libdir"; then
++	  case "$current_libdirs " in
++	  *" $libdir "*) ;;
++	  *) current_libdirs="$current_libdirs $libdir" ;;
++	  esac
++	else
++	  # Note the libdir as a future libdir.
++	  case "$future_libdirs " in
++	  *" $libdir "*) ;;
++	  *) future_libdirs="$future_libdirs $libdir" ;;
++	  esac
++	fi
 +
-+        dir="`$echo "X$file" | $Xsed -e 's%/[^/]*$%%'`/"
-+        test "X$dir" = "X$file/" && dir=
-+        dir="$dir$objdir"
++	dir="`$echo "X$file" | $Xsed -e 's%/[^/]*$%%'`/"
++	test "X$dir" = "X$file/" && dir=
++	dir="$dir$objdir"
 +
-+        # See the names of the shared library.
-+        set dummy $library_names
-+        if test -n "$2"; then
-+          realname="$2"
-+          shift
-+          shift
++	# See the names of the shared library.
++	set dummy $library_names
++	if test -n "$2"; then
++	  realname="$2"
++	  shift
++	  shift
 +
-+          # Install the shared library and build the symlinks.
-+          $show "$install_prog $dir/$realname $destdir/$realname"
-+          $run eval "$install_prog $dir/$realname $destdir/$realname" || exit $?
-+          test "X$dlname" = "X$realname" && dlname=
++	  # Install the shared library and build the symlinks.
++	  $show "$install_prog $dir/$realname $destdir/$realname"
++	  $run eval "$install_prog $dir/$realname $destdir/$realname" || exit $?
 +
-+          if test $# -gt 0; then
-+            # Delete the old symlinks.
-+            rmcmd="$rm"
-+            for linkname
-+            do
-+              rmcmd="$rmcmd $destdir/$linkname"
-+            done
-+            $show "$rmcmd"
-+            $run $rmcmd
++	  if test $# -gt 0; then
++	    # Delete the old symlinks, and create new ones.
++	    for linkname
++	    do
++	      if test "$linkname" != "$realname"; then
++		$show "(cd $destdir && $rm $linkname && $LN_S $realname $linkname)"
++		$run eval "(cd $destdir && $rm $linkname && $LN_S $realname $linkname)"
++	      fi
++	    done
++	  fi
 +
-+            # ... and create new ones.
-+            for linkname
-+            do
-+              test "X$dlname" = "X$linkname" && dlname=
-+              $show "(cd $destdir && $LN_S $realname $linkname)"
-+              $run eval "(cd $destdir && $LN_S $realname $linkname)"
-+            done
-+          fi
++	  # Do each command in the postinstall commands.
++	  lib="$destdir/$realname"
++	  eval cmds=\"$postinstall_cmds\"
++	  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
++	  for cmd in $cmds; do
++	    IFS="$save_ifs"
++	    $show "$cmd"
++	    $run eval "$cmd" || exit $?
++	  done
++	  IFS="$save_ifs"
++	fi
 +
-+          if test -n "$dlname"; then
-+            # Install the dynamically-loadable library.
-+            $show "$install_prog $dir/$dlname $destdir/$dlname"
-+            $run eval "$install_prog $dir/$dlname $destdir/$dlname" || exit $?
-+          fi
++	# Install the pseudo-library for information purposes.
++	name=`$echo "X$file" | $Xsed -e 's%^.*/%%'`
++	instname="$dir/$name"i
++	$show "$install_prog $instname $destdir/$name"
++	$run eval "$install_prog $instname $destdir/$name" || exit $?
 +
-+          # Do each command in the postinstall commands.
-+          lib="$destdir/$realname"
-+          eval cmds=\"$postinstall_cmds\"
-+          IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=';'
-+          for cmd in $cmds; do
-+            IFS="$save_ifs"
-+            $show "$cmd"
-+            $run eval "$cmd" || exit $?
-+          done
-+          IFS="$save_ifs"
-+        fi
-+
-+        # Install the pseudo-library for information purposes.
-+        name=`$echo "X$file" | $Xsed -e 's%^.*/%%'`
-+        $show "$install_prog $file $destdir/$name"
-+        $run eval "$install_prog $file $destdir/$name" || exit $?
-+
-+        # Maybe install the static library, too.
-+        test -n "$old_library" && staticlibs="$staticlibs $dir/$old_library"
-+        ;;
++	# Maybe install the static library, too.
++	test -n "$old_library" && staticlibs="$staticlibs $dir/$old_library"
++	;;
 +
 +      *.lo)
-+        # Install (i.e. copy) a libtool object.
++	# Install (i.e. copy) a libtool object.
 +
-+        # Figure out destination file name, if it wasn't already specified.
-+        if test -n "$destname"; then
-+          destfile="$destdir/$destname"
-+        else
-+          destfile=`$echo "X$file" | $Xsed -e 's%^.*/%%'`
-+          destfile="$destdir/$destfile"
-+        fi
++	# Figure out destination file name, if it wasn't already specified.
++	if test -n "$destname"; then
++	  destfile="$destdir/$destname"
++	else
++	  destfile=`$echo "X$file" | $Xsed -e 's%^.*/%%'`
++	  destfile="$destdir/$destfile"
++	fi
 +
-+        # Deduce the name of the destination old-style object file.
-+        case "$destfile" in
-+        *.lo)
-+          staticdest=`$echo "X$destfile" | $Xsed -e 's/\.lo$/\.o/'`
-+          ;;
-+        *.o)
-+          staticdest="$destfile"
-+          destfile=
-+          ;;
-+        *)
-+          $echo "$modename: cannot copy a libtool object to \`$destfile'" 1>&2
-+          $echo "$help" 1>&2
-+          exit 1
-+          ;;
-+        esac
++	# Deduce the name of the destination old-style object file.
++	case "$destfile" in
++	*.lo)
++	  staticdest=`$echo "X$destfile" | $Xsed -e "$lo2o"`
++	  ;;
++	*.o | *.obj)
++	  staticdest="$destfile"
++	  destfile=
++	  ;;
++	*)
++	  $echo "$modename: cannot copy a libtool object to \`$destfile'" 1>&2
++	  $echo "$help" 1>&2
++	  exit 1
++	  ;;
++	esac
 +
-+        # Install the libtool object if requested.
-+        if test -n "$destfile"; then
-+          $show "$install_prog $file $destfile"
-+          $run eval "$install_prog $file $destfile" || exit $?
-+        fi
++	# Install the libtool object if requested.
++	if test -n "$destfile"; then
++	  $show "$install_prog $file $destfile"
++	  $run eval "$install_prog $file $destfile" || exit $?
++	fi
 +
-+        # Install the old object if enabled.
-+        if test "$build_old_libs" = yes; then
-+          # Deduce the name of the old-style object file.
-+          staticobj=`$echo "X$file" | $Xsed -e 's/\.lo$/\.o/'`
++	# Install the old object if enabled.
++	if test "$build_old_libs" = yes; then
++	  # Deduce the name of the old-style object file.
++	  staticobj=`$echo "X$file" | $Xsed -e "$lo2o"`
 +
-+          $show "$install_prog $staticobj $staticdest"
-+          $run eval "$install_prog \$staticobj \$staticdest" || exit $?
-+        fi
-+        exit 0
-+        ;;
++	  $show "$install_prog $staticobj $staticdest"
++	  $run eval "$install_prog \$staticobj \$staticdest" || exit $?
++	fi
++	exit 0
++	;;
 +
 +      *)
-+        # Do a test to see if this is really a libtool program.
-+        if (sed -e '4q' $file | egrep '^# Generated by ltmain\.sh') >/dev/null 2>&1; then
-+          link_against_libtool_libs=
-+          finalize_command=
++	# Figure out destination file name, if it wasn't already specified.
++	if test -n "$destname"; then
++	  destfile="$destdir/$destname"
++	else
++	  destfile=`$echo "X$file" | $Xsed -e 's%^.*/%%'`
++	  destfile="$destdir/$destfile"
++	fi
 +
-+          # If there is no directory component, then add one.
-+          case "$file" in
-+          */* | *\\*) . $file ;;
-+          *) . ./$file ;;
-+          esac
++	# Do a test to see if this is really a libtool program.
++	if (sed -e '4q' $file | egrep "^# Generated by .*$PACKAGE") >/dev/null 2>&1; then
++	  link_against_libtool_libs=
++	  relink_command=
 +
-+          # Check the variables that should have been set.
-+          if test -z "$link_against_libtool_libs" || test -z "$finalize_command"; then
-+            $echo "$modename: invalid libtool wrapper script \`$file'" 1>&2
-+            exit 1
-+          fi
++	  # If there is no directory component, then add one.
++	  case "$file" in
++	  */* | *\\*) . $file ;;
++	  *) . ./$file ;;
++	  esac
 +
-+          finalize=yes
-+          for lib in $link_against_libtool_libs; do
-+            # Check to see that each library is installed.
-+            libdir=
-+            if test -f "$lib"; then
-+              # If there is no directory component, then add one.
-+              case "$lib" in
-+              */* | *\\*) . $lib ;;
-+              *) . ./$lib ;;
-+              esac
-+            fi
-+            libfile="$libdir/`$echo "X$lib" | $Xsed -e 's%^.*/%%g'`"
-+            if test -z "$libdir"; then
-+              $echo "$modename: warning: \`$lib' contains no -rpath information" 1>&2
-+            elif test -f "$libfile"; then :
-+            else
-+              $echo "$modename: warning: \`$lib' has not been installed in \`$libdir'" 1>&2
-+              finalize=no
-+            fi
-+          done
++	  # Check the variables that should have been set.
++	  if test -z "$link_against_libtool_libs"; then
++	    $echo "$modename: invalid libtool wrapper script \`$file'" 1>&2
++	    exit 1
++	  fi
 +
-+          if test "$hardcode_action" = relink; then
-+            if test "$finalize" = yes; then
-+              $echo "$modename: warning: relinking \`$file' on behalf of your buggy system linker" 1>&2
-+              $show "$finalize_command"
-+              if $run eval "$finalize_command"; then :
-+              else
-+                $echo "$modename: error: relink \`$file' with the above command before installing it" 1>&2
-+                continue
-+              fi
-+              file="$objdir/$file"T
-+            else
-+              $echo "$modename: warning: cannot relink \`$file' on behalf of your buggy system linker" 1>&2
-+            fi
-+          else
-+            # Install the binary that we compiled earlier.
++	  finalize=yes
++	  for lib in $link_against_libtool_libs; do
++	    # Check to see that each library is installed.
++	    libdir=
++	    if test -f "$lib"; then
++	      # If there is no directory component, then add one.
++	      case "$lib" in
++	      */* | *\\*) . $lib ;;
++	      *) . ./$lib ;;
++	      esac
++	    fi
++	    libfile="$libdir/`$echo "X$lib" | $Xsed -e 's%^.*/%%g'`"
++	    if test -n "$libdir" && test ! -f "$libfile"; then
++	      $echo "$modename: warning: \`$lib' has not been installed in \`$libdir'" 1>&2
++	      finalize=no
++	    fi
++	  done
++
++	  outputname=
++	  if test "$fast_install" = no && test -n "$relink_command"; then
++	    if test "$finalize" = yes && test -z "$run"; then
++	      tmpdir="/tmp"
++	      test -n "$TMPDIR" && tmpdir="$TMPDIR"
++	      tmpdir="$tmpdir/libtool-$$"
++	      if $mkdir -p "$tmpdir" && chmod 700 "$tmpdir"; then :
++	      else
++		$echo "$modename: error: cannot create temporary directory \`$tmpdir'" 1>&2
++		continue
++	      fi
++	      outputname="$tmpdir/$file"
++	      # Replace the output file specification.
++	      relink_command=`$echo "X$relink_command" | $Xsed -e 's%@OUTPUT@%'"$outputname"'%g'`
++
++	      $show "$relink_command"
++	      if $run eval "$relink_command"; then :
++	      else
++		$echo "$modename: error: relink \`$file' with the above command before installing it" 1>&2
++		${rm}r "$tmpdir"
++		continue
++	      fi
++	      file="$outputname"
++	    else
++	      $echo "$modename: warning: cannot relink \`$file'" 1>&2
++	    fi
++	  else
++	    # Install the binary that we compiled earlier.
 +	    file=`$echo "X$file" | $Xsed -e "s%\([^/]*\)$%$objdir/\1%"`
-+          fi
-+        fi
++	  fi
++	fi
 +
-+        $show "$install_prog$stripme $file $dest"
-+        $run eval "$install_prog\$stripme \$file \$dest" || exit $?
-+        ;;
++	$show "$install_prog$stripme $file $destfile"
++	$run eval "$install_prog\$stripme \$file \$destfile" || exit $?
++	test -n "$outputname" && ${rm}r "$tmpdir"
++	;;
 +      esac
 +    done
 +
@@ -10199,11 +15020,11 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +      # Do each command in the postinstall commands.
 +      eval cmds=\"$old_postinstall_cmds\"
-+      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=';'
++      IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
 +      for cmd in $cmds; do
-+        IFS="$save_ifs"
-+        $show "$cmd"
-+        $run eval "$cmd" || exit $?
++	IFS="$save_ifs"
++	$show "$cmd"
++	$run eval "$cmd" || exit $?
 +      done
 +      IFS="$save_ifs"
 +    done
@@ -10226,43 +15047,49 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +  finish)
 +    modename="$modename: finish"
 +    libdirs="$nonopt"
++    admincmds=
 +
 +    if test -n "$finish_cmds$finish_eval" && test -n "$libdirs"; then
 +      for dir
 +      do
-+        libdirs="$libdirs $dir"
++	libdirs="$libdirs $dir"
 +      done
 +
 +      for libdir in $libdirs; do
 +	if test -n "$finish_cmds"; then
 +	  # Do each command in the finish commands.
 +	  eval cmds=\"$finish_cmds\"
-+          IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=';'
-+          for cmd in $cmds; do
-+            IFS="$save_ifs"
-+            $show "$cmd"
-+            $run eval "$cmd"
-+          done
-+          IFS="$save_ifs"
++	  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
++	  for cmd in $cmds; do
++	    IFS="$save_ifs"
++	    $show "$cmd"
++	    $run eval "$cmd" || admincmds="$admincmds
++       $cmd"
++	  done
++	  IFS="$save_ifs"
 +	fi
 +	if test -n "$finish_eval"; then
 +	  # Do the single finish_eval.
 +	  eval cmds=\"$finish_eval\"
-+	  $run eval "$cmds"
++	  $run eval "$cmds" || admincmds="$admincmds
++       $cmds"
 +	fi
 +      done
 +    fi
 +
-+    echo "------------------------------------------------------------------------------"
++    # Exit here if they wanted silent mode.
++    test "$show" = : && exit 0
++
++    echo "----------------------------------------------------------------------"
 +    echo "Libraries have been installed in:"
 +    for libdir in $libdirs; do
 +      echo "   $libdir"
 +    done
 +    echo
-+    echo "To link against installed libraries in a given directory, LIBDIR,"
-+    echo "you must use the \`-LLIBDIR' flag during linking."
-+    echo
-+    echo " You will also need to do one of the following:"
++    echo "If you ever happen to want to link against installed libraries"
++    echo "in a given directory, LIBDIR, you must either use libtool, and"
++    echo "specify the full pathname of the library, or use \`-LLIBDIR'"
++    echo "flag during linking and do at least one of the following:"
 +    if test -n "$shlibpath_var"; then
 +      echo "   - add LIBDIR to the \`$shlibpath_var' environment variable"
 +      echo "     during execution"
@@ -10277,13 +15104,16 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +      echo "   - use the \`$flag' linker flag"
 +    fi
++    if test -n "$admincmds"; then
++      echo "   - have your system administrator run these commands:$admincmds"
++    fi
 +    if test -f /etc/ld.so.conf; then
 +      echo "   - have your system administrator add LIBDIR to \`/etc/ld.so.conf'"
 +    fi
 +    echo
 +    echo "See any operating system documentation about shared libraries for"
 +    echo "more information, such as the ld(1) and ld.so(8) manual pages."
-+    echo "------------------------------------------------------------------------------"
++    echo "----------------------------------------------------------------------"
 +    exit 0
 +    ;;
 +
@@ -10301,8 +15131,7 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +    # Handle -dlopen flags immediately.
 +    for file in $execute_dlfiles; do
-+      if test -f "$file"; then :
-+      else
++      if test ! -f "$file"; then
 +	$echo "$modename: \`$file' is not a file" 1>&2
 +	$echo "$help" 1>&2
 +	exit 1
@@ -10311,22 +15140,22 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +      dir=
 +      case "$file" in
 +      *.la)
-+        # Check to see that this really is a libtool archive.
-+        if (sed -e '2q' $file | egrep '^# Generated by ltmain\.sh') >/dev/null 2>&1; then :
-+        else
-+          $echo "$modename: \`$lib' is not a valid libtool archive" 1>&2
-+          $echo "$help" 1>&2
-+          exit 1
-+        fi
++	# Check to see that this really is a libtool archive.
++	if (sed -e '2q' $file | egrep "^# Generated by .*$PACKAGE") >/dev/null 2>&1; then :
++	else
++	  $echo "$modename: \`$lib' is not a valid libtool archive" 1>&2
++	  $echo "$help" 1>&2
++	  exit 1
++	fi
 +
 +	# Read the libtool library.
 +	dlname=
 +	library_names=
 +
-+        # If there is no directory component, then add one.
++	# If there is no directory component, then add one.
 +	case "$file" in
 +	*/* | *\\*) . $file ;;
-+        *) . ./$file ;;
++	*) . ./$file ;;
 +	esac
 +
 +	# Skip this library if it cannot be dlopened.
@@ -10355,7 +15184,7 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +      *)
 +	$echo "$modename: warning \`-dlopen' is ignored for non-libtool libraries and objects" 1>&2
-+        continue
++	continue
 +	;;
 +      esac
 +
@@ -10382,8 +15211,8 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +      case "$file" in
 +      -*) ;;
 +      *)
-+        # Do a test to see if this is really a libtool program.
-+        if (sed -e '4q' $file | egrep '^# Generated by ltmain\.sh') >/dev/null 2>&1; then
++	# Do a test to see if this is really a libtool program.
++	if (sed -e '4q' $file | egrep "^# Generated by .*$PACKAGE") >/dev/null 2>&1; then
 +	  # If there is no directory component, then add one.
 +	  case "$file" in
 +	  */* | *\\*) . $file ;;
@@ -10393,7 +15222,7 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +	  # Transform arg to wrapped name.
 +	  file="$progdir/$program"
 +	fi
-+        ;;
++	;;
 +      esac
 +      # Quote arguments (to preserve shell metacharacters).
 +      file=`$echo "X$file" | $Xsed -e "$sed_quote_subst"`
@@ -10401,8 +15230,18 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +    done
 +
 +    if test -z "$run"; then
-+      # Export the shlibpath_var.
-+      eval "export $shlibpath_var"
++      if test -n "$shlibpath_var"; then
++        # Export the shlibpath_var.
++        eval "export $shlibpath_var"
++      fi
++
++      # Restore saved enviroment variables
++      if test "${save_LC_ALL+set}" = set; then
++	LC_ALL="$save_LC_ALL"; export LC_ALL
++      fi
++      if test "${save_LANG+set}" = set; then
++	LANG="$save_LANG"; export LANG
++      fi
 +
 +      # Now actually exec the command.
 +      eval "exec \$cmd$args"
@@ -10411,8 +15250,10 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +      exit 1
 +    else
 +      # Display what would be done.
-+      eval "\$echo \"\$shlibpath_var=\$$shlibpath_var\""
-+      $echo "export $shlibpath_var"
++      if test -n "$shlibpath_var"; then
++        eval "\$echo \"\$shlibpath_var=\$$shlibpath_var\""
++        $echo "export $shlibpath_var"
++      fi
 +      $echo "$cmd$args"
 +      exit 0
 +    fi
@@ -10447,17 +15288,15 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +      case "$name" in
 +      *.la)
-+        # Possibly a libtool archive, so verify it.
-+        if (sed -e '2q' $file | egrep '^# Generated by ltmain\.sh') >/dev/null 2>&1; then
-+          . $dir/$name
++	# Possibly a libtool archive, so verify it.
++	if (sed -e '2q' $file | egrep "^# Generated by .*$PACKAGE") >/dev/null 2>&1; then
++	  . $dir/$name
 +
-+          # Delete the libtool libraries and symlinks.
-+          for n in $library_names; do
-+            rmfiles="$rmfiles $dir/$n"
-+            test "X$n" = "X$dlname" && dlname=
-+          done
-+          test -n "$dlname" && rmfiles="$rmfiles $dir/$dlname"
-+          test -n "$old_library" && rmfiles="$rmfiles $dir/$old_library"
++	  # Delete the libtool libraries and symlinks.
++	  for n in $library_names; do
++	    rmfiles="$rmfiles $dir/$n"
++	  done
++	  test -n "$old_library" && rmfiles="$rmfiles $dir/$old_library"
 +
 +	  $show "$rm $rmfiles"
 +	  $run $rm $rmfiles
@@ -10465,7 +15304,7 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +	  if test -n "$library_names"; then
 +	    # Do each command in the postuninstall commands.
 +	    eval cmds=\"$postuninstall_cmds\"
-+	    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=';'
++	    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
 +	    for cmd in $cmds; do
 +	      IFS="$save_ifs"
 +	      $show "$cmd"
@@ -10474,10 +15313,10 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +	    IFS="$save_ifs"
 +	  fi
 +
-+          if test -n "$old_library"; then
++	  if test -n "$old_library"; then
 +	    # Do each command in the old_postuninstall commands.
 +	    eval cmds=\"$old_postuninstall_cmds\"
-+	    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS=';'
++	    IFS="${IFS= 	}"; save_ifs="$IFS"; IFS='~'
 +	    for cmd in $cmds; do
 +	      IFS="$save_ifs"
 +	      $show "$cmd"
@@ -10486,21 +15325,21 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +	    IFS="$save_ifs"
 +	  fi
 +
-+          # FIXME: should reinstall the best remaining shared library.
-+        fi
-+        ;;
++	  # FIXME: should reinstall the best remaining shared library.
++	fi
++	;;
 +
 +      *.lo)
-+        if test "$build_old_libs" = yes; then
-+          oldobj=`$echo "X$name" | $Xsed -e 's/\.lo$/\.o/'`
-+          rmfiles="$rmfiles $dir/$oldobj"
-+        fi
++	if test "$build_old_libs" = yes; then
++	  oldobj=`$echo "X$name" | $Xsed -e "$lo2o"`
++	  rmfiles="$rmfiles $dir/$oldobj"
++	fi
 +	$show "$rm $rmfiles"
 +	$run $rm $rmfiles
-+        ;;
++	;;
 +
 +      *)
-+      	$show "$rm $rmfiles"
++	$show "$rm $rmfiles"
 +	$run $rm $rmfiles
 +	;;
 +      esac
@@ -10527,8 +15366,10 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +
 +Provide generalized library-building support services.
 +
++    --config          show all configuration variables
++    --debug           enable verbose shell tracing
 +-n, --dry-run         display commands without modifying any files
-+    --features        display configuration information and exit
++    --features        display basic configuration information and exit
 +    --finish          same as \`--mode=finish'
 +    --help            display this help message and exit
 +    --mode=MODE       use operation mode MODE [default=inferred from MODE-ARGS]
@@ -10555,6 +15396,11 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +"Usage: $modename [OPTION]... --mode=compile COMPILE-COMMAND... SOURCEFILE
 +
 +Compile a source file into a libtool library object.
++
++This mode accepts the following additional options:
++
++  -o OUTPUT-FILE    set the output file name to OUTPUT-FILE
++  -static           always build a \`.o' file suitable for static linking
 +
 +COMPILE-COMMAND is a command to be used in creating a \`standard' object file
 +from the given SOURCEFILE.
@@ -10622,18 +15468,25 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +The following components of LINK-COMMAND are treated specially:
 +
 +  -all-static       do not do any dynamic linking at all
++  -avoid-version    do not add a version suffix if possible
 +  -dlopen FILE      \`-dlpreopen' FILE if it cannot be dlopened at runtime
-+  -dlpreopen FILE   link in FILE and add its symbols to dld_preloaded_symbols
++  -dlpreopen FILE   link in FILE and add its symbols to lt_preloaded_symbols
 +  -export-dynamic   allow symbols from OUTPUT-FILE to be resolved with dlsym(3)
++  -export-symbols SYMFILE
++		    try to export only the symbols listed in SYMFILE
++  -export-symbols-regex REGEX
++		    try to export only the symbols matching REGEX
 +  -LLIBDIR          search LIBDIR for required installed libraries
 +  -lNAME            OUTPUT-FILE requires the installed library libNAME
++  -module           build a library that can dlopened
 +  -no-undefined     declare that a library does not refer to external symbols
 +  -o OUTPUT-FILE    create OUTPUT-FILE from the specified objects
 +  -release RELEASE  specify package release information
 +  -rpath LIBDIR     the created library will eventually be installed in LIBDIR
++  -R[ ]LIBDIR       add LIBDIR to the runtime path of programs and libraries
 +  -static           do not do any dynamic linking of libtool libraries
 +  -version-info CURRENT[:REVISION[:AGE]]
-+                    specify library version info [each variable defaults to 0]
++		    specify library version info [each variable defaults to 0]
 +
 +All other options (arguments beginning with \`-') are ignored.
 +
@@ -10641,18 +15494,19 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +treated as uninstalled libtool libraries, other files are standard or library
 +object files.
 +
-+If the OUTPUT-FILE ends in \`.la', then a libtool library is created, only
-+library objects (\`.lo' files) may be specified, and \`-rpath' is required.
++If the OUTPUT-FILE ends in \`.la', then a libtool library is created,
++only library objects (\`.lo' files) may be specified, and \`-rpath' is
++required, except when creating a convenience library.
 +
-+If OUTPUT-FILE ends in \`.a', then a standard library is created using \`ar'
-+and \`ranlib'.
++If OUTPUT-FILE ends in \`.a' or \`.lib', then a standard library is created
++using \`ar' and \`ranlib', or on Windows using \`lib'.
 +
-+If OUTPUT-FILE ends in \`.lo' or \`.o', then a reloadable object file is
-+created, otherwise an executable program is created."
++If OUTPUT-FILE ends in \`.lo' or \`.${objext}', then a reloadable object file
++is created, otherwise an executable program is created."
 +  ;;
 +
 +uninstall)
-+  $echo
++  $echo \
 +"Usage: $modename [OPTION]... --mode=uninstall RM [RM-OPTION]... FILE...
 +
 +Remove libraries from an installation directory.
@@ -10681,9 +15535,56 @@ diff -Naur gd-1.8.4/ltmain.sh gd-1.8.4.patch/ltmain.sh
 +# mode:shell-script
 +# sh-indentation:2
 +# End:
+diff -Naur gd-1.8.4/mathmake.c gd-1.8.4.patch/mathmake.c
+--- gd-1.8.4/mathmake.c	Tue Feb  6 14:44:02 2001
++++ gd-1.8.4.patch/mathmake.c	Wed Dec 31 19:00:00 1969
+@@ -1,43 +0,0 @@
+-#include <stdio.h>
+-#include <math.h>
+-
+-#define scale 1024
+-
+-int basis[91];
+-int cost[360];
+-
+-main(void) {
+-	int i;
+-	printf("#define costScale %d\n", scale);
+-	printf("int cost[] = {\n  ");
+-	for (i=0; (i <= 90); i++) {
+-		basis[i] = cos((double)i * .0174532925) * scale;
+-	}
+-	for (i=0; (i < 90); i++) {
+-		printf("%d,\n  ", cost[i] = basis[i]);
+-	}
+-	for (i=90; (i < 180); i++) {
+-		printf("%d,\n  ", cost[i] = -basis[180-i]);
+-	}
+-	for (i=180; (i < 270); i++) {
+-		printf("%d,\n  ", cost[i] = -basis[i-180]);
+-	}
+-	for (i=270; (i < 359); i++) {
+-		printf("%d,\n  ", cost[i] = basis[360-i]);
+-	}
+-	printf("%d\n", cost[359] = basis[1]);
+-	printf("};\n");
+-	printf("#define sintScale %d\n", scale);
+-	printf("int sint[] = {\n  ");
+-	for (i=0; (i<360); i++) {
+-		int val;
+-		val = cost[(i + 270) % 360];
+-		if (i != 359) {
+-			printf("%d,\n  ", val);
+-		} else {
+-			printf("%d\n", val);
+-		}
+-	}
+-	printf("};\n");
+-}
+-		
 diff -Naur gd-1.8.4/missing gd-1.8.4.patch/missing
 --- gd-1.8.4/missing	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/missing	Tue Sep 25 22:50:56 2001
++++ gd-1.8.4.patch/missing	Sat Mar 31 22:52:12 2001
 @@ -0,0 +1,188 @@
 +#! /bin/sh
 +# Common stub for a few missing GNU programs while installing.
@@ -10875,7 +15776,7 @@ diff -Naur gd-1.8.4/missing gd-1.8.4.patch/missing
 +exit 0
 diff -Naur gd-1.8.4/mkinstalldirs gd-1.8.4.patch/mkinstalldirs
 --- gd-1.8.4/mkinstalldirs	Wed Dec 31 19:00:00 1969
-+++ gd-1.8.4.patch/mkinstalldirs	Tue Sep 25 22:50:53 2001
++++ gd-1.8.4.patch/mkinstalldirs	Sat Mar 31 22:52:12 2001
 @@ -0,0 +1,40 @@
 +#! /bin/sh
 +# mkinstalldirs --- make directory hierarchy
@@ -10883,7 +15784,7 @@ diff -Naur gd-1.8.4/mkinstalldirs gd-1.8.4.patch/mkinstalldirs
 +# Created: 1993-05-16
 +# Public domain
 +
-+# $Id: patch_gd.pl,v 1.1.1.1 2001/12/06 23:25:48 lstein Exp $
++# $Id: patch_gd.pl,v 1.2 2002/06/12 02:01:47 lstein Exp $
 +
 +errstatus=0
 +
@@ -10917,6 +15818,2949 @@ diff -Naur gd-1.8.4/mkinstalldirs gd-1.8.4.patch/mkinstalldirs
 +exit $errstatus
 +
 +# mkinstalldirs ends here
+diff -Naur gd-1.8.4/readme.txt gd-1.8.4.patch/readme.txt
+--- gd-1.8.4/readme.txt	Tue Feb  6 14:44:03 2001
++++ gd-1.8.4.patch/readme.txt	Wed Dec 31 19:00:00 1969
+@@ -1,2939 +0,0 @@
+-
+-                                   gd 1.8.4
+-                                       
+-A graphics library for fast image creation
+-
+-Follow this link to the latest version of this document.
+-
+-     _HEY! READ THIS!_ gd 1.8.4 creates PNG, JPEG and WBMP images, not
+-     GIF images. This is a good thing. PNG is a more compact format, and
+-     full compression is available. JPEG works well with photographic
+-     images, and is still more compatible with the major Web browsers
+-     than even PNG is. WBMP is intended for wireless devices (not
+-     regular web browsers). Existing code will need modification to call
+-     gdImagePng or gdImageJpeg instead of gdImageGif. _Please do not ask
+-     us to send you the old GIF version of GD._ Unisys holds a patent on
+-     the LZW compression algorithm, which is used in fully compressed
+-     GIF images. The best solution is to move to legally unencumbered,
+-     well-compressed, modern image formats such as PNG and JPEG as soon
+-     as possible.
+-     
+-     gd 1.8.4 _requires_ that the following libraries also be installed:
+-     
+-     libpng (see the libpng home page)
+-     
+-     zlib (see the info-zip home page) zlib
+-     
+-     jpeg-6b or later, if desired (see the Independent JPEG Group home
+-     page)
+-     
+-     If you want to use the TrueType font support, you must also install
+-     the _FreeType 2.x library_, including the header files. See the
+-     Freetype Home Page, or SourceForge. No, I cannot explain why that
+-     site is down on a particular day, and no, I can't send you a copy.
+-     
+-     If you want to use the Xpm color bitmap loading support, you must
+-     also have the X Window System and the Xpm library installed (Xpm is
+-     often included in modern X distributions).
+-     
+-     Please read the documentation and install the required libraries.
+-     Do not send email asking why png.h is not found. See the
+-     requirements section for more information. Thank you!
+-     
+-  Table of Contents
+-  
+-     * Credits and license terms
+-     * What's new in version "XYZ" of GD?
+-     * What is gd?
+-     * What if I want to use another programming language?
+-     * What else do I need to use gd?
+-     * How do I get gd?
+-     * How do I build gd?
+-     * gd basics: using gd in your program
+-     * webpng: a useful example
+-     * Function and type reference by category
+-     * About the additional .gd image file format
+-     * Please tell us you're using gd!
+-     * If you have problems
+-     * Alphabetical quick index
+-       
+-   Up to the Boutell.Com, Inc. Home Page
+-   
+-  Credits and license terms
+-  
+-   In order to resolve any possible confusion regarding the authorship of
+-   gd, the following copyright statement covers all of the authors who
+-   have required such a statement. _If you are aware of any oversights in
+-   this copyright notice, please contact Thomas Boutell who will be
+-   pleased to correct them._
+-
+-COPYRIGHT STATEMENT FOLLOWS THIS LINE
+-
+-     Portions copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000 by Cold
+-     Spring Harbor Laboratory. Funded under Grant P41-RR02188 by the
+-     National Institutes of Health.
+-     
+-     Portions copyright 1996, 1997, 1998, 1999, 2000 by Boutell.Com,
+-     Inc.
+-     
+-     Portions relating to GD2 format copyright 1999, 2000 Philip Warner.
+-     
+-     Portions relating to PNG copyright 1999, 2000 Greg Roelofs.
+-     
+-     Portions relating to libttf copyright 1999, 2000 John Ellson
+-     (ellson@lucent.com).
+-     
+-     Portions relating to JPEG copyright 2000, Doug Becker and copyright
+-     (C) 1994-1998, Thomas G. Lane. This software is based in part on
+-     the work of the Independent JPEG Group.
+-     
+-     Portions relating to WBMP copyright 2000 Maurice Szmurlo and Johan
+-     Van den Brande.
+-     
+-     _Permission has been granted to copy, distribute and modify gd in
+-     any context without fee, including a commercial application,
+-     provided that this notice is present in user-accessible supporting
+-     documentation._
+-     
+-     This does not affect your ownership of the derived work itself, and
+-     the intent is to assure proper credit for the authors of gd, not to
+-     interfere with your productive use of gd. If you have questions,
+-     ask. "Derived works" includes all programs that utilize the
+-     library. Credit must be given in user-accessible documentation.
+-     
+-     _This software is provided "AS IS."_ The copyright holders disclaim
+-     all warranties, either express or implied, including but not
+-     limited to implied warranties of merchantability and fitness for a
+-     particular purpose, with respect to this code and accompanying
+-     documentation.
+-     
+-     Although their code does not appear in gd 1.8.4, the authors wish
+-     to thank David Koblas, David Rowley, and Hutchison Avenue Software
+-     Corporation for their prior contributions.
+-     
+-END OF COPYRIGHT STATEMENT
+-
+-  What is gd?
+-  
+-   gd is a graphics library. It allows your code to quickly draw images
+-   complete with lines, arcs, text, multiple colors, cut and paste from
+-   other images, and flood fills, and write out the result as a PNG or
+-   JPEG file. This is particularly useful in World Wide Web applications,
+-   where PNG and JPEG are two of the formats accepted for inline images
+-   by most browsers.
+-   
+-   gd is not a paint program. If you are looking for a paint program, you
+-   are looking in the wrong place. If you are not a programmer, you are
+-   looking in the wrong place.
+-   
+-   gd does not provide for every possible desirable graphics operation.
+-   It is not necessary or desirable for gd to become a kitchen-sink
+-   graphics package, but version 1.7.3 incorporates most of the commonly
+-   requested features for an 8-bit 2D package. Support for truecolor
+-   images, including truecolor JPEG and PNG, is planned for version 2.0.
+-   
+-  What if I want to use another programming language?
+-  
+-    Perl
+-    
+-   gd can also be used from Perl, courtesy of Lincoln Stein's GD.pm
+-   library, which uses gd as the basis for a set of Perl 5.x classes.
+-   Highly recommended.
+-   
+-    Tcl
+-    
+-   gd can be used from Tcl with John Ellson's Gdtclft dynamically loaded
+-   extension package. (Gdtclft2.0 or later is needed for gd-1.6 and up
+-   with PNG output.)
+-   
+-    Pascal
+-    
+-   Pascal enthusiasts should look into Michael Bradbury's gdfp package.
+-   
+-    Haskell
+-    
+-   A new gd interface is now available for Haskell programmers.
+-   
+-    REXX
+-    
+-   A gd interface for the REXX language is available.
+-   
+-    Any Language
+-    
+-   There are, at the moment, at least three simple interpreters that
+-   perform gd operations. You can output the desired commands to a simple
+-   text file from whatever scripting language you prefer to use, then
+-   invoke the interpreter.
+-   
+-     * tgd, by Bradley K. Sherman
+-     * fly, by Martin Gleeson
+-       
+-  What's new in version 1.8.4?
+-  
+-     * Add support for FreeType2 (John Ellson ellson@lucent.com)
+-     * Add support for finding in fonts in a builtin DEFAULT_FONTPATH, or
+-       in a path from the GDFONTPATH environment variable.
+-     * remove some unused symbols to reduce compiler warnings
+-     * bugfix in size comparisons in gdImageCompare
+-     * REXX now mentioned
+-     * All memory allocation functions are now wrapped within the
+-       library; gdFree is exported and recommended for freeing memory
+-       returned by the gdImage(Something)Ptr family of functions.
+-       
+-  What's new in version 1.8.3?
+-  
+-     * WBMP output memory leak fixed
+-     * #include <gd.h> corrected to #include "gd.h" in gd_wbmp.c
+-     * Documented the fact that the source and output images shouldn't
+-       match in the WBMP test except for black and white source images
+-       
+-  What's new in version 1.8.2?
+-  
+-     * WBMP support debugged and improved by Johann Van den Brande
+-     * WBMP tests added to gdtest.c by Thomas Boutell
+-     * Use of platform-dependent 'install' command removed by Thomas
+-       Boutell
+-     * Comments added to Makefile warning users to juggle the order of
+-       the libraries if the linker complains; is there any portable way
+-       to do this automatically, short of using autoconf?
+-     * Documentation of gdImageCreateFromXpm corrected
+-     * Updated links to fast-moving, always dodging libpng and zlib web
+-       sites
+-       
+-  What's new in version 1.8.1?
+-  
+-     * Optional components no longer built by default (following the
+-       documentation)
+-     * JPEG code no longer requires inappropriate header files
+-     * Win32 patches from Joe Gregorio
+-     * 16-bit font support for bdftogd, from Honza Pazdziora
+-       
+-  What's new in version 1.8?
+-  
+-     * Support for JPEG output, courtesy of Doug Becker
+-     * A link to Michael Bradbery's Pascal wrapper
+-     * Support for WBMP output, courtesy of Maurice Szmurlo
+-     * gdImageColorClosestHWB function based on hue, whiteness,
+-       blackness, superior to the regular gdImageColorClosest function,
+-       courtesy of Philip Warner
+-     * License clarification: yes, you can modify gd
+-       
+-    Additional JPEG Information
+-    
+-   Support for reading and writing JPEG-format images is courtesy of Doug
+-   Becker and the Independent JPEG Group / Thomas G. Lane. You can get
+-   the latest version of the IJG JPEG software from
+-   ftp://ftp.uu.net/graphics/jpeg/ (e.g., the jpegsrc.v6b.tar.gz file).
+-   You _must_ use version 6b or later of the IJG JPEG software. You might
+-   also consult the JPEG FAQ at http://www.faqs.org/faqs/jpeg-faq/.
+-   
+-  What's new in version 1.7.3?
+-  
+-   Another attempt at Makefile fixes to permit linking with all libraries
+-   required on platforms with order- dependent linkers. Perhaps it will
+-   work this time.
+-   
+-  What's new in version 1.7.2?
+-  
+-   An uninitialized-pointer bug in gdtestttf.c was corrected. This bug
+-   caused crashes at the end of each call to gdImageStringTTF on some
+-   platforms. Thanks to Wolfgang Haefelinger.
+-   
+-   Documentation fixes. Thanks to Dohn Arms.
+-   
+-   Makefile fixes to permit linking with all libraries required on
+-   platforms with order- dependent linkers.
+-   
+-  What's new in version 1.7.1?
+-  
+-   A minor buglet in the Makefile was corrected, as well as an inaccurate
+-   error message in gdtestttf.c. Thanks to Masahito Yamaga.
+-   
+-  What's new in version 1.7?
+-  
+-   Version 1.7 contains the following changes:
+-     * Japanese language support for the TrueType functions. Thanks to
+-       Masahito Yamaga.
+-     * autoconf and configure have been removed, in favor of a carefully
+-       designed Makefile which produces and properly installs the library
+-       and the binaries. System-dependent variables are at the top of the
+-       Makefile for easy modification. I'm sorry, folks, but autoconf
+-       generated _many, many confused email messages_ from people who
+-       didn't have things where autoconf expected to find them. I am not
+-       an autoconf/automake wizard, and gd is a simple, very compact
+-       library which does not need to be a shared library. I _did_ make
+-       many improvements over the old gd 1.3 Makefile, which were
+-       directly inspired by the autoconf version found in the 1.6 series
+-       (thanks to John Ellson).
+-     * Completely ANSI C compliant, according to the -pedantic-errors
+-       flag of gcc. Several pieces of not-quite-ANSI-C code were causing
+-       problems for those with non-gcc compilers.
+-     * gdttf.c patched to allow the use of Windows symbol fonts, when
+-       present (thanks to Joseph Peppin).
+-     * extern "C" wrappers added to gd.h and the font header files for
+-       the convenience of C++ programmers. bdftogd was also modified to
+-       automatically insert these wrappers into future font header files.
+-       Thanks to John Lindal.
+-     * Compiles correctly on platforms that don't define SEEK_SET. Thanks
+-       to Robert Bonomi.
+-     * Loads Xpm images via the gdImageCreateFromXpm function, if the Xpm
+-       library is available. Thanks to Caolan McNamara.
+-       
+-  What's new in version 1.6.3?
+-  
+-   Version 1.6.3 corrects a memory leak in gd_png.c. This leak caused a
+-   significant amount of memory to be allocated and not freed when
+-   writing a PNG image.
+-   
+-  What's new in version 1.6.2?
+-  
+-   Version 1.6.2 from John Ellson adds two new functions:
+-     * gdImageStringTTF - scalable, rotatable, anti-aliased, TrueType
+-       strings using the FreeType library, but only if libttf is found by
+-       configure. _We do not provide TrueType fonts. Obtaining them is
+-       entirely up to you._
+-     * gdImageColorResolve - an efficient alternative for the common code
+-       fragment:
+-
+-
+-      if ((color=gdImageColorExact(im,R,G,B)) < 0)
+-          if ((color=gdImageColorAllocate(im,R,G,B)) < 0)
+-              color=gdImageColorClosest(im,R,G,B);
+-
+-   Also in this release the build process has been converted to GNU
+-   autoconf/automake/libtool conventions so that both (or either) static
+-   and shared libraries can be built.
+-   
+-  What's new in version 1.6.1?
+-  
+-   Version 1.6.1 incorporates superior PNG reading and writing code from
+-   Greg Roelofs, with minor modifications by Tom Boutell. Specifically, I
+-   altered his code to read non-palette images (converting them to
+-   palette images badly, by dithering them), and to tolerate palette
+-   images with types of transparency that gd doesn't actually support (it
+-   just ignores the advanced transparency features). Any bugs in this
+-   area are therefore my fault, not Greg's.
+-   
+-   Unlike gd 1.6, users should have no trouble linking with gd 1.6.1 if
+-   they follow the instructions and install all of the pieces. However,
+-   _If you get undefined symbol errors, be sure to check for older
+-   versions of libpng in your library directories!_
+-   
+-  What's new in version 1.6?
+-  
+-   Version 1.6 features the following changes:
+-   
+-   _Support for 8-bit palette PNG images has been added. Support for GIF
+-   has been removed._ This step was taken to completely avoid the legal
+-   controversy regarding the LZW compression algorithm used in GIF.
+-   Unisys holds a patent which is relevant to LZW compression. PNG is a
+-   superior image format in any case. Now that PNG is supported by both
+-   Microsoft Internet Explorer and Netscape (in their recent releases),
+-   we highly recommend that GD users upgrade in order to get
+-   well-compressed images in a format which is legally unemcumbered.
+-   
+-  What's new in version 1.5?
+-  
+-   Version 1.5 featured the following changes:
+-   
+-   _New GD2 format_
+-          An improvement over the GD format, the GD2 format uses the zlib
+-          compression library to compress the image in chunks. This
+-          results in file sizes comparable to GIFs, with the ability to
+-          access parts of large images without having to read the entire
+-          image into memory.
+-          
+-          This format also supports version numbers and rudimentary
+-          validity checks, so it should be more 'supportable' than the
+-          previous GD format.
+-          
+-   _Re-arranged source files_
+-          gd.c has been broken into constituant parts: io, gif, gd, gd2
+-          and graphics functions are now in separate files.
+-          
+-   _Extended I/O capabilities._
+-          The source/sink feature has been extended to support GD2 file
+-          formats (which require seek/tell functions), and to allow more
+-          general non-file I/O.
+-          
+-   _Better support for Lincoln Stein's Perl Module_
+-          The new gdImage*Ptr function returns the chosen format stored
+-          in a block of memory. This can be directly used by the GD perl
+-          module.
+-          
+-   _Added functions_
+-          gdImageCreateFromGd2Part - allows retrieval of part of an image
+-          (good for huge images, like maps),
+-          gdImagePaletteCopy - Copies a palette from one image to
+-          another, doing it's best to match the colors in the target
+-          image to the colors in the source palette.
+-          gdImageGd2, gdImageCreateFromGd2 - Support for new format
+-          gdImageCopyMerge - Merges two images (useful to highlight part
+-          of an image)
+-          gdImageCopyMergeGray - Similar to gdImageCopyMerge, but tries
+-          to preserve source image hue.
+-          gdImagePngPtr, gdImageJpegPtr, gdImageWBMPPtr, gdImageGdPtr,
+-          gdImageGd2Ptr - return memory blocks for each type of image.
+-          gdImageCreateFromPngCtx, gdImageCreateFromGdCtx,
+-          gdImageCreateFromGd2Ctx, gdImageCreateFromGd2PartCtx - Support
+-          for new I/O context.
+-          
+-   _NOTE:_ In fairness to Thomas Boutell, any bug/problems with any of
+-   the above features should probably be reported to Philip Warner.
+-   
+-  What's new in version 1.4?
+-  
+-   Version 1.4 features the following changes:
+-   
+-   Fixed polygon fill routine (again)
+-          Thanks to Kirsten Schulz, version 1.4 is able to fill numerous
+-          types of polygons that caused problems with previous releases,
+-          including version 1.3.
+-          
+-   Support for alternate data sources
+-          Programmers who wish to load a GIF from something other than a
+-          stdio FILE * stream can use the new gdImageCreateFromPngSource
+-          function.
+-          
+-   Support for alternate data destinations
+-          Programmers who wish to write a GIF to something other than a
+-          stdio FILE * stream can use the new gdImagePngToSink function.
+-          
+-   More tolerant when reading GIFs
+-          Version 1.4 does not crash when reading certain animated GIFs,
+-          although it still only reads the first frame. Version 1.4 also
+-          has overflow testing code to prevent crashes when reading
+-          damaged GIFs.
+-          
+-  What's new in version 1.3?
+-  
+-   Version 1.3 features the following changes:
+-   
+-   Non-LZW-based GIF compression code
+-          Version 1.3 contained GIF compression code that uses simple Run
+-          Length Encoding instead of LZW compression, while still
+-          retaining compatibility with normal LZW-based GIF decoders
+-          (your browser will still like your GIFs). _LZW compression is
+-          patented by Unisys. We are currently reevaluating the approach
+-          taken by gd 1.3. The current release of gd does not support
+-          this approach. We recommend that you use the current release,
+-          and generate PNG images._ Thanks to Hutchison Avenue Software
+-          Corporation for contributing the RLE GIF code.
+-          
+-   8-bit fonts, and 8-bit font support
+-          This improves support for European languages. Thanks are due to
+-          Honza Pazdziora and also to Jan Pazdziora . Also see the
+-          provided bdftogd Perl script if you wish to convert fixed-width
+-          X11 fonts to gd fonts.
+-          
+-   16-bit font support (no fonts provided)
+-          Although no such fonts are provided in the distribution, fonts
+-          containing more than 256 characters should work if the
+-          gdImageString16 and gdImageStringUp16 routines are used.
+-          
+-   Improvements to the "webpng" example/utility
+-          The "webpng" utility is now a slightly more useful application.
+-          Thanks to Brian Dowling for this code.
+-          
+-   Corrections to the color resolution field of GIF output
+-          Thanks to Bruno Aureli.
+-          
+-   Fixed polygon fills
+-          A one-line patch for the infamous polygon fill bug, courtesy of
+-          Jim Mason. I believe this fix is sufficient. However, if you
+-          find a situation where polygon fills still fail to behave
+-          properly, please send code that demonstrates the problem, _and_
+-          a fix if you have one. Verifying the fix is important.
+-          
+-   Row-major, not column-major
+-          Internally, gd now represents the array of pixels as an array
+-          of rows of pixels, rather than an array of columns of pixels.
+-          This improves the performance of compression and decompression
+-          routines slightly, because horizontally adjacent pixels are now
+-          next to each other in memory. _This should not affect properly
+-          written gd applications, but applications that directly
+-          manipulate the pixels array will require changes._
+-          
+-  What else do I need to use gd?
+-  
+-   To use gd, you will need an ANSI C compiler. _All popular Windows 95
+-   and NT C compilers are ANSI C compliant._ Any full-ANSI-standard C
+-   compiler should be adequate. _The cc compiler released with SunOS
+-   4.1.3 is not an ANSI C compiler. Most Unix users who do not already
+-   have gcc should get it. gcc is free, ANSI compliant and a de facto
+-   industry standard. Ask your ISP why it is missing._
+-   
+-   As of version 1.6, you also need the zlib compression library, and the
+-   libpng library. As of version 1.6.2, you can draw text using
+-   antialiased TrueType fonts if you also have the libttf library
+-   installed, but this is not mandatory. zlib is available for a variety
+-   of platforms from the zlib web site. libpng is available for a variety
+-   of platforms from the PNG web site.
+-   
+-   You will also want a PNG viewer, if you do not already have one for
+-   your system, since you will need a good way to check the results of
+-   your work. Netscape 4.04 and higher, and Microsoft Internet Explorer
+-   4.0 or higher, both support PNG. For some purposes you might be
+-   happier with a package like Lview Pro for Windows or xv for X. There
+-   are PNG viewers available for every graphics-capable modern operating
+-   system, so consult newsgroups relevant to your particular system.
+-   
+-  How do I get gd?
+-  
+-    By HTTP
+-    
+-     * Gzipped Tar File (Unix)
+-     * .ZIP File (Windows)
+-       
+-    By FTP
+-    
+-     * Gzipped Tar File (Unix)
+-     * .ZIP File (Windows)
+-       
+-  How do I build gd?
+-  
+-   In order to build gd, you must first unpack the archive you have
+-   downloaded. If you are not familiar with tar and gunzip (Unix) or ZIP
+-   (Windows), please consult with an experienced user of your system.
+-   Sorry, we cannot answer questions about basic Internet skills.
+-   
+-   Unpacking the archive will produce a directory called "gd-1.8.4".
+-   
+-    For Unix
+-    
+-   cd to the 1.8.4 directory. Edit the Makefile with your preferred text
+-   editor and make any necessary changes to the settings at the top,
+-   especially if you want Xpm or TrueType support. Next, type "make". If
+-   you are the system administrator, and you wish to make the gd library
+-   available to other programs, you may also wish to type "make install".
+-   
+-   If you get errors, edit the Makefile again, paying special attention
+-   to the INCLUDEDIRS and LIBDIRS settings.
+-   
+-   IF YOU GET LINKER ERRORS, TRY JUGGLING THE ORDER OF THE -l DIRECTIVES
+-   IN THE MAKEFILE. Some platforms may prefer that the libraries be
+-   listed in the opposite order.
+-   
+-    For Windows, Mac, Et Cetera
+-    
+-   Create a project using your favorite programming environment. Copy all
+-   of the gd files to the project directory. Add gd.c to your project.
+-   Add other source files as appropriate. Learning the basic skills of
+-   creating projects with your chosen C environment is up to you.
+-   
+-   You have now built both the gd library and a demonstration program
+-   which shows off the capabilities of gd. To see it in action, type
+-   "gddemo".
+-   
+-   gddemo should execute without incident, creating the file demoout.png.
+-   (Note there is also a file named demoin.png, which is provided in the
+-   package as part of the demonstration.)
+-   
+-   Display demoout.png in your PNG viewer. The image should be 128x128
+-   pixels and should contain an image of the space shuttle with quite a
+-   lot of graphical elements drawn on top of it.
+-   
+-   (If you are missing the demoin.png file, the other items should appear
+-   anyway.)
+-   
+-   Look at demoin.png to see the original space shuttle image which was
+-   scaled and copied into the output image.
+-   
+-  gd basics: using gd in your program
+-  
+-   gd lets you create PNG or JPEG images on the fly. To use gd in your
+-   program, include the file gd.h, and link with the libgd.a library
+-   produced by "make libgd.a", under Unix. Under other operating systems
+-   you will add gd.c to your own project.
+-   
+-   If you want to use the provided fonts, include gdfontt.h, gdfonts.h,
+-   gdfontmb.h, gdfontl.h and/or gdfontg.h. For more impressive results,
+-   install FreeType 2.x and use the new gdImageStringFT function. If you
+-   are not using the provided Makefile and/or a library-based approach,
+-   be sure to include the source modules as well in your project. (They
+-   may be too large for 16-bit memory models, that is, 16-bit DOS and
+-   Windows.)
+-   
+-   Here is a short example program. _(For a more advanced example, see
+-   gddemo.c, included in the distribution. gddemo.c is NOT the same
+-   program; it demonstrates additional features!)_
+-   
+-/* Bring in gd library functions */
+-#include "gd.h"
+-
+-/* Bring in standard I/O so we can output the PNG to a file */
+-#include <stdio.h>
+-
+-int main() {
+-        /* Declare the image */
+-        gdImagePtr im;
+-        /* Declare output files */
+-        FILE *pngout, *jpegout;
+-        /* Declare color indexes */
+-        int black;
+-        int white;
+-
+-        /* Allocate the image: 64 pixels across by 64 pixels tall */
+-        im = gdImageCreate(64, 64);
+-
+-        /* Allocate the color black (red, green and blue all minimum).
+-                Since this is the first color in a new image, it will
+-                be the background color. */
+-        black = gdImageColorAllocate(im, 0, 0, 0);
+-
+-        /* Allocate the color white (red, green and blue all maximum). */
+-        white = gdImageColorAllocate(im, 255, 255, 255);
+-        
+-        /* Draw a line from the upper left to the lower right,
+-                using white color index. */
+-        gdImageLine(im, 0, 0, 63, 63, white);
+-
+-        /* Open a file for writing. "wb" means "write binary", important
+-                under MSDOS, harmless under Unix. */
+-        pngout = fopen("test.png", "wb");
+-
+-        /* Do the same for a JPEG-format file. */
+-        jpegout = fopen("test.jpg", "wb");
+-
+-        /* Output the image to the disk file in PNG format. */
+-        gdImagePng(im, pngout);
+-
+-        /* Output the same image in JPEG format, using the default
+-                JPEG quality setting. */
+-        gdImageJpeg(im, jpegout, -1);
+-
+-        /* Close the files. */
+-        fclose(pngout);
+-        fclose(jpegout);
+-
+-        /* Destroy the image in memory. */
+-        gdImageDestroy(im);
+-}
+-
+-   When executed, this program creates an image, allocates two colors
+-   (the first color allocated becomes the background color), draws a
+-   diagonal line (note that 0, 0 is the upper left corner), writes the
+-   image to PNG and JPEG files, and destroys the image.
+-   
+-   The above example program should give you an idea of how the package
+-   works. gd provides many additional functions, which are listed in the
+-   following reference chapters, complete with code snippets
+-   demonstrating each. There is also an alphabetical index.
+-   
+-  Webpng: a more powerful gd example
+-  
+-   Webpng is a simple utility program to manipulate PNGs from the command
+-   line. It is written for Unix and similar command-line systems, but
+-   should be easily adapted for other environments. Webpng allows you to
+-   set transparency and interlacing and output interesting information
+-   about the PNG in question.
+-   
+-   webpng.c is provided in the distribution. Unix users can simply type
+-   "make webpng" to compile the program. Type "webpng" with no arguments
+-   to see the available options.
+-   
+-Function and type reference
+-
+-     * Types
+-     * Image creation, destruction, loading and saving
+-     * Drawing, styling, brushing, tiling and filling functions
+-     * Query functions (not color-related)
+-     * Font and text-handling functions
+-     * Color handling functions
+-     * Copying and resizing functions
+-     * Miscellaneous Functions
+-     * Constants
+-       
+-  Types
+-  
+-   gdImage_(TYPE)_
+-          The data structure in which gd stores images. gdImageCreate
+-          returns a pointer to this type, and the other functions expect
+-          to receive a pointer to this type as their first argument. You
+-          may read the members sx (size on X axis), sy (size on Y axis),
+-          colorsTotal (total colors), red (red component of colors; an
+-          array of 256 integers between 0 and 255), green (green
+-          component of colors, as above), blue (blue component of colors,
+-          as above), and transparent (index of transparent color, -1 if
+-          none); please do so using the macros provided. Do NOT set the
+-          members directly from your code; use the functions provided.
+-          
+-
+-typedef struct {
+-        unsigned char ** pixels;
+-        int sx;
+-        int sy;
+-        int colorsTotal;
+-        int red[gdMaxColors];
+-        int green[gdMaxColors];
+-        int blue[gdMaxColors];
+-        int open[gdMaxColors];
+-        int transparent;
+-} gdImage;
+-
+-   gdImagePtr _(TYPE)_
+-          A pointer to an image structure. gdImageCreate returns this
+-          type, and the other functions expect it as the first argument.
+-          
+-   gdFont _(TYPE)_
+-          A font structure. Used to declare the characteristics of a
+-          font. Plese see the files gdfontl.c and gdfontl.h for an
+-          example of the proper declaration of this structure. You can
+-          provide your own font data by providing such a structure and
+-          the associated pixel array. You can determine the width and
+-          height of a single character in a font by examining the w and h
+-          members of the structure. If you will not be creating your own
+-          fonts, you will not need to concern yourself with the rest of
+-          the components of this structure.
+-          
+-
+-typedef struct {
+-        /* # of characters in font */
+-        int nchars;
+-        /* First character is numbered... (usually 32 = space) */
+-        int offset;
+-        /* Character width and height */
+-        int w;
+-        int h;
+-        /* Font data; array of characters, one row after another.
+-                Easily included in code, also easily loaded from
+-                data files. */
+-        char *data;
+-} gdFont;
+-
+-   gdFontPtr _(TYPE)_
+-          A pointer to a font structure. Text-output functions expect
+-          these as their second argument, following the gdImagePtr
+-          argument. Two such pointers are declared in the provided
+-          include files gdfonts.h and gdfontl.h.
+-          
+-   gdPoint _(TYPE)_
+-          Represents a point in the coordinate space of the image; used
+-          by gdImagePolygon and gdImageFilledPolygon.
+-          
+-
+-typedef struct {
+-        int x, y;
+-} gdPoint, *gdPointPtr;
+-
+-   gdPointPtr _(TYPE)_
+-          A pointer to a gdPoint structure; passed as an argument to
+-          gdImagePolygon and gdImageFilledPolygon.
+-          
+-   gdSource _(TYPE)_
+-
+-typedef struct {
+-        int (*source) (void *context, char *buffer, int len);
+-        void *context;
+-} gdSource, *gdSourcePtr;
+-
+-   Represents a source from which a PNG can be read. Programmers who do
+-   not wish to read PNGs from a file can provide their own alternate
+-   input mechanism, using the gdImageCreateFromPngSource function. See
+-   the documentation of that function for an example of the proper use of
+-   this type.
+-   
+-   gdSink _(TYPE)_
+-
+-typedef struct {
+-        int (*sink) (void *context, char *buffer, int len);
+-        void *context;
+-} gdSink, *gdSinkPtr;
+-
+-   Represents a "sink" (destination) to which a PNG can be written.
+-   Programmers who do not wish to write PNGs to a file can provide their
+-   own alternate output mechanism, using the gdImagePngToSink function.
+-   See the documentation of that function for an example of the proper
+-   use of this type.
+-   
+-  Image creation, destruction, loading and saving
+-  
+-   gdImageCreate(sx, sy) _(FUNCTION)_
+-          gdImageCreate is called to create images. Invoke gdImageCreate
+-          with the x and y dimensions of the desired image. gdImageCreate
+-          returns a gdImagePtr to the new image, or NULL if unable to
+-          allocate the image. The image must eventually be destroyed
+-          using gdImageDestroy().
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-im = gdImageCreate(64, 64);
+-/* ... Use the image ... */
+-gdImageDestroy(im);
+-
+-   gdImageCreateFromJpeg(FILE *in) _(FUNCTION)_
+-          gdImageCreateFromJpegCtx(FILE *in) _(FUNCTION)_
+-          
+-          
+-          gdImageCreateFromJpeg is called to load images from JPEG format
+-          files. Invoke gdImageCreateFromJpeg with an already opened
+-          pointer to a file containing the desired image.
+-          gdImageCreateFromJpeg returns a gdImagePtr to the new image, or
+-          NULL if unable to load the image (most often because the file
+-          is corrupt or does not contain a JPEG image).
+-          gdImageCreateFromPng does _not_ close the file. You can inspect
+-          the sx and sy members of the image to determine its size. The
+-          image must eventually be destroyed using gdImageDestroy().
+-          
+-
+-gdImagePtr im;
+-... inside a function ...
+-FILE *in;
+-in = fopen("myjpeg.jpg", "rb");
+-im = gdImageCreateFromJpeg(in);
+-fclose(in);
+-/* ... Use the image ... */
+-gdImageDestroy(im);
+-
+-   gdImageCreateFromPng(FILE *in) _(FUNCTION)_
+-          gdImageCreateFromPngCtx(gdIOCtx *in) _(FUNCTION)_
+-          
+-          
+-          gdImageCreateFromPng is called to load images from PNG format
+-          files. Invoke gdImageCreateFromPng with an already opened
+-          pointer to a file containing the desired image.
+-          gdImageCreateFromPng returns a gdImagePtr to the new image, or
+-          NULL if unable to load the image (most often because the file
+-          is corrupt or does not contain a PNG image).
+-          gdImageCreateFromPng does _not_ close the file. You can inspect
+-          the sx and sy members of the image to determine its size. The
+-          image must eventually be destroyed using gdImageDestroy().
+-          
+-
+-gdImagePtr im;
+-... inside a function ...
+-FILE *in;
+-in = fopen("mypng.png", "rb");
+-im = gdImageCreateFromPng(in);
+-fclose(in);
+-/* ... Use the image ... */
+-gdImageDestroy(im);
+-
+-   gdImageCreateFromPngSource(gdSourcePtr in) _(FUNCTION)_
+-          gdImageCreateFromPngSource is called to load a PNG from a data
+-          source other than a file. Usage is very similar to the
+-          gdImageCreateFromPng function, except that the programmer
+-          provides a custom data source.
+-          
+-          The programmer must write an input function which accepts a
+-          context pointer, a buffer, and a number of bytes to be read as
+-          arguments. This function must read the number of bytes
+-          requested, unless the end of the file has been reached, in
+-          which case the function should return zero, or an error has
+-          occurred, in which case the function should return -1. The
+-          programmer then creates a gdSource structure and sets the
+-          source pointer to the input function and the context pointer to
+-          any value which is useful to the programmer.
+-          
+-          The example below implements gdImageCreateFromPng by creating a
+-          custom data source and invoking gdImageCreateFromPngSource.
+-          
+-
+-static int freadWrapper(void *context, char *buf, int len);
+-
+-gdImagePtr gdImageCreateFromPng(FILE *in)
+-{
+-        gdSource s;
+-        s.source = freadWrapper;
+-        s.context = in;
+-        return gdImageCreateFromPngSource(&s);
+-}
+-
+-static int freadWrapper(void *context, char *buf, int len)
+-{
+-        int got = fread(buf, 1, len, (FILE *) context);
+-        return got;
+-}
+-
+-   gdImageCreateFromGd(FILE *in) _(FUNCTION)_
+-          gdImageCreateFromGdCtx(gdIOCtx *in) _(FUNCTION)_
+-          
+-          
+-          gdImageCreateFromGd is called to load images from gd format
+-          files. Invoke gdImageCreateFromGd with an already opened
+-          pointer to a file containing the desired image in the gd file
+-          format, which is specific to gd and intended for very fast
+-          loading. (It is _not_ intended for compression; for
+-          compression, use PNG or JPEG.) gdImageCreateFromGd returns a
+-          gdImagePtr to the new image, or NULL if unable to load the
+-          image (most often because the file is corrupt or does not
+-          contain a gd format image). gdImageCreateFromGd does _not_
+-          close the file. You can inspect the sx and sy members of the
+-          image to determine its size. The image must eventually be
+-          destroyed using gdImageDestroy().
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-FILE *in;
+-in = fopen("mygd.gd", "rb");
+-im = gdImageCreateFromGd(in);
+-fclose(in);
+-/* ... Use the image ... */
+-gdImageDestroy(im);
+-
+-   gdImageCreateFromGd2(FILE *in) _(FUNCTION)_
+-          gdImageCreateFromGd2Ctx(gdIOCtx *in) _(FUNCTION)_
+-          
+-          
+-          gdImageCreateFromGd2 is called to load images from gd2 format
+-          files. Invoke gdImageCreateFromGd2 with an already opened
+-          pointer to a file containing the desired image in the gd2 file
+-          format, which is specific to gd2 and intended for fast loading
+-          of parts of large images. (It is a compressed format, but
+-          generally not as good a LZW compression). gdImageCreateFromGd
+-          returns a gdImagePtr to the new image, or NULL if unable to
+-          load the image (most often because the file is corrupt or does
+-          not contain a gd format image). gdImageCreateFromGd2 does _not_
+-          close the file. You can inspect the sx and sy members of the
+-          image to determine its size. The image must eventually be
+-          destroyed using gdImageDestroy().
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-FILE *in;
+-in = fopen("mygd.gd2", "rb");
+-im = gdImageCreateFromGd2(in);
+-fclose(in);
+-/* ... Use the image ... */
+-gdImageDestroy(im);
+-
+-   gdImageCreateFromGd2Part(FILE *in, int srcX, int srcY, int w, int h)
+-          _(FUNCTION)_
+-          gdImageCreateFromGd2PartCtx(gdIOCtx *in) _(FUNCTION)_
+-          
+-          
+-          gdImageCreateFromGd2Part is called to load parts of images from
+-          gd2 format files. Invoked in the same way as
+-          gdImageCreateFromGd2, but with extra parameters indicating the
+-          source (x, y) and width/height of the desired image.
+-          gdImageCreateFromGd2Part returns a gdImagePtr to the new image,
+-          or NULL if unable to load the image. The image must eventually
+-          be destroyed using gdImageDestroy().
+-          
+-   gdImageCreateFromXbm(FILE *in) _(FUNCTION)_
+-          gdImageCreateFromXbm is called to load images from X bitmap
+-          format files. Invoke gdImageCreateFromXbm with an already
+-          opened pointer to a file containing the desired image.
+-          gdImageCreateFromXbm returns a gdImagePtr to the new image, or
+-          NULL if unable to load the image (most often because the file
+-          is corrupt or does not contain an X bitmap format image).
+-          gdImageCreateFromXbm does _not_ close the file. You can inspect
+-          the sx and sy members of the image to determine its size. The
+-          image must eventually be destroyed using gdImageDestroy().
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-FILE *in;
+-in = fopen("myxbm.xbm", "rb");
+-im = gdImageCreateFromXbm(in);
+-fclose(in);
+-/* ... Use the image ... */
+-gdImageDestroy(im);
+-
+-   gdImageCreateFromXpm(char *filename) _(FUNCTION)_
+-          gdImageCreateFromXbm is called to load images from XPM X Window
+-          System color bitmap format files. This function is available
+-          only if HAVE_XPM is selected in the Makefile and the Xpm
+-          library is linked with the application. Unlike most gd file
+-          functions, the Xpm functions require filenames, not file
+-          pointers. gdImageCreateFromXpm returns a gdImagePtr to the new
+-          image, or NULL if unable to load the image (most often because
+-          the file is corrupt or does not contain an XPM bitmap format
+-          image). You can inspect the sx and sy members of the image to
+-          determine its size. The image must eventually be destroyed
+-          using gdImageDestroy().
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-FILE *in;
+-in = fopen("myxpm.xpm", "rb");
+-im = gdImageCreateFromXpm(in);
+-fclose(in);
+-/* ... Use the image ... */
+-gdImageDestroy(im);
+-
+-   gdImageDestroy(gdImagePtr im) _(FUNCTION)_
+-          gdImageDestroy is used to free the memory associated with an
+-          image. It is important to invoke gdImageDestroy before exiting
+-          your program or assigning a new image to a gdImagePtr variable.
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-im = gdImageCreate(10, 10);
+-/* ... Use the image ... */
+-/* Now destroy it */
+-gdImageDestroy(im);
+-
+-   void gdImageJpeg(gdImagePtr im, FILE *out, int quality) _(FUNCTION)_
+-          void gdImageJpegCtx(gdImagePtr im, gdIOCtx *out, int quality)
+-          
+-   _(FUNCTION)_
+-   
+-   gdImageJpeg outputs the specified image to the specified file in JPEG
+-   format. The file must be open for writing. Under MSDOS and all
+-   versions of Windows, it is important to use "wb" as opposed to simply
+-   "w" as the mode when opening the file, and under Unix there is no
+-   penalty for doing so. gdImageJpeg does _not_ close the file; your code
+-   must do so.
+-   
+-   If quality is negative, the default IJG JPEG quality value (which
+-   should yield a good general quality / size tradeoff for most
+-   situations) is used. Otherwise, for practical purposes, quality should
+-   be a value in the range 0-95, higher quality values usually implying
+-   both higher quality and larger image sizes.
+-   
+-   If you have set image interlacing using gdImageInterlace, this
+-   function will interpret that to mean you wish to output a progressive
+-   JPEG. Some programs (e.g., Web browsers) can display progressive JPEGs
+-   incrementally; this can be useful when browsing over a relatively slow
+-   communications link, for example. Progressive JPEGs can also be
+-   slightly smaller than sequential (non-progressive) JPEGs.
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black, white;
+-FILE *out;
+-/* Create the image */
+-im = gdImageCreate(100, 100);
+-/* Allocate background */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Allocate drawing color */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Draw rectangle */
+-gdImageRectangle(im, 0, 0, 99, 99, black);
+-/* Open output file in binary mode */
+-out = fopen("rect.jpg", "wb");
+-/* Write JPEG using default quality */
+-gdImageJpeg(im, out, -1);
+-/* Close file */
+-fclose(out);
+-/* Destroy image */
+-gdImageDestroy(im);
+-
+-   void* gdImageJpegPtr(gdImagePtr im, int *size) _(FUNCTION)_
+-   Identical to gdImageJpeg except that it returns a pointer to a memory
+-   area with the JPEG data. This memory must be freed by the caller when
+-   it is no longer needed. _The caller must invoke gdFree(), not free(),
+-   unless the caller is absolutely certain that the same implementations
+-   of malloc, free, etc. are used both at library build time and at
+-   application build time._ The 'size' parameter receives the total size
+-   of the block of memory.
+-   
+-   void gdImagePng(gdImagePtr im, FILE *out) _(FUNCTION)_
+-   gdImagePng outputs the specified image to the specified file in PNG
+-   format. The file must be open for writing. Under MSDOS and all
+-   versions of Windows, it is important to use "wb" as opposed to simply
+-   "w" as the mode when opening the file, and under Unix there is no
+-   penalty for doing so. gdImagePng does _not_ close the file; your code
+-   must do so.
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black, white;
+-FILE *out;
+-/* Create the image */
+-im = gdImageCreate(100, 100);
+-/* Allocate background */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Allocate drawing color */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Draw rectangle */
+-gdImageRectangle(im, 0, 0, 99, 99, black);
+-/* Open output file in binary mode */
+-out = fopen("rect.png", "wb");
+-/* Write PNG */
+-gdImagePng(im, out);
+-/* Close file */
+-fclose(out);
+-/* Destroy image */
+-gdImageDestroy(im);
+-
+-   void* gdImagePngPtr(gdImagePtr im, int *size) _(FUNCTION)_
+-   Identical to gdImagePng except that it returns a pointer to a memory
+-   area with the PNG data. This memory must be freed by the caller when
+-   it is no longer needed. _The caller must invoke gdFree(), not free(),
+-   unless the caller is absolutely certain that the same implementations
+-   of malloc, free, etc. are used both at library build time and at
+-   application build time._ The 'size' parameter receives the total size
+-   of the block of memory.
+-   
+-   gdImagePngToSink(gdImagePtr im, gdSinkPtr out) _(FUNCTION)_
+-   gdImagePngToSink is called to write a PNG to a data "sink"
+-   (destination) other than a file. Usage is very similar to the
+-   gdImagePng function, except that the programmer provides a custom data
+-   sink.
+-   
+-   The programmer must write an output function which accepts a context
+-   pointer, a buffer, and a number of bytes to be written as arguments.
+-   This function must write the number of bytes requested and return that
+-   number, unless an error has occurred, in which case the function
+-   should return -1. The programmer then creates a gdSink structure and
+-   sets the sink pointer to the output function and the context pointer
+-   to any value which is useful to the programmer.
+-   
+-   The example below implements gdImagePng by creating a custom data
+-   source and invoking gdImagePngFromSink.
+-
+-static int stdioSink(void *context, char *buffer, int len)
+-{
+-        return fwrite(buffer, 1, len, (FILE *) context);
+-}
+-
+-void gdImagePng(gdImagePtr im, FILE *out)
+-{
+-        gdSink mySink;
+-        mySink.context = (void *) out;
+-        mySink.sink = stdioSink;
+-        gdImagePngToSink(im, &mySink);
+-}
+-
+-   void gdImageWBMP(gdImagePtr im, int fg, FILE *out)
+-   gdImageWBMPCtx(gdIOCtx *out) _(FUNCTION)__(FUNCTION)_
+-   gdImageWBMP outputs the specified image to the specified file in WBMP
+-   format. The file must be open for writing. Under MSDOS and all
+-   versions of Windows, it is important to use "wb" as opposed to simply
+-   "w" as the mode when opening the file, and under Unix there is no
+-   penalty for doing so. gdImageWBMP does _not_ close the file; your code
+-   must do so.
+-   
+-   _WBMP file support is black and white only. The color index specified
+-   by the fg argument is the "foreground," and only pixels of this color
+-   will be set in the WBMP file._ All other pixels will be considered
+-   "background."
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black, white;
+-FILE *out;
+-/* Create the image */
+-im = gdImageCreate(100, 100);
+-/* Allocate background */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Allocate drawing color */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Draw rectangle */
+-gdImageRectangle(im, 0, 0, 99, 99, black);
+-/* Open output file in binary mode */
+-out = fopen("rect.wbmp", "wb");
+-/* Write WBMP, with black as foreground */
+-gdImageWBMP(im, black, out);
+-/* Close file */
+-fclose(out);
+-/* Destroy image */
+-gdImageDestroy(im);
+-
+-   void* gdImageWBMPPtr(gdImagePtr im, int *size) _(FUNCTION)_
+-   Identical to gdImageWBMP except that it returns a pointer to a memory
+-   area with the WBMP data. This memory must be freed by the caller when
+-   it is no longer needed. _The caller must invoke gdFree(), not free(),
+-   unless the caller is absolutely certain that the same implementations
+-   of malloc, free, etc. are used both at library build time and at
+-   application build time._ The 'size' parameter receives the total size
+-   of the block of memory.
+-   
+-   void gdImageGd(gdImagePtr im, FILE *out) _(FUNCTION)_
+-   gdImageGd outputs the specified image to the specified file in the gd
+-   image format. The file must be open for writing. Under MSDOS and all
+-   versions of Windows, it is important to use "wb" as opposed to simply
+-   "w" as the mode when opening the file, and under Unix there is no
+-   penalty for doing so. gdImagePng does _not_ close the file; your code
+-   must do so.
+-   
+-   The gd image format is intended for fast reads and writes of images
+-   your program will need frequently to build other images. It is _not_ a
+-   compressed format, and is not intended for general use.
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black, white;
+-FILE *out;
+-/* Create the image */
+-im = gdImageCreate(100, 100);
+-/* Allocate background */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Allocate drawing color */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Draw rectangle */
+-gdImageRectangle(im, 0, 0, 99, 99, black);
+-/* Open output file in binary mode */
+-out = fopen("rect.gd", "wb");
+-/* Write gd format file */
+-gdImageGd(im, out);
+-/* Close file */
+-fclose(out);
+-/* Destroy image */
+-gdImageDestroy(im);
+-
+-   void* gdImageGdPtr(gdImagePtr im, int *size) _(FUNCTION)_
+-   Identical to gdImageGd except that it returns a pointer to a memory
+-   area with the GD data. This memory must be freed by the caller when it
+-   is no longer needed. _The caller must invoke gdFree(), not free(),
+-   unless the caller is absolutely certain that the same implementations
+-   of malloc, free, etc. are used both at library build time and at
+-   application build time._ The 'size' parameter receives the total size
+-   of the block of memory.
+-   
+-   void gdImageGd2(gdImagePtr im, FILE *out, int chunkSize, int fmt)
+-   _(FUNCTION)_
+-   gdImageGd2 outputs the specified image to the specified file in the
+-   gd2 image format. The file must be open for writing. Under MSDOS and
+-   all versions of Windows, it is important to use "wb" as opposed to
+-   simply "w" as the mode when opening the file, and under Unix there is
+-   no penalty for doing so. gdImageGd2 does _not_ close the file; your
+-   code must do so.
+-   
+-   The gd2 image format is intended for fast reads and writes of parts of
+-   images. It is a compressed format, and well suited to retrieving smll
+-   sections of much larger images. The third and fourth parameters are
+-   the 'chunk size' and format resposectively.
+-   
+-   The file is stored as a series of compressed subimages, and the _Chunk
+-   Size_ determines the sub-image size - a value of zero causes the GD
+-   library to use the default.
+-   
+-   It is also possible to store GD2 files in an uncompressed format, in
+-   which case the fourth parameter should be GD2_FMT_RAW.
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black, white;
+-FILE *out;
+-/* Create the image */
+-im = gdImageCreate(100, 100);
+-/* Allocate background */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Allocate drawing color */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Draw rectangle */
+-gdImageRectangle(im, 0, 0, 99, 99, black);
+-/* Open output file in binary mode */
+-out = fopen("rect.gd", "wb");
+-/* Write gd2 format file */
+-gdImageGd2(im, out, 0, GD2_FMT_COMPRESSED);
+-/* Close file */
+-fclose(out);
+-/* Destroy image */
+-gdImageDestroy(im);
+-
+-   void* gdImageGd2Ptr(gdImagePtr im, int chunkSize, int fmt, int *size)
+-   _(FUNCTION)_
+-   Identical to gdImageGd2 except that it returns a pointer to a memory
+-   area with the GD2 data. This memory must be freed by the caller when
+-   it is no longer needed. _The caller must invoke gdFree(), not free(),
+-   unless the caller is absolutely certain that the same implementations
+-   of malloc, free, etc. are used both at library build time and at
+-   application build time._ The 'size' parameter receives the total size
+-   of the block of memory.
+-   
+-  Drawing Functions
+-  
+-   void gdImageSetPixel(gdImagePtr im, int x, int y, int color)
+-          _(FUNCTION)_
+-          gdImageSetPixel sets a pixel to a particular color index.
+-          Always use this function or one of the other drawing functions
+-          to access pixels; do not access the pixels of the gdImage
+-          structure directly.
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Set a pixel near the center. */
+-gdImageSetPixel(im, 50, 50, white);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-   void gdImageLine(gdImagePtr im, int x1, int y1, int x2, int y2, int
+-          color) _(FUNCTION)_
+-          gdImageLine is used to draw a line between two endpoints (x1,y1
+-          and x2, y2). The line is drawn using the color index specified.
+-          Note that the color index can be an actual color returned by
+-          gdImageColorAllocate or one of gdStyled, gdBrushed or
+-          gdStyledBrushed.
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Draw a line from the upper left corner to the lower right corner. */
+-gdImageLine(im, 0, 0, 99, 99, white);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-   void gdImageDashedLine(gdImagePtr im, int x1, int y1, int x2, int y2,
+-          int color) _(FUNCTION)_
+-          gdImageDashedLine is provided _solely for backwards
+-          compatibility _with gd 1.0. New programs should draw dashed
+-          lines using the normal gdImageLine function and the new
+-          gdImageSetStyle function.
+-          
+-          gdImageDashedLine is used to draw a dashed line between two
+-          endpoints (x1,y1 and x2, y2). The line is drawn using the color
+-          index specified. The portions of the line that are not drawn
+-          are left transparent so the background is visible.
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Draw a dashed line from the upper left corner to the lower right corner. */
+-gdImageDashedLine(im, 0, 0, 99, 99);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-   void gdImagePolygon(gdImagePtr im, gdPointPtr points, int pointsTotal,
+-          int color) _(FUNCTION)_
+-          gdImagePolygon is used to draw a polygon with the verticies (at
+-          least 3) specified, using the color index specified. See also
+-          gdImageFilledPolygon.
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-/* Points of polygon */
+-gdPoint points[3];
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Draw a triangle. */
+-points[0].x = 50;
+-points[0].y = 0;
+-points[1].x = 99;
+-points[1].y = 99;
+-points[2].x = 0;
+-points[2].y = 99;
+-gdImagePolygon(im, points, 3, white);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-   void gdImageRectangle(gdImagePtr im, int x1, int y1, int x2, int y2,
+-          int color) _(FUNCTION)_
+-          gdImageRectangle is used to draw a rectangle with the two
+-          corners (upper left first, then lower right) specified, using
+-          the color index specified.
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Draw a rectangle occupying the central area. */
+-gdImageRectangle(im, 25, 25, 74, 74, white);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-   void gdImageFilledPolygon(gdImagePtr im, gdPointPtr points, int
+-          pointsTotal, int color) _(FUNCTION)_
+-          gdImageFilledPolygon is used to fill a polygon with the
+-          verticies (at least 3) specified, using the color index
+-          specified. See also gdImagePolygon.
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-int red;
+-/* Points of polygon */
+-gdPoint points[3];
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Allocate the color red. */
+-red = gdImageColorAllocate(im, 255, 0, 0);
+-/* Draw a triangle. */
+-points[0].x = 50;
+-points[0].y = 0;
+-points[1].x = 99;
+-points[1].y = 99;
+-points[2].x = 0;
+-points[2].y = 99;
+-/* Paint it in white */
+-gdImageFilledPolygon(im, points, 3, white);
+-/* Outline it in red; must be done second */
+-gdImagePolygon(im, points, 3, red);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-   void gdImageFilledRectangle(gdImagePtr im, int x1, int y1, int x2, int
+-          y2, int color) _(FUNCTION)_
+-          gdImageFilledRectangle is used to draw a solid rectangle with
+-          the two corners (upper left first, then lower right) specified,
+-          using the color index specified.
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = int gdImageColorAllocate(im, 255, 255, 255);
+-/* Draw a filled rectangle occupying the central area. */
+-gdImageFilledRectangle(im, 25, 25, 74, 74, white);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-   void gdImageArc(gdImagePtr im, int cx, int cy, int w, int h, int s,
+-          int e, int color) _(FUNCTION)_
+-          gdImageArc is used to draw a partial ellipse centered at the
+-          given point, with the specified width and height in pixels. The
+-          arc begins at the position in degrees specified by s and ends
+-          at the position specified by e. The arc is drawn in the color
+-          specified by the last argument. A circle can be drawn by
+-          beginning from 0 degrees and ending at 360 degrees, with width
+-          and height being equal. e must be greater than s. Values
+-          greater than 360 are interpreted modulo 360.
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-im = gdImageCreate(100, 50);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Inscribe an ellipse in the image. */
+-gdImageArc(im, 50, 25, 98, 48, 0, 360, white);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-   void gdImageFillToBorder(gdImagePtr im, int x, int y, int border, int
+-          color) _(FUNCTION)_
+-          gdImageFillToBorder floods a portion of the image with the
+-          specified color, beginning at the specified point and stopping
+-          at the specified border color. For a way of flooding an area
+-          defined by the color of the starting point, see gdImageFill.
+-          
+-          The border color _cannot_ be a special color such as gdTiled;
+-          it must be a proper solid color. The fill color can be,
+-          however.
+-          
+-          Note that gdImageFillToBorder is recursive. It is not the most
+-          naive implementation possible, and the implementation is
+-          expected to improve, but there will always be degenerate cases
+-          in which the stack can become very deep. This can be a problem
+-          in MSDOS and MS Windows 3.1 environments. (Of course, in a Unix
+-          or Windows 95/98/NT environment with a proper stack, this is
+-          not a problem at all.)
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-int red;
+-im = gdImageCreate(100, 50);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Allocate the color red. */
+-red = gdImageColorAllocate(im, 255, 0, 0);
+-/* Inscribe an ellipse in the image. */
+-gdImageArc(im, 50, 25, 98, 48, 0, 360, white);
+-/* Flood-fill the ellipse. Fill color is red, border color is
+-        white (ellipse). */
+-gdImageFillToBorder(im, 50, 50, white, red);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-   void gdImageFill(gdImagePtr im, int x, int y, int color) _(FUNCTION)_
+-          gdImageFill floods a portion of the image with the specified
+-          color, beginning at the specified point and flooding the
+-          surrounding region of the same color as the starting point. For
+-          a way of flooding a region defined by a specific border color
+-          rather than by its interior color, see gdImageFillToBorder.
+-          
+-          The fill color can be gdTiled, resulting in a tile fill using
+-          another image as the tile. However, the tile image cannot be
+-          transparent. If the image you wish to fill with has a
+-          transparent color index, call gdImageTransparent on the tile
+-          image and set the transparent color index to -1 to turn off its
+-          transparency.
+-          
+-          Note that gdImageFill is recursive. It is not the most naive
+-          implementation possible, and the implementation is expected to
+-          improve, but there will always be degenerate cases in which the
+-          stack can become very deep. This can be a problem in MSDOS and
+-          MS Windows environments. (Of course, in a Unix or Windows
+-          95/98/NT environment with a proper stack, this is not a problem
+-          at all.)
+-          
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-int red;
+-im = gdImageCreate(100, 50);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Allocate the color red. */
+-red = gdImageColorAllocate(im, 255, 0, 0);
+-/* Inscribe an ellipse in the image. */
+-gdImageArc(im, 50, 25, 98, 48, 0, 360, white);
+-/* Flood-fill the ellipse. Fill color is red, and will replace the
+-        black interior of the ellipse. */
+-gdImageFill(im, 50, 50, red);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-   void gdImageSetBrush(gdImagePtr im, gdImagePtr brush) _(FUNCTION)_
+-          A "brush" is an image used to draw wide, shaped strokes in
+-          another image. Just as a paintbrush is not a single point, a
+-          brush image need not be a single pixel. _Any_ gd image can be
+-          used as a brush, and by setting the transparent color index of
+-          the brush image with gdImageColorTransparent, a brush of any
+-          shape can be created. All line-drawing functions, such as
+-          gdImageLine and gdImagePolygon, will use the current brush if
+-          the special "color" gdBrushed or gdStyledBrushed is used when
+-          calling them.
+-          
+-          gdImageSetBrush is used to specify the brush to be used in a
+-          particular image. You can set any image to be the brush. If the
+-          brush image does not have the same color map as the first
+-          image, any colors missing from the first image will be
+-          allocated. If not enough colors can be allocated, the closest
+-          colors already available will be used. This allows arbitrary
+-          PNGs to be used as brush images. It also means, however, that
+-          you should not set a brush unless you will actually use it; if
+-          you set a rapid succession of different brush images, you can
+-          quickly fill your color map, and the results will not be
+-          optimal.
+-          
+-          You need not take any special action when you are finished with
+-          a brush. As for any other image, if you will not be using the
+-          brush image for any further purpose, you should call
+-          gdImageDestroy. You must not use the color gdBrushed if the
+-          current brush has been destroyed; you can of course set a new
+-          brush to replace it.
+-          
+-
+-... inside a function ...
+-gdImagePtr im, brush;
+-FILE *in;
+-int black;
+-im = gdImageCreate(100, 100);
+-/* Open the brush PNG. For best results, portions of the
+-        brush that should be transparent (ie, not part of the
+-        brush shape) should have the transparent color index. */
+-in = fopen("star.png", "rb");
+-brush = gdImageCreateFromPng(in);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-gdImageSetBrush(im, brush);
+-/* Draw a line from the upper left corner to the lower right corner
+-        using the brush. */
+-gdImageLine(im, 0, 0, 99, 99, gdBrushed);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-/* Destroy the brush image */
+-gdImageDestroy(brush);
+-
+-   void gdImageSetTile(gdImagePtr im, gdImagePtr tile) _(FUNCTION)_
+-          A "tile" is an image used to fill an area with a repeated
+-          pattern. _Any_ gd image can be used as a tile, and by setting
+-          the transparent color index of the tile image with
+-          gdImageColorTransparent, a tile that allows certain parts of
+-          the underlying area to shine through can be created. All
+-          region-filling functions, such as gdImageFill and
+-          gdImageFilledPolygon, will use the current tile if the special
+-          "color" gdTiled is used when calling them.
+-          
+-          gdImageSetTile is used to specify the tile to be used in a
+-          particular image. You can set any image to be the tile. If the
+-          tile image does not have the same color map as the first image,
+-          any colors missing from the first image will be allocated. If
+-          not enough colors can be allocated, the closest colors already
+-          available will be used. This allows arbitrary PNGs to be used
+-          as tile images. It also means, however, that you should not set
+-          a tile unless you will actually use it; if you set a rapid
+-          succession of different tile images, you can quickly fill your
+-          color map, and the results will not be optimal.
+-          
+-          You need not take any special action when you are finished with
+-          a tile. As for any other image, if you will not be using the
+-          tile image for any further purpose, you should call
+-          gdImageDestroy. You must not use the color gdTiled if the
+-          current tile has been destroyed; you can of course set a new
+-          tile to replace it.
+-          
+-
+-... inside a function ...
+-gdImagePtr im, tile;
+-FILE *in;
+-int black;
+-im = gdImageCreate(100, 100);
+-/* Open the tile PNG. For best results, portions of the
+-        tile that should be transparent (ie, allowing the
+-        background to shine through) should have the transparent
+-        color index. */
+-in = fopen("star.png", "rb");
+-tile = gdImageCreateFromPng(in);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-gdImageSetTile(im, tile);
+-/* Fill an area using the tile. */
+-gdImageFilledRectangle(im, 25, 25, 75, 75, gdTiled);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-/* Destroy the tile image */
+-gdImageDestroy(tile);
+-
+-   void gdImageSetStyle(gdImagePtr im, int *style, int styleLength)
+-          _(FUNCTION)_
+-          It is often desirable to draw dashed lines, dotted lines, and
+-          other variations on a broken line. gdImageSetStyle can be used
+-          to set any desired series of colors, including a special color
+-          that leaves the background intact, to be repeated during the
+-          drawing of a line.
+-          
+-          To use gdImageSetStyle, create an array of integers and assign
+-          them the desired series of color values to be repeated. You can
+-          assign the special color value gdTransparent to indicate that
+-          the existing color should be left unchanged for that particular
+-          pixel (allowing a dashed line to be attractively drawn over an
+-          existing image).
+-          
+-          Then, to draw a line using the style, use the normal
+-          gdImageLine function with the special color value gdStyled.
+-          
+-          As of version 1.1.1, the style array is copied when you set the
+-          style, so you need not be concerned with keeping the array
+-          around indefinitely. This should not break existing code that
+-          assumes styles are not copied.
+-          
+-          You can also combine styles and brushes to draw the brush image
+-          at intervals instead of in a continuous stroke. When creating a
+-          style for use with a brush, the style values are interpreted
+-          differently: zero (0) indicates pixels at which the brush
+-          should not be drawn, while one (1) indicates pixels at which
+-          the brush should be drawn. To draw a styled, brushed line, you
+-          must use the special color value gdStyledBrushed. For an
+-          example of this feature in use, see gddemo.c (provided in the
+-          distribution).
+-          
+-
+-gdImagePtr im;
+-int styleDotted[2], styleDashed[6];
+-FILE *in;
+-int black;
+-int red;
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-red = gdImageColorAllocate(im, 255, 0, 0);
+-/* Set up dotted style. Leave every other pixel alone. */
+-styleDotted[0] = red;
+-styleDotted[1] = gdTransparent;
+-/* Set up dashed style. Three on, three off. */
+-styleDashed[0] = red;
+-styleDashed[1] = red;
+-styleDashed[2] = red;
+-styleDashed[3] = gdTransparent;
+-styleDashed[4] = gdTransparent;
+-styleDashed[5] = gdTransparent;
+-/* Set dotted style. Note that we have to specify how many pixels are
+-        in the style! */
+-gdImageSetStyle(im, styleDotted, 2);
+-/* Draw a line from the upper left corner to the lower right corner. */
+-gdImageLine(im, 0, 0, 99, 99, gdStyled);
+-/* Now the dashed line. */
+-gdImageSetStyle(im, styleDashed, 6);
+-gdImageLine(im, 0, 99, 0, 99, gdStyled);
+-
+-/* ... Do something with the image, such as saving it to a file ... */
+-
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-  Query Functions
+-  
+-        int gdImageBlue(gdImagePtr im, int color) _(MACRO)_
+-                gdImageBlue is a macro which returns the blue component
+-                of the specified color index. Use this macro rather than
+-                accessing the structure members directly.
+-                
+-        int gdImageGetPixel(gdImagePtr im, int x, int y) _(FUNCTION)_
+-                gdImageGetPixel() retrieves the color index of a
+-                particular pixel. Always use this function to query
+-                pixels; do not access the pixels of the gdImage structure
+-                directly.
+-                
+-
+-... inside a function ...
+-FILE *in;
+-gdImagePtr im;
+-int c;
+-in = fopen("mypng.png", "rb");
+-im = gdImageCreateFromPng(in);
+-fclose(in);
+-c = gdImageGetPixel(im, gdImageSX(im) / 2, gdImageSY(im) / 2);
+-printf("The value of the center pixel is %d; RGB values are %d,%d,%d\n",
+-        c, im->red[c], im->green[c], im->blue[c]);
+-gdImageDestroy(im);
+-
+-        int gdImageBoundsSafe(gdImagePtr im, int x, int y) _(FUNCTION)_
+-                gdImageBoundsSafe returns true (1) if the specified point
+-                is within the bounds of the image, false (0) if not. This
+-                function is intended primarily for use by those who wish
+-                to add functions to gd. All of the gd drawing functions
+-                already clip safely to the edges of the image.
+-                
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-im = gdImageCreate(100, 100);
+-if (gdImageBoundsSafe(im, 50, 50)) {
+-        printf("50, 50 is within the image bounds\n");
+-} else {
+-        printf("50, 50 is outside the image bounds\n");
+-}
+-gdImageDestroy(im);
+-
+-        int gdImageGreen(gdImagePtr im, int color) _(MACRO)_
+-                gdImageGreen is a macro which returns the green component
+-                of the specified color index. Use this macro rather than
+-                accessing the structure members directly.
+-                
+-        int gdImageRed(gdImagePtr im, int color) _(MACRO)_
+-                gdImageRed is a macro which returns the red component of
+-                the specified color index. Use this macro rather than
+-                accessing the structure members directly.
+-                
+-        int gdImageSX(gdImagePtr im) _(MACRO)_
+-                gdImageSX is a macro which returns the width of the image
+-                in pixels. Use this macro rather than accessing the
+-                structure members directly.
+-                
+-        int gdImageSY(gdImagePtr im) _(MACRO)_
+-                gdImageSY is a macro which returns the height of the
+-                image in pixels. Use this macro rather than accessing the
+-                structure members directly.
+-                
+-  Fonts and text-handling functions
+-  
+-        void gdImageChar(gdImagePtr im, gdFontPtr font, int x, int y, int
+-                c, int color) _(FUNCTION)_
+-                gdImageChar is used to draw single characters on the
+-                image. (To draw multiple characters, use gdImageString or
+-                gdImageString16. See also gdImageStringFT for a high
+-                quality solution.) The second argument is a pointer to a
+-                font definition structure; five fonts are provided with
+-                gd, gdFontTiny, gdFontSmall, gdFontMediumBold,
+-                gdFontLarge, and gdFontGiant. You must include the files
+-                "gdfontt.h", "gdfonts.h", "gdfontmb.h", "gdfontl.h" and
+-                "gdfontg.h" respectively and (if you are not using a
+-                library-based approach) link with the corresponding .c
+-                files to use the provided fonts. The character specified
+-                by the fifth argument is drawn from left to right in the
+-                specified color. (See gdImageCharUp for a way of drawing
+-                vertical text.) Pixels not set by a particular character
+-                retain their previous color.
+-                
+-
+-#include "gd.h"
+-#include "gdfontl.h"
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Draw a character. */
+-gdImageChar(im, gdFontLarge, 0, 0, 'Q', white);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-        void gdImageCharUp(gdImagePtr im, gdFontPtr font, int x, int y,
+-                int c, int color) _(FUNCTION)_
+-                gdImageCharUp is used to draw single characters on the
+-                image, rotated 90 degrees. (To draw multiple characters,
+-                use gdImageStringUp or gdImageStringUp16.) The second
+-                argument is a pointer to a font definition structure;
+-                five fonts are provided with gd, gdFontTiny, gdFontSmall,
+-                gdFontMediumBold, gdFontLarge, and gdFontGiant. You must
+-                include the files "gdfontt.h", "gdfonts.h", "gdfontmb.h",
+-                "gdfontl.h" and "gdfontg.h" respectively and (if you are
+-                not using a library-based approach) link with the
+-                corresponding .c files to use the provided fonts. The
+-                character specified by the fifth argument is drawn from
+-                bottom to top, rotated at a 90-degree angle, in the
+-                specified color. (See gdImageChar for a way of drawing
+-                horizontal text.) Pixels not set by a particular
+-                character retain their previous color.
+-                
+-
+-#include "gd.h"
+-#include "gdfontl.h"
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Draw a character upwards so it rests against the top of the image. */
+-gdImageCharUp(im, gdFontLarge,
+-        0, gdFontLarge->h, 'Q', white);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-        void gdImageString(gdImagePtr im, gdFontPtr font, int x, int y,
+-                unsigned char *s, int color) _(FUNCTION)_
+-                gdImageString is used to draw multiple characters on the
+-                image. (To draw single characters, use gdImageChar.) The
+-                second argument is a pointer to a font definition
+-                structure; five fonts are provided with gd, gdFontTiny,
+-                gdFontSmall, gdFontMediumBold, gdFontLarge, and
+-                gdFontGiant. You must include the files "gdfontt.h",
+-                "gdfonts.h", "gdfontmb.h", "gdfontl.h" and "gdfontg.h"
+-                respectively and (if you are not using a library-based
+-                approach) link with the corresponding .c files to use the
+-                provided fonts. The null-terminated C string specified by
+-                the fifth argument is drawn from left to right in the
+-                specified color. (See gdImageStringUp for a way of
+-                drawing vertical text. See also gdImageStringFT for a
+-                high quality solution.) Pixels not set by a particular
+-                character retain their previous color.
+-                
+-
+-#include "gd.h"
+-#include "gdfontl.h"
+-#include <string.h>
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-/* String to draw. */
+-char *s = "Hello.";
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Draw a centered string. */
+-gdImageString(im, gdFontLarge,
+-        im->w / 2 - (strlen(s) * gdFontLarge->w / 2),
+-        im->h / 2 - gdFontLarge->h / 2,
+-        s, white);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-        void gdImageString16(gdImagePtr im, gdFontPtr font, int x, int y,
+-                unsigned short *s, int color) _(FUNCTION)_
+-                gdImageString is used to draw multiple 16-bit characters
+-                on the image. (To draw single characters, use
+-                gdImageChar.) The second argument is a pointer to a font
+-                definition structure; five fonts are provided with gd,
+-                gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge,
+-                and gdFontGiant. You must include the files "gdfontt.h",
+-                "gdfonts.h", "gdfontmb.h", "gdfontl.h" and "gdfontg.h"
+-                respectively and (if you are not using a library-based
+-                approach) link with the corresponding .c files to use the
+-                provided fonts. The null-terminated string of characters
+-                represented as 16-bit unsigned short integers specified
+-                by the fifth argument is drawn from left to right in the
+-                specified color. (See gdImageStringUp16 for a way of
+-                drawing vertical text.) Pixels not set by a particular
+-                character retain their previous color.
+-                
+-                This function was added in gd1.3 to provide a means of
+-                rendering fonts with more than 256 characters for those
+-                who have them. A more frequently used routine is
+-                gdImageString.
+-                
+-        void gdImageStringUp(gdImagePtr im, gdFontPtr font, int x, int y,
+-                unsigned char *s, int color) _(FUNCTION)_
+-                gdImageStringUp is used to draw multiple characters on
+-                the image, rotated 90 degrees. (To draw single
+-                characters, use gdImageCharUp.) The second argument is a
+-                pointer to a font definition structure; five fonts are
+-                provided with gd, gdFontTiny, gdFontSmall,
+-                gdFontMediumBold, gdFontLarge, and gdFontGiant. You must
+-                include the files "gdfontt.h", "gdfonts.h", "gdfontmb.h",
+-                "gdfontl.h" and "gdfontg.h" respectively and (if you are
+-                not using a library-based approach) link with the
+-                corresponding .c files to use the provided fonts.The
+-                null-terminated C string specified by the fifth argument
+-                is drawn from bottom to top (rotated 90 degrees) in the
+-                specified color. (See gdImageString for a way of drawing
+-                horizontal text.) Pixels not set by a particular
+-                character retain their previous color.
+-                
+-
+-#include "gd.h"
+-#include "gdfontl.h"
+-#include <string.h>
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-/* String to draw. */
+-char *s = "Hello.";
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color white (red, green and blue all maximum). */
+-white = gdImageColorAllocate(im, 255, 255, 255);
+-/* Draw a centered string going upwards. Axes are reversed,
+-        and Y axis is decreasing as the string is drawn. */
+-gdImageStringUp(im, gdFontLarge,
+-        im->w / 2 - gdFontLarge->h / 2,
+-        im->h / 2 + (strlen(s) * gdFontLarge->w / 2),
+-        s, white);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-        void gdImageStringUp16(gdImagePtr im, gdFontPtr font, int x, int
+-                y, unsigned short *s, int color) _(FUNCTION)_
+-                gdImageString is used to draw multiple 16-bit characters
+-                vertically on the image. (To draw single characters, use
+-                gdImageChar.) The second argument is a pointer to a font
+-                definition structure; five fonts are provided with gd,
+-                gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge,
+-                and gdFontGiant. You must include the files "gdfontt.h",
+-                "gdfonts.h", "gdfontmb.h", "gdfontl.h" and "gdfontg.h"
+-                respectively and (if you are not using a library-based
+-                approach) link with the corresponding .c files to use the
+-                provided fonts. The null-terminated string of characters
+-                represented as 16-bit unsigned short integers specified
+-                by the fifth argument is drawn from bottom to top in the
+-                specified color. (See gdImageStringUp16 for a way of
+-                drawing horizontal text.) Pixels not set by a particular
+-                character retain their previous color.
+-                
+-                This function was added in gd1.3 to provide a means of
+-                rendering fonts with more than 256 characters for those
+-                who have them. A more frequently used routine is
+-                gdImageStringUp.
+-                
+-        char *gdImageStringFT(gdImagePtr im, int *brect, int fg, char
+-                *fontname, double ptsize, double angle, int x, int y,
+-                char *string) _(FUNCTION)_
+-                _RECOMMENDED. New in 1.8.4._ gdImageStringFT draws text
+-                using the FreeType 2.x library.
+-                
+-                gdImageStringFT draws a string of anti-aliased characters
+-                on the image using the FreeType library to render
+-                user-supplied TrueType fonts. _We do not provide TrueType
+-                fonts (.ttf and .ttc files). Obtaining them is entirely
+-                up to you._ The string is anti-aliased, meaning that
+-                there should be fewer "jaggies" visible. The fontname is
+-                the full pathname to a TrueType font file, or a font face
+-                name if the GDFONTPATH environment variable or FreeType's
+-                DEFAULT_FONTPATH variable have been set intelligently.
+-                The string may be arbitrarily scaled (ptsize) and rotated
+-                (angle in radians).
+-                
+-                The user-supplied int brect[8] array is filled on return
+-                from gdImageStringFT with the 8 elements representing the
+-                4 corner coordinates of the bounding rectangle.
+-                0 lower left corner, X position
+-                lower left corner, Y position
+-                lower right corner, X position
+-                3 lower right corner, Y position
+-                4 upper right corner, X position
+-                5 upper right corner, Y position
+-                6 upper left corner, X position
+-                7 upper left corner, Y position
+-                
+-                The points are relative to the text regardless of the
+-                angle, so "upper left" means in the top left-hand corner
+-                seeing the text horizontally.
+-                
+-                Use a NULL gdImagePtr to get the bounding rectangle
+-                without rendering. This is a relatively cheap operation
+-                if followed by a rendering of the same string, because of
+-                the caching of the partial rendering during bounding
+-                rectangle calculation.
+-                
+-                The string is rendered in the color indicated by the gf
+-                color index. _Use the negative of the desired color index
+-                to disable anti-aliasing._
+-                
+-                The string may contain UTF-8 sequences like: "&#192;"
+-                
+-                gdImageStringFT will return a null char* on success, or
+-                an error string on failure.
+-                
+-
+-#include "gd.h"
+-#include <string.h>
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-int brect[8];
+-int x, y;
+-char *err;
+-
+-char *s = "Hello."; /* String to draw. */
+-double sz = 40.;
+-char *f = "/usr/local/share/ttf/Times.ttf";  /* User supplied font */
+-
+-/* obtain brect so that we can size the image */
+-err = gdImageStringFT(NULL,&brect[0],0,f,sz,0.,0,0,s);
+-if (err) {fprintf(stderr,err); return 1;}
+-
+-/* create an image big enough for the string plus a little whitespace */
+-x = brect[2]-brect[6] + 6;
+-y = brect[3]-brect[7] + 6;
+-im = gdImageCreate(x,y);
+-
+-/* Background color (first allocated) */
+-white = gdImageColorResolve(im, 255, 255, 255);
+-black = gdImageColorResolve(im, 0, 0, 0);
+-
+-/* render the string, offset origin to center string*/
+-/* note that we use top-left coordinate for adjustment
+- * since gd origin is in top-left with y increasing downwards. */
+-x = 3 - brect[6];
+-y = 3 - brect[7];
+-err = gdImageStringFT(im,&brect[0],black,f,sz,0.0,x,y,s);
+-if (err) {fprintf(stderr,err); return 1;}
+-
+-/* Write img to stdout */
+-gdImagePng(im, stdout);
+-
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-        char *gdImageStringTTF(gdImagePtr im, int *brect, int fg, char
+-                *fontname, double ptsize, double angle, int x, int y,
+-                char *string) _(FUNCTION)_
+-                _DEPRECATED._ gdImageStringTTF draws text using the
+-                FreeType 1.x library. For better results, use
+-                gdImageStringFT and FreeType 2.x.
+-                
+-                gdImageStringTTF draws a string of anti-aliased
+-                characters on the image using the FreeType library to
+-                render user-supplied TrueType fonts. _We do not provide
+-                TrueType fonts (.ttf and .ttc files). Obtaining them is
+-                entirely up to you._ The string is anti-aliased, meaning
+-                that there should be fewer "jaggies" visible. The
+-                fontname is the full pathname to a TrueType font file, or
+-                a font face name if the GDFONTPATH environment variable
+-                or FreeType's DEFAULT_FONTPATH variable have been set
+-                intelligently. The string may be arbitrarily scaled
+-                (ptsize) and rotated (angle in radians).
+-                
+-                The user-supplied int brect[8] array is filled on return
+-                from gdImageStringTTF with the 8 elements representing
+-                the 4 corner coordinates of the bounding rectangle.
+-                0 lower left corner, X position
+-                lower left corner, Y position
+-                lower right corner, X position
+-                3 lower right corner, Y position
+-                4 upper right corner, X position
+-                5 upper right corner, Y position
+-                6 upper left corner, X position
+-                7 upper left corner, Y position
+-                
+-                The points are relative to the text regardless of the
+-                angle, so "upper left" means in the top left-hand corner
+-                seeing the text horizontally.
+-                
+-                Use a NULL gdImagePtr to get the bounding rectangle
+-                without rendering. This is a relatively cheap operation
+-                if followed by a rendering of the same string, because of
+-                the caching of the partial rendering during bounding
+-                rectangle calculation.
+-                
+-                The string is rendered in the color indicated by the gf
+-                color index. _Use the negative of the desired color index
+-                to disable anti-aliasing._
+-                
+-                The string may contain UTF-8 sequences like: "&#192;"
+-                
+-                gdImageStringTTF will return a null char* on success, or
+-                an error string on failure.
+-                
+-
+-#include "gd.h"
+-#include <string.h>
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int white;
+-int brect[8];
+-int x, y;
+-char *err;
+-
+-char *s = "Hello."; /* String to draw. */
+-double sz = 40.;
+-char *f = "/usr/local/share/ttf/Times.ttf";  /* User supplied font */
+-
+-/* obtain brect so that we can size the image */
+-err = gdImageStringTTF(NULL,&brect[0],0,f,sz,0.,0,0,s);
+-if (err) {fprintf(stderr,err); return 1;}
+-
+-/* create an image big enough for the string plus a little whitespace */
+-x = brect[2]-brect[6] + 6;
+-y = brect[3]-brect[7] + 6;
+-im = gdImageCreate(x,y);
+-
+-/* Background color (first allocated) */
+-white = gdImageColorResolve(im, 255, 255, 255);
+-black = gdImageColorResolve(im, 0, 0, 0);
+-
+-/* render the string, offset origin to center string*/
+-/* note that we use top-left coordinate for adjustment
+- * since gd origin is in top-left with y increasing downwards. */
+-x = 3 - brect[6];
+-y = 3 - brect[7];
+-err = gdImageStringTTF(im,&brect[0],black,f,sz,0.0,x,y,s);
+-if (err) {fprintf(stderr,err); return 1;}
+-
+-/* Write img to stdout */
+-gdImagePng(im, stdout);
+-
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-  Color-handling functions
+-  
+-        int gdImageColorAllocate(gdImagePtr im, int r, int g, int b)
+-                _(FUNCTION)_
+-                gdImageColorAllocate finds the first available color
+-                index in the image specified, sets its RGB values to
+-                those requested (255 is the maximum for each), and
+-                returns the index of the new color table entry. When
+-                creating a new image, the first time you invoke this
+-                function, you are setting the background color for that
+-                image.
+-                
+-                In the event that all gdMaxColors colors (256) have
+-                already been allocated, gdImageColorAllocate will return
+-                -1 to indicate failure. (This is not uncommon when
+-                working with existing PNG files that already use 256
+-                colors.) Note that gdImageColorAllocate does not check
+-                for existing colors that match your request; see
+-                gdImageColorExact, gdImageColorClosest and
+-                gdImageColorClosestHWB for ways to locate existing colors
+-                that approximate the color desired in situations where a
+-                new color is not available. Also see gdImageColorResolve,
+-                new in gd-1.6.2.
+-                
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-int red;
+-im = gdImageCreate(100, 100);
+-/* Background color (first allocated) */
+-black = gdImageColorAllocate(im, 0, 0, 0);
+-/* Allocate the color red. */
+-red = gdImageColorAllocate(im, 255, 0, 0);
+-/* Draw a dashed line from the upper left corner to the lower right corner. */
+-gdImageDashedLine(im, 0, 0, 99, 99, red);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-        int gdImageColorClosest(gdImagePtr im, int r, int g, int b)
+-                _(FUNCTION)_
+-                gdImageColorClosest searches the colors which have been
+-                defined thus far in the image specified and returns the
+-                index of the color with RGB values closest to those of
+-                the request. (Closeness is determined by Euclidian
+-                distance, which is used to determine the distance in
+-                three-dimensional color space between colors.)
+-                
+-                If no colors have yet been allocated in the image,
+-                gdImageColorClosest returns -1.
+-                
+-                This function is most useful as a backup method for
+-                choosing a drawing color when an image already contains
+-                gdMaxColors (256) colors and no more can be allocated.
+-                (This is not uncommon when working with existing PNG
+-                files that already use many colors.) See
+-                gdImageColorExact for a method of locating exact matches
+-                only.
+-                
+-
+-... inside a function ...
+-gdImagePtr im;
+-FILE *in;
+-int red;
+-/* Let's suppose that photo.png is a scanned photograph with
+-        many colors. */
+-in = fopen("photo.png", "rb");
+-im = gdImageCreateFromPng(in);
+-fclose(in);
+-/* Try to allocate red directly */
+-red = gdImageColorAllocate(im, 255, 0, 0);
+-/* If we fail to allocate red... */
+-if (red == (-1)) {
+-        /* Find the _closest_ color instead. */
+-        red = gdImageColorClosest(im, 255, 0, 0);
+-}
+-/* Draw a dashed line from the upper left corner to the lower right corner */
+-gdImageDashedLine(im, 0, 0, 99, 99, red);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-        int gdImageColorClosestHWB(gdImagePtr im, int r, int g, int b)
+-                _(FUNCTION)_
+-                gdImageColorClosestHWB searches the colors which have
+-                been defined thus far in the image specified and returns
+-                the index of the color with hue, whiteness and blackness
+-                closest to the requested color. This scheme is typically
+-                superior to the Euclidian distance scheme used by
+-                gdImageColorClosest.
+-                
+-                If no colors have yet been allocated in the image,
+-                gdImageColorClosestHWB returns -1.
+-                
+-                This function is most useful as a backup method for
+-                choosing a drawing color when an image already contains
+-                gdMaxColors (256) colors and no more can be allocated.
+-                (This is not uncommon when working with existing PNG
+-                files that already use many colors.) See
+-                gdImageColorExact for a method of locating exact matches
+-                only.
+-                
+-
+-... inside a function ...
+-gdImagePtr im;
+-FILE *in;
+-int red;
+-/* Let's suppose that photo.png is a scanned photograph with
+-        many colors. */
+-in = fopen("photo.png", "rb");
+-im = gdImageCreateFromPng(in);
+-fclose(in);
+-/* Try to allocate red directly */
+-red = gdImageColorAllocate(im, 255, 0, 0);
+-/* If we fail to allocate red... */
+-if (red == (-1)) {
+-        /* Find the _closest_ color instead. */
+-        red = gdImageColorClosestHWB(im, 255, 0, 0);
+-}
+-/* Draw a dashed line from the upper left corner to the lower right corner */
+-gdImageDashedLine(im, 0, 0, 99, 99, red);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-        int gdImageColorExact(gdImagePtr im, int r, int g, int b)
+-                _(FUNCTION)_
+-                gdImageColorExact searches the colors which have been
+-                defined thus far in the image specified and returns the
+-                index of the first color with RGB values which exactly
+-                match those of the request. If no allocated color matches
+-                the request precisely, gdImageColorExact returns -1. See
+-                gdImageColorClosest for a way to find the color closest
+-                to the color requested.
+-                
+-
+-... inside a function ...
+-gdImagePtr im;
+-int red;
+-in = fopen("photo.png", "rb");
+-im = gdImageCreateFromPng(in);
+-fclose(in);
+-/* The image may already contain red; if it does, we'll save a slot
+-        in the color table by using that color. */
+-/* Try to allocate red directly */
+-red = gdImageColorExact(im, 255, 0, 0);
+-/* If red isn't already present... */
+-if (red == (-1)) {
+-        /* Second best: try to allocate it directly. */
+-        red = gdImageColorAllocate(im, 255, 0, 0);
+-        /* Out of colors, so find the _closest_ color instead. */
+-        red = gdImageColorClosest(im, 255, 0, 0);
+-}
+-/* Draw a dashed line from the upper left corner to the lower right corner */
+-gdImageDashedLine(im, 0, 0, 99, 99, red);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-        int gdImageColorResolve(gdImagePtr im, int r, int g, int b)
+-                _(FUNCTION)_
+-                gdImageColorResolve searches the colors which have been
+-                defined thus far in the image specified and returns the
+-                index of the first color with RGB values which exactly
+-                match those of the request. If no allocated color matches
+-                the request precisely, then gdImageColorResolve tries to
+-                allocate the exact color. If there is no space left in
+-                the color table then gdImageColorResolve returns the
+-                closest color (as in gdImageColorClosest). This function
+-                always returns an index of a color.
+-                
+-
+-... inside a function ...
+-gdImagePtr im;
+-int red;
+-in = fopen("photo.png", "rb");
+-im = gdImageCreateFromPng(in);
+-fclose(in);
+-/* The image may already contain red; if it does, we'll save a slot
+-        in the color table by using that color. */
+-/* Get index of red, or color closest to red */
+-red = gdImageColorResolve(im, 255, 0, 0);
+-/* Draw a dashed line from the upper left corner to the lower right corner */
+-gdImageDashedLine(im, 0, 0, 99, 99, red);
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-        int gdImageColorsTotal(gdImagePtr im) _(MACRO)_
+-                gdImageColorsTotal is a macro which returns the number of
+-                colors currently allocated in the image. Use this macro
+-                to obtain this information; do not access the structure
+-                directly.
+-                
+-        int gdImageColorRed(gdImagePtr im, int c) _(MACRO)_
+-                gdImageColorRed is a macro which returns the red portion
+-                of the specified color in the image. Use this macro to
+-                obtain this information; do not access the structure
+-                directly.
+-                
+-        int gdImageColorGreen(gdImagePtr im, int c) _(MACRO)_
+-                gdImageColorGreen is a macro which returns the green
+-                portion of the specified color in the image. Use this
+-                macro to obtain this information; do not access the
+-                structure directly.
+-                
+-        int gdImageColorBlue(gdImagePtr im, int c) _(MACRO)_
+-                gdImageColorBlue is a macro which returns the green
+-                portion of the specified color in the image. Use this
+-                macro to obtain this information; do not access the
+-                structure directly.
+-                
+-        int gdImageGetInterlaced(gdImagePtr im) _(MACRO)_
+-                gdImageGetInterlaced is a macro which returns true (1) if
+-                the image is interlaced, false (0) if not. Use this macro
+-                to obtain this information; do not access the structure
+-                directly. See gdImageInterlace for a means of interlacing
+-                images.
+-                
+-        int gdImageGetTransparent(gdImagePtr im) _(MACRO)_
+-                gdImageGetTransparent is a macro which returns the
+-                current transparent color index in the image. If there is
+-                no transparent color, gdImageGetTransparent returns -1.
+-                Use this macro to obtain this information; do not access
+-                the structure directly.
+-                
+-        void gdImageColorDeallocate(gdImagePtr im, int color) _(FUNCTION)_
+-                
+-                gdImageColorDeallocate marks the specified color as being
+-                available for reuse. It does not attempt to determine
+-                whether the color index is still in use in the image.
+-                After a call to this function, the next call to
+-                gdImageColorAllocate for the same image will set new RGB
+-                values for that color index, changing the color of any
+-                pixels which have that index as a result. If multiple
+-                calls to gdImageColorDeallocate are made consecutively,
+-                the lowest-numbered index among them will be reused by
+-                the next gdImageColorAllocate call.
+-                
+-
+-... inside a function ...
+-gdImagePtr im;
+-int red, blue;
+-in = fopen("photo.png", "rb");
+-im = gdImageCreateFromPng(in);
+-fclose(in);
+-/* Look for red in the color table. */
+-red = gdImageColorExact(im, 255, 0, 0);
+-/* If red is present... */
+-if (red != (-1)) {
+-        /* Deallocate it. */
+-        gdImageColorDeallocate(im, red);
+-        /* Allocate blue, reusing slot in table.
+-                Existing red pixels will change color. */
+-        blue = gdImageColorAllocate(im, 0, 0, 255);
+-}
+-/* ... Do something with the image, such as saving it to a file... */
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-        void gdImageColorTransparent(gdImagePtr im, int color)
+-                _(FUNCTION)_
+-                gdImageColorTransparent sets the transparent color index
+-                for the specified image to the specified index. To
+-                indicate that there should be _no_ transparent color,
+-                invoke gdImageColorTransparent with a color index of -1.
+-                Note that JPEG images do not support transparency, so
+-                this setting has no effect when writing JPEG images.
+-                
+-                The color index used should be an index allocated by
+-                gdImageColorAllocate, whether explicitly invoked by your
+-                code or implicitly invoked by loading an image. In order
+-                to ensure that your image has a reasonable appearance
+-                when viewed by users who do not have transparent
+-                background capabilities (or when you are writing a
+-                JPEG-format file, which does not support transparency),
+-                be sure to give reasonable RGB values to the color you
+-                allocate for use as a transparent color, _even though it
+-                will be transparent on systems that support PNG
+-                transparency_.
+-                
+-
+-... inside a function ...
+-gdImagePtr im;
+-int black;
+-FILE *in, *out;
+-in = fopen("photo.png", "rb");
+-im = gdImageCreateFromPng(in);
+-fclose(in);
+-/* Look for black in the color table and make it transparent. */
+-black = gdImageColorExact(im, 0, 0, 0);
+-/* If black is present... */
+-if (black != (-1)) {
+-        /* Make it transparent */
+-        gdImageColorTransparent(im, black);
+-}
+-/* Save the newly-transparent image back to the file */
+-out = fopen("photo.png", "wb");
+-gdImagePng(im, out);
+-fclose(out);
+-/* Destroy it */
+-gdImageDestroy(im);
+-
+-  Copying and resizing functions
+-  
+-        void gdImageCopy(gdImagePtr dst, gdImagePtr src, int dstX, int
+-                dstY, int srcX, int srcY, int w, int h) _(FUNCTION)_
+-                gdImageCopy is used to copy a rectangular portion of one
+-                image to another image. (For a way of stretching or
+-                shrinking the image in the process, see
+-                gdImageCopyResized.)
+-                
+-                The dst argument is the destination image to which the
+-                region will be copied. The src argument is the source
+-                image from which the region is copied. The dstX and dstY
+-                arguments specify the point in the destination image to
+-                which the region will be copied. The srcX and srcY
+-                arguments specify the upper left corner of the region in
+-                the source image. The w and h arguments specify the width
+-                and height of the region.
+-                
+-                When you copy a region from one location in an image to
+-                another location in the same image, gdImageCopy will
+-                perform as expected unless the regions overlap, in which
+-                case the result is unpredictable.
+-                
+-                _Important note on copying between images:_ since
+-                different images do not necessarily have the same color
+-                tables, pixels are not simply set to the same color index
+-                values to copy them. gdImageCopy will attempt to find an
+-                identical RGB value in the destination image for each
+-                pixel in the copied portion of the source image by
+-                invoking gdImageColorExact. If such a value is not found,
+-                gdImageCopy will attempt to allocate colors as needed
+-                using gdImageColorAllocate. If both of these methods
+-                fail, gdImageCopy will invoke gdImageColorClosest to find
+-                the color in the destination image which most closely
+-                approximates the color of the pixel being copied.
+-                
+-
+-... Inside a function ...
+-gdImagePtr im_in;
+-gdImagePtr im_out;
+-int x, y;
+-FILE *in;
+-FILE *out;
+-/* Load a small png to tile the larger one with */
+-in = fopen("small.png", "rb");
+-im_in = gdImageCreateFromPng(in);
+-fclose(in);
+-/* Make the output image four times as large on both axes */
+-im_out = gdImageCreate(im_in->sx * 4, im_in->sy * 4);
+-/* Now tile the larger image using the smaller one */
+-for (y = 0; (y < 4); y++) {
+-        for (x = 0; (x < 4); x++) {
+-                gdImageCopy(im_out, im_in,
+-                        x * im_in->sx, y * im_in->sy,
+-                        0, 0,
+-                        im_in->sx, im_in->sy);
+-        }
+-}
+-out = fopen("tiled.png", "wb");
+-gdImagePng(im_out, out);
+-fclose(out);
+-gdImageDestroy(im_in);
+-gdImageDestroy(im_out);
+-
+-        void gdImageCopyResized(gdImagePtr dst, gdImagePtr src, int dstX,
+-                int dstY, int srcX, int srcY, int destW, int destH, int
+-                srcW, int srcH) _(FUNCTION)_
+-                gdImageCopyResized is used to copy a rectangular portion
+-                of one image to another image. The X and Y dimensions of
+-                the original region and the destination region can vary,
+-                resulting in stretching or shrinking of the region as
+-                appropriate. (For a simpler version of this function
+-                which does not deal with resizing, see gdImageCopy.)
+-                
+-                The dst argument is the destination image to which the
+-                region will be copied. The src argument is the source
+-                image from which the region is copied. The dstX and dstY
+-                arguments specify the point in the destination image to
+-                which the region will be copied. The srcX and srcY
+-                arguments specify the upper left corner of the region in
+-                the source image. The dstW and dstH arguments specify the
+-                width and height of the destination region. The srcW and
+-                srcH arguments specify the width and height of the source
+-                region and can differ from the destination size, allowing
+-                a region to be scaled during the copying process.
+-                
+-                When you copy a region from one location in an image to
+-                another location in the same image, gdImageCopy will
+-                perform as expected unless the regions overlap, in which
+-                case the result is unpredictable. If this presents a
+-                problem, create a scratch image in which to keep
+-                intermediate results.
+-                
+-                _Important note on copying between images:_ since images
+-                do not necessarily have the same color tables, pixels are
+-                not simply set to the same color index values to copy
+-                them. gdImageCopy will attempt to find an identical RGB
+-                value in the destination image for each pixel in the
+-                copied portion of the source image by invoking
+-                gdImageColorExact. If such a value is not found,
+-                gdImageCopy will attempt to allocate colors as needed
+-                using gdImageColorAllocate. If both of these methods
+-                fail, gdImageCopy will invoke gdImageColorClosest to find
+-                the color in the destination image which most closely
+-                approximates the color of the pixel being copied.
+-                
+-
+-... Inside a function ...
+-gdImagePtr im_in;
+-gdImagePtr im_out;
+-int x, y;
+-FILE *in;
+-FILE *out;
+-/* Load a small png to expand in the larger one */
+-in = fopen("small.png", "rb");
+-im_in = gdImageCreateFromPng(in);
+-fclose(in);
+-/* Make the output image four times as large on both axes */
+-im_out = gdImageCreate(im_in->sx * 4, im_in->sy * 4);
+-/* Now copy the smaller image, but four times larger */
+-gdImageCopyResized(im_out, im_in, 0, 0, 0, 0,
+-        im_out->sx, im_out->sy,
+-        im_in->sx, im_in->sy);
+-out = fopen("large.png", "wb");
+-gdImagePng(im_out, out);
+-fclose(out);
+-gdImageDestroy(im_in);
+-gdImageDestroy(im_out);
+-
+-        void gdImageCopyMerge(gdImagePtr dst, gdImagePtr src, int dstX,
+-                int dstY, int srcX, int srcY, int w, int h, int pct)
+-                _(FUNCTION)_
+-                gdImageCopyMerge is almost identical to gdImageCopy,
+-                except that it 'merges' the two images by an amount
+-                specified in the last parameter. If the last parameter is
+-                100, then it will function identically to gdImageCopy -
+-                the source image replaces the pixels in the destination.
+-                
+-                If, however, the _pct_ parameter is less than 100, then
+-                the two images are merged. With pct = 0, no action is
+-                taken.
+-                
+-                This feature is most useful to 'highlight' sections of an
+-                image by merging a solid color with pct = 50:
+-                
+-
+-... Inside a function ...
+-gdImageCopyMerge(im_out, im_in, 100, 200, 0, 0, 30, 50, 50);
+-
+-        void gdImageCopyMergeGray(gdImagePtr dst, gdImagePtr src, int
+-                dstX, int dstY, int srcX, int srcY, int w, int h, int
+-                pct) _(FUNCTION)_
+-                gdImageCopyMergeGray is almost identical to
+-                gdImageCopyMerge, except that when merging images it
+-                preserves the hue of the source by converting the
+-                destination pixels to grey scale before the copy
+-                operation.
+-                
+-
+-... Inside a function ...
+-gdImageCopyMergeGray(im_out, im_in, 100, 200, 0, 0, 30, 50, 50);
+-
+-        void gdImagePaletteCopy(gdImagePtr dst, gdImagePtr src)
+-                _(FUNCTION)_
+-                Copies a palette from one image to another, attempting to
+-                match the colors in the target image to the colors in the
+-                source palette.
+-                
+-  Miscellaneous Functions
+-  
+-              int gdImageCompare(gdImagePtr im1, gdImagePtr im2)
+-                      _(FUNCTION)_
+-                      gdImageCompare returns a bitmap indicating if the
+-                      two images are different. The members of the bitmap
+-                      are defined in gd.h, but the most important is
+-                      GD_CMP_IMAGE, which indicated that the images will
+-                      actually appear different when displayed. Other,
+-                      less important, differences relate to pallette
+-                      entries. Any difference in the transparent colour
+-                      is assumed to make images display differently, even
+-                      if the transparent colour is not used.
+-                      
+-
+-... Inside a function ...
+-cmpMask = gdImageCompare(im1, im2);
+-
+-              gdImageInterlace(gdImagePtr im, int interlace) _(FUNCTION)_
+-                      
+-                      gdImageInterlace is used to determine whether an
+-                      image should be stored in a linear fashion, in
+-                      which lines will appear on the display from first
+-                      to last, or in an interlaced fashion, in which the
+-                      image will "fade in" over several passes. By
+-                      default, images are not interlaced. (When writing
+-                      JPEG images, interlacing implies generating
+-                      progressive JPEG files, which are represented as a
+-                      series of scans of increasing quality.
+-                      Noninterlaced gd images result in regular
+-                      [sequential] JPEG data streams.)
+-                      
+-                      A nonzero value for the interlace argument turns on
+-                      interlace; a zero value turns it off. Note that
+-                      interlace has no effect on other functions, and has
+-                      no meaning unless you save the image in PNG or JPEG
+-                      format; the gd and xbm formats do not support
+-                      interlace.
+-                      
+-                      When a PNG is loaded with gdImageCreateFromPng or a
+-                      JPEG is loaded with gdImageCreateFromJpeg,
+-                      interlace will be set according to the setting in
+-                      the PNG or JPEG file.
+-                      
+-                      Note that many PNG and JPEG viewers and web
+-                      browsers do _not_ support interlace or the
+-                      incremental display of progressive JPEGs. However,
+-                      the interlaced PNG or progressive JPEG should still
+-                      display; it will simply appear all at once, just as
+-                      other images do.
+-                      
+-
+-gdImagePtr im;
+-FILE *out;
+-/* ... Create or load the image... */
+-
+-/* Now turn on interlace */
+-gdImageInterlace(im, 1);
+-/* And open an output file */
+-out = fopen("test.png", "wb");
+-/* And save the image  -- could also use gdImageJpeg */
+-gdImagePng(im, out);
+-fclose(out);
+-gdImageDestroy(im);
+-
+-              gdFree(void *ptr) _(FUNCTION)_
+-                      gdFree provides a reliable way to free memory
+-                      allocated by functions such as gdImagePngPtr which
+-                      return blocks of memory. Use of this function
+-                      guarantees that the version of free() that is
+-                      ultimately called will be intended for use with the
+-                      version of malloc() that originally allocated the
+-                      block.
+-                      
+-  Constants
+-  
+-                    gdBrushed _(CONSTANT)_
+-                            Used in place of a color when invoking a
+-                            line-drawing function such as gdImageLine or
+-                            gdImageRectangle. When gdBrushed is used as
+-                            the color, the brush image set with
+-                            gdImageSetBrush is drawn in place of each
+-                            pixel of the line (the brush is usually
+-                            larger than one pixel, creating the effect of
+-                            a wide paintbrush). See also gdStyledBrushed
+-                            for a way to draw broken lines with a series
+-                            of distinct copies of an image.
+-                            
+-                    gdMaxColors_(CONSTANT)_
+-                            The constant 256. This is the maximum number
+-                            of colors in a PNG file according to the PNG
+-                            standard, and is also the maximum number of
+-                            colors in a gd image.
+-                            
+-                    gdStyled _(CONSTANT)_
+-                            Used in place of a color when invoking a
+-                            line-drawing function such as gdImageLine or
+-                            gdImageRectangle. When gdStyled is used as
+-                            the color, the colors of the pixels are drawn
+-                            successively from the style that has been set
+-                            with gdImageSetStyle. If the color of a pixel
+-                            is equal to gdTransparent, that pixel is not
+-                            altered. (This mechanism is completely
+-                            unrelated to the "transparent color" of the
+-                            image itself; see gdImageColorTransparent
+-                            gdImageColorTransparent for that mechanism.)
+-                            See also gdStyledBrushed.
+-                            
+-                    gdStyledBrushed _(CONSTANT)_
+-                            Used in place of a color when invoking a
+-                            line-drawing function such as gdImageLine or
+-                            gdImageRectangle. When gdStyledBrushed is
+-                            used as the color, the brush image set with
+-                            gdImageSetBrush is drawn at each pixel of the
+-                            line, providing that the style set with
+-                            gdImageSetStyle contains a nonzero value (OR
+-                            gdTransparent, which does not equal zero but
+-                            is supported for consistency) for the current
+-                            pixel. (Pixels are drawn successively from
+-                            the style as the line is drawn, returning to
+-                            the beginning when the available pixels in
+-                            the style are exhausted.) Note that this
+-                            differs from the behavior of gdStyled, in
+-                            which the values in the style are used as
+-                            actual pixel colors, except for
+-                            gdTransparent.
+-                            
+-                    gdDashSize _(CONSTANT)_
+-                            The length of a dash in a dashed line.
+-                            Defined to be 4 for backwards compatibility
+-                            with programs that use gdImageDashedLine. New
+-                            programs should use gdImageSetStyle and call
+-                            the standard gdImageLine function with the
+-                            special "color" gdStyled or gdStyledBrushed.
+-                            
+-                    gdTiled _(CONSTANT)_
+-                            Used in place of a normal color in
+-                            gdImageFilledRectangle, gdImageFilledPolygon,
+-                            gdImageFill, and gdImageFillToBorder. gdTiled
+-                            selects a pixel from the tile image set with
+-                            gdImageSetTile in such a way as to ensure
+-                            that the filled area will be tiled with
+-                            copies of the tile image. See the discussions
+-                            of gdImageFill and gdImageFillToBorder for
+-                            special restrictions regarding those
+-                            functions.
+-                            
+-                    gdTransparent _(CONSTANT)_
+-                            Used in place of a normal color in a style to
+-                            be set with gdImageSetStyle. gdTransparent is
+-                            _not_ the transparent color index of the
+-                            image; for that functionality please see
+-                            gdImageColorTransparent.
+-                            
+-  About the additional .gd image file format
+-  
+-                            In addition to reading and writing the PNG
+-                            and JPEG formats and reading the X Bitmap
+-                            format, gd has the capability to read and
+-                            write its own ".gd" format. This format is
+-                            _not_ intended for general purpose use and
+-                            should never be used to distribute images. It
+-                            is not a compressed format. Its purpose is
+-                            solely to allow very fast loading of images
+-                            your program needs often in order to build
+-                            other images for output. If you are
+-                            experiencing performance problems when
+-                            loading large, fixed PNG images your program
+-                            needs to produce its output images, you may
+-                            wish to examine the functions
+-                            gdImageCreateFromGd and gdImageGd, which read
+-                            and write .gd format images.
+-                            
+-                            The program "pngtogd.c" is provided as a
+-                            simple way of converting .png files to .gd
+-                            format. I emphasize again that you will not
+-                            need to use this format unless you have a
+-                            need for high-speed loading of a few
+-                            frequently-used images in your program.
+-                            
+-  About the .gd2 image file format
+-  
+-                            In addition to reading and writing the PNG
+-                            format and reading the X Bitmap format, gd
+-                            has the capability to read and write its own
+-                            ".gd2" format. This format is _not_ intended
+-                            for general purpose use and should never be
+-                            used to distribute images. It is a compressed
+-                            format allowing pseudo-random access to large
+-                            image files. Its purpose is solely to allow
+-                            very fast loading of _parts_ of images If you
+-                            are experiencing performance problems when
+-                            loading large, fixed PNG or JPEG images your
+-                            program needs to produce its output images,
+-                            you may wish to examine the functions
+-                            gdImageCreateFromGd2,
+-                            gdImageCreateFromGd2Part and gdImageGd2,
+-                            which read and write .gd2 format images.
+-                            
+-                            The program "pngtogd2.c" is provided as a
+-                            simple way of converting .png files to .gd2
+-                            format.
+-                            
+-  About the gdIOCtx structure
+-  
+-                            Version 1.5 of GD added a new style of I/O
+-                            based on an IOCtx structure (the most
+-                            up-to-date version can be found in gd_io.h):
+-                            
+-
+-typedef struct gdIOCtx {
+-        int     (*getC)(struct gdIOCtx*);
+-        int     (*getBuf)(struct gdIOCtx*, void*, int);
+-
+-        void     (*putC)(struct gdIOCtx*, int);
+-        int     (*putBuf)(struct gdIOCtx*, const void*, int);
+-
+-        int     (*seek)(struct gdIOCtx*, const int);
+-        long    (*tell)(struct gdIOCtx*);
+-
+-        void    (*free)(struct gdIOCtx*);
+-
+-} gdIOCtx;
+-
+-                    Most functions that accepted files in previous
+-                            versions now also have a counterpart that
+-                            accepts an I/O context. These functions have
+-                            a 'Ctx' suffix.
+-                            
+-                            The Ctx routines use the function pointers in
+-                            the I/O context pointed to by gdIOCtx to
+-                            perform all I/O. Examples of how to implement
+-                            an I/O context can be found in io_file.c
+-                            (which provides a wrapper for file routines),
+-                            and io_dp.c (which implements in-memory
+-                            storage).
+-                            
+-                            It is not necessary to implement all
+-                            functions in an I/O context if you know that
+-                            it will only be used in limited
+-                            cirsumstances. At the time of writing
+-                            (Version 1.6.1, July 1999), the known
+-                            requirements are:
+-                            
+-                            All   Must have 'free',
+-                            Anything that reads from the context Must
+-                            have 'getC' and 'getBuf',
+-                            Anything that writes to the context Must have
+-                            'putC' and 'putBuf'.
+-                            If gdCreateFromGd2Part is called Must also
+-                            have 'seek' and 'tell'.
+-                            If gdImageGd2 is called Must also have 'seek'
+-                            and 'tell'.
+-                            
+-  Please tell us you're using gd!
+-  
+-                            When you contact us and let us know you are
+-                            using gd, you help us justify the time spent
+-                            in maintaining and improving it. So please
+-                            let us know. If the results are publicly
+-                            visible on the web, a URL is a wonderful
+-                            thing to receive, but if it's not a publicly
+-                            visible project, a simple note is just as
+-                            welcome.
+-                            
+-  If you have problems
+-  
+-                            If you have any difficulties with gd, feel
+-                            free to contact the author, Thomas Boutell.
+-                            Problems relating to the gd2 format should be
+-                            addressed to Philip Warner.
+-                            
+-                            _Be sure to read this manual carefully first.
+-                            _
+-  Alphabetical quick index
+-  
+-                            gdBrushed | gdDashSize | gdFont | gdFontPtr |
+-                            gdFree | gdImage | gdImageArc | gdImageBlue |
+-                            gdImageBoundsSafe | gdImageChar |
+-                            gdImageCharUp | gdImageColorAllocate |
+-                            gdImageColorClosest | gdImageColorDeallocate
+-                            | gdImageColorExact | gdImageColorResolve |
+-                            gdImageColorTransparent | gdImageCopy |
+-                            gdImageCopyResized | gdImageCreate |
+-                            gdImageCreateFromGd | gdImageCreateFromGd2 |
+-                            gdImageCreateFromGd2Part |
+-                            gdImageCreateFromJpeg | gdImageCreateFromPng
+-                            | gdImageCreateFromPngSource |
+-                            gdImageCreateFromXbm | gdImageCreateFromXpm |
+-                            gdImageDashedLine | gdImageDestroy |
+-                            gdImageFill | gdImageFillToBorder |
+-                            gdImageFilledRectangle | gdImageGd |
+-                            gdImageGd2 | gdImageGetInterlaced |
+-                            gdImageGetPixel | gdImageGetTransparent |
+-                            gdImageGreen | gdImageInterlace | gdImageJpeg
+-                            | gdImageLine | gdImageFilledPolygon |
+-                            gdImagePaletteCopy | gdImagePng |
+-                            gdImagePngToSink | gdImagePolygon |
+-                            gdImagePtr | gdImageWBMP | gdImageRectangle |
+-                            gdImageRed | gdImageSetBrush |
+-                            gdImageSetPixel | gdImageSetStyle |
+-                            gdImageSetTile | gdImageString |
+-                            gdImageString16 | gdImageStringFT |
+-                            gdImageStringTTF | gdImageStringUp |
+-                            gdImageStringUp16 | gdImageWBMP | gdMaxColors
+-                            | gdPoint | gdStyled | gdStyledBrushed |
+-                            gdTiled | gdTransparent
+-                            
+-                            _Boutell.Com, Inc._
 END_OF_PATCH
 
 close PATCH or die "patch failed with status $?\n";

@@ -22,9 +22,9 @@ warn "\nIf you experience compile problems, please check the \@INC, \@LIBPATH an
 
 #### no user-serviceable parts below #####
 
-push @LIBS,'-lfreetype' if $TTF;
+push @LIBS,'-lttf' if $TTF;
 push @LIBS,'-ljpeg' if $JPEG;
-push @LIBS,'-lm' unless $^O eq 'MSWin32';
+push @LIBS, '-lm' unless $^O eq 'MSWin32';
 
 # FreeBSD 3.3 with libgd built from ports croaks if -lXpm is specified 
 if ($^O ne 'freebsd' && $^O ne 'MSWin32') { 
