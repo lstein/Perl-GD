@@ -1,4 +1,4 @@
-#!perl
+#!/usr/bin/perl -w
 
 use lib './blib/lib','./blib/arch','../blib/lib','../blib/arch';
 use FileHandle;
@@ -60,7 +60,6 @@ if (GD::Image->newFromJpeg('frog.jpg')) {
 } else {
   print "not ok ",++$loaded,"\n";
 }
-
 
 sub compare {
     my($imageData,$testNo,$fht) = @_;
@@ -260,3 +259,4 @@ sub test9 {
   my $im = GD::Image->newFromJpeg($fn);
   $im->png;
 }
+

@@ -17,7 +17,7 @@ f.  support for transparency and interlacing
 For full information on usage, see the accompanying man and html
 documentation.
 
-===> NOTE: This version of GD REQUIRES libgd 1.8.1 or higher.  If you
+===> NOTE: This version of GD REQUIRES libgd 1.8.3 or higher.  If you
 ===> have an older version of libgd installed you must remove libgd.a,
 ===> libgd.so (if present) and gd.h.  Then install the new version of
 ===> libgd from www.boutell.com (see below).  This particularly
@@ -32,16 +32,12 @@ documentation.
 
 COPYRIGHT INFO
 
-The GD.pm interface is copyright 1995-1999, Lincoln D. Stein.  It is
+The GD.pm interface is copyright 1995-2000, Lincoln D. Stein.  It is
 covered by the Perl "Artistic License", which allows for free usage
 and redistribution.  See the Artistic License in the Perl source
 package for details.
 
-Code from the gd graphics library is covered separately, under a 1994
-copyright by Quest Protein Database Center, Cold Spring Harbor Labs,
-and by Thomas Boutell.
-
-THE LATEST VERSION IS 1.26
+THE LATEST VERSION IS 1.27
 
 INSTALLATION:
 
@@ -52,24 +48,25 @@ Read these instructions all the way through before you start!
 	a. Perl 5.004 or higher:
 		http://www.perl.com/
 
-	b. The gd graphics library, version 1.6.3 or higher:
+	b. The gd graphics library, version 1.8.3 or higher:
 		http://www.boutell.com/gd/
 
 	c. The PNG graphics library:
-		http://www.cdrom.com/pub/png/
+		http://www.libpng.org/pub/png
 
 	d. The zlib compression library:
 		http://www.cdrom.com/pub/infozip/zlib/
 
-	e. The FreeType font rendering library for TrueType fonts
-	   (optional):
+	(OPTIONAL)
+
+	e. The FreeType font rendering library for TrueType fonts:
 		http://www.freetype.org/
 
-        f. The JPEG library, version 6b or later (optional):
+        f. The JPEG library, version 6b or later:
                 ftp://ftp.uu.net/graphics/jpeg/
 
         g. The XPM library, a standard part of modern X Windows 
-	   distributions (optional).  If you don't have a modern
+	   distributions.  If you don't have a modern
            version of X, don't try to get XPM working.
 
 2. OPTIONAL -- patch the libgd distribution
@@ -77,21 +74,27 @@ Read these instructions all the way through before you start!
 Some users have had trouble getting GD to link correctly.  Part of the
 problem is that Perl's Makefile.PL system prefers dynamically-linked
 shared libraries, but libgd builds a static library file by default.
-The file C<patch_gd.sh>, included with this distribution, will patch
-libgd version 1.8.1 to make it possible to compile it as a shared
+The file C<patch_gd.pl>, included with this distribution, will patch
+libgd version 1.8.3 to make it possible to compile it as a shared
 library.
 
-This file is a shell script.  To use it, copy it into the top level of
-a B<virgin> copy of the gd-1.8.1 directory.  Then run it like this:
+This file is a perl script which runs GNU patch and then makes a few
+other adjustments.  To use it, copy it into the top level of a
+B<virgin> copy of the gd-1.8.3 directory.  Then run it like this:
 
-  % sh patch_gd.sh
+  % perl patch_gd.pl
 
 This will patch the libgd distribution so that it works with the GNU
 autoconfiguration system.  Read the README and INSTALL files that were
 created by the script and follow the directions.
 
+The patch requires a recent version of GNU patch (download sites
+listed at http://www.gnu.org/order/ftp.html).  Solaris systems do
+*not* have a suitable version of patch.  You must install GNU patch
+yourself.
+
 It is possible that this patch will work with later version of libgd,
-but this is not guaranteed by any means.
+but this is not guaranteed. 
 
 3.  Unpack the tar file:
 
@@ -104,6 +107,10 @@ but this is not guaranteed by any means.
 
 	a.  cd GD-1.XX
 	b.  perl Makefile.PL
+            Please choose the features that match how libgd was built:
+            Build JPEG support? [y] 
+            Build FreeType support? [y] 
+            Build XPM support? [y] 
 	c.  make
         d.  make test (optional)
 	e.  make html (optional)
@@ -113,22 +120,14 @@ but this is not guaranteed by any means.
     the system-wide Perl library directory.  You'll need root
     privileges to do the install step.  If you don't have them, see below.
 
-    If during step (b) you see either of these messages:
+    During step (b), Makefile.PL will ask you whether to build support for
+    JPEG, FreeType and/or XPM image formats.  Please answer "y" (the default) 
+    if libgd was built with the feature, and "n" if it was not.  Failure
+    to answer correctly will lead to link errors.
 
-      Note (probably harmless): No library found for -lttf
-      Note (probably harmless): No library found for -lXpm
-
-    this means that FreeType and/or Xpm support will not be compiled
-    in.  You may still be able to use the library, but the functions
-    that call these routines will fail (check the $@ variable for the
-    exact error message).  If you get a link error while loading the
-    module, then you be able to recover the situation by changing
-    the library search path specified by the @extrainc and
-    @extrasearch variables    in Makefile.PL.  See "Frequently Asked
-    Questions" for more details.
- 
-    If you see notes about any other missing libraries (-lz, -lgd, -lpng) then
-    this module will not compile and install correctly.
+    If, during step (b) you see notes about missing libraries, then this
+    module will probably not link correctly, even though the warning may say
+    "probably harmless".    
 
 5.  To compile GD.pm statically on systems that do not support dynamic
     linking:
@@ -307,16 +306,30 @@ FREQUENTLY ASKED QUESTIONS
    including both library and header files (e.g. gd.h).  If that doesn't
    help matters, examine the following lines in Makefile.PL:
 
-   my @extrainc    = qw(-I/usr/local/include -I/usr/local/include/gd); 
-   my @extrasearch = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/local/lib );
-   my @extralibs   = qw(-lgd -lpng -lttf -lz -ljpeg);
+   my @INC     = qw(-I/usr/local/include -I/usr/local/include/gd); 
+   my @LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/local/lib );
+   my @LIBS    = qw(-lgd -lpng -lz);
 
-   Try adjusting the pathnames in @extrainc and @extrasearch, and/or the
-   link order in @extralibs.  In a few cases, people who haven't had any
+   Try adjusting the pathnames in @INC and @LIBPATH, and/or the
+   link order in @LIBS.  In a few cases, people who haven't had any
    luck at all have been able to get GD to compile by first reinstalling
    Perl from scratch.  Perhaps this reflects a situation in which Perl
    was initially built with one set of system libraries, and then the
    libraries were updated (or Perl was moved to a different machine).
+
+   If you get this error:
+
+   /arch/auto/GD/GD.so: undefined symbol: SetCPerlObj at ....
+
+   You may have a version of Perl that was compiled with one C compiler
+   and then moved to another system with a slightly different version of
+   the compiler.  The only solution I know of is to compile Perl completely 
+   from scratch on the target system.
+
+   If you get frustrated with not being able to compile libgd, GD, or one
+   of the many external libraries needed by this module, just go to CPAN
+   and get GD version 1.19.  It only produces GIFs, but it uses a self-
+   contained version of libgd and requires no external libraries at all.
 
 5. When I try to load an XPM file, all I get is blackness!
 
@@ -326,14 +339,25 @@ FREQUENTLY ASKED QUESTIONS
 
 BUG REPORTS
 
-Feel free to contact me via e-mail.  Provide the version numbers of
-GD, Perl, make and model of your operating system, and make and model
-of your Web server, if appropriate.  Provide a small script that
-demonstrates the bug.
+Feel free to contact me via e-mail, subject to the caveats below.
+Provide the version numbers of GD, Perl, make and model of your
+operating system, and make and model of your Web server, if
+appropriate.  Provide a small script that demonstrates the bug.
 
 Do NOT contact me for issues involving compilation failures on
 Windows, VMS, or Macintosh systems.  I do not have any such systems on
 hand, and cannot help you out.
+
+Also do NOT contact me for issues involving the images looking
+distorted, having the wrong color tables, or other such low-level
+issues.  These problems should be referred to Tom Boutell because they
+pertain to the underlying libgd library.
+
+WHAT'S NEW IN 1.27
+	- updated for compatibility with libgd 1.8.3
+	- WBMP support
+	- turned Makefile.PL into a multiple-choice quiz
+	- turned libgd patchfile into a perl script
 
 WHAT'S NEW IN 1.26
 	- updated for compatibility with libgd 1.8.1

@@ -247,6 +247,7 @@ extern	gdFontPtr	gdFontTiny;
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng((FILE*)x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm((FILE*)x)
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg((FILE*)x)
+#define GDIMAGECREATEFROMWBMP(x) gdImageCreateFromWBMP((FILE*)x)
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd((FILE*)x)
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2((FILE*)x)
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part((FILE*)x,a,b,c,d)
@@ -255,6 +256,7 @@ extern	gdFontPtr	gdFontTiny;
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng(x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm(x)
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(x)
+#define GDIMAGECREATEFROMWBMP(x) gdImageCreateFromWBMP(x)
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd(x)
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(x)
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part(x,a,b,c,d)
@@ -334,11 +336,37 @@ gd_newFromJpeg(packname="GD::Image", filehandle)
 	  gdImagePtr img;
 	  SV* errormsg;
 	CODE:
+#ifdef HAVE_JPEG
 	img = GDIMAGECREATEFROMJPEG(filehandle);
         if (img == NULL) {
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
 	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+	  XSRETURN_EMPTY;
+        }
+        RETVAL = img;
+#else
+        errormsg = perl_get_sv("@",0);
+        sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+        XSRETURN_EMPTY;
+#endif
+	OUTPUT:
+        RETVAL
+
+GD::Image
+gd_newFromWBMP(packname="GD::Image", filehandle)
+	char *	packname
+	InputStream	filehandle
+	PROTOTYPE: $$
+        PREINIT:
+	  gdImagePtr img;
+	  SV* errormsg;
+	CODE:
+	img = GDIMAGECREATEFROMWBMP(filehandle);
+        if (img == NULL) {
+          errormsg = perl_get_sv("@",0);
+	  if (errormsg != NULL)
+	    sv_setpv(errormsg,"libgd was not built with WBMP support\n");
 	  XSRETURN_EMPTY;
         }
         RETVAL = img;
@@ -414,11 +442,41 @@ gdjpeg(image,quality=-1)
   {
 	void*         data;
 	int           size;
+#ifdef HAVE_JPEG
 	data = (void *) gdImageJpegPtr(image,&size,quality);
         if (data == NULL) {
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
 	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+	  XSRETURN_EMPTY;
+        }
+	RETVAL = newSVpv((char*) data,size);
+	free(data);
+#else
+        errormsg = perl_get_sv("@",0);
+        sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+        XSRETURN_EMPTY;
+#endif
+  }
+  OUTPUT:
+    RETVAL
+
+SV*
+gdwbmp(image,fg)
+  GD::Image	image
+  int           fg
+  PROTOTYPE: $
+  PREINIT:
+  SV* errormsg;
+  CODE:
+  {
+	void*         data;
+	int           size;
+	data = (void *) gdImageWBMPPtr(image,&size,fg);
+        if (data == NULL) {
+          errormsg = perl_get_sv("@",0);
+	  if (errormsg != NULL)
+	    sv_setpv(errormsg,"libgd was not built with WBMP support\n");
 	  XSRETURN_EMPTY;
         }
 	RETVAL = newSVpv((char*) data,size);

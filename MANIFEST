@@ -6,7 +6,7 @@ ChangeLog
 README
 README.unix
 README.QUICKDRAW
-patch_gd.sh
+patch_gd.pl
 demos/brushes.pl
 demos/copies.pl
 demos/fills.pl

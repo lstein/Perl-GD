@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "1.27";
+$VERSION = "1.28";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -115,7 +115,11 @@ sub GD::Image::_make_filehandle {
   return $thing if defined(fileno $thing);
 
   # otherwise try qualifying it into caller's package
-  my $fh = qualify_to_ref($thing,caller(2));
+  my $fh;
+  {   
+    local $^W = 0;  # to avoid uninitialized variable warning from Symbol.pm
+    $fh = qualify_to_ref($thing,caller(2));
+  }
   return $fh if defined(fileno $fh);
 
   # otherwise treat it as a file to open
@@ -470,8 +474,7 @@ the image to.
 
 =head1 Method Calls
 
-
-=head2 Creating and Saving Images
+=head2 Object Constructors: Creating Images
 
 =over 5
 
@@ -491,7 +494,7 @@ return undef.
 
 =item C<newFromPng>
 
-C<GD::Image-E<gt>newFromPng(FILEHANDLE)> I<class method>
+C<GD::Image-E<gt>newFromPng($file)> I<class method>
 
 This will create an image from a PNG file read in through the provided
 filehandle.  The filehandle must previously have been opened on a
@@ -539,17 +542,65 @@ means that photographic images will become posterized.
 
 =item C<newFromXbm>
 
-C<GD::Image-E<gt>newFromXbm(FILEHANDLE)> I<class method>
+C<GD::Image-E<gt>newFromXbm($file)> I<class method>
 
 This works in exactly the same way as C<newFromPng>, but reads the
 contents of an X Bitmap (black & white) file:
 
 	open (XBM,"coredump.xbm") || die;
-	$myImage = newFromXbm GD::Image(XBM) || die;
+	$myImage = newFromXbm GD::Image(\*XBM) || die;
 	close XBM;
 
 Note that this function also calls C<binmode(FILEHANDLE)> before
 reading from the filehandle.
+
+=item C<newFromWBMP>
+
+C<GD::Image-E<gt>newFromWMP($file)> I<class method>
+
+This creates a new GD::Image object starting from a WBMP-format file
+or filehandle.
+
+=item C<newFromGd>
+
+C<GD::Image-E<gt>newFromGd($file)> I<class method>
+
+This works in exactly the same way as C<newFromPng>, but reads the
+contents of a GD file.  GD is Tom Boutell's disk-based storage format,
+intended for the rare case when you need to read and write the image
+to disk quickly.  It's not intended for regular use, because, unlike
+PNG or JPEG, no image compression is performed and these files can
+become B<BIG>.
+
+	$myImage = newFromGd GD::Image("godzilla.gd") || die;
+	close GDF;
+
+Note that this function also calls C<binmode(FILEHANDLE)> before
+reading from the supplied filehandle.
+
+
+=item C<newFromGd2>
+
+C<GD::Image-E<gt>newFromGd2($file)> I<class method>
+
+This works in exactly the same way as C<newFromgd()>, but uses the new
+compressed GD2 image format.
+
+=item C<newFromGd2Part>
+
+C<GD::Image-E<gt>newFromGd2Part($file,srcX,srcY,width,height)> I<class method>
+
+This class method allows you to read in just a portion of a GD version
+2 image file.  In additionto a filehandle, it accepts the top-left
+corner and dimensions (width,height) of the region of the image to
+read.  For example:
+
+	open (GDF,"godzilla.gd2") || die;
+	$myImage = GD::Image->newFromGd2Part(\*GDF,10,20,100,100) || die;
+	close GDF;
+
+This reads a 100x100 square portion of the image starting from
+position (10,20).
 
 =item C<newFromXpm>
 
@@ -568,54 +619,7 @@ support.
 NOTE: The libgd library is unable to read certain XPM files, returning
 an all-black image instead.
 
-=item C<newFromGd2>
-
-C<GD::Image-E<gt>newFromGd2(FILEHANDLE)> I<class method>
-
-This works in exactly the same way as C<newFromgd()>, but uses the new
-compressed GD2 image format.
-
-=item C<newFromGd>
-
-C<GD::Image-E<gt>newFromGd(FILEHANDLE)> I<class method>
-
-This works in exactly the same way as C<newFromPng>, but reads the
-contents of a GD file.  GD is Tom Boutell's disk-based storage format,
-intended for the rare case when you need to read and write the image
-to disk quickly.  It's not intended for regular use, because, unlike
-PNG or JPEG, no image compression is performed and these files can
-become B<BIG>.
-
-	open (GDF,"godzilla.gd") || die;
-	$myImage = newFromGd GD::Image(GDF) || die;
-	close GDF;
-
-Note that this function also calls C<binmode(FILEHANDLE)> before
-reading from the supplied filehandle.
-
-
-=item C<newFromGd2>
-
-C<GD::Image-E<gt>newFromGd2(FILEHANDLE)> I<class method>
-
-This works in exactly the same way as C<newFromgd()>, but uses the new
-compressed GD2 image format.
-
-=item C<newFromGd2Part>
-
-C<GD::Image-E<gt>newFromGd2Part(FILEHANDLE,srcX,srcY,width,height)> I<class method>
-
-This class method allows you to read in just a portion of a GD version
-2 image file.  In additionto a filehandle, it accepts the top-left
-corner and dimensions (width,height) of the region of the image to
-read.  For example:
-
-	open (GDF,"godzilla.gd2") || die;
-	$myImage = GD::Image->newFromGd2Part(GDF,10,20,100,100) || die;
-	close GDF;
-
-This reads a 100x100 square portion of the image starting from
-position (10,20).
+=head2 Saving Images
 
 =item C<png>
 
@@ -662,6 +666,14 @@ C<$image-E<gt>gd2> I<object method>
 
 Same as gd(), except that it returns the data in compressed GD2
 format.
+
+=item C<wbmp>
+
+C<$image-E<gt>wbmp([$foreground])> I<object method>
+
+This returns the image data in WBMP format, which is a black-and-white
+image format.  Provide the index of the color to become the foreground
+color.  All other pixels will be considered background.
 
 =back
 
