@@ -1,0 +1,12 @@
+qd.pl -- a Perl interface to Macintosh Quickdraw routines
+
+qd.pl allows you to create Macintosh PICT files from within Perl.  You
+can download them to Macintosh systems, open the pictures up, and manipulate
+them with standard Macintosh drawing tools.
+
+To install, just copy qd.pl into /usr/local/lib/perl, or wherever your
+perl libraries are kept.  The documentation, somewhat crude, is
+contained within the qd.pl file itself.
+
+Lincoln Stein
+lstein@genome.wi.mit.edu

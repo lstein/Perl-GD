@@ -1,0 +1,90 @@
+GD.pm A perl5 interface to Thomas Boutell's gd library.
+
+ABSTRACT:
+
+This is a autoloadable interface module for libgd, a popular library
+for creating and manipulating GIF files.  With this library you can
+create GIF images on the fly or modify existing files.  Features
+include:
+
+a.  lines, polygons, rectangles and arcs, both filled and unfilled
+b.  flood fills
+c.  the use of arbitrary images as brushes and as tiled fill patterns
+d.  line styling (dashed lines and the like)
+e.  horizontal and vertical text rendering
+f.  support for transparency and interlacing
+
+For full information on usage, see the accompanying man and html
+documentation.
+
+COPYRIGHT INFO
+
+The GD.pm interface is copyright 1995, Lincoln D. Stein.  You are free
+to use it for any purpose, commercial or noncommercial, provided that
+if you redistribute the source code this statement of copyright
+remains attached. The Gd library is covered separately, under a 1994
+copyright by Quest Protein Database Center, Cold Spring Harbor Labs.
+For usage information see the Gd documentation at the URL given below.
+
+INSTALLATION:
+
+1.  You'll need the following:
+	a.  perl 5.001 or higher:
+		ftp://ftp.netlabs.com/pub/outgoing/perl5.0
+		(and many other places)
+	b.  libgd.a
+		http://www.boutell.com/gd/
+
+    If you haven't already, configure and build them according to their
+	instructions.  For best results, make sure they're installed
+	in more-or-less "standard" places, e.g. /usr/local/bin/perl
+	,/usr/local/lib/libgd.a, and /usr/local/include/gd.h.
+
+    Note: After you build libgd.a you may see linker warnings
+	about it not having a table of contents.  This seems
+	to be harmless (at least on the systems I use), but you 
+	can run ranlib on libgd.a to get rid of the warnings.
+
+2.  Unpack the tar file and install in the perl source tree with the
+	other external utilities, e.g. perl5.001/ext/GD/
+
+3.  If you have dynamic linking, the rest is easy:
+
+	a.  cd perl5.001/ext/GD
+	b.  perl Makefile.PL
+	c.  make
+	d.  make install
+
+4.  If you have static linking, you'll have to reconfigure and relink
+	perl:
+
+	a.  cd perl5.001
+	b.  Configure
+	c.  When it asks you if you want to statically link GD,
+		answer YES
+	d.  make
+	e.  make install
+
+5.  There are some demos you can run in ext/GD/demos.  They print GIF
+	files to standard output.  To view the files, pipe their
+	output to display or xv in this way:
+
+	a.  cd perl5.001/ext/GD/demos
+	b   shapes.pl | xv -
+
+The current version is 1.00.  It is up to date with respect to gd version 1.2.
+When version 2.0 of gd is released, the new version of GD will be found at
+
+	http://www-genome.wi.mit.edu/pub/software/WWW/GD.html
+
+This interface has been tested on multiple systems.  A warning: you may
+experience problems compiling this interface using the built-in "make" and
+"cc" programs that Sun provides.  If this happens to you, obtain the GNU
+equivalents, "gmake" and "gcc".  You'll be thankful you did in the long run.
+If you encounter other problems on your system, drop me a
+line:
+
+	Lincoln Stein
+	lstein@genome.wi.mit.edu
+	http://www-genome.wi.mit.edu/~lstein
+
