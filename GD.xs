@@ -191,6 +191,49 @@ constant(char *name, int arg)
 #else
 	    goto not_there;
 #endif
+        if (strEQ(name,"gdAntiAliased"))
+#ifdef gdAntiAliased
+	    return gdAntiAliased;
+#else
+	    goto not_there;
+#endif
+        if (strEQ(name,"gdAntiAliased"))
+#ifdef gdAntiAliased
+	    return gdAntiAliased;
+#else
+	    goto not_there;
+#endif
+        if (strEQ(name,"gdArc"))
+#ifdef gdArc
+	  return gdArc;
+#else
+	    goto not_there;
+#endif
+        if (strEQ(name,"gdPie"))
+#ifdef gdPie
+	  return gdPie;
+#else
+	    goto not_there;
+#endif
+        if (strEQ(name,"gdChord"))
+#ifdef gdChord
+	  return gdChord;
+#else
+	    goto not_there;
+#endif
+        if (strEQ(name,"gdNoFill"))
+#ifdef gdNoFill
+	  return gdNoFill;
+#else
+	    goto not_there;
+#endif
+        if (strEQ(name,"gdEdged"))
+#ifdef gdEdged
+	  return gdEdged;
+#else
+	    goto not_there;
+#endif
+
 	break;
     case 'h':
 	break;
@@ -712,14 +755,20 @@ gdDESTROY(image)
 	}
 
 SV*
-gdpng(image)
+gdpng(image, ...)
   GD::Image	image
-  PROTOTYPE: $
+  PROTOTYPE: $;$
   CODE:
   {
 	void*         data;
 	int           size;
-	data = (void *) gdImagePngPtr(image,&size);
+	int           level;
+        if (items > 1) {
+	  level = (int)SvIV(ST(1));
+	  data  = (void *) gdImagePngPtrEx(image,&size,level);
+	} else {
+	  data = (void *) gdImagePngPtr(image,&size);
+	}
 	RETVAL = newSVpv((char*) data,size);
 	gdFree(data);
   }
@@ -887,10 +936,12 @@ gdboundsSafe(image,x,y)
         PROTOTYPE: $$$
 	CODE:
 	{
-		RETVAL=gdImageBoundsSafe(image,x,y);
+	  RETVAL=gdImageBoundsSafe(image,x,y);
+	  if (RETVAL == 0)
+	    XSRETURN_UNDEF;
 	}
 	OUTPUT:
-		RETVAL
+            RETVAL
 
 int
 gdgetPixel(image,x,y)
@@ -1287,6 +1338,20 @@ gdfilledRectangle(image,x1,y1,x2,y2,color)
 	}
 
 void
+gdfilledEllipse(image,cx,cy,w,h,color)
+	GD::Image	image
+	int		cx
+	int		cy
+	int		w
+	int		h
+	int		color
+        PROTOTYPE: $$$$$$
+	CODE:
+	{
+		gdImageFilledEllipse(image,cx,cy,w,h,color);
+	}
+
+void
 gdarc(image,cx,cy,w,h,s,e,color)
 	GD::Image	image
 	int		cx
@@ -1300,6 +1365,23 @@ gdarc(image,cx,cy,w,h,s,e,color)
 	CODE:
 	{
 		gdImageArc(image,cx,cy,w,h,s,e,color);
+	}
+
+void
+gdfilledArc(image,cx,cy,w,h,s,e,color,arc_style=0)
+	GD::Image	image
+	int		cx
+	int		cy
+	int		w
+	int		h
+	int		s
+	int		e
+	int		color
+	int		arc_style
+        PROTOTYPE: $$$$$$$$$
+	CODE:
+	{
+		gdImageFilledArc(image,cx,cy,w,h,s,e,color,arc_style);
 	}
 
 void
@@ -1346,6 +1428,17 @@ setTile(image,tile)
 	{
 		gdImageSetTile(image,tile);
 	}
+
+void
+setThickness(image,thickness)
+	GD::Image	image
+	int		thickness
+        PROTOTYPE: $$
+	CODE:
+	{
+	  gdImageSetThickness(image,thickness);
+	}
+
 
 void
 setStyle(image, ...)
@@ -1456,16 +1549,16 @@ interlaced(image, ...)
 	PROTOTYPE: $;$
 	CODE:
 	{
-		if (items > 1) {
-			if (SvOK(ST(1)))
-				gdImageInterlace(image,1);
-			else
-				gdImageInterlace(image,0);
-		}
-		RETVAL = gdImageGetInterlaced(image);
+	  if (items > 1) {
+	    if (SvOK(ST(1)))
+	      gdImageInterlace(image,1);
+	    else
+	      gdImageInterlace(image,0);
+	  }
+	  RETVAL = gdImageGetInterlaced(image);
 	}
-	OUTPUT:
-		RETVAL
+        OUTPUT:
+	  RETVAL
 
 int
 compare(image1,image2)
@@ -1642,7 +1735,7 @@ gdstringUp(image,font,x,y,s,color)
 	}
 
 void
-gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string)
+gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
         SV *	        image
         int             fgcolor
 	char *          fontname
@@ -1651,13 +1744,16 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string)
 	int		x
         int             y
         char *          string
-        PROTOTYPE: $$$$$$$$
+        PROTOTYPE: $$$$$$$$;$
         PREINIT:
 	  gdImagePtr img;
-	  int brect[8];
-	  char *err;
-	  SV* errormsg;
-	  int i;
+	  int        brect[8];
+	  char       *err;
+	  SV*        errormsg;
+          HV*        hash;
+          SV**       value;
+	  int        i;
+          gdFTStringExtra strex;
 	PPCODE:
 	{
 #ifndef HAVE_FT
@@ -1672,7 +1768,34 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string)
 	    img = NULL;
 	  }
 
-	  err = gdImageStringFT(img,brect,fgcolor,fontname,ptsize,angle,x,y,string);
+	  if (items == 9) {  /* hashref options at end */
+	    if (SvTYPE(SvRV(ST(8))) != SVt_PVHV)
+	      croak ("Usage: $gd->stringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,[{options}])");
+	    hash  = (HV*)SvRV(ST(8));
+	    strex.flags       = 0;
+	    strex.linespacing = 0;
+	    strex.charmap     = 0;
+	    if (value = hv_fetch(hash,"linespacing",strlen("linespacing"),0)) {
+	      strex.flags |= gdFTEX_LINESPACE;
+	      strex.linespacing = SvNV(*value);
+	    }
+	    if (value = hv_fetch(hash,"charmap",strlen("charmap"),0)) {
+	      strex.flags |= gdFTEX_CHARMAP;
+	      if (strEQ(SvPV_nolen(*value),"Unicode"))
+		strex.charmap = gdFTEX_Unicode;
+	      else if (strEQ(SvPV_nolen(*value),"Shift_JIS"))
+		strex.charmap = gdFTEX_Shift_JIS;
+	      else if (strEQ(SvPV_nolen(*value),"Big5"))
+		strex.charmap = gdFTEX_Big5;
+	      else
+		croak("Unknown charmap %s",SvPV_nolen(*value));
+	    }
+	    err = gdImageStringFTEx(img,brect,fgcolor,fontname,ptsize,angle,x,y,string,&strex);
+	  }
+
+	  else {
+	    err = gdImageStringFT(img,brect,fgcolor,fontname,ptsize,angle,x,y,string);
+	  }
 	  if (err) {
 	    errormsg = perl_get_sv("@",0);
 	    if (errormsg != NULL)
@@ -1705,6 +1828,51 @@ PROTOTYPE: $$
 CODE:
 {
   gdImageSaveAlpha(image,saveAlphaArg) ;
+}
+
+void
+gdclip(image,...)
+	GD::Image	image
+        PROTOTYPE: $;$$$$
+        PREINIT:
+        int		coords[4];
+        int             i;
+        PPCODE:
+	{
+	  if (items == 5) {
+	    for (i=0;i<4;i++)
+	      coords[i] = (int)SvIV(ST(i+1));
+	    gdImageSetClip(image,coords[0],coords[1],coords[2],coords[3]);
+	  }
+	  else if (items > 1) /* something weird */
+	    croak("Usage: $gd->clip() or $gd->clip(x1,x2,y1,y2)");
+
+	  gdImageGetClip(image,&coords[0],&coords[1],&coords[2],&coords[3]);
+	  EXTEND(sp,4);
+	  for (i=0;i<4;i++)
+	    PUSHs(sv_2mortal(newSViv(coords[i])));
+	}
+
+void
+gdsetAntiAliased(image,color)
+     GD::Image       image
+     int             color
+PROTOTYPE: $$
+CODE:
+{
+  gdImageSetAntiAliased(image,color);
+}
+
+
+void
+gdsetAntiAliasedDontBlend(image,color,flag=1)
+     GD::Image       image
+     int             color
+     int             flag
+PROTOTYPE: $$$
+CODE:
+{
+  gdImageSetAntiAliasedDontBlend(image,color,flag);
 }
 
 

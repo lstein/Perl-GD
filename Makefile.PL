@@ -1,8 +1,9 @@
 use ExtUtils::MakeMaker qw(prompt WriteMakefile);
 
-warn "\nNOTICE: This module requires libgd 2.0.5 or higher.\n";
+warn "\nNOTICE: This module requires libgd 2.0.12 or higher.\n";
 warn "        it will NOT work with earlier versions.\n";
-warn "        For earlier versions of libgd, use GD version 1.41.\n";
+warn "        See www.cpan.org for versions of GD that are compatible\n";
+warn "        with earlier versions of libgd.\n";
 
 
 # =====> PATHS: CHECK AND ADJUST <=====
