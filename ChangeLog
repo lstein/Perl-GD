@@ -1,3 +1,4 @@
+2.01	Added Math::Trig to the prerequisites because GD::Polyline needs it.
 2.00    Folded in support for gd version 2.0 from Dan Palermo
 	Folded in support for splines (GD::Polyline) from Dan Harasty.
 	Removed all GIF support.

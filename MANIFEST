@@ -18,7 +18,7 @@ demos/fills.pl
 demos/font_list.png
 demos/fonttest
 demos/gd_example.cgi
-demos/polyline-example.pl
+demos/polyline.pl
 demos/polys.pl
 demos/polyline.pl
 demos/shapes.pl
