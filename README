@@ -37,7 +37,7 @@ covered by the Perl "Artistic License", which allows for free usage
 and redistribution.  See the Artistic License in the Perl source
 package for details.
 
-THE LATEST VERSION IS 2.0
+THE LATEST VERSION IS 2.04
 
 INSTALLATION:
 
@@ -69,46 +69,21 @@ Read these instructions all the way through before you start!
 	   distributions.  If you don't have a modern
            version of X, don't try to get XPM working.
 
-NOTE: This version of GD requires libgd version 2.0.1 or higher.  If
-it fails to compile and link, you are probably using an older version
-of libgd.  Use GD 1.41 for libgd versions 1.8.4 and lower.
+NOTE: This version of GD requires libgd version 2.0.4.  It will not
+work on earlier versions of libgd, and may not work with later
+versions either.  
 
-2. OPTIONAL -- patch the libgd distribution
+If it fails to compile and link, you are probably using an older
+version of libgd.  Use GD 1.41 for libgd versions 1.8.4 and lower.
 
-libgd has a number of compile-time options which are adjusted by
-editing its make file.  Many users prefer using the familiar GNU
-configure script in which compile-time options are set by command-line
-flags.  In order to accomodate these users, GD provides a patch file
-named C<patch_gd.pl> which will add GNU autoconfig to virgin 2.0.1
-distributions.  In addition, the patch file provides some bug fixes
-and performance enhances courtesy Daniel Palermo.
-
-This file is a perl script which runs GNU patch and then makes a few
-other adjustments.  To use it, copy it into the top level of a
-B<virgin> copy of the gd-2.0.1 directory.  Then run it thus:
-
-  % perl patch_gd.pl
-
-This will patch the libgd distribution so that it works with the GNU
-autoconfiguration system.  Read the README and INSTALL files that were
-created by the script and follow the directions.
-
-The patch requires a recent version of GNU patch (download sites
-listed at http://www.gnu.org/order/ftp.html).  Solaris systems do
-*not* have a suitable version of patch.  You must install GNU patch
-yourself.
-
-It is possible that this patch will work with later version of libgd,
-but this is not guaranteed. 
-
-3.  Unpack the tar file:
+2.  Unpack the tar file:
 
 	zcat GD-2.XX.tar.gz | tar xvf -
 
     (Where "XX" is the most recent revision number.)  This will create
     the directory GD-2.XX.
 
-4.  To compile GD.pm on a system that supports dynamic linking:
+3.  To compile GD.pm on a system that supports dynamic linking:
 
 	a.  cd GD-2.XX
 	b.  perl Makefile.PL
@@ -134,7 +109,7 @@ but this is not guaranteed.
     module will probably not link correctly, even though the warning may say
     "probably harmless".    
 
-5.  To compile GD.pm statically on systems that do not support dynamic
+4.  To compile GD.pm statically on systems that do not support dynamic
     linking:
 
 	a.  cd GD-2.XX
@@ -145,7 +120,7 @@ but this is not guaranteed.
      This will create a new version of Perl and install it in your system
      binaries directory, under the name "gdperl".  
 
-6.  Before you install GD, you may want to run the regression tests.  You
+5.  Before you install GD, you will want to run the regression tests.  You
     can do this after the "make" step by typing:
 
 	make test
@@ -154,7 +129,7 @@ but this is not guaranteed.
 
         make test TEST_VERBOSE=1
 
-7.  There are some demos you can run in ext/GD/demos.  They print PNG
+6.  There are some demos you can run in ext/GD/demos.  They print PNG
     files to standard output.  To view the files, pipe their
     output to "display" or "xv" in this way:
 
@@ -168,13 +143,13 @@ but this is not guaranteed.
     temporary file and display with recent versions of Netscape or
     Internet Explorer.
 
-8.  A program named fonttest is included in this package under demos.  This 
+7.  A program named fonttest is included in this package under demos.  This 
     generates an image showing all the built-in fonts available.  If you have
     built libgd with TrueType support, and you have a directory containing
     some TrueType fonts, you can create a simple font listing by running
     the program truetype_test, also located in demos.
 
-9.  See demos/gd_example.cgi for an example of how to use GD to create
+8.  See demos/gd_example.cgi for an example of how to use GD to create
     a picture dynamically with a CGI script.  It's intended to be run
     under a Web server.  To see it work, install it in your server's
     cgi-bin/ directory and invoke it from a browser by fetching a URL like:
@@ -358,105 +333,6 @@ distorted, having the wrong color tables, or other such low-level
 issues.  These problems should be referred to Tom Boutell because they
 pertain to the underlying libgd library.
 
-WHAT'S NEW IN 1.31-1.39 (see ChangeLog for details)
-	-Fixed FreeType test (#8), at least on some platforms.
-	-Added patches from Stephen Clouse to allow to build on 5.8.0rc1.
-	-Patches to support Philip Warner's GIF-reinstating library
-	maintained at http://www.rime.com.au/gd/
-	-Fixed problems that arise when compiling against older versions of
-		libgd that do not have XPM support.
-	-Updated patch file for gd 1.8.4
-	-Added support for Tru64 UNIX v5.0
-
-WHAT'S NEW IN 1.30
-	- now you can create GD::Image objects directly from image DATA
-	- reformatted documentation
-
-WHAT'S NEW IN 1.29
-	- internal release
-
-WHAT'S NEW IN 1.28
-	- fixed a bad regression test
-
-WHAT'S NEW IN 1.27
-	- updated for compatibility with libgd 1.8.3
-	- WBMP support
-	- turned Makefile.PL into a multiple-choice quiz
-	- turned libgd patchfile into a perl script
-
-WHAT'S NEW IN 1.26
-	- updated for compatibility with libgd 1.8.1
-	- JPEG support
-	- the newFromXXX() functions now accept pathnames
-	- patchfile for building libgd as a shared library
-
-WHAT'S NEW IN 1.25
-	- improvements to the Makefile to help with compilation
-
-WHAT'S NEW IN 1.24
-	- added more help in compiling and installing to docs
-
-WHAT'S NEW IN 1.23
-	- added some more libraries to link in, might help unresolved symbol problems
-	- if Tom Boutell would provide support for linking libgd dynamically,
-	 none of these unresolved symbol problems would be occurring!!!!!
-
-WHAT'S NEW IN 1.22
-	- added support for statically linked libgd.a, which is
-		now default for libgd 1.7.3 (grrrr)
-	- added newFromGd2Part() and newFromXPM() methods
-
-WHAT'S NEW IN 1.21
-	- fix to regression test so that all tests pass when truetype support
-	  not enabled
-	- removed GD.html from distribution
-
-WHAT'S NEW IN 1.20
-
-	- uses libgd 1.6.3, allowing it to
-		1. create png images
-		2. render TrueType Fonts
-	- SUPPORT FOR GIF OUTPUT HAS BEEN REMOVED DUE TO UNISYS PATENT RESTRICTIONS
-	- Fixes to compile correctly on VMS systems
-	- Patches from ActiveState for Windows/DOS systems.
-	- bdftogd fix from Honza Pazdziora to handle non-fixed width fonts better
-
-WHAT'S NEW IN 1.19
-	
-	- Fixes to compile correctly on Win32 systems
-
-WHAT'S NEW IN 1.18
-
-	- New "Giant" font.
-
-WHAT'S NEW IN 1.17
-
-	- Patches from Gurusamy Sarathy <gsar@engin.umich.edu> that allow GD 
-	  to compile correctly on Win32 systems.
-	- Patches from Jan Pazdziora <adelton@fi.muni.cz> to handle the 
-          full ISO-Latin-2 alphabet, along with some bug fixes.
-
-WHAT'S NEW IN 1.16
-
-	- Patches from Andreas Koenig <koenig@kulturbox.de> to use 
-          FileHandle correctly (also fixes problems with mod_perl).
-
-WHAT'S NEW IN 1.15
-
-	- Patches from Ulrich Pfeifer to allow to compile
-	  correctly with FastCGI
-	- Patches from Douglas Wegscheid to avoid multiple defined
-	  symbol problems under NetBSD
-	- Patches from Weinfriend Koenig to fix problems in filled polygons,
-	  plus new routines for scaling, translating and rotating polygons.
-	
-WHAT'S NEW IN 1.14
-
-	- Modified gd library now included in the package.
-	- Performance improvements.
-	- Extensive code cleanup.
-	- Runs correctly with FastCGI.
-
 ACKNOWLEDGEMENTS:
 
 I'd like to thank Jan Pazdziora, Geoff Baysinger, and David Kilzer for
@@ -465,9 +341,7 @@ wrote libgd.
 
 UPDATES:
 
-The current version of GD can be found at:
-
-   http://stein.cshl.org/WWW/software/GD
+The current version of GD can be found in CPAN.
 
 AUTHOR:
 

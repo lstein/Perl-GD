@@ -5,7 +5,6 @@ MANIFEST
 Makefile.PL
 README
 README.QUICKDRAW
-patch_gd.pl
 GD/Polyline.pm
 README.unix
 bdf_scripts/README
@@ -26,7 +25,6 @@ demos/tile.png
 demos/transform.pl
 demos/truetype_test
 demos/ttf.pl
-patch_gd.pl
 qd.pl
 t/GD.t
 t/Polyline.t
