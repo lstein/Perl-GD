@@ -1688,7 +1688,7 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string)
 	}
 
 void
-gdimageAlphaBlending(image,blending)
+gdalphaBlending(image,blending)
      GD::Image       image
         int             blending
 		PROTOTYPE: $$
@@ -1698,7 +1698,7 @@ gdimageAlphaBlending(image,blending)
 }
 
 void
-gdimageSaveAlpha(image,saveAlphaArg)
+gdsaveAlpha(image,saveAlphaArg)
      GD::Image       image
         int             saveAlphaArg
 PROTOTYPE: $$

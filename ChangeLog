@@ -1,3 +1,4 @@
+2.06	Added saveAlpha() and alphaBlending() methods.
 2.05	Alpha methods courtesy Georges Arnould.
 2.041	Added a regression test to detect certain versions of freetype.
 2.04	Removed the patch file since Tom has begun adding his own configure file.
