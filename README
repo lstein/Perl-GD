@@ -28,9 +28,14 @@ Code from the gd graphics library is covered separately, under a 1994
 copyright by Quest Protein Database Center, Cold Spring Harbor Labs,
 and by Thomas Boutell.
 
-THE LATEST VERSION IS 1.22
+THE LATEST VERSION IS 1.23
 
-WHAT's NEW IN 1.22
+WHAT'S NEW IN 1.23
+	- added some more libraries to link in, might help unresolved symbol problems
+	- if Tom Boutell would provide support for linking libgd dynamically,
+	 none of these unresolved symbol problems would be occurring!!!!!
+
+WHAT'S NEW IN 1.22
 	- added support for statically linked libgd.a, which is
 		now default for libgd 1.7.3 (grrrr)
 	- added newFromGd2Part() and newFromXPM() methods

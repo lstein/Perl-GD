@@ -19,7 +19,7 @@
 	usage restrictions */
 
 #ifndef gdImageCreateFromXpm
-gdImagePtr gdImageCreateFromXpm(char *filename);
+gdImagePtr gdImageCreateFromXpm(char *filename) { return NULL; };
 #endif
 
 static int
