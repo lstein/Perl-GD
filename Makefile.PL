@@ -4,7 +4,7 @@ require 5.6.0;
 
 unless (@ARGV) {
 warn <<END;
-NOTICE: This module requires libgd 2.0.25 or higher.
+NOTICE: This module requires libgd 2.0.28 or higher.
         it will NOT work with earlier versions. If you are getting
         compile or link errors, then please get and install a new
         version of libgd from www.boutell.com. Do NOT ask Lincoln
@@ -152,21 +152,24 @@ unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
 ##################################################################################################################
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
-my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG);
+my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$FTCIRCLE);
 if( defined($options) )
 {
   $JPEG     = $options =~ m/JPEG/i;
   $FT       = $options =~ m/FT|FREETYPE/i;
   $XPM      = $options =~ m/XPM/i;
   $GIF      = $options =~ m/GIF/i;
+  $PNG      = $options =~ m/PNG/i;
   $ANIMGIF  = $options =~ m/ANIMGIF/i;
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
   $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
+  $FTCIRCLE  = $options =~ m/FTCIRCLE/i;
 }
 else
 {
     warn "\nPlease choose the features that match how libgd was built:\n";
     $JPEG    = lc prompt('Build JPEG support?','y') eq 'y';
+    $PNG     = lc prompt('Build PNG support?','y') eq 'y';
     $FT      = lc prompt('Build FreeType support?','y') eq 'y';
     $ANIMGIF = lc prompt('Build support for animated GIFs?','y') eq 'y';
     $XPM     = $^O !~ /^freebsd|MSWin32$/ && lc prompt('Build XPM support?','y') eq 'y';
@@ -200,10 +203,12 @@ $DEFINES    .= ' -DHAVE_JPEG'    if $JPEG;
 $DEFINES    .= ' -DHAVE_FT'      if $FT;
 $DEFINES    .= ' -DHAVE_XPM'     if $XPM;
 $DEFINES    .= ' -DHAVE_GIF'     if $GIF;
+$DEFINES    .= ' -DHAVE_PNG'     if $PNG;
 $DEFINES    .= ' -DFCGI'         if $FCGI;
 $DEFINES    .= ' -DHAVE_ANIMGIF' if $ANIMGIF;
 $DEFINES    .= ' -DHAVE_UNCLOSEDPOLY' if $UNCLOSEDPOLY;
 $DEFINES    .= ' -DHAVE_FONTCONFIG'   if $FONTCONFIG;
+$DEFINES    .= ' -DHAVE_FTCIRCLE'  if $FTCIRCLE;
 
 WriteMakefile(
     'NAME'	=> 'GD',
@@ -248,7 +253,7 @@ sub try_to_autoconfigure {
   $$options      = $features;
 
   my ($minor)    = $version =~ /^2\.\d+\.(\d+)$/;
-  $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF" if defined($minor) && $minor >= 33;
+  $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE" if defined($minor) && $minor >= 33;
 }
 
 sub MY::postamble {

@@ -66,6 +66,10 @@ if (GD::Image->newFromJpeg('frog.jpg')) {
 }
 
 sub compare {
+    if (@_ < 2 && $@ =~ /not built with PNG/i) {
+      print "ok $_[0] # Skip, no PNG support\n";
+      return;
+    }
     my($imageData,$testNo,$fht) = @_;
     local($/);
     undef $/;
@@ -105,6 +109,7 @@ sub test2 {
     open (TILE,"./tile.png") || die "Can't open tile file: $!";
     my($tile) = newFromPng GD::Image(TILE);
     close TILE;
+    return unless $tile;
     $im->setBrush($tile);
     $im->arc(100,100,100,150,0,360,gdBrushed);
     $im->setTile($tile);
