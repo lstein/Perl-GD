@@ -800,6 +800,13 @@ Example:
 	$black = $myImage->colorAllocate(255,255,255);
 	$peachpuff = $myImage->colorAllocate(255,218,185);
 
+=item B<$index = $image-E<gt>colorAllocateAlpha(reg,green,blue,alpha)>
+
+This allocates a color with the specified red, green, and blue components,
+plus the specified alpha channel.  The alpha value may range from 0 (opaque)
+to 127 (transparent).  The C<alphaBlending> function changes the way this
+alpha channel affects the resulting image.
+
 =item B<$image-E<gt>colorDeallocate(colorIndex)>
 
 This marks the color at the specified index as being ripe for

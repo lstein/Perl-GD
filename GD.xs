@@ -1500,6 +1500,21 @@ colorAllocate(image,r,g,b)
 		RETVAL
 
 int
+colorAllocateAlpha(image,r,g,b,a)
+	GD::Image	image
+	int		r
+	int		g
+	int		b
+	int		a
+		PROTOTYPE: $$$$
+	CODE:
+	{
+		RETVAL = gdImageColorAllocateAlpha(image,r,g,b,a);
+	}
+	OUTPUT:
+		RETVAL
+
+int
 colorClosest(image,r,g,b)
 	GD::Image	image
 	int		r
