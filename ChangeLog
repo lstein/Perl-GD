@@ -1,3 +1,6 @@
+1.36	Recovered GD after the theft of my CVS server.  Current version
+	folds in GIF-restoration patches, TTF->Freetype transition, and
+	a new color lookup routine.
 1.31	Added support for GD 1.8.4, and libfreetype.  Must upgrade to
 	1.8.4 and libfreetype for GD to compile correctly.
 1.29	Fixed a corrupted .xpm file in the regression suite

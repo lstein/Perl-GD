@@ -17,6 +17,7 @@
 #endif
 /* Copyright 1995 - 1998, Lincoln D. Stein.  See accompanying README file for
 	usage restrictions */
+#define gdFree free
 
 static int
 not_here(char *s)
@@ -244,6 +245,7 @@ extern	gdFontPtr	gdFontTiny;
 
 #ifdef PERL_OBJECT
 #  ifdef WIN32
+#define GDIMAGECREATEFROMGIF(x) gdImageCreateFromGif((FILE*)x)
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng((FILE*)x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm((FILE*)x)
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg((FILE*)x)
@@ -253,6 +255,7 @@ extern	gdFontPtr	gdFontTiny;
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part((FILE*)x,a,b,c,d)
 #  endif
 #else
+#define GDIMAGECREATEFROMGIF(x) gdImageCreateFromGif(x)
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng(x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm(x)
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(x)
@@ -379,7 +382,7 @@ gdnewFromPngData(packname="GD::Image", imageData)
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromPngCtx(ctx);
-        ctx->free(ctx);
+        (ctx->free)(ctx);
 	OUTPUT:
 	RETVAL
 
@@ -396,7 +399,7 @@ gdnewFromGdData(packname="GD::Image", imageData)
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromGdCtx(ctx);
-        ctx->free(ctx);
+        (ctx->free)(ctx);
 	OUTPUT:
 	RETVAL
 
@@ -413,7 +416,31 @@ gdnewFromGd2Data(packname="GD::Image", imageData)
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromGd2Ctx(ctx);
+        (ctx->free)(ctx);
+	OUTPUT:
+	RETVAL
+
+GD::Image
+gdnewFromGifData(packname="GD::Image", imageData)
+	char *	packname
+	SV *  imageData
+	PROTOTYPE: $$
+        PREINIT:
+	  gdIOCtx* ctx;
+          char*    data;
+          STRLEN   len;
+          SV* errormsg;
+	CODE:
+#ifdef HAVE_GIF
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+	RETVAL = (GD__Image) gdImageCreateFromGifCtx(ctx);
         ctx->free(ctx);
+#else
+    errormsg = perl_get_sv("@",0);
+    sv_setpv(errormsg,"GD/libgd was not built with gif support\n");
+    XSRETURN_EMPTY;
+#endif
 	OUTPUT:
 	RETVAL
 
@@ -426,11 +453,18 @@ gdnewFromJpegData(packname="GD::Image", imageData)
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
+	  SV* errormsg;
 	CODE:
+#ifdef HAVE_JPEG
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromJpegCtx(ctx);
-        ctx->free(ctx);
+        (ctx->free)(ctx);
+#else
+        errormsg = perl_get_sv("@",0);
+        sv_setpv(errormsg,"GD/libgd was not built with jpeg support\n");
+        XSRETURN_EMPTY;
+#endif
 	OUTPUT:
 	RETVAL
 
@@ -447,7 +481,25 @@ gdnewFromWBMPData(packname="GD::Image", imageData)
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromWBMPCtx(ctx);
-        ctx->free(ctx);
+        (ctx->free)(ctx);
+	OUTPUT:
+	RETVAL
+
+GD::Image
+gd_newFromGif(packname="GD::Image", filehandle)
+	char *	packname
+	InputStream	filehandle
+	PROTOTYPE: $$
+	PREINIT:
+		SV* errormsg;
+	CODE:
+#ifdef HAVE_GIF
+	RETVAL = (GD__Image) GDIMAGECREATEFROMGIF(filehandle);
+#else
+    errormsg = perl_get_sv("@",0);
+    sv_setpv(errormsg,"GD/libgd was not built with gif support\n");
+    XSRETURN_EMPTY;
+#endif
 	OUTPUT:
 	RETVAL
 
@@ -501,7 +553,7 @@ gd_newFromJpeg(packname="GD::Image", filehandle)
         RETVAL = img;
 #else
         errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+        sv_setpv(errormsg,"GD/libgd was not built with jpeg support\n");
         XSRETURN_EMPTY;
 #endif
 	OUTPUT:
@@ -520,7 +572,7 @@ gd_newFromWBMP(packname="GD::Image", filehandle)
         if (img == NULL) {
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with WBMP support\n");
+	    sv_setpv(errormsg,"GD/libgd was not built with WBMP support\n");
 	  XSRETURN_EMPTY;
         }
         RETVAL = img;
@@ -537,17 +589,17 @@ gdnewFromXpm(packname="GD::Image", filename)
 	  SV* errormsg;
 	CODE:
 #ifdef HAVE_XPM
-	img = gdImageCreateFromXpm(filename);
+        img = gdImageCreateFromXpm(filename);
         if (img == NULL) {
-	    errormsg = perl_get_sv("@",0);
-	    if (errormsg != NULL)
-	      sv_setpv(errormsg,"libgd was not built with xpm support\n");
-	    XSRETURN_EMPTY;
+            errormsg = perl_get_sv("@",0);
+            if (errormsg != NULL)
+              sv_setpv(errormsg,"GD/libgd was not built with xpm support\n");
+            XSRETURN_EMPTY;
         }
         RETVAL = img;
 #else
         errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"GD/libgd was not built with XPM support\n");
+        sv_setpv(errormsg,"GD/libgd was not built with xpm support\n");
         XSRETURN_EMPTY;
 #endif
         OUTPUT:
@@ -586,7 +638,30 @@ gdpng(image)
 	int           size;
 	data = (void *) gdImagePngPtr(image,&size);
 	RETVAL = newSVpv((char*) data,size);
+	gdFree(data);
+  }
+  OUTPUT:
+    RETVAL
+
+SV*
+gdgif(image)
+  GD::Image	image
+  PROTOTYPE: $
+  PREINIT:
+    SV* errormsg;
+  CODE:
+  {
+	void*         data;
+	int           size;
+#ifdef HAVE_GIF
+	data = (void *) gdImageGifPtr(image,&size);
+	RETVAL = newSVpv((char*) data,size);
 	free(data);
+#else
+	errormsg = perl_get_sv("@",0);
+	sv_setpv(errormsg,"GD/libgd was not built with gif support\n");
+	XSRETURN_EMPTY;
+#endif
   }
   OUTPUT:
     RETVAL
@@ -607,14 +682,14 @@ gdjpeg(image,quality=-1)
         if (data == NULL) {
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+	    sv_setpv(errormsg,"GD/libgd was not built with jpeg support\n");
 	  XSRETURN_EMPTY;
         }
 	RETVAL = newSVpv((char*) data,size);
-	free(data);
+	gdFree(data);
 #else
         errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+        sv_setpv(errormsg,"GD/libgd was not built with jpeg support\n");
         XSRETURN_EMPTY;
 #endif
   }
@@ -636,11 +711,11 @@ gdwbmp(image,fg)
         if (data == NULL) {
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with WBMP support\n");
+	    sv_setpv(errormsg,"GD/libgd was not built with WBMP support\n");
 	  XSRETURN_EMPTY;
         }
 	RETVAL = newSVpv((char*) data,size);
-	free(data);
+	gdFree(data);
   }
   OUTPUT:
     RETVAL
@@ -655,7 +730,7 @@ gdgd(image)
 	int           size;
 	data = gdImageGdPtr(image,&size);
 	RETVAL = newSVpv((char*) data,size);
-	free(data);
+	gdFree(data);
   }
   OUTPUT:
     RETVAL
@@ -670,7 +745,7 @@ gdgd2(image)
 	int           size;
 	data = gdImageGd2Ptr(image,0,GD2_FMT_COMPRESSED,&size);
 	RETVAL = newSVpv((char*) data,size);
-	free(data);
+	gdFree(data);
   }
   OUTPUT:
     RETVAL
@@ -1039,6 +1114,20 @@ colorClosest(image,r,g,b)
 		RETVAL
 
 int
+colorClosestHWB(image,r,g,b)
+	GD::Image	image
+	int		r
+	int		g
+	int		b
+        PROTOTYPE: $$$$
+	CODE:
+	{
+		RETVAL = gdImageColorClosestHWB(image,r,g,b);
+	}
+	OUTPUT:
+		RETVAL
+
+int
 colorExact(image,r,g,b)
 	GD::Image	image
 	int		r
@@ -1234,7 +1323,7 @@ gdstring(image,font,x,y,s,color)
         PROTOTYPE: $$$$$$
 	CODE:
 	{
-		gdImageString(image,font,x,y,s,color);
+		gdImageString(image,font,x,y,(unsigned char*)s,color);
 	}
 
 void
@@ -1248,7 +1337,7 @@ gdstringUp(image,font,x,y,s,color)
         PROTOTYPE: $$$$$$
 	CODE:
 	{
-		gdImageStringUp(image,font,x,y,s,color);
+		gdImageStringUp(image,font,x,y,(unsigned char*)s,color);
 	}
 
 void
