@@ -1,3 +1,4 @@
+1.38	Updated test #8 to prevent it from failing.
 1.37	$gd->can('gif') and $gd->can('newFromGif') now return false if the
 	GIF patch is not installed.
 	Patch from Jeremy Wadsack to prevent compilation errors when
