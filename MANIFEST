@@ -1,16 +1,18 @@
 ChangeLog
 GD.pm
 GD.xs
+GD/Polyline.pm
+GD/Simple.pm
 MANIFEST
+META.yml			Module meta-data (added by MakeMaker)
 Makefile.PL
 README
 README.QUICKDRAW
-GD/Polyline.pm
 README.unix
 bdf_scripts/README
-bdf_scripts/bdftogd
+bdf_scripts/bdf2gdfont.PLS
 bdf_scripts/cvtbdf.pl
-GD/Polyline.pm
+bdf_scripts/bdftogd
 demos/brushes.pl
 demos/copies.pl
 demos/fills.pl
@@ -19,7 +21,6 @@ demos/fonttest
 demos/gd_example.cgi
 demos/polyline.pl
 demos/polys.pl
-demos/polyline.pl
 demos/shapes.pl
 demos/tile.png
 demos/transform.pl
@@ -27,17 +28,19 @@ demos/truetype_test
 demos/ttf.pl
 qd.pl
 t/GD.t
-t/Polyline.t
 t/Generic.ttf
+t/Polyline.t
 t/frog.jpg
 t/frog.xpm
 t/palettemap.png
 t/test.out.1.png
+t/test.out.10.png
 t/test.out.10.png-1
 t/test.out.10.png-2
 t/test.out.2.png
 t/test.out.3.png
 t/test.out.4.png
+t/test.out.4.png-1
 t/test.out.5.png
 t/test.out.6.png
 t/test.out.7.png
@@ -48,6 +51,6 @@ t/test.out.8.png-3
 t/test.out.8.png-4
 t/test.out.8.png-5
 t/test.out.9.png
+t/test.out.9.png-1
 t/tile.png
 typemap
-META.yml                                 Module meta-data (added by MakeMaker)

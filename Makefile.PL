@@ -5,9 +5,10 @@ require 5.6.0;
 unless (@ARGV) {
 warn <<END;
 NOTICE: This module requires libgd 2.0.12 or higher.
-        it will NOT work with earlier versions.
-        See www.cpan.org for versions of GD that are compatible
-        with earlier versions of libgd.
+        it will NOT work with earlier versions. If you are getting
+        compile or link errors, then please get and install a new
+        version of libgd from www.boutell.com. Do NOT ask Lincoln
+        for help until you try this.
 
         If you are using Math::Trig 1.01 or lower, it has a bug that
         causes a "prerequisite not found" warning to be issued.  You may

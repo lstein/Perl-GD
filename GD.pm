@@ -2021,6 +2021,8 @@ The latest versions of GD.pm are available at
 =head1 SEE ALSO
 
 L<GD::Polyline>,
+L<GD::SVG>,
+L<GD::Simple>,
 L<Image::Magick>
 
 =cut

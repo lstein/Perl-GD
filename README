@@ -15,19 +15,20 @@ e.  horizontal and vertical text rendering
 f.  support for transparency and interlacing
 g.  support for TrueType font rendering, via libfreetype.
 h.  support for spline curves, via GD::Polyline
+i.  support for symbolic font names, such as "helvetica:italic"
+j.  support for symbolic color names, such as "green", via GD::Simple
+k.  produces output in png, gif, jpeg and xbm format
+l.  produces output in svg format via GD::SVG.
 
 For full information on usage, see the accompanying man and html
 documentation.
 
-===> NOTE: This version of GD REQUIRES libgd 2.0.12 or higher.  If you
-===> have an older version of libgd installed you must remove libgd.a,
-===> libgd.so (if present) and gd.h.  Then install the new version of
-===> libgd from www.boutell.com (see below).  This particularly
-===> applies to users of Linux systems.  Older versions of GD are
-===> available at http://www.cpan.org.
-
-===> This version of GD again supports GIF output, thanks to the
-===> expiration of the related US and international patents.
+=> IMPORTANT: This version of GD REQUIRES libgd 2.0.12 or higher.  If you <=
+=> have an older version of libgd installed you must remove libgd.a,      <=
+=> libgd.so (if present) and gd.h.  Then install the new version of       <=
+=> libgd from www.boutell.com (see below).  This particularly             <=
+=> applies to users of Linux systems.  Older versions of GD are           <=
+=> available at http://www.cpan.org.                                      <=
 
 COPYRIGHT INFO
 
@@ -71,8 +72,8 @@ older version of libgd.  Symptoms of this problem include errors about
 functions not being recognized in the gd.h header file, and undefined
 symbols from the linker.  If you are having this type of error, please
 REMOVE all versions of libgd, gd.h from your system and reinstall
-libgd 2.0.5 or higher from source code.  Do not contact the author of
-this module until you have done this.
+libgd 2.0.12 or higher.  Do not contact Lincoln for help until you
+have done this.
 
 Use GD 1.41 for libgd versions 1.8.4 and lower.
 
@@ -238,6 +239,18 @@ correctly, and unfortunately I have a limited number of systems at my
 disposal.  You're much more likely to get correct answers from the
 gurus on the newsgroup than from myself.
 
+THE GD::SIMPLE LIBRARY
+
+GD::Simple is a simplified API for GD. It supports turtle graphics, a
+unified interface for drawing text, and symbolic color names (like
+"green").  Run "perldoc GD::Simple" for information on using it.
+
+The GD::SVG LIBRARY
+
+GD::SVG, which is available separately on CPAN, provides a subset of
+GD method calls. For this subset, you can create images in SVG
+(scaleable vector graphics) format.
+
 THE QUICKDRAW LIBRARY
 
 Also included in this package is qd.pl, a package of Quickdraw
@@ -248,72 +261,90 @@ and qd.pl for more information.
 
 FREQUENTLY ASKED QUESTIONS
 
-1. What happened to GIF support?
+1. I get a warning about prerequisite Math::Trig not being found
 
-   Unisys owns the patent on the LZW compression scheme, which is the
-   basis for GIF. Recently (Summer 1999) Unisys's lawyers have begun
-   threatening providers of GIF software, as well as Web site operators
-   who display GIF images.  To avoid legal issues, Tom Boutell and myself
-   are forced to remove GIF support from GD.  PNG is technically better
-   than GIF, and is supported by newer Web browsers, including Netscape
-   Navigator 4.04 and higher, and Microsoft Internet Explorer 4.0 and
-   higher.
+   The version of Math::Trig that comes with Perl version 5.6.0 and
+   lower has a bug in it that causes it not to be found even when it
+   is installed.  Try running perl -MMath::Trig -e0 from the command
+   line.  If you get no errors, go ahead and install GD. If you get an
+   error, install Math::Trig from CPAN.
 
-2. Is there a utility to convert X Windows BDF fonts into GD fonts.
+2. Why do I get errors about functions not being found when building this module?
 
-   Yes.  See the directory bdf_scripts/.  However these scripts were
-   written for earlier versions of GD which included its own mini-gd
-   library.  These scripts will have to be adapted for use with
-   libgd, and the libgd library itself will have to be recompiled and
-   linked!
+   You need libgd (the C library that does all the work) version 2.0.12 or
+   higher.  Older versions will give you errors during GD
+   installation. Get the latest version from www.boutell.com and install it.
+   Sometimes just installing the new version of libgd is not enough: you must
+   remove the old library first. Find the gd.h include file and all libgd files
+   and remove them from your system.
 
-3. Does GD run with MacPerl/Win32 Perl?
+3. Why do I get errors about symbols being undefined when building this module?
 
-   Yes.  The latest MacPerl and ActiveState binaries come with GD
-   already compiled in and ready to go.  I don't own any Win32 systems,
+   See (1).
+
+4. Is there a utility to convert X Windows BDF fonts into GD fonts.
+
+   Yes.  See the utility bdf2gdfont.pl.  Run "bdf2gdfont.pl -h" to get help
+   on using this.
+
+5. Does GD run with Macintosh OS X?
+
+   Yes.  GD compiles just fine under OSX.  However, you may need to
+   remove old versions of libgd, libpng, and libz and reinstall the
+   current versions before you try to install GD.
+
+6. Does GD run with Win32 Perl?
+
+   The latest ActiveState binaries for Win32 systems come with GD
+   already compiled in and ready to go. I don't own any Win32 systems,
    and cannot provide you with help in compiling GD from scratch on such 
    systems.
 
-4. GD won't compile on system XX.
+7. GD won't compile on system XX.
 
    Because libgd relies on multiple external libraries, GD does as well.  
    Unfortunately, different systems place their libraries in different
    places and sometimes are picky about the order in which libraries 
-   are linked.  If you are having problems with compiling GD, first make
-   sure that you have removed all vestiges of old libgd installations,
-   including both library and header files (e.g. gd.h).  If that doesn't
-   help matters, examine the following lines in Makefile.PL:
+   are linked.  The best thing to do is to install the latest version of
+   libgd. Recent versions of libgd contain a gdlib-config utility, which
+   GD will use to determine which libraries are necessary and in which
+   order to link them.
 
-   my @INC     = qw(-I/usr/local/include -I/usr/local/include/gd); 
-   my @LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/local/lib );
-   my @LIBS    = qw(-lgd -lpng -lz);
-
-   Try adjusting the pathnames in @INC and @LIBPATH, and/or the
-   link order in @LIBS.  In a few cases, people who haven't had any
-   luck at all have been able to get GD to compile by first reinstalling
-   Perl from scratch.  Perhaps this reflects a situation in which Perl
-   was initially built with one set of system libraries, and then the
-   libraries were updated (or Perl was moved to a different machine).
-
-   If you get this error:
+   Another thing to be aware of is that some Unix distributions provide
+   a faulty precompiled version of Perl which is unable to build and
+   load new C-based modules (like this one).  If you are getting errors
+   like this:
 
    /arch/auto/GD/GD.so: undefined symbol: SetCPerlObj at ....
 
-   You may have a version of Perl that was compiled with one C compiler
-   and then moved to another system with a slightly different version of
-   the compiler.  The only solution I know of is to compile Perl completely 
-   from scratch on the target system.
+   then you may have such a faulty version of Perl.  The most reliable
+   thing to do is to recompile Perl from source code, thereby ensuring
+   that it is complete.
 
-   If you get frustrated with not being able to compile libgd, GD, or one
-   of the many external libraries needed by this module, just go to CPAN
-   and get GD version 1.19.  It only produces GIFs, but it uses a self-
-   contained version of libgd and requires no external libraries at all.
-
-5. When I try to load an XPM file, all I get is blackness!
+8. When I try to load an XPM file, all I get is blackness!
 
    The libgd createFromXpm() function works with some XPM files, and
    not with others.  The problem is buried deep in the libXpm library
    somewhere.
+
+9. The stringFTCircle() method doesn't work!
+
+   I know.  I think this might be a problem in libgd because I have
+   never gotten it to work as a C program.  If you have any insight
+   into this problem let me know.
+
+10. Test XX fails
+
+   The regression tests for GD involve generating images, saving
+   them as PNG files, and then comparing the PNG files bit-for-bit
+   to known "correct" PNG files.  Sometimes one of the underlying
+   C libraries such as libz, libpng or libgd is updated, causing 
+   GD to generate an image that is subtly different.  These differences
+   are usually insignificant, such as a reordering of colors in the
+   color table, but they will call isolated tests to fail.  If you
+   are seeing the great majority of GD tests pass, but one or two
+   fail, then you are probably seeing the effect of a new library.
+   Just go ahead and install GD and drop me a note about the problem.
 
 BUG REPORTS
 
