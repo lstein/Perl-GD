@@ -17,7 +17,7 @@ f.  support for transparency and interlacing
 For full information on usage, see the accompanying man and html
 documentation.
 
-===> NOTE: This version of GD REQUIRES libgd 2.0.1 or higher.  If you
+===> NOTE: This version of GD REQUIRES libgd 2.0.4 or higher.  If you
 ===> have an older version of libgd installed you must remove libgd.a,
 ===> libgd.so (if present) and gd.h.  Then install the new version of
 ===> libgd from www.boutell.com (see below).  This particularly

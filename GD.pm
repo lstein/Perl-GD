@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "2.041";
+$VERSION = "2.05";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -1343,6 +1343,42 @@ relative font paths are not recognized due to problems in the libgd
 library.
 
 =back
+
+=head2 Alpha channels
+
+The alpha channel methods allow you to control the way drawings are
+processed according to the alpha channel.
+
+=over 4
+
+=item B<$image-E<gt>imageAlphaBlending($blending)>
+
+The imageAlphaBlending function allows for two different modes of drawing on
+truecolor images. In blending mode, which is on by default (libgd 2.0.2 and
+above), the alpha channel component of the color supplied to all drawing
+functions, such as C<setPixel>, determines how much of the underlying color
+should be allowed to shine through. As a result, GD automatically blends
+the existing color at that point with the drawing color, and stores the
+result in the image. The resulting pixel is opaque. In non-blending mode,
+the drawing color is copied literally with its alpha channel information,
+replacing the destination pixel. Blending mode is not available when
+drawing on palette images.
+
+=item B<$image-E<gt>imageSaveAlpha($saveAlpha)>
+
+By default, GD (libgd 2.0.2 and above) does not attempt to save full alpha
+channel information (as opposed to single-color transparency) when saving
+PNG images. (PNG is currently the only output format supported by gd which
+can accommodate alpa channel information.) This saves space in the output
+file. If you wish to create an image with alpha channel information for use
+with tools that support it, call C<imageSaveAlpha(1)> to turn on saving of
+such information, and call C<imageAlphaBlending(0)> to turn off alpha
+blending within the library so that alpha channel information is actually
+stored in the image rather than being composited immediately at the time
+that drawing functions are invoked.
+
+=back
+
 
 =head2 Miscellaneous Image Methods
 
