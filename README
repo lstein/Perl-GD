@@ -44,7 +44,7 @@ Read these instructions all the way through before you start!
 
 1.  Make sure you have downloaded and installed the following packages:
 
-	a. Perl 5.004 or higher:
+	a. Perl 5.6.0 or higher:
 		http://www.perl.com/
 
 	b. The gd graphics library:
