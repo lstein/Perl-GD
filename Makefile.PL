@@ -8,6 +8,10 @@ warn "        it will NOT work with earlier versions.\n";
 warn "        See www.cpan.org for versions of GD that are compatible\n";
 warn "        with earlier versions of libgd.\n";
 warn "\n";
+warn "        If you are using Math::Trig 1.01 or lower, it has a bug that\n";
+warn "        causes a \"prerequisite not found\" warning to be issued.  You may\n";
+warn "        safely ignore this warning.\n";
+warn "\n";
 warn "Type perl Makefile.PL -h for command-line option summary\n";
 }
 
@@ -163,9 +167,9 @@ push @INC, '-I/X11' if ($XPM && $^O eq 'VMS');
 # FreeBSD 3.3 with libgd built from ports croaks if -lXpm is specified 
 if ($^O ne 'freebsd' && $^O ne 'MSWin32') { 
   push @LIBS,'-lX11','-lXpm' if $XPM; 
-} 
+}
 
-my $CAPI = defined $ExtUtils::MakeMaker::CAPI_support ? 'TRUE' : 'FALSE';
+my $CAPI = defined $ExtUtils::MakeMaker::CAPI_support;
 my $DEFINES = '';
 $DEFINES    .= ' -DHAVE_JPEG' if $JPEG;
 $DEFINES    .= ' -DHAVE_FT'   if $FT;
@@ -176,7 +180,7 @@ WriteMakefile(
     'NAME'	=> 'GD',
     'VERSION_FROM'	=> 'GD.pm',
     'PREREQ_PM' => {
-		    Math::Trig => 1.00,
+		    'Math::Trig' => 0,
 		    },
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
@@ -184,7 +188,7 @@ WriteMakefile(
     'INC'       => join(' ',$ENV{'GD_INC'},@INC), 
     'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
     'ABSTRACT'  => 'Interface to Gd Graphics Library',
-    'CAPI'      => $CAPI,
+     $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
 );
 
