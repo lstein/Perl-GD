@@ -438,7 +438,7 @@ gdnewFromGifData(packname="GD::Image", imageData)
         ctx->free(ctx);
 #else
     errormsg = perl_get_sv("@",0);
-    sv_setpv(errormsg,"libgd was not built with gif support\n");
+    sv_setpv(errormsg,"GD/libgd was not built with gif support\n");
     XSRETURN_EMPTY;
 #endif
 	OUTPUT:
@@ -462,7 +462,7 @@ gdnewFromJpegData(packname="GD::Image", imageData)
         (ctx->free)(ctx);
 #else
         errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+        sv_setpv(errormsg,"GD/libgd was not built with jpeg support\n");
         XSRETURN_EMPTY;
 #endif
 	OUTPUT:
@@ -497,7 +497,7 @@ gd_newFromGif(packname="GD::Image", filehandle)
 	RETVAL = (GD__Image) GDIMAGECREATEFROMGIF(filehandle);
 #else
     errormsg = perl_get_sv("@",0);
-    sv_setpv(errormsg,"libgd was not built with gif support\n");
+    sv_setpv(errormsg,"GD/libgd was not built with gif support\n");
     XSRETURN_EMPTY;
 #endif
 	OUTPUT:
@@ -547,13 +547,13 @@ gd_newFromJpeg(packname="GD::Image", filehandle)
         if (img == NULL) {
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+	    sv_setpv(errormsg,"GD/libgd was not built with jpeg support\n");
 	  XSRETURN_EMPTY;
         }
         RETVAL = img;
 #else
         errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+        sv_setpv(errormsg,"GD/libgd was not built with jpeg support\n");
         XSRETURN_EMPTY;
 #endif
 	OUTPUT:
@@ -572,7 +572,7 @@ gd_newFromWBMP(packname="GD::Image", filehandle)
         if (img == NULL) {
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with WBMP support\n");
+	    sv_setpv(errormsg,"GD/libgd was not built with WBMP support\n");
 	  XSRETURN_EMPTY;
         }
         RETVAL = img;
@@ -593,13 +593,13 @@ gdnewFromXpm(packname="GD::Image", filename)
         if (img == NULL) {
             errormsg = perl_get_sv("@",0);
             if (errormsg != NULL)
-              sv_setpv(errormsg,"libgd was not built with xpm support\n");
+              sv_setpv(errormsg,"GD/libgd was not built with xpm support\n");
             XSRETURN_EMPTY;
         }
         RETVAL = img;
 #else
         errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with xpm support\n");
+        sv_setpv(errormsg,"GD/libgd was not built with xpm support\n");
         XSRETURN_EMPTY;
 #endif
         OUTPUT:
@@ -659,7 +659,7 @@ gdgif(image)
 	free(data);
 #else
 	errormsg = perl_get_sv("@",0);
-	sv_setpv(errormsg,"libgd was not built with gif support\n");
+	sv_setpv(errormsg,"GD/libgd was not built with gif support\n");
 	XSRETURN_EMPTY;
 #endif
   }
@@ -682,14 +682,14 @@ gdjpeg(image,quality=-1)
         if (data == NULL) {
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+	    sv_setpv(errormsg,"GD/libgd was not built with jpeg support\n");
 	  XSRETURN_EMPTY;
         }
 	RETVAL = newSVpv((char*) data,size);
 	gdFree(data);
 #else
         errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+        sv_setpv(errormsg,"GD/libgd was not built with jpeg support\n");
         XSRETURN_EMPTY;
 #endif
   }
@@ -711,7 +711,7 @@ gdwbmp(image,fg)
         if (data == NULL) {
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with WBMP support\n");
+	    sv_setpv(errormsg,"GD/libgd was not built with WBMP support\n");
 	  XSRETURN_EMPTY;
         }
 	RETVAL = newSVpv((char*) data,size);
@@ -1341,7 +1341,7 @@ gdstringUp(image,font,x,y,s,color)
 	}
 
 void
-gdstringTTF(image,fgcolor,fontname,ptsize,angle,x,y,string)
+gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string)
         SV *	        image
         int             fgcolor
 	char *          fontname
@@ -1366,7 +1366,7 @@ gdstringTTF(image,fgcolor,fontname,ptsize,angle,x,y,string)
 	    img = NULL;
 	  }
 
-	  err = gdImageStringTTF(img,brect,fgcolor,fontname,ptsize,angle,x,y,string);
+	  err = gdImageStringFT(img,brect,fgcolor,fontname,ptsize,angle,x,y,string);
 	  if (err) {
 	    errormsg = perl_get_sv("@",0);
 	    if (errormsg != NULL)

@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "1.35";
+$VERSION = "1.36";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -58,6 +58,7 @@ $VERSION = "1.35";
 
 # documentation error
 *GD::Polygon::delete = \&GD::Polygon::deletePt;
+*GD::Image::stringTTF = \&GD::Image::stringFT;
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -672,8 +673,6 @@ support.
 NOTE: The libgd library is unable to read certain XPM files, returning
 an all-black image instead.
 
-=back
-
 =head1 GD::Image Methods
 
 Once a GD::Image object is created, you can draw with it, copy it, and
@@ -685,8 +684,6 @@ a file.
 
 The following methods convert the internal drawing format into
 standard output file formats.
-
-=over 4
 
 =item B<$pngdata = $image-E<gt>png>
 
@@ -1222,9 +1219,9 @@ specified font and color.  They're carry-overs from the C interface,
 where there is a distinction between characters and strings.  Perl is
 insensible to such subtle distinctions.
 
-=item B<@bounds = $image-E<gt>stringTTF($fgcolor,$fontname,$ptsize,$angle,$x,$y,$string)>
+=item B<@bounds = $image-E<gt>stringFT($fgcolor,$fontname,$ptsize,$angle,$x,$y,$string)>
 
-=item B<@bounds = GD::Image-E<gt>stringTTF($fgcolor,$fontname,$ptsize,$angle,$x,$y,$string)>
+=item B<@bounds = GD::Image-E<gt>stringFT($fgcolor,$fontname,$ptsize,$angle,$x,$y,$string)>
 
 This method uses TrueType to draw a scaled, antialiased string using
 the TrueType vector font of your choice.  It requires that libgd to
@@ -1248,7 +1245,7 @@ boundaries of the rendered string:
  @bounds[4,5]  Upper right corner (x,y)
  @bounds[6,7]  Upper left corner (x,y)
 
-In case of an error (such as the font not being available, or TTF
+In case of an error (such as the font not being available, or FT
 support not being available), the method returns an empty list and
 sets $@ to the error message.
 
@@ -1256,6 +1253,10 @@ You may also call this method from the GD::Image class name, in which
 case it doesn't do any actual drawing, but returns the bounding box
 using an inexpensive operation.  You can use this to perform layout
 operations prior to drawing.
+
+For backward compatibility with older versions of the FreeType
+library, the alias stringTTF() is also recognized.  Also be aware that
+(for some reason) relative font paths are not recognized.
 
 =back
 
@@ -1429,7 +1430,7 @@ PostScript Reference, page 154 for a full explanation, or experiment.
 The libgd library (used by the Perl GD library) has built-in support
 for about half a dozen fonts, which were converted from public-domain
 X Windows fonts.  For more fonts, compile libgd with TrueType support
-and use the stringTTF() call.
+and use the stringFT() call.
 
 If you wish to add more built-in fonts, the directory bdf_scripts
 contains two contributed utilities that may help you convert X-Windows

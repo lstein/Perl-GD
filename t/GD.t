@@ -2,7 +2,8 @@
 
 use lib './blib/lib','./blib/arch','../blib/lib','../blib/arch';
 use FileHandle;
-use constant FONT=>'./Generic.ttf';
+use Cwd;
+use constant FONT=>"./Generic.ttf";
 
 my $loaded;
 BEGIN {$| = 1; $loaded = 0; print "1..10\n"; }
@@ -14,10 +15,10 @@ $loaded++;
 
 chdir 't' || die "Couldn't change to 't' directory: $!";
 
+my $font = cwd . '/' . FONT;
 $arg = shift;
 
 if (defined $arg && $arg eq '--write') {
-  warn "Writing regression files...";
   compare(&test1,2,'write');
   compare(&test2,3,'write');
   compare(&test3,4,'write');
@@ -27,7 +28,6 @@ if (defined $arg && $arg eq '--write') {
   compare(&test7,8,'write');
   compare(&test8('frog.xpm'),9,'write');
   compare(&test9('frog.jpg'),10,'write');
-#  compare(&test10('frog.gif'),11,'write');
 }
 
 compare(test1(),++$loaded);
@@ -37,7 +37,7 @@ compare(test4(),++$loaded);
 compare(test5(),++$loaded);
 compare(test6(),++$loaded);
 
-if (GD::Image->stringTTF(0,FONT,12.0,0.0,20,20,"Hello world!")) {
+if (GD::Image->stringFT(0,$font,12.0,0.0,20,20,"Hello world!")) {
   compare(test7(),++$loaded);
 } elsif ($@ =~/not built with TrueType font support/) {
   warn "\n$@";
@@ -60,16 +60,6 @@ if (GD::Image->newFromJpeg('frog.jpg')) {
   print "ok ",++$loaded," # Skip, no JPEG support\n";
 } else {
   print "not ok ",++$loaded,"\n";
-}
-
-if (0) {
-if (GD::Image->newFromGif('frog.gif')) {
-  compare(test10('frog.gif'),++$loaded);
-} elsif ($@ =~/not built with gif support/) {
-  print "ok ",++$loaded," # Skip, no GIF support\n";
-} else {
-  print "not ok ",++$loaded,"\n";
-}
 }
 
 sub compare {
@@ -243,7 +233,6 @@ sub test6 {
 
 sub test7 {
   my $im = GD::Image->new(400,250);
-  if (!$im) { printf("Test7: no image");};
   my($white,$black,$red,$blue,$yellow) = 
     (
      $im->colorAllocate(255, 255, 255),
@@ -254,9 +243,9 @@ sub test7 {
     );
 
   # Some TTFs
-  $im->stringTTF($black,FONT,12.0,0.0,20,20,"Hello world!") || return;
-  $im->stringTTF($red,FONT,14.0,0.0,20,80,"Hello world!") || return;
-  $im->stringTTF($blue,FONT,30.0,-0.5,60,100,"Goodbye cruel world!") || die $@;
+  $im->stringFT($black,$font,12.0,0.0,20,20,"Hello world!") or (warn($@) && return 0);
+  $im->stringFT($red,$font,14.0,0.0,20,80,"Hello world!") or (warn($@) && return 0);
+  $im->stringFT($blue,$font,30.0,-0.5,60,100,"Goodbye cruel world!") or (warn($@) && return 0);
   $im->png;
 }
 
@@ -270,11 +259,5 @@ sub test9 {
   my $fn = shift;
   my $im = GD::Image->newFromJpeg($fn);
   $im->png;
-}
-
-sub test10 {
-  my $fn = shift;
-  my $im = GD::Image->newFromGif($fn);
-  $im->gif;
 }
 
