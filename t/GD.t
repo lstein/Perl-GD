@@ -7,7 +7,7 @@ use constant FONT=>"$Bin/Generic.ttf";
 use constant SKIP_TEST_8 => 1;
 
 my $loaded;
-BEGIN {$| = 1; $loaded = 0; print "1..10\n"; }
+BEGIN {$| = 1; $loaded = 0; print "1..11\n"; }
 END {print "not ok 1\n" unless $loaded;}
 
 use GD qw(:DEFAULT GD_CMP_IMAGE);
@@ -64,6 +64,17 @@ if (GD::Image->newFromJpeg('frog.jpg')) {
 } else {
   print "not ok ",10,"\n";
 }
+
+my $image  = GD::Image->new(300,300);
+$image->colorAllocate(255,255,255);
+$image->colorAllocate(0,0,0);
+$image->colorAllocate(255,0,0);
+$image->rectangle(0,0,300,300,0);
+$image->filledRectangle(10,10,50,50,2);
+my $gd2    = $image->gd2;
+my $image2 = GD::Image->newFromGd2Data($gd2);
+my $gd3    = $image2->gd2;
+print (($gd2 eq $gd3) ? "ok 11\n" : "not ok 11\n");
 
 sub compare {
     if (@_ < 2 && $@ =~ /not built with PNG/i) {

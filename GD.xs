@@ -618,14 +618,13 @@ gdnewFromGdData(packname="GD::Image", imageData)
 	SV *	imageData
 	PROTOTYPE: $$
         PREINIT:
-	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
 	CODE:
 	data = SvPV(imageData,len);
-        ctx = newDynamicCtx(data,len);
-	RETVAL = (GD__Image) gdImageCreateFromGdCtx(ctx);
-        (ctx->gd_free)(ctx);
+        fprintf(stderr,"length = %d\n",len);
+	RETVAL = (GD__Image) gdImageCreateFromGdPtr(len,(void*) data);
+        safefree(data);
 	OUTPUT:
 	RETVAL
 
@@ -635,14 +634,12 @@ gdnewFromGd2Data(packname="GD::Image", imageData)
 	SV *	imageData
 	PROTOTYPE: $$
         PREINIT:
-	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
 	CODE:
 	data = SvPV(imageData,len);
-        ctx = newDynamicCtx(data,len);
-	RETVAL = (GD__Image) gdImageCreateFromGd2Ctx(ctx);
-        (ctx->gd_free)(ctx);
+	RETVAL = (GD__Image) gdImageCreateFromGd2Ptr(len,(void*) data);
+        safefree(data);
 	OUTPUT:
 	RETVAL
 
