@@ -1,5 +1,0 @@
-The only difference between 1.00 and 1.01 is the change of one line
-to prevent perl "uninitialized variable" warnings when running with
-the -w switch.
-
-Lincoln

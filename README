@@ -22,69 +22,195 @@ COPYRIGHT INFO
 The GD.pm interface is copyright 1995, Lincoln D. Stein.  You are free
 to use it for any purpose, commercial or noncommercial, provided that
 if you redistribute the source code this statement of copyright
-remains attached. The Gd library is covered separately, under a 1994
-copyright by Quest Protein Database Center, Cold Spring Harbor Labs.
-For usage information see the Gd documentation at the URL given below.
+remains attached.  Code from the gd graphics library is covered
+separately, under a 1994 copyright by Quest Protein Database Center,
+Cold Spring Harbor Labs, and by Thomas Boutell.
+
+WHAT'S NEW IN VERSION 1.10
+
+	- Modified gd library now included in the package.
+	- Performance improvements.
+	- Extensive code cleanup.
+	- Runs correctly with FastCGI.
 
 INSTALLATION:
 
-1.  You'll need the following:
-	a.  perl 5.001 or higher:
-		ftp://ftp.netlabs.com/pub/outgoing/perl5.0
-		(and many other places)
-	b.  libgd.a
-		http://www.boutell.com/gd/
+1.  You'll need perl 5.002 or higher (5.003 is recommended).
+    Perl is available from:
+     
+	a. Larry Wall's FTP site:
+           ftp://ftp.netlabs.com/pub/outgoing/perl5.0
 
-    If you haven't already, configure and build them according to their
-	instructions.  For best results, make sure they're installed
-	in more-or-less "standard" places, e.g. /usr/local/bin/perl
-	,/usr/local/lib/libgd.a, and /usr/local/include/gd.h.
+	b. the CPAN archives:
+	   http://www.perl.com/CPAN/
 
-    Note: After you build libgd.a you may see linker warnings
-	about it not having a table of contents.  This seems
-	to be harmless (at least on the systems I use), but you 
-	can run ranlib on libgd.a to get rid of the warnings.
+    Unlike previous versions of this package, you no longer need
+    the C-language version of libgd.  This package comes with a
+    version of libgd that has been specially modified to work well
+    with Perl.
 
-2.  Unpack the tar file and install in the perl source tree with the
-	other external utilities, e.g. perl5.001/ext/GD/
+2.  Unpack the tar file:
 
-3.  If you have dynamic linking, the rest is easy:
+	zcat GD-1.10.tar.gz | tar xvf -
 
-	a.  cd perl5.001/ext/GD
+    This will create the directory GD-1.10. Do NOT install this directory
+    into the Perl source tree.
+
+3.  To compile GD.pm on a system that supports dynamic linking:
+
+	a.  cd GD-1.10
 	b.  perl Makefile.PL
 	c.  make
 	d.  make install
 
-4.  If you have static linking, you'll have to reconfigure and relink
-	perl:
+    This will create GD.pm and copy itm and its dynamically loadable module 
+    GD.so into the Perl library tree.  You'll need root privileges to do
+    the install step.  If you don't have them, see below.
 
-	a.  cd perl5.001
-	b.  Configure
-	c.  When it asks you if you want to statically link GD,
-		answer YES
-	d.  make
-	e.  make install
+4.  To compile GD.pm statically on systems that do not support dynamic
+    linking (I think this includes Windows NT):
 
-5.  There are some demos you can run in ext/GD/demos.  They print GIF
-	files to standard output.  To view the files, pipe their
-	output to display or xv in this way:
+	a.  cd GD-1.10
+        b.  perl Makefile.PL
+        c.  make perl
+        d.  make inst_perl
 
-	a.  cd perl5.001/ext/GD/demos
-	b   shapes.pl | xv -
+     This will create a new version of Perl and install it in your system
+     binaries directory, OVERWRITING THE PREVIOUS VERSION OF PERL.  If you'd
+     like to install Perl under a different name, such as "gdperl",
+     follow this recipe:
 
-The current version is 1.01.  It is up to date with respect to gd version 1.2.
-When version 2.0 of gd is released, the new version of GD will be found at
+	a.  cd GD-1.10
+        b.  perl Makefile.PL MAP_TARGET=gdperl
+        c.  make gdperl
+        d.  make inst_perl
 
-	http://www-genome.wi.mit.edu/pub/software/WWW/GD.html
+5.  Before you install GD, you may want to run the regression tests.  You
+    can do this after the "make" step by typing:
 
-This interface has been tested on multiple systems.  A warning: you may
-experience problems compiling this interface using the built-in "make" and
-"cc" programs that Sun provides.  If this happens to you, obtain the GNU
-equivalents, "gmake" and "gcc".  You'll be thankful you did in the long run.
-If you encounter other problems on your system, drop me a
-line:
+	make test
 
-	Lincoln Stein
-	lstein@genome.wi.mit.edu
-	http://www-genome.wi.mit.edu/~lstein
+6.  There are some demos you can run in ext/GD/demos.  They print GIF
+    files to standard output.  To view the files, pipe their
+    output to "display" or "xv" in this way:
 
+	a.  cd GD-1.10/demos
+	b   perl shapes.pl | xv -
+
+7.  See demos/gd_example.cgi for an example of how to use GD to create
+    a picture dynamically with a CGI script.  It's intended to be run
+    under a Web server.  To see it work, install it in your server's
+    cgi-bin/ directory and invoke it from a browser by fetching a URL like:
+
+	http://your.site/cgi-bin/gd_example.cgi
+
+
+INSTALLING GD IN YOUR HOME DIRECTORY
+
+IF YOU DON'T HAVE PRIVILEGES TO INSTALL GD.pm in your system's main
+Perl library directory, don't despair.  You can install it into your
+home directory using the following trick:
+
+	cd ~
+	mkdir lib
+	mkdir lib/perl
+        mv    GD-1.10/blib/* lib/perl
+
+You'll now need to modify your GD-using scripts to tell Perl where to
+find GD.  This example assumes that your home directory is at path
+"/home/fred"; change it as appropriate.
+
+	#!/usr/local/bin/perl
+        use lib '/home/fred/lib/perl/lib',
+	        '/home/fred/lib/perl/arch';
+        use GD;
+	... etc ...
+
+USING GD WITH FAST CGI
+
+FastCGI is a protocol from OpenMarket Corporation that markedly speeds
+up the execution of CGI scripts.  To use FastCGI with Perl scripts,
+you need a specially-modified version of the Perl interpreter which
+you can obtain in binary and/or source form from:
+
+	http://www.openmarket.com/
+
+To use GD with a FastCGI version of Perl you'll need to recompile it
+using the modified Perl.  In this example, I assume that this version
+of Perl is found at '/usr/local/fcgi/bin/perl': modify as appropriate
+for your system.
+
+	a. cd GD-1.10
+	b. edit Makefile.PL and uncomment the line 
+               'DEFINE'	=> '-DFCGI'
+        c. /usr/local/fcgi/bin/perl Makefile.PL
+        d. make
+        e. make install
+
+IF YOU RUN INTO PROBLEMS
+
+Some versions of Unix and Unix-like systems such as Linux ship with an
+incomplete version of the Perl distribution.  If you get warnings such
+as "Module ExtUtils::MakeMaker not found", you may have such a
+system.  Your only option is to obtain the full Perl distribution and
+reinstall it.
+
+If the make and install all seem to go well but you get errors like
+"Fatal error: can't load module GD.so", or "Fatal error: unknown
+symbol gdFontSmall" when you try to run a script that uses GD, you may
+have problems with dynamic linking.  Check whether other
+dynamically-linked Perl modules such as POSIX and DB_File run
+correctly.  If not, then you'll have to link Perl statically, as
+described above.
+
+If you have problems and can't solve it on your own, post a message to
+the newsgroup "comp.lang.perl.modules".  There are some systems that
+require obscure compiler and linker options in order to compile
+correctly, and unfortunately I have a limited number of systems at my
+disposal.  You're much more likely to get correct answers from the
+gurus on the newsgroup than from myself.
+
+THE QUICKDRAW LIBRARY
+
+Also included in this package is qd.pl, a package of Quickdraw
+routines.  If you are familiar with the Quickdraw Macintosh library,
+you can create Macintosh pictures (complete with scaleable fonts,
+draggable objects, etc. etc.) directly in Perl.  See README.QUICKDRAW
+and qd.pl for more information.
+
+FREQUENTLY ASKED QUESTIONS
+
+1. Are there plans to include additional fonts in GD?
+
+   Maybe some day.  Not soon.  This is Thomas Boutell's provenance.
+
+2. Is there a utility to convert {True Type, X Windows, Postscript}
+fonts into GD fonts.
+
+   No.
+
+3. Does GD run with MacPerl?
+
+   No.  If you manage to compile and get it running, let me know.
+
+4. Are there any Windows NT binaries of GD?
+
+   It ought to, but I don't know of anyone who actually has done so.
+   Although a Windows NT system is available to me, I don't have any
+   developers tools.  I'm happy to accept donations! :-)
+
+BUG REPORTS
+
+Feel free to contact me via e-mail.
+
+UPDATES:
+
+The current version of GD can be found at:
+
+   http://www.genome.wi.mit.edu/pub/software/WWW/GD.html
+
+AUTHOR:
+
+Lincoln Stein
+lstein@genome.wi.mit.edu
+http://www-genome.wi.mit.edu/~lstein

@@ -1,10 +1,14 @@
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
-#include "gd.h"
-#include "stdio.h"
+#include "libgd/gd.h"
+#ifdef FCGI
+   #include <fcgi_stdio.h>
+#else
+   #include <stdio.h>
+#endif
 
-/* Copyright 1995, Lincoln D. Stein.  See accompanying README file for
+/* Copyright 1995, 1996, Lincoln D. Stein.  See accompanying README file for
 	usage restrictions */
 
 static int
@@ -191,6 +195,7 @@ char* style;
 {
   dSP ;
   int count ;
+  FILE* file;
   int fd;
   
   ENTER ;
@@ -207,7 +212,8 @@ char* style;
   FREETMPS ;
   LEAVE ;
 
-  return fdopen(fd,style);
+  file = fdopen(fd,style);
+  return file;
 }
 
 MODULE = GD		PACKAGE = GD
@@ -224,6 +230,7 @@ gdnew(packname="GD::Image", x=64, y=64)
 	char *	packname
 	int	x
 	int	y
+        PROTOTYPE: $;$$
 	CODE:
 	{
 		gdImagePtr theImage;
@@ -237,16 +244,17 @@ GD::Image
 gdnewFromGif(packname="GD::Image", filehandle)
 	char *	packname
 	char *	filehandle
+	PROTOTYPE: $$
 	CODE:
 	{
 		gdImagePtr theImage;
 		FILE*	theFile;
 		theFile = fh2file(filehandle,"r");
 		if (theFile == NULL) {
-			RETVAL = NULL;
+		  RETVAL = NULL;
 		} else {
-			theImage = gdImageCreateFromGif(theFile);
-			RETVAL = theImage;
+		  theImage = gdImageCreateFromGif(theFile);
+		  RETVAL = theImage;
 		}
 	}
 	OUTPUT:
@@ -256,6 +264,7 @@ GD::Image
 gdnewFromXbm(packname="GD::Image", filehandle)
 	char *	packname
 	char *	filehandle
+	PROTOTYPE: $$
 	CODE:
 	{
 		gdImagePtr theImage;
@@ -275,6 +284,7 @@ GD::Image
 gdnewFromGd(packname="GD::Image", filehandle)
 	char *	packname
 	char *	filehandle
+	PROTOTYPE: $$
 	CODE:
 	{
 		gdImagePtr theImage;
@@ -294,46 +304,46 @@ gdnewFromGd(packname="GD::Image", filehandle)
 void
 gdDESTROY(image)
 	GD::Image	image
+	PROTOTYPE: $
 	CODE:
 	{
 		gdImageDestroy(image);
 	}
 
-void
-gd__Gif(image,filedescriptor)
-	GD::Image	image
-	int		filedescriptor
-	CODE:
-	{
-		gdImagePtr theImage;
-		FILE*	theFile;
-		theFile = fdopen(filedescriptor,"w");
-		if (theFile != NULL) {
-			gdImageGif(image,theFile);
-			if (0 != fflush(theFile))
-				croak("fflush returned nonzero result code.\n");
-		}
-	}
+SV*
+gdgif(image)
+  GD::Image	image
+  PROTOTYPE: $
+  CODE:
+  {
+	void*         data;
+	int           size;
+	data = gdImageGifPtr(image,&size);
+	RETVAL = newSVpv((char*) data,size);
+	free(data);
+  }
+  OUTPUT:
+    RETVAL
 
-void
-gd__Gd(image,filedescriptor)
-	GD::Image	image
-	int		filedescriptor
-	CODE:
-	{
-		gdImagePtr theImage;
-		FILE*	theFile;
-		theFile = fdopen(filedescriptor,"w");
-		if (theFile != NULL) {
-			gdImageGd(image,theFile);
-			if (0 != fflush(theFile))
-				croak("fflush returned nonzero result code.\n");
-		}
-	}
+SV*
+gdgd(image)
+  GD::Image	image
+  PROTOTYPE: $
+  CODE:
+  {
+	void*         data;
+	int           size;
+	data = gdImageGdPtr(image,&size);
+	RETVAL = newSVpv((char*) data,size);
+	free(data);
+  }
+  OUTPUT:
+    RETVAL
 
 int
 gdtransparent(image, ...)
 	GD::Image	image
+        PROTOTYPE: $;$
 	CODE:
 	{
 		int color;
@@ -349,6 +359,7 @@ gdtransparent(image, ...)
 void
 gdgetBounds(image)
 	GD::Image	image
+	PROTOTYPE: $
 	PPCODE:
 	{
 		int sx,sy;
@@ -363,6 +374,7 @@ int
 gdrgb(image,color)
 	GD::Image	image
 	int		color
+        PROTOTYPE: $$
 	PPCODE:
 	{
 		int r,g,b;
@@ -380,6 +392,7 @@ gdboundsSafe(image,x,y)
 	GD::Image	image
 	int		x
 	int		y
+        PROTOTYPE: $$$
 	CODE:
 	{
 		RETVAL=gdImageBoundsSafe(image,x,y);
@@ -392,6 +405,7 @@ gdgetPixel(image,x,y)
 	GD::Image	image
 	int		x
 	int		y
+	PROTOTYPE: $$$
 	CODE:
 	{
 		RETVAL=gdImageGetPixel(image,x,y);
@@ -405,6 +419,7 @@ gdsetPixel(image,x,y,color)
 	int		x
 	int		y
 	int		color
+	PROTOTYPE: $$$
 	CODE:
 	{
 		gdImageSetPixel(image,x,y,color);
@@ -418,6 +433,7 @@ gdline(image,x1,y1,x2,y2,color)
 	int		x2
 	int		y2
 	int		color
+        PROTOTYPE: $$$$$$
 	CODE:
 	{
 		gdImageLine(image,x1,y1,x2,y2,color);
@@ -431,6 +447,7 @@ gddashedLine(image,x1,y1,x2,y2,color)
 	int		x2
 	int		y2
 	int		color
+        PROTOTYPE: $$$$$$
 	CODE:
 	{
 		gdImageDashedLine(image,x1,y1,x2,y2,color);
@@ -441,6 +458,7 @@ gdpolygon(image,poly,color)
 	GD::Image	image
 	SV *		poly
 	int		color
+        PROTOTYPE: $$$
 	CODE:
 	{
 		dSP ;
@@ -496,6 +514,7 @@ gdfilledPolygon(image,poly,color)
 	GD::Image	image
 	SV *		poly
 	int		color
+        PROTOTYPE: $$$
 	CODE:
 	{
 		dSP ;
@@ -554,6 +573,7 @@ gdrectangle(image,x1,y1,x2,y2,color)
 	int		x2
 	int		y2
 	int		color
+        PROTOTYPE: $$$$$$
 	CODE:
 	{
 		gdImageRectangle(image,x1,y1,x2,y2,color);
@@ -567,6 +587,7 @@ gdfilledRectangle(image,x1,y1,x2,y2,color)
 	int		x2
 	int		y2
 	int		color
+        PROTOTYPE: $$$$$$
 	CODE:
 	{
 		gdImageFilledRectangle(image,x1,y1,x2,y2,color);
@@ -582,6 +603,7 @@ gdarc(image,cx,cy,w,h,s,e,color)
 	int		s
 	int		e
 	int		color
+        PROTOTYPE: $$$$$$$$
 	CODE:
 	{
 		gdImageArc(image,cx,cy,w,h,s,e,color);
@@ -594,6 +616,7 @@ fillToBorder(image,x,y,border,color)
 	int		y
 	int		border
 	int		color
+        PROTOTYPE: $$$$$
 	CODE:
 	{
 		gdImageFillToBorder(image,x,y,border,color);
@@ -605,6 +628,7 @@ fill(image,x,y,color)
 	int		x
 	int		y
 	int		color
+        PROTOTYPE: $$$$
 	CODE:
 	{
 		gdImageFill(image,x,y,color);
@@ -614,6 +638,7 @@ void
 setBrush(image,brush)
 	GD::Image	image
 	GD::Image	brush
+        PROTOTYPE: $$
 	CODE:
 	{
 		gdImageSetBrush(image,brush);
@@ -623,6 +648,7 @@ void
 setTile(image,tile)
 	GD::Image	image
 	GD::Image	tile
+        PROTOTYPE: $$
 	CODE:
 	{
 		gdImageSetTile(image,tile);
@@ -631,6 +657,7 @@ setTile(image,tile)
 void
 setStyle(image, ...)
 	GD::Image	image
+        PROTOTYPE: $;$
 	CODE:
 	{
 		int	*style;
@@ -654,6 +681,7 @@ colorAllocate(image,r,g,b)
 	int		r
 	int		g
 	int		b
+        PROTOTYPE: $$$$
 	CODE:
 	{
 		RETVAL = gdImageColorAllocate(image,r,g,b);
@@ -667,6 +695,7 @@ colorClosest(image,r,g,b)
 	int		r
 	int		g
 	int		b
+        PROTOTYPE: $$$$
 	CODE:
 	{
 		RETVAL = gdImageColorClosest(image,r,g,b);
@@ -680,6 +709,7 @@ colorExact(image,r,g,b)
 	int		r
 	int		g
 	int		b
+	PROTOTYPE: $$$$
 	CODE:
 	{
 		RETVAL = gdImageColorExact(image,r,g,b);
@@ -690,6 +720,7 @@ colorExact(image,r,g,b)
 int
 colorsTotal(image)
 	GD::Image	image
+	PROTOTYPE: $
 	CODE:
 	{
 		RETVAL = gdImageColorsTotal(image);
@@ -701,6 +732,7 @@ colorsTotal(image)
 int
 interlaced(image, ...)
 	GD::Image	image
+	PROTOTYPE: $;$
 	CODE:
 	{
 		if (items > 1) {
@@ -718,6 +750,7 @@ void
 colorDeallocate(image,color)
 	GD::Image	image
 	int		color
+	PROTOTYPE: $$
 	CODE:
 	{
 		gdImageColorDeallocate(image,color);
@@ -733,6 +766,7 @@ copy(destination,source,dstX,dstY,srcX,srcY,w,h)
 	int		srcY
 	int		w
 	int		h
+        PROTOTYPE: $$$$$$$$
 	CODE:
 	{
 		gdImageCopy(destination,source,dstX,dstY,srcX,srcY,w,h);
@@ -750,6 +784,7 @@ copyResized(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH)
 	int		destH
 	int		srcW
 	int		srcH
+        PROTOTYPE: $$$$$$$$$$
 	CODE:
 	{
 		gdImageCopyResized(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH);
@@ -763,6 +798,7 @@ gdchar(image,font,x,y,c,color)
 	int		y
 	char *		c
 	int		color
+        PROTOTYPE: $$$$$$
 	CODE:
 	{
 		gdImageChar(image,font,x,y,*c,color);
@@ -776,6 +812,7 @@ gdcharUp(image,font,x,y,c,color)
 	int		y
 	char *		c
 	int		color
+        PROTOTYPE: $$$$$$
 	CODE:
 	{
 		gdImageCharUp(image,font,x,y,*c,color);
@@ -789,6 +826,7 @@ gdstring(image,font,x,y,s,color)
 	int		y
 	char *		s
 	int		color
+        PROTOTYPE: $$$$$$
 	CODE:
 	{
 		gdImageString(image,font,x,y,s,color);
@@ -802,6 +840,7 @@ gdstringUp(image,font,x,y,s,color)
 	int		y
 	char *		s
 	int		color
+        PROTOTYPE: $$$$$$
 	CODE:
 	{
 		gdImageStringUp(image,font,x,y,s,color);
@@ -812,6 +851,7 @@ MODULE = GD		PACKAGE = GD::Font	PREFIX=gd
 GD::Font
 gdSmall(packname="GD::Font")
 	char *	packname
+        PROTOTYPE: $
 	CODE:
 	{
 		RETVAL = gdFontSmall;
@@ -822,6 +862,7 @@ gdSmall(packname="GD::Font")
 GD::Font
 gdLarge(packname="GD::Font")
 	char *	packname
+	PROTOTYPE: $
 	CODE:
 	{
 		RETVAL = gdFontLarge;
@@ -832,6 +873,7 @@ gdLarge(packname="GD::Font")
 GD::Font
 gdMediumBold(packname="GD::Font")
 	char *	packname
+	PROTOTYPE: $
 	CODE:
 	{
 		RETVAL = gdFontMediumBold;
@@ -842,6 +884,7 @@ gdMediumBold(packname="GD::Font")
 GD::Font
 gdTiny(packname="GD::Font")
 	char *	packname
+	PROTOTYPE: $
 	CODE:
 	{
 		RETVAL = gdFontTiny;
@@ -852,6 +895,7 @@ gdTiny(packname="GD::Font")
 int
 gdnchars(font)
 	GD::Font	font
+	PROTOTYPE: $
 	CODE:
 	{
 		RETVAL = font->nchars;
@@ -862,6 +906,7 @@ gdnchars(font)
 int
 gdoffset(font)
 	GD::Font	font
+	PROTOTYPE: $
 	CODE:
 	{
 		RETVAL = font->offset;
@@ -872,6 +917,7 @@ gdoffset(font)
 int
 gdwidth(font)
 	GD::Font	font
+	PROTOTYPE: $
 	CODE:
 	{
 		RETVAL = font->w;
@@ -882,11 +928,10 @@ gdwidth(font)
 int
 gdheight(font)
 	GD::Font	font
+	PROTOTYPE: $
 	CODE:
 	{
 		RETVAL = font->h;
 	}
 	OUTPUT:
 		RETVAL
-
-	
