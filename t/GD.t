@@ -8,7 +8,7 @@ use constant SKIP_TEST_8 => 1;
 
 my $loaded;
 my $suffix;
-BEGIN {$| = 1; $loaded = 0; print "1..11\n"; }
+BEGIN {$| = 1; $loaded = 0; print "1..12\n"; }
 END {print "not ok 1\n" unless $loaded;}
 
 use GD qw(:DEFAULT GD_CMP_IMAGE);
@@ -86,10 +86,10 @@ $image->colorAllocate(0,0,0);
 $image->colorAllocate(255,0,0);
 $image->rectangle(0,0,300,300,0);
 $image->filledRectangle(10,10,50,50,2);
-my $gd2    = $image->gd2;
-my $image2 = GD::Image->newFromGd2Data($gd2);
-my $gd3    = $image2->gd2;
-print (($gd2 eq $gd3) ? "ok 11\n" : "not ok 11\n");
+my $image2 = GD::Image->newFromGdData($image->gd);
+print ((image($image) eq image($image2)) ? "ok 11\n" : "not ok 11\n");
+$image2 = GD::Image->newFromGd2Data($image->gd2);
+print ((image($image) eq image($image2)) ? "ok 12\n" : "not ok 12\n");
 
 exit 0;
 

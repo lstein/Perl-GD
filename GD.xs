@@ -613,7 +613,6 @@ gdnewFromGdData(packname="GD::Image", imageData)
           STRLEN   len;
 	CODE:
 	data = SvPV(imageData,len);
-        fprintf(stderr,"length = %d\n",len);
 	RETVAL = (GD__Image) gdImageCreateFromGdPtr(len,(void*) data);
         safefree(data);
 	OUTPUT:

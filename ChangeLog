@@ -1,3 +1,5 @@
+2.22	Changed the way the gd and gd2 round-trip tests are evaluated. This
+		might fix test failures that have been reported on some platforms.
 2.21    Regression tests are now functional for versions of libgd compiled
 	exclusively with PNG, JPEG or GIF support.
 2.20	GD::Image->newFromGdData() and newFromGd2Data() got broken
