@@ -42,7 +42,7 @@ if (SKIP_TEST_8) {
   print "ok 8 # Skip, FreeType changes too frequently to be testable\n";
 }
 elsif (GD::Image->stringTTF(0,FONT,12.0,0.0,20,20,"Hello world!")) {
-  multicompare(test8(),8,undef);
+  compare(test8(),8,undef);
 } elsif ($@ =~/not built with .+Type font support/) {
   print "ok ",8," # Skip, no FreeType font support\n";
 } else {
@@ -58,7 +58,7 @@ if (GD::Image->newFromXpm('frog.xpm')) {
 }
 
 if (GD::Image->newFromJpeg('frog.jpg')) {
-  multicompare(test10('frog.jpg'),10);
+  compare(test10('frog.jpg'),10);
 } elsif ($@ =~/not built with jpeg support/) {
   print "ok ",10," # Skip, no JPEG support\n";
 } else {
@@ -69,52 +69,30 @@ sub compare {
     my($imageData,$testNo,$fht) = @_;
     local($/);
     undef $/;
-    my $ok = $testNo;
     my $regressdata;
     my $file = ($^O eq 'VMS')? "test.out_".$testNo."_png" : "./test.out.$testNo.png";
     if (defined $fht and $fht eq 'write') {
-      open (REGRESSFILE,">$file")
-	|| die "Can't open regression file '$file': $!\n";
+      open (REGRESSFILE,">${file}_new")
+	|| die "Can't open regression file '${file}_new': $!\n";
+      print STDERR "Writing ${file}_new\n";
       binmode REGRESSFILE;
       print REGRESSFILE $imageData;
       close REGRESSFILE;
     } else {
-      open (REGRESSFILE,"./$file")
-        || die "Can't open regression file './t/$file': $!\n";
-      binmode REGRESSFILE;
-      $regressdata = <REGRESSFILE>;
-      close REGRESSFILE;
-      print $imageData eq $regressdata ? "ok $ok" : "not ok $ok","\n";
-    }
-}
-
-sub multicompare {
-  my($imageData,$testNo,$fht,@alt) = @_;
-  local $/ = undef;
-  my $ok = $testNo;
-  my $regressdata;
-  my $file = ($^O eq 'VMS')? "test.out_".$testNo."_png" : "test.out.$testNo.png";
-  if (defined $fht and $fht eq 'write') {
-    die "Not implemented with multicompare";
-  } else {
-    my $equal;
-    opendir(DIR,'.');
-  ENTRY:
-    while (my $entry =readdir(DIR)) {
-      next unless $entry =~ /^$file(-\d+)?/;
-      open (REGRESSFILE,$entry)
-	|| die "Can't open regression file './t/$entry': $!\n";
-      binmode REGRESSFILE;
-      $regressdata = <REGRESSFILE>;
-      close REGRESSFILE;
-      if ($imageData eq $regressdata) {
-	$equal = 1;
-	last ENTRY;
+      my ($ok,$counter);
+      my $fname = $file;
+      while (-r "./$fname") {
+	open (REGRESSFILE,"./$fname")
+	  || die "Can't open regression file './t/$fname': $!\n";
+	binmode REGRESSFILE;
+	$regressdata = <REGRESSFILE>;
+	close REGRESSFILE;
+	$ok = $imageData eq $regressdata;
+	last if $ok;
+	$fname = "$file-".++$counter;
       }
+      print $ok ? "ok $testNo" : "not ok $testNo","\n";
     }
-    closedir DIR;
-    print $equal ? "ok $ok" : "not ok $ok","\n";
-  }
 }
 
 sub test2 {

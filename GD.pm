@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "2.16";
+$VERSION = "2.17";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -94,6 +94,7 @@ sub AUTOLOAD {
 }
 
 bootstrap GD;
+
 
 # Preloaded methods go here.
 sub GD::gdSmallFont {
@@ -185,7 +186,7 @@ sub GD::Image::newFromJpeg {
 }
 
 sub GD::Image::newFromGif {
-    croak("Usage: newFromJpeg(class,filehandle,[truecolor])") unless @_>=2;
+    croak("Usage: newFromGif(class,filehandle,[truecolor])") unless @_>=2;
     my($class) = shift;
     my($f)     = shift;
     my $fh = $class->_make_filehandle($f);
@@ -228,6 +229,18 @@ sub GD::Image::newFromGd2Part {
 sub GD::Image::ellipse ($$$$$) {
   my ($self,$cx,$cy,$width,$height,$color) = @_;
   $self->arc($cx,$cy,$width,$height,0,360,$color);
+}
+
+sub GD::Image::width {
+  my $self = shift;
+  my @bounds = $self->getBounds;
+  $bounds[0];
+}
+
+sub GD::Image::height {
+  my $self = shift;
+  my @bounds = $self->getBounds;
+  $bounds[1];
 }
 
 sub _image_type {
@@ -765,6 +778,56 @@ the jpeg() quality argument, which ranges from 0-100 and has the
 opposite meaning from compression (higher numbers give higher
 quality).
 
+=item B<$gifdata = $image-E<gt>gifanimbegin([$GlobalCM [, $Loops]])>
+
+For libgd version 2.0.33 and higher, this call begins an animated GIF
+by returning the data that comprises animated gif image file header.
+After you call this method, call gifanimadd() one or more times to add
+the frames of the image. Then call gifanimend(). Each frame must be
+the same width and height.
+
+A typical sequence will look like this:
+
+  my $gifdata = $image->gifanimbegin;
+  $gifdata   .= $image->gifanimadd;    # first frame
+  for (1..100) {
+     # make a frame of right size
+     my $frame  = GD::Image->new($image->getBounds);
+     add_frame_data($frame);              # add the data for this frame
+     $gifdata   .= $frame->gifanimadd;     # add frame
+  }
+  $gifdata   .= $image->gifanimend;   # finish the animated GIF
+  print $gifdata;                     # write animated gif to STDOUT
+
+If you do not wish to to store the data in memory, you can print it to
+stdout or a file.
+
+The image that you call gifanimbegin on is used to set the image size,
+color resolution and color map.  If argument $GlobalCM is 1, the image
+color map becomes the GIF89a global color map.  If $Loops is given and
+>= 0, the NETSCAPE2.0 application extension is created, with looping
+count.  Looping count 0 means forever.
+
+=item B<$gifdata = $image-E<gt>gifanimadd([$LocalCM [, $LeftOfs [, $TopOfs [, $Delay [, $Disposal [, $previm]]]]]])>
+
+Returns the data that comprises one animated gif image frame.  You can
+then print it, pipe it to a display program, or write it to a file.
+With $LeftOfs and $TopOfs you can place this frame in different offset
+than (0,0) inside the image screen.  Delay between the previous frame
+and this frame is in 1/100s units.  Disposal is usually and by default
+1.  Compression is activated by giving the previous image as a
+parameter.  This function then compares the images and only writes the
+changed pixels to the new frame in animation.  The Disposal parameter
+for optimized animations must be set to 1, also for the first frame.
+$LeftOfs and $TopOfs parameters are ignored for optimized frames.
+
+=item B<$gifdata = $image-E<gt>gifanimend()>
+
+Returns the data for end segment of animated gif file.  It always
+returns string ';'.  This string must be printed to an animated gif
+file after all image frames to properly terminate it according to GIF
+file syntax.  Image object is not used at all in this method.
+
 =item B<$jpegdata = $image-E<gt>jpeg([$quality])>
 
 This returns the image data in JPEG format.  You can then print it,
@@ -863,7 +926,7 @@ Example:
 =item B<$index = $image-E<gt>colorClosestHWB(red,green,blue)>
 
 This also attempts to return the color closest in the color table to the
-red green and blue components specified. If uses a Hue/White/Black 
+red green and blue components specified. It uses a Hue/White/Black 
 color representation to make the selected colour more likely to match
 human perceptions of similar colors.
 
@@ -1115,7 +1178,7 @@ Example:
 
 	$myImage->dashedLine(0,0,150,150,$blue);
 
-=item B<GD::Image::rectangle($x1,$y1,$x2,$y2,$color)>
+=item B<$image-E<gt>rectangle($x1,$y1,$x2,$y2,$color)>
 
 This draws a rectangle with the specified color.  (x1,y1) and (x2,y2)
 are the upper left and lower right corners respectively.  Both real
@@ -1141,7 +1204,7 @@ Example:
 	# draw the rectangle, filling it with the pattern
 	$myImage->filledRectangle(10,10,150,200,gdTiled);
 
-=item B<$image-E<gt>polygon($polygon,$color)>
+=item B<$image-E<gt>openPolygon($polygon,$color)>
 
 This draws a polygon with the specified color.  The polygon must be
 created first (see below).  The polygon must have at least three
@@ -1155,7 +1218,25 @@ Example:
 	$poly->addPt(50,0);
 	$poly->addPt(99,99);
 	$poly->addPt(0,99);
-	$myImage->polygon($poly,$blue);
+	$myImage->openPolygon($poly,$blue);
+
+=item B<$image-E<gt>unclosedPolygon($polygon,$color)>
+
+This draws a sequence of connected lines with the specified color,
+without connecting the first and last point to a closed polygon.  The
+polygon must be created first (see below).  The polygon must have at
+least three vertices.  Both real color indexes and the special colors
+gdBrushed, gdStyled and gdStyledBrushed can be specified.
+
+You need libgd 2.0.33 or higher to use this feature.
+
+Example:
+
+	$poly = new GD::Polygon;
+	$poly->addPt(50,0);
+	$poly->addPt(99,99);
+	$poly->addPt(0,99);
+	$myImage->unclosedPolygon($poly,$blue);
 
 =item B<$image-E<gt>filledPolygon($poly,$color)>
 
@@ -1417,12 +1498,23 @@ modify the image in place.
 
 =head2 Character and String Drawing
 
-Gd allows you to draw characters and strings, either in normal
+GD allows you to draw characters and strings, either in normal
 horizontal orientation or rotated 90 degrees.  These routines use a
 GD::Font object, described in more detail below.  There are four
-built-in fonts, available in global variables B<gdGiantFont>,
-B<gdLargeFont>, B<gdMediumBoldFont>, B<gdSmallFont> and B<gdTinyFont>.
-Currently there is no way of dynamically creating your own fonts.
+built-in monospaced fonts, available in the global variables
+B<gdGiantFont>, B<gdLargeFont>, B<gdMediumBoldFont>, B<gdSmallFont>
+and B<gdTinyFont>.
+
+In addition, you can use the load() method to load GD-formatted bitmap
+font files at runtime. You can create these bitmap files from X11
+BDF-format files using the bdf2gd.pl script, which should have been
+installed with GD (see the bdf_scripts directory if it wasn't).  The
+format happens to be identical to the old-style MSDOS bitmap ".fnt"
+files, so you can use one of those directly if you happen to have one.
+
+For writing proportional scaleable fonts, GD offers the stringFT()
+method, which allows you to load and render any TrueType font on your
+system.
 
 =over 4
 
@@ -1450,6 +1542,16 @@ specified font and color.  They're carry-overs from the C interface,
 where there is a distinction between characters and strings.  Perl is
 insensible to such subtle distinctions.
 
+=item $font = B<GD::Font-E<gt>load($fontfilepath)>
+
+This method dynamically loads a font file, returning a font that you
+can use in subsequent calls to drawing methods.  For example:
+
+   my $courier = GD::Font->load('./courierR12.fnt') or die "Can't load font";
+   $image->string($courier,2,10,"Peachy Keen",$peach);
+
+Font files must be in GD binary format, as described above.
+
 =item B<@bounds = $image-E<gt>stringFT($fgcolor,$fontname,$ptsize,$angle,$x,$y,$string)>
 
 =item B<@bounds = GD::Image-E<gt>stringFT($fgcolor,$fontname,$ptsize,$angle,$x,$y,$string)>
@@ -1464,9 +1566,9 @@ TrueType font to be installed on your system.
 The arguments are as follows:
 
   fgcolor    Color index to draw the string in
-  fontname   An absolute path to the TrueType (.ttf) font file
+  fontname   A path to the TrueType (.ttf) font file or a font pattern.
   ptsize     The desired point size (may be fractional)
-  angle      The rotation angle, in radians
+  angle      The rotation angle, in radians (positive values rotate counter clockwise)
   x,y        X and Y coordinates to start drawing the string
   string     The string itself
 
@@ -1482,6 +1584,8 @@ In case of an error (such as the font not being available, or FT
 support not being available), the method returns an empty list and
 sets $@ to the error message.
 
+The string may contain UTF-8 sequences like: "&#192;" 
+
 You may also call this method from the GD::Image class name, in which
 case it doesn't do any actual drawing, but returns the bounding box
 using an inexpensive operation.  You can use this to perform layout
@@ -1492,9 +1596,8 @@ in the libgd manual page at
 L<http://www.boutell.com/gd/manual2.0.9.html#gdImageStringFT>.
 
 An optional 8th argument allows you to pass a hashref of options to
-stringFT().  Two hashkeys are recognized: B<linespacing>, if present,
-controls the spacing between lines of text.  B<charmap>, if present,
-sets the character map to use.
+stringFT().  Several hashkeys are recognized: B<linespacing>,
+B<charmap>, B<resolution>, and B<kerning>. 
 
 The value of B<linespacing> is supposed to be a multiple of the
 character height, so setting linespacing to 2.0 will result in
@@ -1510,6 +1613,14 @@ The value of B<charmap> is one of "Unicode", "Shift_JIS" and "Big5".
 The interaction between Perl, Unicode and libgd is not clear to me,
 and you should experiment a bit if you want to use this feature.
 
+The value of B<resolution> is the vertical and horizontal resolution,
+in DPI, in the format "hdpi,vdpi".  If present, the resolution will be
+passed to the Freetype rendering engine as a hint to improve the
+appearance of the rendered font.
+
+The value of B<kerning> is a flag.  Set it to false to turn off the
+default kerning of text.
+
 Example:
 
  $gd->stringFT($black,'/dosc/windows/Fonts/pala.ttf',40,0,20,90,
@@ -1518,10 +1629,50 @@ Example:
 	       charmap  => 'Unicode',
 	      });
 
+If GD was compiled with fontconfig support, and the fontconfig library
+is available on your system, then you can use a font name pattern
+instead of a path.  Patterns are described in L<fontconfig> and will
+look something like this "Times:italic".  For backward
+compatibility, this feature is disabled by default.  You must enable
+it by calling useFontConfig(1) prior to the stringFT() call.
+
+   $image->useFontConfig(1);
+
 For backward compatibility with older versions of the FreeType
-library, the alias stringTTF() is also recognized.  Also be aware that
-relative font paths are not recognized due to problems in the libgd
-library.
+library, the alias stringTTF() is also recognized.
+
+=item B<$hasfontconfig = $image-E<gt>useFontConfig($flag)>
+
+Call useFontConfig() with a value of 1 in order to enable support for
+fontconfig font patterns (see stringFT).  Regardless of the value of
+$flag, this method will return a true value if the fontconfig library
+is present, or false otherwise.
+
+=item B<$result = $image->stringFTCircle($cx,$cy,$radius,$textRadius,$fillPortion,$font,$points,$top,$bottom,$fgcolor)>
+
+This draws text in a circle. Currently (libgd 2.0.33) this function
+does not work for me, but the interface is provided for completeness.
+The call signature is somewhat complex.  Here is an excerpt from the
+libgd manual page:
+
+Draws the text strings specified by top and bottom on im, curved along
+the edge of a circle of radius radius, with its center at cx and
+cy. top is written clockwise along the top; bottom is written
+counterclockwise along the bottom. textRadius determines the "height"
+of each character; if textRadius is 1/2 of radius, characters extend
+halfway from the edge to the center. fillPortion varies from 0 to 1.0,
+with useful values from about 0.4 to 0.9, and determines how much of
+the 180 degrees of arc assigned to each section of text is actually
+occupied by text; 0.9 looks better than 1.0 which is rather
+crowded. font is a freetype font; see gdImageStringFT. points is
+passed to the freetype engine and has an effect on hinting; although
+the size of the text is determined by radius, textRadius, and
+fillPortion, you should pass a point size that "hints" appropriately
+-- if you know the text will be large, pass a large point size such as
+24.0 to get the best results. fgcolor can be any color, and may have
+an alpha component, do blending, etc.
+
+Returns a true value on success.
 
 =back
 
@@ -1592,6 +1743,12 @@ current setting.
 This method will return a two-member list containing the width and
 height of the image.  You query but not not change the size of the
 image once it's created.
+
+=item B<$width = $image-E<gt>width>
+
+=item B<$height = $image-E<gt>height>
+
+Return the width and height of the image, respectively.
 
 =item B<$is_truecolor = $image-E<gt>isTrueColor()>
 
@@ -1864,6 +2021,8 @@ The latest versions of GD.pm are available at
 =head1 SEE ALSO
 
 L<GD::Polyline>,
+L<GD::SVG>,
+L<GD::Simple>,
 L<Image::Magick>
 
 =cut

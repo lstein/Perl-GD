@@ -5,6 +5,11 @@
 #include "perl.h"
 #include "XSUB.h"
 #include <gd.h>
+#include <gdfontg.h>
+#include <gdfontl.h>
+#include <gdfontmb.h>
+#include <gdfonts.h>
+#include <gdfontt.h>
 #ifdef FCGI
  #include <fcgi_stdio.h>
 #else
@@ -331,11 +336,6 @@ not_there:
 typedef gdImagePtr	GD__Image;
 typedef gdFontPtr	GD__Font;
 typedef PerlIO          * InputStream;
-extern 	gdFontPtr	gdFontGiant;
-extern 	gdFontPtr	gdFontLarge;
-extern	gdFontPtr	gdFontSmall;
-extern	gdFontPtr	gdFontMediumBold;
-extern	gdFontPtr	gdFontTiny;
 
 #ifdef PERL_OBJECT
 #  ifdef WIN32
@@ -362,7 +362,7 @@ extern	gdFontPtr	gdFontTiny;
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng(x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm(x)
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(x)
-#define GDIMAGECREATEFROMGIF(x) gdImageCreateFromJpeg(x)
+#define GDIMAGECREATEFROMGIF(x) gdImageCreateFromGif(x)
 #define GDIMAGECREATEFROMWBMP(x) gdImageCreateFromWBMP(x)
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd(x)
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(x)
@@ -370,7 +370,7 @@ extern	gdFontPtr	gdFontTiny;
 #  endif
 #endif
 
-#define bigendian(a) \
+#define littleendian(a) \
     (a[3]<<24)+(a[2]<<16)+(a[1]<<8)+a[0]
 
 /* definitions required to create images from in-memory buffers */
@@ -915,6 +915,73 @@ gdjpeg(image,quality=-1)
     RETVAL
 
 SV*
+gdgifanimbegin(image,globalcm=-1,loops=-1)
+  GD::Image	image
+  int           globalcm
+  int           loops
+  PROTOTYPE: $$$
+  PREINIT:
+  SV* errormsg;
+  CODE:
+  {
+	void*         data;
+	int           size;
+#ifdef HAVE_ANIMGIF
+	data = (void *) gdImageGifAnimBeginPtr(image,&size,globalcm,loops);
+	RETVAL = newSVpv((char*) data,size);
+	gdFree(data);
+#else
+        die("libgd 2.0.33 or higher required for animated GIF support");
+#endif
+  }
+  OUTPUT:
+    RETVAL
+
+SV*
+gdgifanimadd(image,localcm=-1,leftofs=-1,topofs=-1,delay=-1,disposal=-1,previm=0)
+  GD::Image	image
+  int           localcm
+  int           leftofs
+  int           topofs
+  int           delay
+  int           disposal
+  GD::Image	previm
+  PROTOTYPE: $$$$$$$
+  CODE:
+  {
+	void*         data;
+	int           size;
+#ifdef HAVE_ANIMGIF
+	data = (void *) gdImageGifAnimAddPtr(image,&size,localcm,leftofs,topofs,delay,disposal,previm);
+	RETVAL = newSVpv((char*) data,size);
+	gdFree(data);
+#else
+        die("libgd 2.0.33 or higher required for animated GIF support");
+#endif
+  }
+  OUTPUT:
+    RETVAL
+
+SV*
+gdgifanimend(image)
+  GD::Image	image
+  PROTOTYPE: $
+  CODE:
+  {
+	void*         data;
+	int           size;
+#ifdef HAVE_ANIMGIF
+	data = (void *) gdImageGifAnimEndPtr(&size);
+	RETVAL = newSVpv((char*) data,size);
+	gdFree(data);
+#else
+        die("libgd 2.0.33 or higher required for animated GIF support");
+#endif
+  }
+  OUTPUT:
+    RETVAL
+
+SV*
 gdwbmp(image,fg)
   GD::Image	image
   int           fg
@@ -1389,6 +1456,65 @@ gdopenPolygon(image,poly,color)
 
 		gdImagePolygon(image,polyptr,length,color);
 		safefree((char*) polyptr);
+	}
+
+void
+gdunclosedPolygon(image,poly,color)
+	GD::Image	image
+	SV *		poly
+	int		color
+        PROTOTYPE: $$$
+	CODE:
+	{
+		dSP ;
+		int length,count ;
+		int x,y,i ;
+		gdPointPtr polyptr;
+#ifdef HAVE_UNCLOSEDPOLY
+		ENTER ;
+		SAVETMPS ;
+		PUSHMARK(sp) ;
+		XPUSHs(poly) ;
+		PUTBACK ;
+		count = perl_call_method("length",G_SCALAR) ;
+		SPAGAIN ;
+		if (count != 1)
+			croak("Didn't get a single result from GD::Poly::length() call.\n");
+		length = POPi ;
+		PUTBACK ;
+		FREETMPS ;
+		LEAVE ;
+
+		polyptr = (gdPointPtr)safemalloc(sizeof(gdPoint)*length);
+		if (polyptr == NULL)
+			croak("safemalloc() returned NULL in GD::Image::poly().\n");
+		
+		for (i=0;i<length;i++) {
+			ENTER ;
+			SAVETMPS ;
+			PUSHMARK(sp) ;
+			XPUSHs(poly) ;
+			XPUSHs(sv_2mortal(newSViv(i))) ;
+			PUTBACK ;
+			count = perl_call_method("getPt",G_ARRAY) ;
+			SPAGAIN ;
+			if (count != 2)
+				croak("Didn't get a single result from GD::Poly::length() call.\n");
+			y = POPi ;
+			x = POPi ;
+			PUTBACK ;
+			FREETMPS ;
+			LEAVE ;
+
+			polyptr[i].x = x;
+			polyptr[i].y = y;
+		}
+
+		gdImageOpenPolygon(image,polyptr,length,color);
+		safefree((char*) polyptr);
+#else
+	die("libgd 2.0.33 or higher required for unclosed polygon support");
+#endif
 	}
 
 void
@@ -1949,10 +2075,13 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
 	  gdImagePtr img;
 	  int        brect[8];
 	  char       *err;
+          char       *a;
 	  SV*        errormsg;
           HV*        hash;
           SV**       value;
 	  int        i;
+          int        hdpi;
+          int        vdpi;
           gdFTStringExtra strex;
 	PPCODE:
 	{
@@ -1990,6 +2119,24 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
 	      else
 		croak("Unknown charmap %s",SvPV_nolen(*value));
 	    }
+	    /* proxy for version 2.0.33 or higher */
+#ifdef HAVE_FONTCONFIG
+            if (value = hv_fetch(hash,"resolution",strlen("resolution"),0)) {
+	      strex.flags |= gdFTEX_RESOLUTION;
+	      a = SvPV_nolen(*value);
+	      if (sscanf(a,"%d,%d",&hdpi,&vdpi) == 2) {
+		strex.hdpi = hdpi;
+		strex.vdpi = vdpi;
+	      }
+	    }
+            if (value = hv_fetch(hash,"kerning",strlen("kerning"),0)) {
+	      if (!SvTRUE(*value)) {
+		strex.flags |= gdFTEX_DISABLE_KERNING;
+	      }
+              else
+                strex.flags &= gdFTEX_DISABLE_KERNING;
+	    }
+#endif
 	    err = gdImageStringFTEx(img,brect,fgcolor,fontname,ptsize,angle,x,y,string,&strex);
 	  }
 
@@ -2010,12 +2157,73 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
 
 	}
 
+int
+gdstringFTCircle(image,cx,cy,radius,textRadius,fillPortion,fontname,points,top,bottom,fgcolor)
+        GD::Image       image
+        int             cx
+        int             cy
+        double          radius
+        double          textRadius
+        double          fillPortion
+	char *          fontname
+	double          points
+        char *          top
+        char *          bottom
+        int             fgcolor
+        PROTOTYPE: $$$$$$$$$$$
+        PREINIT:
+        char*      err;
+        SV*        errormsg;
+        CODE:
+	{
+#ifndef HAVE_FT
+  	errormsg = perl_get_sv("@",0);
+	sv_setpv(errormsg,"libgd was not built with FreeType font support\n");
+	XSRETURN_EMPTY;
+#endif
+	fprintf(stderr,"cx=%d,cy=%d,radius=%f,textRadius=%f,fillPortion=%f,fontname=%s,points=%f,top=%s,bottom=%s,fgcolor=%d",
+		cx,cy,radius,textRadius,
+		fillPortion,fontname,points,top,bottom,fgcolor);
+        err = gdImageStringFTCircle(image,cx,cy,radius,textRadius,
+				    fillPortion,fontname,points,top,bottom,fgcolor);
+        if (err) {
+	    errormsg = perl_get_sv("@",0);
+	    if (errormsg != NULL)
+	      sv_setpv(errormsg,err);
+	    XSRETURN_EMPTY;
+	  } else {
+            RETVAL = 1;
+	  }
+	}
+        OUTPUT:
+           RETVAL
+
+int
+gduseFontConfig(image,flag)
+     GD::Image   image
+     int         flag
+PROTOTYPE: $$
+PREINIT:
+     SV* errormsg;
+CODE:
+{
+#ifdef HAVE_FONTCONFIG
+   RETVAL = gdFTUseFontConfig(flag);
+#else
+   errormsg = perl_get_sv("@",0);
+   sv_setpv(errormsg,"libgd was not built with fontconfig support\n");
+   XSRETURN_EMPTY;
+#endif
+}
+OUTPUT:
+  RETVAL
+
 void
 gdalphaBlending(image,blending)
      GD::Image       image
         int             blending
-		PROTOTYPE: $$
-		CODE:
+PROTOTYPE: $$
+CODE:
 {
   gdImageAlphaBlending(image,blending);
 }
@@ -2084,13 +2292,13 @@ gdload(packname="GD::Font",fontpath)
      char * fontpath
      PROTOTYPE: $$
      PREINIT:
-       int       fontfile;
-       int       datasize;
-       SV*       errormsg;
-       char      errstr[256];
-       gdFontPtr font;
-       char      word[4];
-       char*     fontdata;
+       int             fontfile;
+       int             datasize;
+       SV*             errormsg;
+       char            errstr[256];
+       gdFontPtr       font;
+       unsigned char   word[4];
+       char*           fontdata;
      CODE:
      {
        fontfile = open(fontpath,O_RDONLY);
@@ -2103,22 +2311,22 @@ gdload(packname="GD::Font",fontpath)
        font = (gdFontPtr)safemalloc(sizeof(gdFont));
        if (font == NULL)
 	 croak("safemalloc() returned NULL while trying to allocate font struct.\n");
-       /* read header from font - note that the file is assumed to be bigendian*/
+       /* read header from font - note that the file is assumed to be littleendian*/
        if (read(fontfile,word,4) < 4)
 	 croak(strerror(errno));
-       font->nchars = bigendian(word);
+       font->nchars = littleendian(word);
 
        if (read(fontfile,word,4) < 4)
 	 croak(strerror(errno));
-       font->offset = bigendian(word);
+       font->offset = littleendian(word);
 
        if (read(fontfile,word,4) < 4)
 	 croak(strerror(errno));
-       font->w = bigendian(word);
+       font->w = littleendian(word);
 
        if (read(fontfile,word,4) < 4)
 	 croak(strerror(errno));
-       font->h = bigendian(word);
+       font->h = littleendian(word);
 
        datasize = font->nchars * font->w * font->h;
        fontdata = (char*)safemalloc(datasize);
@@ -2142,11 +2350,11 @@ gdDESTROY(self)
      PROTOTYPE: $
      CODE:
      {
-       if (self == gdFontSmall ||
-	   self == gdFontLarge ||
-	   self == gdFontGiant ||
-	   self == gdFontMediumBold ||
-	   self == gdFontTiny)
+       if (self == gdFontGetSmall()      ||
+	   self == gdFontGetLarge()      ||
+	   self == gdFontGetGiant()      ||
+	   self == gdFontGetMediumBold() ||
+	   self == gdFontGetTiny() )
 	 XSRETURN_EMPTY;
        safefree(self->data);
        safefree(self);
@@ -2158,7 +2366,7 @@ gdSmall(packname="GD::Font")
         PROTOTYPE: $
 	CODE:
 	{
-		RETVAL = gdFontSmall;
+		RETVAL = gdFontGetSmall();
 	}
 	OUTPUT:
 		RETVAL
@@ -2169,7 +2377,7 @@ gdLarge(packname="GD::Font")
 	PROTOTYPE: $
 	CODE:
 	{
-		RETVAL = gdFontLarge;
+		RETVAL = gdFontGetLarge();
 	}
 	OUTPUT:
 		RETVAL
@@ -2180,7 +2388,7 @@ gdGiant(packname="GD::Font")
 	PROTOTYPE: $
 	CODE:
 	{
-		RETVAL = gdFontGiant;
+		RETVAL = gdFontGetGiant();
 	}
 	OUTPUT:
 		RETVAL
@@ -2191,7 +2399,7 @@ gdMediumBold(packname="GD::Font")
 	PROTOTYPE: $
 	CODE:
 	{
-		RETVAL = gdFontMediumBold;
+		RETVAL = gdFontGetMediumBold();
 	}
 	OUTPUT:
 		RETVAL
@@ -2202,7 +2410,7 @@ gdTiny(packname="GD::Font")
 	PROTOTYPE: $
 	CODE:
 	{
-		RETVAL = gdFontTiny;
+		RETVAL = gdFontGetTiny();
 	}
 	OUTPUT:
 		RETVAL
