@@ -59,7 +59,7 @@ not_here(char *s)
 }
 
 static double
-constant(char *name, int arg)
+constant(char *name)
 {
     errno = 0;
     switch (*name) {
@@ -516,9 +516,8 @@ gd_chkimagefmt(GD__Image image, int truecolor) {
 MODULE = GD		PACKAGE = GD
 
 double
-constant(name,arg)
+constant(name)
 	char *		name
-	int		arg
 
 MODULE = GD		PACKAGE = GD::Image	PREFIX=gd
 
