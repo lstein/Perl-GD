@@ -1,3 +1,4 @@
+2.08	Applied 5.00503 compatibility patch from Mathieu Arnold
 2.07	Now compatible with (and requires!) libgd 2.0.12.
 	Added setThickness() method.
 	Added support for compression level argument to png().
