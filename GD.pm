@@ -12,7 +12,7 @@ use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "1.38";
+$VERSION = "1.39";
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -58,7 +58,7 @@ $VERSION = "1.38";
 
 # documentation error
 *GD::Polygon::delete = \&GD::Polygon::deletePt;
-*GD::Image::stringTTF = \&GD::Image::stringFT;
+*GD::Image::stringFT = \&GD::Image::stringTTF;
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
