@@ -1,3 +1,7 @@
+2.04	Removed the patch file since Tom has begun adding his own configure file.
+	Changed the context member from free to gd_free to allow for compiling.
+	Fixed the regression tests since the gd-generated images have changed slightly.
+2.03	Skipped so as to remain version number compatible with libgd.
 2.02	Changed Math::Trig version requirement from 0.0 to 1.0 as Perl 5.8
 	no long recognizes this as a valid version number.
 2.01	Added Math::Trig to the prerequisites because GD::Polyline needs it.

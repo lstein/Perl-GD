@@ -342,7 +342,7 @@ static gdIOCtx* newDynamicCtx (char* data, int length) {
   ctx->ctx.getBuf = bufGetBuf;
   ctx->ctx.seek   = bufSeek;
   ctx->ctx.tell   = bufTell;
-  ctx->ctx.free   = bufFree;
+  ctx->ctx.gd_free = bufFree;
   ctx->ctx.putC   = NULL;
   ctx->ctx.putBuf = NULL;
   return (gdIOCtx*)ctx;
@@ -496,7 +496,7 @@ gdnewFromPngData(packname="GD::Image", imageData, ...)
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromPngCtx(ctx);
-        (ctx->free)(ctx);
+        (ctx->gd_free)(ctx);
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
 	OUTPUT:
@@ -515,7 +515,7 @@ gdnewFromGdData(packname="GD::Image", imageData)
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromGdCtx(ctx);
-        (ctx->free)(ctx);
+        (ctx->gd_free)(ctx);
 	OUTPUT:
 	RETVAL
 
@@ -532,7 +532,7 @@ gdnewFromGd2Data(packname="GD::Image", imageData)
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromGd2Ctx(ctx);
-        (ctx->free)(ctx);
+        (ctx->gd_free)(ctx);
 	OUTPUT:
 	RETVAL
 
@@ -552,7 +552,7 @@ gdnewFromJpegData(packname="GD::Image", imageData, ...)
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromJpegCtx(ctx);
-        (ctx->free)(ctx);
+        (ctx->gd_free)(ctx);
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
 #else
@@ -577,7 +577,7 @@ gdnewFromWBMPData(packname="GD::Image", imageData, ...)
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromWBMPCtx(ctx);
-        (ctx->free)(ctx);
+        (ctx->gd_free)(ctx);
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
 	OUTPUT:

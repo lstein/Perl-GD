@@ -1,18 +1,19 @@
 use ExtUtils::MakeMaker qw(prompt WriteMakefile);
 
-warn "NOTICE: This module requires libgd 2.0.1 or higher.\n";
+warn "NOTICE: This module requires libgd 2.0.4.\n";
+warn "        it will NOT work with earlier versions, and may not work with later ones.\n";
 warn "        For earlier versions of libgd, use GD version 1.43.\n";
 
 
 # =====> PATHS: CHECK AND ADJUST <=====
 my @INC     = qw(-I/usr/local/include -I/usr/local/include/gd);
-my @LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/local/lib );
+my @LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/local/lib);
 my @LIBS    = qw(-lgd -lpng -lz);
 
 if ($^O eq 'VMS'){
   warn "This is a build on OpenVMS. In case of problems with the build\n";
   warn "do not bother Lincoln Stein but get in touch with\n";
-  warn "Martin P.J. Zinser (zinser@decus.de)\n\n";
+  warn "Martin P.J. Zinser (zinser\@decus.de)\n\n";
 
   if ($ENV{"LIB_ROOT"} eq "") {
     warn "Define lib_root as a concealed logical pointing to the\n";
@@ -28,6 +29,15 @@ if ($^O eq 'VMS'){
   @INC     = qw(-I/lib_root/gd -I/lib_root/libpng -I/lib_root/zlib);
   @LIBPATH = qw(-Lpubbin);
   @LIBS    = qw(-llibgd.olb -llibpng.olb -llibz.olb);
+}
+
+# path to libgd
+warn "\n";
+my $PREFIX = lc prompt('Where is libgd installed?','/usr/lib');
+unless ($PREFIX eq '/usr/lib') {
+  $PREFIX =~ s!/lib$!!;
+  unshift @INC,"-I$PREFIX/include";
+  unshift @LIBPATH,"-L$PREFIX/lib";
 }
 
 # FEATURE FLAGS
