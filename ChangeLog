@@ -1,3 +1,9 @@
+2.21    Regression tests are now functional for versions of libgd compiled
+	exclusively with PNG, JPEG or GIF support.
+2.20	GD::Image->newFromGdData() and newFromGd2Data() got broken
+		somewhere along the line.  They are now fixed (and
+		have a regression test).
+	Added copyRotated() method.
 2.19	Added a HAVE_FTCIRCLE define to handle versions of libgd that do not 
 		have the gdImageStringFTCircle() function.
 2.18	This version needs libgd 2.0.28 or higher.

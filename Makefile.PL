@@ -1,10 +1,11 @@
 use ExtUtils::MakeMaker qw(prompt WriteMakefile);
 
 require 5.6.0;
+my $VERSION = 2.21;
 
 unless (@ARGV) {
 warn <<END;
-NOTICE: This module requires libgd 2.0.28 or higher.
+NOTICE: This module requires libgd 2.0.25 or higher.
         it will NOT work with earlier versions. If you are getting
         compile or link errors, then please get and install a new
         version of libgd from www.boutell.com. Do NOT ask Lincoln
@@ -131,6 +132,11 @@ if ($^O eq 'VMS'){
   @LIBS    = qw(-llibgd.olb -llibpng.olb -llibz.olb);
 }
 
+# workaround for solaris systems?
+elsif ($^O =~ /solaris/i) {
+    push @LIBS,'-liconv';
+}
+
 ###################################################################
 # path to libgd, skip prompt if passed in from above
 ###################################################################
@@ -152,15 +158,16 @@ unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
 ##################################################################################################################
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
-my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$FTCIRCLE);
+my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$FTCIRCLE,$VERSION_33);
 if( defined($options) )
 {
-  $JPEG     = $options =~ m/JPEG/i;
-  $FT       = $options =~ m/FT|FREETYPE/i;
-  $XPM      = $options =~ m/XPM/i;
-  $GIF      = $options =~ m/GIF/i;
-  $PNG      = $options =~ m/PNG/i;
-  $ANIMGIF  = $options =~ m/ANIMGIF/i;
+  $JPEG      = $options =~ m/JPEG/i;
+  $FT        = $options =~ m/FT|FREETYPE/i;
+  $XPM       = $options =~ m/XPM/i;
+  $GIF       = $options =~ m/GIF/i;
+  $PNG       = $options =~ m/PNG/i;
+  $ANIMGIF   = $options =~ m/ANIMGIF/i;
+  $VERSION_33= $options =~ m/VERSION_33/i;
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
   $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
   $FTCIRCLE  = $options =~ m/FTCIRCLE/i;
@@ -206,21 +213,31 @@ $DEFINES    .= ' -DHAVE_GIF'     if $GIF;
 $DEFINES    .= ' -DHAVE_PNG'     if $PNG;
 $DEFINES    .= ' -DFCGI'         if $FCGI;
 $DEFINES    .= ' -DHAVE_ANIMGIF' if $ANIMGIF;
+$DEFINES    .= ' -DVERSION_33'   if $VERSION_33;
 $DEFINES    .= ' -DHAVE_UNCLOSEDPOLY' if $UNCLOSEDPOLY;
 $DEFINES    .= ' -DHAVE_FONTCONFIG'   if $FONTCONFIG;
 $DEFINES    .= ' -DHAVE_FTCIRCLE'  if $FTCIRCLE;
+open F,">.config.cache";
+print F $DEFINES,"\n";
+print F $VERSION,"\n";
+close F;
+
+unlink './GD.pm';
 
 WriteMakefile(
     'NAME'	=> 'GD',
-    'VERSION_FROM'	=> 'GD.pm',
+    'VERSION'	=> $VERSION,
     'PREREQ_PM' => {
 		    'Math::Trig' => 0,
 		    },
+    'PM'        => { 'GD.pm' => '$(INST_LIBDIR)/GD.pm'},
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
     'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],
     'INC'       => join(' ',$ENV{'GD_INC'},@INC),
-    'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl'},
+    'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
+		    'GD.pm.PLS' => 'GD.pm',
+		   },
     'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
     'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
     'ABSTRACT'  => 'Interface to Gd Graphics Library',
@@ -253,13 +270,14 @@ sub try_to_autoconfigure {
   $$options      = $features;
 
   my ($minor)    = $version =~ /^2\.\d+\.(\d+)$/;
-  $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE" if defined($minor) && $minor >= 33;
+  $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE VERSION_33" if defined($minor) && $minor >= 33;
 }
 
 sub MY::postamble {
     my $postamble = <<'END';
 html: GD.pm
 	pod2html --outfile=GD.html GD.pm
+
 END
     $postamble;
 }

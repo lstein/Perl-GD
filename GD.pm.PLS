@@ -1,3 +1,28 @@
+#!perl
+use Config;
+use File::Basename qw(&basename &dirname);
+use Cwd;
+
+my $DEFINES = '';
+my $VERSION = '';
+if (open F,".config.cache") {
+  chomp($DEFINES = <F>);
+  chomp($VERSION = <F>);
+  close F;
+}
+
+$origdir = cwd;
+chdir dirname($0);
+$file = basename($0, '.PL','.PLS');
+
+open OUT,">$file" or die "Can't create $file: $!";
+
+print "Extracting $file (with variable substitutions)\n";
+
+print OUT "$Config{startperl}\n";
+
+print OUT <<"!GROK!THIS!";
+
 package GD;
 
 # Copyright 1995 Lincoln D. Stein.  See accompanying README file for
@@ -11,9 +36,12 @@ require AutoLoader;
 use Symbol 'gensym','qualify_to_ref';
 use Carp 'croak','carp';
 use strict;
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
-$VERSION = "2.19";
+use vars qw(\$VERSION \@ISA \@EXPORT \@EXPORT_OK \%EXPORT_TAGS \$AUTOLOAD);
+\$VERSION = "$VERSION";
 
+!GROK!THIS!
+
+print OUT <<'!NO!SUBS!';
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
@@ -165,41 +193,6 @@ sub GD::Image::newTrueColor {
 sub GD::Image::newPalette {
   my $pack = shift;
   return $pack->_new(@_, 0);
-}
-
-sub GD::Image::newFromPng {
-    croak("Usage: newFromPng(class,filehandle,[truecolor])") unless @_>=2;
-    my($class) = shift;
-    my($f)     = shift;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromPng($fh,@_);
-}
-
-sub GD::Image::newFromJpeg {
-    croak("Usage: newFromJpeg(class,filehandle,[truecolor])") unless @_>=2;
-    my($class) = shift;
-    my($f)     = shift;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromJpeg($fh,@_);
-}
-
-sub GD::Image::newFromGif {
-    croak("Usage: newFromGif(class,filehandle,[truecolor])") unless @_>=2;
-    my($class) = shift;
-    my($f)     = shift;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromGif($fh,@_);
-}
-
-sub GD::Image::newFromXbm {
-    croak("Usage: newFromXbm(class,filehandle)") unless @_==2;
-    my($class,$f) = @_;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromXbm($fh);
 }
 
 sub GD::Image::newFromGd {
@@ -411,10 +404,6 @@ sub GD::Polygon::scale {
     $self->transform($sx,0,0,$sy,0,0);
 }
 
-
-# Autoload methods go after __END__, and are processed by the autosplit program.
-1;
-__END__
 
 =head1 NAME
 
@@ -1448,6 +1437,15 @@ pixels of the source area rather than selecting one representative
 pixel. This method is identical to copyResized() when the destination
 image is a palette image.
 
+=item B<$image-E<gt>copyRotated($sourceImage,$dstX,$dstY,>
+
+B<				$srcX,$srcY,$width,$height,$angle)>
+
+Like copyResized() but the $angle argument specifies an arbitrary
+amount to rotate the image clockwise (in degrees).  In addition, $dstX
+and $dstY species the B<center> of the destination image, and not the
+topleft corner.
+
 =item B<$image-E<gt>trueColorToPalette([$dither], [$colors])>
 
 This method converts a truecolor image to a palette image. The code for
@@ -2026,3 +2024,70 @@ L<GD::Simple>,
 L<Image::Magick>
 
 =cut
+
+!NO!SUBS!
+
+if ($DEFINES =~ /HAVE_PNG/) {
+  print OUT <<'!NO!SUBS!'
+sub GD::Image::newFromPng {
+    croak("Usage: newFromPng(class,filehandle,[truecolor])") unless @_>=2;
+    my($class) = shift;
+    my($f)     = shift;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromPng($fh,@_);
+}
+
+!NO!SUBS!
+}
+
+if ($DEFINES =~ /HAVE_JPEG/) {
+  print OUT <<'!NO!SUBS!'
+sub GD::Image::newFromJpeg {
+    croak("Usage: newFromJpeg(class,filehandle,[truecolor])") unless @_>=2;
+    my($class) = shift;
+    my($f)     = shift;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromJpeg($fh,@_);
+}
+
+!NO!SUBS!
+}
+
+if ($DEFINES =~ /HAVE_GIF/) {
+  print OUT <<'!NO!SUBS!'
+sub GD::Image::newFromGif {
+    croak("Usage: newFromGif(class,filehandle,[truecolor])") unless @_>=2;
+    my($class) = shift;
+    my($f)     = shift;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromGif($fh,@_);
+}
+
+!NO!SUBS!
+}
+
+if ($DEFINES =~ /HAVE_DBM/) {
+  print OUT <<'!NO!SUBS!'
+sub GD::Image::newFromXbm {
+    croak("Usage: newFromXbm(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromXbm($fh);
+}
+
+!NO!SUBS!
+}
+
+print OUT <<'!NO!SUBS!';
+# Autoload methods go after __END__, and are processed by the autosplit program.
+1;
+__END__
+!NO!SUBS!
+
+
+close OUT or die "Can't close $file: $!";
+chdir $origdir;

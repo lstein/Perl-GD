@@ -21,7 +21,7 @@ k.  produces output in png, gif, jpeg and xbm format
 l.  produces output in svg format via GD::SVG.
 
 For full information on usage, see the accompanying man and html
-documentation.
+documentation. Also check the FAQ at the bottom of this document.
 
 => IMPORTANT: This version of GD REQUIRES libgd 2.0.28 or higher.  If you <=
 => have an older version of libgd installed you must remove libgd.a,      <=
@@ -282,25 +282,42 @@ FREQUENTLY ASKED QUESTIONS
 
    See (1).
 
-4. Is there a utility to convert X Windows BDF fonts into GD fonts.
+4. My scripts fail with "Can't locate object method 'png' via package "GD::Image".
+
+   libgd can now be built with support for one or more of the PNG, GIF, XPM or 
+   JPEG formats. If one or more of these formats are not supported by libgd, then
+   the corresponding GD::Image methods will be unavailable.  Unfortunately, many
+   older scripts assume that the png() method will always be present.  You can
+   work around this issue with code like the following:
+
+      my $image = $gd->can('png') ? $gd->png : $gd->gif;
+
+   or if you prefer eval {}
+
+      my $image = eval {$gd->png} || $gd->gif;
+
+   As of libgd 2.0.33, GIF support is always compiled in, so (for the time being!)
+   this is a safe fallback.
+   
+5. Is there a utility to convert X Windows BDF fonts into GD fonts.
 
    Yes.  See the utility bdf2gdfont.pl.  Run "bdf2gdfont.pl -h" to get help
    on using this.
 
-5. Does GD run with Macintosh OS X?
+6. Does GD run with Macintosh OS X?
 
    Yes.  GD compiles just fine under OSX.  However, you may need to
    remove old versions of libgd, libpng, and libz and reinstall the
    current versions before you try to install GD.
 
-6. Does GD run with Win32 Perl?
+7. Does GD run with Win32 Perl?
 
    The latest ActiveState binaries for Win32 systems come with GD
    already compiled in and ready to go. I don't own any Win32 systems,
    and cannot provide you with help in compiling GD from scratch on such 
    systems.
 
-7. GD won't compile on system XX.
+8. GD won't compile on system XX.
 
    Because libgd relies on multiple external libraries, GD does as well.  
    Unfortunately, different systems place their libraries in different
@@ -321,23 +338,23 @@ FREQUENTLY ASKED QUESTIONS
    thing to do is to recompile Perl from source code, thereby ensuring
    that it is complete.
 
-8. When I try to load an XPM file, all I get is blackness!
+9. When I try to load an XPM file, all I get is blackness!
 
    The libgd createFromXpm() function works with some XPM files, and
    not with others.  The problem is buried deep in the libXpm library
    somewhere.
 
-9. The stringFTCircle() method doesn't work!
+10. The stringFTCircle() method doesn't work!
 
    I know.  I think this might be a problem in libgd because I have
    never gotten it to work as a C program.  If you have any insight
    into this problem let me know.
 
-10. Test XX fails
+11. Test XX fails
 
    The regression tests for GD involve generating images, saving
-   them as PNG files, and then comparing the PNG files bit-for-bit
-   to known "correct" PNG files.  Sometimes one of the underlying
+   them as PNG, JPEG or GIF files, and then comparing the files bit-for-bit
+   to known "correct" files.  Sometimes one of the underlying
    C libraries such as libz, libpng or libgd is updated, causing 
    GD to generate an image that is subtly different.  These differences
    are usually insignificant, such as a reordering of colors in the

@@ -7,11 +7,28 @@ use constant FONT=>"$Bin/Generic.ttf";
 use constant SKIP_TEST_8 => 1;
 
 my $loaded;
-BEGIN {$| = 1; $loaded = 0; print "1..10\n"; }
+my $suffix;
+BEGIN {$| = 1; $loaded = 0; print "1..11\n"; }
 END {print "not ok 1\n" unless $loaded;}
 
 use GD qw(:DEFAULT GD_CMP_IMAGE);
 $loaded++;
+
+if ($suffix = $ENV{GDIMAGETYPE}) {
+  print STDERR "Testing using $suffix support.\n";
+} elsif (GD::Image->can('newFromPng')) {
+  print STDERR "Testing using png support.\n";
+  $suffix = "png";
+} elsif (GD::Image->can('newFromJpeg')) {
+  print STDERR "Testing using jpeg support.\n";
+  $suffix = "jpeg";
+} elsif (GD::Image->can('newFromGif')) {
+  print STDERR "Testing using gif support.\n";
+  $suffix = "gif";
+} else {
+  die "Regression tests require one or more of PNG, GIF or JPEG support in libgd.";
+}
+
 print "ok 1\n";
 
 chdir 't' || die "Couldn't change to 't' directory: $!";
@@ -27,8 +44,8 @@ if (defined $arg && $arg eq '--write') {
   compare(&test6,6,'write');
   compare(&test7,7,'write');
   compare(&test8,8,'write');
-  compare(&test9('frog.xpm'),9,'write');
-  compare(&test10('frog.jpg'),10,'write');
+  compare(&test9('frog.xpm'),9,'write')   if GD::Image->can('newFromXpm');
+  compare(&test10('frog.jpg'),10,'write') if GD::Image->can('newFromJpeg');
 }
 
 compare(test2(),2);
@@ -57,13 +74,25 @@ if (GD::Image->newFromXpm('frog.xpm')) {
   print "not ok ",9,"\n";
 }
 
-if (GD::Image->newFromJpeg('frog.jpg')) {
+if (GD::Image->can('newFromJpeg')) {
   compare(test10('frog.jpg'),10);
-} elsif ($@ =~/not built with jpeg support/) {
-  print "ok ",10," # Skip, no JPEG support\n";
 } else {
-  print "not ok ",10,"\n";
+  print "ok ",10," # Skip, no JPEG support\n";
 }
+
+my $image  = GD::Image->new(300,300);
+$image->colorAllocate(255,255,255);
+$image->colorAllocate(0,0,0);
+$image->colorAllocate(255,0,0);
+$image->rectangle(0,0,300,300,0);
+$image->filledRectangle(10,10,50,50,2);
+my $gd2    = $image->gd2;
+my $image2 = GD::Image->newFromGd2Data($gd2);
+my $gd3    = $image2->gd2;
+print (($gd2 eq $gd3) ? "ok 11\n" : "not ok 11\n");
+
+exit 0;
+
 
 sub compare {
     if (@_ < 2 && $@ =~ /not built with PNG/i) {
@@ -74,7 +103,7 @@ sub compare {
     local($/);
     undef $/;
     my $regressdata;
-    my $file = ($^O eq 'VMS')? "test.out_".$testNo."_png" : "./test.out.$testNo.png";
+    my $file = ($^O eq 'VMS')? "test.out_".$testNo."_$suffix" : "./test.out.$testNo.$suffix";
     if (defined $fht and $fht eq 'write') {
       open (REGRESSFILE,">${file}_new")
 	|| die "Can't open regression file '${file}_new': $!\n";
@@ -101,13 +130,16 @@ sub compare {
 
 sub test2 {
     my($im) = new GD::Image(300,300);
-    my($white) = $im->colorAllocate(255, 255, 255);        
+    my($white) = $im->colorAllocate(255, 255, 255);
     my($black) = $im->colorAllocate(0, 0, 0);
-    my($red) = $im->colorAllocate(255, 0, 0);      
+    my($red) = $im->colorAllocate(255, 0, 0);
     my($green) = $im->colorAllocate(0,255,0);
     my($yellow) = $im->colorAllocate(255,250,205);
-    open (TILE,"./tile.png") || die "Can't open tile file: $!";
-    my($tile) = newFromPng GD::Image(TILE);
+    open (TILE,"./tile.$suffix") || die "Can't open tile file: $!";
+    my($tile) =   $suffix eq 'png' ? GD::Image->newFromPng(TILE)
+                : $suffix eq 'gif' ? GD::Image->newFromGif(TILE)
+                : $suffix eq 'jpeg'? GD::Image->newFromJpeg(TILE)
+                : die "Regression tests require PNG, GIF or JPEG support in libgd";
     close TILE;
     return unless $tile;
     $im->setBrush($tile);
@@ -117,7 +149,7 @@ sub test2 {
     $im->rectangle(150,150,250,250,$black);
     $im->setStyle($green,$green,$green,gdTransparent,$red,$red,$red,gdTransparent);
     $im->line(0,280,300,280,gdStyled);
-    return $im->png;
+    return image($im)
 }
 
 sub test3 {
@@ -148,7 +180,7 @@ sub test3 {
     $im->interlaced(1);
     $im->copy($im,150,150,20,20,50,50);
     $im->copyResized($im,10,200,20,20,100,100,50,50);
-    return $im->png;
+    return image($im)
 }
 
 sub test4 {
@@ -162,7 +194,7 @@ sub test4 {
 	 );
     $im->arc(50, 25, 98, 48, 0, 360, $white);
     $im->fill(50, 21, $red);
-    return $im->png;
+    return image($im)
 }
 
 sub test5 {
@@ -185,7 +217,7 @@ sub test5 {
     $im->filledPolygon($poly,$yellow);
     $poly->map($poly->bounds,50,20,80,160);
     $im->filledPolygon($poly,$white);
-    return $im->png;
+    return image($im)
 }
 
 sub test6 {
@@ -220,7 +252,7 @@ sub test6 {
     $im->fill(132,62,$blue);
     $im->fill(100,70,$red);
     $im->fill(40,40,$yellow);
-    return $im->png;
+    return image($im)
 }
 
 sub test7 {
@@ -243,7 +275,7 @@ sub test7 {
 
     $im->filledPolygon($poly,$col_fill);            # Call gdImageFilledPolygon()
 
-    return $im->png;
+    return image($im)
 }
 
 sub test8 {
@@ -262,19 +294,19 @@ sub test8 {
   $im->stringFT($black,FONT,12.0,0.0,20,20,"Hello world!") || warn $@;
   $im->stringFT($red,FONT,14.0,0.0,20,80,"Hello world!") || warn $@;
   $im->stringFT($blue,FONT,30.0,-0.5,60,100,"Goodbye cruel world!") || warn $@;
-  $im->png;
+  return image($im)
 }
 
 sub test9 {
   my $fn = shift;
   my $im = GD::Image->newFromXpm($fn);
-  $im->png;
+  return image($im)
 }
 
 sub test10 {
   my $fn = shift;
   my $im = GD::Image->newFromJpeg($fn);
-  $im->png;
+  return image($im)
 }
 
 # not used
@@ -284,3 +316,10 @@ sub test11 {
   $im->gif;
 }
 
+sub image {
+  my $gd = shift;
+  return $suffix eq 'png' ? $gd->png
+        :$suffix eq 'gif' ? $gd->gif
+	:$suffix eq 'jpeg'? $gd->jpeg
+	:undef;
+}
