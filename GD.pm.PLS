@@ -1689,7 +1689,7 @@ with 0x7f(rr)(gg)(bb) will be transparent. The Alpha value must be >=
 
 =over 4
 
-=item B<$image-E<gt>alphaBlending($blending)>
+=item B<$image-E<gt>alphaBlending($integer)>
 
 The alphaBlending() method allows for two different modes of drawing
 on truecolor images. In blending mode, which is on by default (libgd
@@ -1701,6 +1701,8 @@ color, and stores the result in the image. The resulting pixel is
 opaque. In non-blending mode, the drawing color is copied literally
 with its alpha channel information, replacing the destination
 pixel. Blending mode is not available when drawing on palette images.
+
+Pass a value of 1 for blending mode, and 0 for non-blending mode.
 
 =item B<$image-E<gt>saveAlpha($saveAlpha)>
 
