@@ -231,7 +231,10 @@ WriteMakefile(
     'PREREQ_PM' => {
 		    'Math::Trig' => 0,
 		    },
-    'PM'        => { 'GD.pm' => '$(INST_LIBDIR)/GD.pm'},
+    'PM'        => { 'GD.pm' => '$(INST_LIBDIR)/GD.pm',
+                     'GD/Polyline.pm' => '$(INST_LIBDIR)/GD/Polyline.pm',
+                     'GD/Simple.pm' => '$(INST_LIBDIR)/GD/Simple.pm',
+                     'qd.pl' => '$(INST_LIBDIR)/qd.pl'},
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
     'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],
