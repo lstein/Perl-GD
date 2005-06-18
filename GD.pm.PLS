@@ -1155,6 +1155,11 @@ Example:
 
 =item B<$image-E<gt>dashedLine($x1,$y1,$x2,$y2,$color)>
 
+DEPRECATED: The libgd library provides this method solely for backward
+compatibility with libgd version 1.0, and there have been reports that
+it no longer works as expected. Please use the setStyle() and gdStyled
+methods as described below.
+
 This draws a dashed line from (x1,y1) to (x2,y2) in the specified
 color.  A more powerful way to generate arbitrary dashed and dotted
 lines is to use the setStyle() method described below and to draw with
