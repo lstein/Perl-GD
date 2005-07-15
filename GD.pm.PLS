@@ -125,25 +125,24 @@ bootstrap GD;
 
 # Preloaded methods go here.
 sub GD::gdSmallFont {
-    return &GD::Font::Small;
+    return GD::Font->Small;
 }
 
 sub GD::gdLargeFont {
-    return &GD::Font::Large;
+    return GD::Font->Large;
 }
 
 sub GD::gdMediumBoldFont {
-    return &GD::Font::MediumBold;
+    return GD::Font->MediumBold;
 }
 
 sub GD::gdTinyFont {
-    return &GD::Font::Tiny;
+    return GD::Font->Tiny;
 }
 
 sub GD::gdGiantFont {
-    return &GD::Font::Giant;
+    return GD::Font->Giant;
 }
-
 
 sub GD::Image::_make_filehandle {
   shift;  # get rid of class
@@ -613,9 +612,6 @@ the thing at the other end of the filehandle is not a valid PNG file,
 the call returns undef.  Notice that the call doesn't automatically
 close the filehandle for you.  But it does call C<binmode(FILEHANDLE)>
 for you, on platforms where this matters.
-The optional $truecolor (0/1) value can be used to override the global
-setting of trueColor() to specify if the return image should be
-palette-based or truecolor.
 
 You may use any of the following as the argument:
 
@@ -638,10 +634,13 @@ and read the PNG information from it.
   $myImage = newFromPng GD::Image('barnswallow.png');
 
 To get information about the size and color usage of the information,
-you can call the image query methods described below.
+you can call the image query methods described below. Images created
+by reading PNG images will be truecolor if the image file itself is
+truecolor. To force the image to be palette-based, pass a value of 0
+in the optional $truecolor argument.
 
 The newFromPngData() method will create a new GD::Image initialized
-with the PNG format B<data> contained in C<$data>.
+with the PNG format B<data> contained in C<$data>. 
 
 =item B<$image = GD::Image-E<gt>newFromJpeg($file, [$truecolor])>
 
@@ -650,23 +649,22 @@ with the PNG format B<data> contained in C<$data>.
 These methods will create an image from a JPEG file.  They work just
 like newFromPng() and newFromPngData(), and will accept the same
 filehandle and pathname arguments.
-The optional $truecolor (0/1) value can be used to override the global
-setting of trueColor() to specify if the return image should be
-palette-based or truecolor.
 
-=item B<$image = GD::Image-E<gt>newFromGif($file, [$truecolor])>
+Images created by reading JPEG images will always be truecolor.  To
+force the image to be palette-based, pass a value of 0 in the optional
+$truecolor argument.
 
-=item B<$image = GD::Image-E<gt>newFromGif($data, [$truecolor])>
+=item B<$image = GD::Image-E<gt>newFromGif($file)>
+
+=item B<$image = GD::Image-E<gt>newFromGif($data)>
 
 These methods will create an image from a GIF file.  They work just
 like newFromPng() and newFromPngData(), and will accept the same
 filehandle and pathname arguments.
-The optional $truecolor (0/1) value can be used to override the global
-setting of trueColor() to specify if the return image should be
-palette-based or truecolor.
 
-Bear in mind that GIF is an 8-bit format, so there will initially be
-at most 256 colors even if you specify truecolor. 
+Images created from GIFs are always 8-bit palette images. To convert
+to truecolor, you must create a truecolor image and then perform a
+copy.
 
 =item B<$image = GD::Image-E<gt>newFromXbm($file)>
 
@@ -1156,6 +1154,11 @@ Example:
 	$myImage->line(0,0,150,150,gdBrushed);
 
 =item B<$image-E<gt>dashedLine($x1,$y1,$x2,$y2,$color)>
+
+DEPRECATED: The libgd library provides this method solely for backward
+compatibility with libgd version 1.0, and there have been reports that
+it no longer works as expected. Please use the setStyle() and gdStyled
+methods as described below.
 
 This draws a dashed line from (x1,y1) to (x2,y2) in the specified
 color.  A more powerful way to generate arbitrary dashed and dotted
@@ -1690,7 +1693,7 @@ with 0x7f(rr)(gg)(bb) will be transparent. The Alpha value must be >=
 
 =over 4
 
-=item B<$image-E<gt>alphaBlending($blending)>
+=item B<$image-E<gt>alphaBlending($integer)>
 
 The alphaBlending() method allows for two different modes of drawing
 on truecolor images. In blending mode, which is on by default (libgd
@@ -1702,6 +1705,8 @@ color, and stores the result in the image. The resulting pixel is
 opaque. In non-blending mode, the drawing color is copied literally
 with its alpha channel information, replacing the destination
 pixel. Blending mode is not available when drawing on palette images.
+
+Pass a value of 1 for blending mode, and 0 for non-blending mode.
 
 =item B<$image-E<gt>saveAlpha($saveAlpha)>
 

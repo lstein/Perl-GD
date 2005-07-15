@@ -645,14 +645,14 @@ gdnewFromJpegData(packname="GD::Image", imageData, ...)
 	  SV* errormsg;
           int     truecolor = truecolor_default;
 	CODE:
-	data = SvPV(imageData,len);
-        ctx = newDynamicCtx(data,len);
-	RETVAL = (GD__Image) gdImageCreateFromJpegCtx(ctx);
-        (ctx->gd_free)(ctx);
-        if (items > 2) truecolor = (int)SvIV(ST(2));
-	gd_chkimagefmt(RETVAL, truecolor);
+	  data = SvPV(imageData,len);
+          ctx = newDynamicCtx(data,len);
+          RETVAL = (GD__Image) gdImageCreateFromJpegCtx(ctx);
+          (ctx->gd_free)(ctx);
+          if (items > 2) truecolor = (int)SvIV(ST(2));
+	  gd_chkimagefmt(RETVAL, truecolor);
 	OUTPUT:
-	RETVAL
+	  RETVAL
 
 #endif
 
@@ -706,34 +706,23 @@ gd_newFromGd2(packname="GD::Image", filehandle)
 	OUTPUT:
 	RETVAL
 
+#ifdef HAVE_JPEG
 GD::Image
 gd_newFromJpeg(packname="GD::Image", filehandle, ...)
 	char *	packname
 	InputStream	filehandle
 	PROTOTYPE: $$;$
         PREINIT:
-	  gdImagePtr img;
 	  SV* errormsg;
           int     truecolor = truecolor_default;
 	CODE:
-#ifdef HAVE_JPEG
-	img = GDIMAGECREATEFROMJPEG(filehandle);
-        if (img == NULL) {
-          errormsg = perl_get_sv("@",0);
-	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
-	  XSRETURN_EMPTY;
-        }
-        RETVAL = img;
-        if (items > 2) truecolor = (int)SvIV(ST(2));
-	gd_chkimagefmt(RETVAL, truecolor);
-#else
-        errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with jpeg support\n");
-        XSRETURN_EMPTY;
-#endif
+	  RETVAL = GDIMAGECREATEFROMJPEG(filehandle);
+          if (items > 2) truecolor = (int)SvIV(ST(2));
+	  gd_chkimagefmt(RETVAL, truecolor);
 	OUTPUT:
-        RETVAL
+          RETVAL
+
+#endif
 
 GD::Image
 gd_newFromWBMP(packname="GD::Image", filehandle)
@@ -797,30 +786,20 @@ gd_newFromGd2Part(packname="GD::Image", filehandle,srcX,srcY,width,height)
 
 #ifdef HAVE_GIF
 GD::Image
-gd_newFromGif(packname="GD::Image", filehandle, ...)
+gd_newFromGif(packname="GD::Image", filehandle)
 	char *	packname
 	InputStream	filehandle
 	PROTOTYPE: $$;$
         PREINIT:
-	  gdImagePtr img;
 	  SV* errormsg;
           int     truecolor = truecolor_default;
 	CODE:
-	img = GDIMAGECREATEFROMGIF(filehandle);
-        if (img == NULL) {
-          errormsg = perl_get_sv("@",0);
-	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
-	  XSRETURN_EMPTY;
-        }
-        RETVAL = img;
-        if (items > 2) truecolor = (int)SvIV(ST(2));
-	gd_chkimagefmt(RETVAL, truecolor);
+	  RETVAL = GDIMAGECREATEFROMGIF(filehandle);
 	OUTPUT:
-        RETVAL
+          RETVAL
 
 GD::Image
-gdnewFromGifData(packname="GD::Image", imageData, ...)
+gdnewFromGifData(packname="GD::Image", imageData)
 	char *	packname
 	SV *    imageData
 	PROTOTYPE: $$;$
@@ -835,8 +814,6 @@ gdnewFromGifData(packname="GD::Image", imageData, ...)
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromGifCtx(ctx);
         (ctx->gd_free)(ctx);
-        if (items > 2) truecolor = (int)SvIV(ST(2));
-	gd_chkimagefmt(RETVAL, truecolor);
 	OUTPUT:
 	RETVAL
 
