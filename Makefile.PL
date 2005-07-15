@@ -1,7 +1,7 @@
 use ExtUtils::MakeMaker qw(prompt WriteMakefile);
 
 require 5.6.0;
-my $VERSION = 2.23;
+my $VERSION = 2.25;
 
 unless (@ARGV) {
 warn <<END;
