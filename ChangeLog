@@ -1,3 +1,4 @@
+2.26    CPAN isn't propagating GD, so I'll upload another version
 2.25    Fixed Makefile.PL so that GD::Polyline and GD::Simple are installed (thanks to Guy Albertelli).
 	
 2.24	Fixed gif/anim gif support so that you can't have animated gif support without
