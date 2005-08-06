@@ -1,3 +1,5 @@
+2.27	Reworked the way that GD.pm is created at compile time so that CPAN picks up
+	   correct version information. No code changes.
 2.26    CPAN isn't propagating GD, so I'll upload another version
 2.25    Fixed Makefile.PL so that GD::Polyline and GD::Simple are installed (thanks to Guy Albertelli).
 	

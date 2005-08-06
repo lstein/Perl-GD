@@ -1,7 +1,6 @@
 use ExtUtils::MakeMaker qw(prompt WriteMakefile);
 
 require 5.6.0;
-my $VERSION = 2.26;
 
 unless (@ARGV) {
 warn <<END;
@@ -220,14 +219,11 @@ $DEFINES    .= ' -DHAVE_FONTCONFIG'   if $FONTCONFIG;
 $DEFINES    .= ' -DHAVE_FTCIRCLE'  if $FTCIRCLE;
 open F,">.config.cache";
 print F $DEFINES,"\n";
-print F $VERSION,"\n";
 close F;
-
-unlink './GD.pm';
 
 WriteMakefile(
     'NAME'	=> 'GD',
-    'VERSION'	=> $VERSION,
+    'VERSION_FROM'	=> 'GD.pm',
     'PREREQ_PM' => {
 		    'Math::Trig' => 0,
 		    },
@@ -240,7 +236,7 @@ WriteMakefile(
     'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],
     'INC'       => join(' ',$ENV{'GD_INC'},@INC),
     'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
-		    'GD.pm.PLS' => 'GD.pm',
+		    'GD/Image.pm.PLS' => 'GD/Image.pm',
 		   },
     'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
     'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
