@@ -1,6 +1,8 @@
 ChangeLog
-GD.pm.PLS
+GD.pm
 GD.xs
+GD/Image.pm.PLS
+GD/Polygon.pm
 GD/Polyline.pm
 GD/Simple.pm
 MANIFEST
