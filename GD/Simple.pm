@@ -375,12 +375,14 @@ sub arc {
   my ($bg,$fg) = ($self->bgcolor,$self->fgcolor);
   my ($cx,$cy) = $self->curPos;
 
-  my @args = defined $style ? ($cx,$cy,$width,$height,$start,$end,$self->bgcolor,$style)
-                            : ($cx,$cy,$width,$height,$start,$end,$self->bgcolor);
-
-  $gd->filledArc(@args)            if defined $bg || defined $style;
-  $gd->arc(@_,$self->fgcolor)   if !defined $style && defined $fg 
-                                      && (!defined $bg || $bg != $fg);
+  if ($bg) {
+    my @args = ($cx,$cy,$width,$height,$start,$end,$bg);
+    push @args,$style if defined $style;
+    $gd->filledArc(@args);
+  } else {
+    my @args = ($cx,$cy,$width,$height,$start,$end,$fg);
+    $gd->arc(@args);
+  }
 }
 
 =item $img->polygon($poly)
@@ -647,7 +649,7 @@ sub translate_color {
   my $self = shift;
   return unless defined $_[0];
   my ($r,$g,$b);
-  if (@_ == 1 && $_[0] =~ /^\d+/) {  # previously allocated index
+  if (@_ == 1 && $_[0] =~ /^-?\d+/) {  # previously allocated index
     return $_[0];
   }
   elsif (@_ == 3) {  # (rgb triplet)
@@ -695,6 +697,16 @@ sub read_color_table {
     last if /^__END__/;
     my ($name,$r,$g,$b) = split /\s+/;
     $COLORS{$name} = [hex $r,hex $g,hex $b];
+  }
+}
+
+sub setBrush {
+  my $self  = shift;
+  my $brush = shift;
+  if ($brush->isa('GD::Simple')) {
+    $self->gd->setBrush($brush->gd);
+  } else {
+    $self->gd->setBrush($brush);
   }
 }
 
