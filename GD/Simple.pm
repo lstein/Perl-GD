@@ -678,6 +678,12 @@ sub translate_color {
   return $self->colorResolve($r,$g,$b);
 }
 
+sub transparent {
+  my $self = shift;
+  my $index = $self->translate_color(@_);
+  $self->gd->transparent($index);
+}
+
 =item $index = $img->alphaColor(@args,$alpha)
 
 Creates an alpha color.  You may pass either an (r,g,b) triple or a
