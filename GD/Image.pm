@@ -185,6 +185,15 @@ sub newFromJpeg {
     $class->_newFromJpeg($fh,@_);
 }
 
+sub newFromGif {
+    croak("Usage: newFromGif(class,filehandle,[truecolor])") unless @_>=2;
+    my($class) = shift;
+    my($f)     = shift;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromGif($fh,@_);
+}
+
 # Autoload methods go after __END__, and are processed by the autosplit program.
 1;
 __END__
