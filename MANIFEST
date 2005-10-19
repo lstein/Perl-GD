@@ -14,7 +14,6 @@ README.unix
 bdf_scripts/README
 bdf_scripts/bdf2gdfont.PLS
 bdf_scripts/bdf2gdfont.pl
-bdf_scripts/bdftofnt
 bdf_scripts/bdftogd
 demos/brushes.pl
 demos/copies.pl

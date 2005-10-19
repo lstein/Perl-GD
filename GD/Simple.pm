@@ -375,12 +375,14 @@ sub arc {
   my ($bg,$fg) = ($self->bgcolor,$self->fgcolor);
   my ($cx,$cy) = $self->curPos;
 
-  my @args = defined $style ? ($cx,$cy,$width,$height,$start,$end,$self->bgcolor,$style)
-                            : ($cx,$cy,$width,$height,$start,$end,$self->bgcolor);
-
-  $gd->filledArc(@args)            if defined $bg || defined $style;
-  $gd->arc(@_,$self->fgcolor)   if !defined $style && defined $fg 
-                                      && (!defined $bg || $bg != $fg);
+  if ($bg) {
+    my @args = ($cx,$cy,$width,$height,$start,$end,$bg);
+    push @args,$style if defined $style;
+    $gd->filledArc(@args);
+  } else {
+    my @args = ($cx,$cy,$width,$height,$start,$end,$fg);
+    $gd->arc(@args);
+  }
 }
 
 =item $img->polygon($poly)
@@ -418,10 +420,9 @@ the bottom left of the first character of the text.  This is different
 from the GD behavior, in which the first character of bitmapped fonts
 hangs down from the pen point.
 
-When rendering TrueType, this method returns an array indicating the
-bounding box of the rendered text.  If an error occurred (such as
-invalid font specification) it returns an empty list and an error
-message in $@.
+This method returns a polygon indicating the bounding bod of the
+rendered text.  If an error occurred (such as invalid font
+specification) it returns undef and an error message in $@.
 
 =cut
 
@@ -429,18 +430,84 @@ sub string {
   my $self   = shift;
   my $string = shift;
   my $font   = $self->font;
+  my @bounds;
   if (ref $font && $font->isa('GD::Font')) {
     my ($x,$y) = $self->curPos;
-    $y -= $font->height;
-    $self->angle == -90 ? $self->gd->stringUp($font,$x,$y,$string,$self->fgcolor)
-                        : $self->gd->string($font,$x,$y,$string,$self->fgcolor);
+    if ($self->angle == -90) {
+      $x -= $font->height;
+      $y -= $font->width;
+      $self->gd->stringUp($font,$x,$y,$string,$self->fgcolor);
+      $self->{xy}[1] -= length($string) * $font->width;
+      @bounds = ( ($self->{xy}[0],$y), ($x,$y), ($x,$self->{xy}[1]-$font->width), ($self->{xy}[0],$self->{xy}[1]-$font->width) );
+    } else {
+      $y -= $font->height;
+      $self->gd->string($font,$x,$y,$string,$self->fgcolor);
+      $self->{xy}[0] += length($string) * $font->width;
+      @bounds = ( ($x,$self->{xy}[1]), ($self->{xy}[0],$self->{xy}[1]), ($self->{xy}[0],$y), ($x,$y) );
+    }
   }
   else {
     $self->useFontConfig(1);
-    my @bounds = $self->stringFT($self->fgcolor,$font,
-				 $self->fontsize,-deg2rad($self->angle), # -pi * $self->angle/180,
-				 $self->curPos,$string);
-    @bounds;
+    @bounds   = $self->stringFT($self->fgcolor,$font,
+				$self->fontsize,-deg2rad($self->angle), # -pi * $self->angle/180,
+				$self->curPos,$string);
+    return unless @bounds;
+    my ($delta_x,$delta_y) = $self->_string_width(@bounds);
+    $self->{xy}[0] += $delta_x;
+    $self->{xy}[1] += $delta_y;
+  }
+  my $poly = GD::Polygon->new;
+  while (@bounds) {
+    $poly->addPt(splice(@bounds,0,2));
+  }
+  return $poly;
+}
+
+=item ($delta_x,$delta_y)= $img->stringWidth($string)
+
+This method indicates the X and Y offsets (which may be negative) that
+will occur when the given string is drawn using the current font,
+fontsize and angle.
+
+=cut
+
+sub stringWidth {
+  my $self = shift;
+  my $string = shift;
+  my $font   = $self->font;
+  if (ref $font && $font->isa('GD::Font')) {
+    if ($self->angle == -90) {
+      return (0,-length($string) * $font->width);
+    } else {
+      return (length($string) * $font->width,0);
+    }
+  }
+  else {
+    $self->useFontConfig(1);
+    my @bounds   = GD::Image->stringFT($self->fgcolor,$font,
+				       $self->fontsize,-deg2rad($self->angle),
+				       $self->curPos,$string);
+    return $self->_string_width(@bounds);
+  }
+}
+
+sub _string_width {
+  my $self   = shift;
+  my @bounds = @_;
+  my $delta_x = abs($bounds[2]-$bounds[0]);
+  my $delta_y = abs($bounds[7]-$bounds[5]);
+  my $angle   = $self->angle % 360;
+  if ($angle >= 0 && $angle < 90) {
+    return ($delta_x,$delta_y);
+
+  } elsif ($angle >= 90 && $angle < 180) {
+    return (-$delta_x,$delta_y);
+
+  } elsif ($angle >= 180 && $angle < 270) {
+    return (-$delta_x,-$delta_y);
+
+  } elsif ($angle >= 270 && $angle < 360) {
+    return ($delta_x,-$delta_y);
   }
 }
 
@@ -582,7 +649,7 @@ sub translate_color {
   my $self = shift;
   return unless defined $_[0];
   my ($r,$g,$b);
-  if (@_ == 1 && $_[0] =~ /^\d+/) {  # previously allocated index
+  if (@_ == 1 && $_[0] =~ /^-?\d+/) {  # previously allocated index
     return $_[0];
   }
   elsif (@_ == 3) {  # (rgb triplet)
@@ -630,6 +697,16 @@ sub read_color_table {
     last if /^__END__/;
     my ($name,$r,$g,$b) = split /\s+/;
     $COLORS{$name} = [hex $r,hex $g,hex $b];
+  }
+}
+
+sub setBrush {
+  my $self  = shift;
+  my $brush = shift;
+  if ($brush->isa('GD::Simple')) {
+    $self->gd->setBrush($brush->gd);
+  } else {
+    $self->gd->setBrush($brush);
   }
 }
 
