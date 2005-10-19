@@ -404,6 +404,22 @@ sub polygon {
   $gd->openPolygon(@_,$fg)   if defined $fg && (!defined $bg || $bg != $fg);
 }
 
+=item $img->polyline($poly)
+
+This method draws polygons without closing the first and last vertices
+(similar to GD::Image->unclosedPolygon()). It uses the fgcolor to draw
+the line.
+
+=cut
+
+sub polyline {
+  my $self = shift;
+  croak 'Usage GD::Simple->polyline($poly)' unless @_ == 1;
+  my $gd = $self->gd;
+  my $fg = $self->fgcolor;
+  $gd->unclosedPolygon(@_,$fg);
+}
+
 =item $img->string($string)
 
 This method draws the indicated string starting at the current
@@ -660,6 +676,30 @@ sub translate_color {
     ($r,$g,$b) = @{$COLORS{lc $_[0]}};
   }
   return $self->colorResolve($r,$g,$b);
+}
+
+=item $index = $img->alphaColor(@args,$alpha)
+
+Creates an alpha color.  You may pass either an (r,g,b) triple or a
+symbolic color name, followed by an integer indicating its
+opacity. The opacity value ranges from 0 (fully opaque) to 127 (fully
+transparent).
+
+=cut
+
+sub alphaColor {
+  my $self = shift;
+  return unless defined $_[0];
+  my ($r,$g,$b,$a);
+  if (@_ == 4) {  # (rgb triplet)
+    ($r,$g,$b,$a) = @_;
+  } else {
+    $self->read_color_table unless %COLORS;
+    die "unknown color" unless exists $COLORS{lc $_[0]};
+    ($r,$g,$b) = @{$COLORS{lc $_[0]}};
+    $a = $_[1];
+  }
+  return $self->colorAllocateAlpha($r,$g,$b,$a);
 }
 
 =item @names = GD::Simple->color_names
