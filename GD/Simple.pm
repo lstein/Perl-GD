@@ -775,13 +775,16 @@ sub HSVtoRGB {
     return ($v,$v,$v);
   }
 
+  $s /= 255;                      ## scale saturation from 0.0-1.0
+  $h %= 256;                      ## hue is mod 255.
+
   $h /= 60;                       ## sector 0 to 5
   $i = int($h);
   $f = $h - $i;                   ## factorial part of h
   $p = $v * ( 1 - $s );
   $q = $v * ( 1 - $s * $f );
   $t = $v * ( 1 - $s * ( 1 - $f ) );
-  
+
   if($i<1) {
     $r = $v;
     $g = $t;
@@ -807,19 +810,7 @@ sub HSVtoRGB {
     $g = $p;
     $b = $q;
   }
-  return ($r,$g,$b);
-}
-
-sub mMin {
-        my $n=10000000000000;
-        map { $n=($n>$_) ? $_ : $n } @_;
-        return($n);     
-}
-
-sub mMax {
-        my $n=0;
-        map { $n=($n<$_) ? $_ : $n } @_;
-        return($n);     
+  return (int($r+0.5),int($g+0.5),int($b+0.5));
 }
 
 
