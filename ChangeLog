@@ -1,3 +1,4 @@
+2.32	Added a GD::Simple->HSVtoRGB() method.
 2.31	Fixed GD::Simple->transparent to support symbolic color names.
 	Made changes that should render the module thread-safe.
 	Changed newSVpv calls to newSVpvn, in hopes of improving performance.

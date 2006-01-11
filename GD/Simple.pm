@@ -730,8 +730,6 @@ sub color_names {
 Return the internal GD::Image object.  Usually you will not need to
 call this since all GD methods are automatically referred to this object.
 
-=back
-
 =cut
 
 sub gd { shift->{gd} }
@@ -755,6 +753,75 @@ sub setBrush {
     $self->gd->setBrush($brush);
   }
 }
+
+=item ($red,$green,$blue) = GD::Simple->HSV2RGB($hue,$saturation,$value)
+
+Convert a Hue/Saturation/Value (HSV) color into an RGB triple. The
+hue, saturation and value are integers from 0 to 255.
+
+=back
+
+=cut
+
+sub HSVtoRGB {
+  my $self = shift;
+  @_ == 3 or croak "Usage: GD::Simple->HSVtoRGB(\$hue,\$saturation,\$value)";
+
+  my ($h,$s,$v)=@_;
+  my ($r,$g,$b,$i,$f,$p,$q,$t);
+
+  if( $s == 0 ) {
+    ## achromatic (grey)
+    return ($v,$v,$v);
+  }
+
+  $h /= 60;                       ## sector 0 to 5
+  $i = int($h);
+  $f = $h - $i;                   ## factorial part of h
+  $p = $v * ( 1 - $s );
+  $q = $v * ( 1 - $s * $f );
+  $t = $v * ( 1 - $s * ( 1 - $f ) );
+  
+  if($i<1) {
+    $r = $v;
+    $g = $t;
+    $b = $p;
+  } elsif($i<2){
+    $r = $q;
+    $g = $v;
+    $b = $p;
+  } elsif($i<3){
+    $r = $p;
+    $g = $v;
+    $b = $t;
+  } elsif($i<4){
+    $r = $p;
+    $g = $q;
+    $b = $v;
+  } elsif($i<5){
+    $r = $t;
+    $g = $p;
+    $b = $v;
+  } else {
+    $r = $v;
+    $g = $p;
+    $b = $q;
+  }
+  return ($r,$g,$b);
+}
+
+sub mMin {
+        my $n=10000000000000;
+        map { $n=($n>$_) ? $_ : $n } @_;
+        return($n);     
+}
+
+sub mMax {
+        my $n=0;
+        map { $n=($n<$_) ? $_ : $n } @_;
+        return($n);     
+}
+
 
 1;
 
