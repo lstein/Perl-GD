@@ -774,12 +774,13 @@ sub HSVtoRGB {
     ## achromatic (grey)
     return ($v,$v,$v);
   }
-
+  $h %= 255;
   $s /= 255;                      ## scale saturation from 0.0-1.0
-  $h %= 256;                      ## hue is mod 255.
+  $h /= 255;                      ## scale hue from 0 to 1.0
+  $h *= 360;                      ## and now scale it to 0 to 360
 
   $h /= 60;                       ## sector 0 to 5
-  $i = int($h);
+  $i = $h % 6;
   $f = $h - $i;                   ## factorial part of h
   $p = $v * ( 1 - $s );
   $q = $v * ( 1 - $s * $f );
