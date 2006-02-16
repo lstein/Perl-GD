@@ -754,12 +754,10 @@ sub setBrush {
   }
 }
 
-=item ($red,$green,$blue) = GD::Simple->HSV2RGB($hue,$saturation,$value)
+=item ($red,$green,$blue) = GD::Simple->HSVtoRGB($hue,$saturation,$value)
 
 Convert a Hue/Saturation/Value (HSV) color into an RGB triple. The
 hue, saturation and value are integers from 0 to 255.
-
-=back
 
 =cut
 
@@ -814,6 +812,44 @@ sub HSVtoRGB {
   return (int($r+0.5),int($g+0.5),int($b+0.5));
 }
 
+=item ($hue,$saturation,$value) = GD::Simple->RGBtoHSV($hue,$saturation,$value)
+
+Convert a Red/Green/Blue (RGB) value into a Hue/Saturation/Value (HSV)
+triple. The hue, saturation and value are integers from 0 to 255.
+
+=back
+
+=cut
+
+sub RGBtoHSV {
+  my $self = shift;
+  my ($r, $g ,$bl) = @_;
+  my ($min,undef,$max) = sort {$a<=>$b} ($r,$g,$bl);
+  return (0,0,0) unless $max > 0;
+
+  my $v = $max;
+  my $s = 255 * ($max - $min)/$max;
+  my $h;
+  my $range = $max - $min;
+
+  if ($range == 0) { # all colors are equal, so monochrome
+    return (0,0,$max);
+  }
+
+  if ($max == $r) {
+    $h = 60 * ($g-$bl)/$range;
+  }
+  elsif ($max == $g) {
+    $h = 60 * ($bl-$r)/$range + 120;
+  }
+  else {
+    $h = 60 * ($r-$g)/$range + 240;
+  }
+
+  $h = int($h*255/360 + 0.5);
+
+  return ($h, $s, $v);
+}
 
 1;
 
