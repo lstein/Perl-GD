@@ -587,7 +587,6 @@ gd_newFromPng(packname="GD::Image", filehandle, ...)
         PREINIT:
         dMY_CXT;
 	int truecolor = MY_CXT.truecolor_default;
-        SV* errormsg;
 	CODE:
 	RETVAL = (GD__Image) GDIMAGECREATEFROMPNG(filehandle);
         if (items > 2) truecolor = (int)SvIV(ST(2));
@@ -605,7 +604,6 @@ gdnewFromPngData(packname="GD::Image", imageData, ...)
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
-          SV*      errormsg;
 	  int truecolor = MY_CXT.truecolor_default;
 	CODE:
 	data = SvPV(imageData,len);
@@ -630,7 +628,6 @@ gdnewFromGdData(packname="GD::Image", imageData)
 	CODE:
 	data = SvPV(imageData,len);
 	RETVAL = (GD__Image) gdImageCreateFromGdPtr(len,(void*) data);
-        safefree(data);
 	OUTPUT:
 	RETVAL
 
@@ -645,7 +642,6 @@ gdnewFromGd2Data(packname="GD::Image", imageData)
 	CODE:
 	data = SvPV(imageData,len);
 	RETVAL = (GD__Image) gdImageCreateFromGd2Ptr(len,(void*) data);
-        safefree(data);
 	OUTPUT:
 	RETVAL
 
@@ -660,7 +656,6 @@ gdnewFromJpegData(packname="GD::Image", imageData, ...)
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
-	  SV* errormsg;
           int     truecolor = MY_CXT.truecolor_default;
 	CODE:
 	  data = SvPV(imageData,len);
@@ -733,7 +728,6 @@ gd_newFromJpeg(packname="GD::Image", filehandle, ...)
 	PROTOTYPE: $$;$
         PREINIT:
 	  dMY_CXT;
-	  SV* errormsg;
           int     truecolor = MY_CXT.truecolor_default;
 	CODE:
 	  RETVAL = GDIMAGECREATEFROMJPEG(filehandle);
@@ -812,7 +806,6 @@ gd_newFromGif(packname="GD::Image", filehandle)
 	PROTOTYPE: $$;$
         PREINIT:
 	  dMY_CXT;
-	  SV* errormsg;
           int     truecolor = MY_CXT.truecolor_default;
 	CODE:
 	  RETVAL = GDIMAGECREATEFROMGIF(filehandle);
@@ -829,7 +822,6 @@ gdnewFromGifData(packname="GD::Image", imageData)
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
-	  SV* errormsg;
           int     truecolor = MY_CXT.truecolor_default;
 	CODE:
 	data = SvPV(imageData,len);
@@ -856,7 +848,6 @@ gdpng(image, ...)
   GD::Image	image
   PROTOTYPE: $;$
   PREINIT:
-  SV* errormsg;
   CODE:
   {
 	void*         data;
@@ -910,7 +901,6 @@ gdgifanimbegin(image,globalcm=-1,loops=-1)
   int           loops
   PROTOTYPE: $$$
   PREINIT:
-  SV* errormsg;
   CODE:
   {
 	void*         data;
@@ -2178,7 +2168,7 @@ gdstringFTCircle(image,cx,cy,radius,textRadius,fillPortion,fontname,points,top,b
         int             fgcolor
         PROTOTYPE: $$$$$$$$$$$
         PREINIT:
-        char*      err;
+        char*      err;        
         SV*        errormsg;
         CODE:
 	{
