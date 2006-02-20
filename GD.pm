@@ -16,7 +16,7 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.30';
+$VERSION = '2.31';
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -373,7 +373,7 @@ $truecolor argument.
 
 =item B<$image = GD::Image-E<gt>newFromGif($file)>
 
-=item B<$image = GD::Image-E<gt>newFromGif($data)>
+=item B<$image = GD::Image-E<gt>newFromGifData($data)>
 
 These methods will create an image from a GIF file.  They work just
 like newFromPng() and newFromPngData(), and will accept the same
@@ -659,7 +659,7 @@ color table and returns its index.
 	$rosey = $myImage->colorResolve(255,100,80);
 	warn "Everything's coming up roses.\n" if $rosey >= 0;
 
-=item B<$colorsTotal = $image-E<gt>colorsTotal)> I<object method>
+=item B<$colorsTotal = $image-E<gt>colorsTotal> I<object method>
 
 This returns the total number of colors allocated in the object.
 

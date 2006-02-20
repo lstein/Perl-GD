@@ -496,12 +496,6 @@ get_xformbounds(GD__Image src, int *x, int *y,
 	(gdImageTrueColorPixel(dst,dx,dy)=gdImageTrueColorPixel(src,sx,sy)) : \
 	(gdImagePalettePixel(dst,dx,dy)=gdImagePalettePixel(src,sx,sy))
 
-/* Current image true color default
- *  0 - create palette based images by default
- *  1 - create true color images by default
- */
-static int truecolor_default = 0;
-
 /* Check the image format being returned */
 void
 gd_chkimagefmt(GD__Image image, int truecolor) {
@@ -513,11 +507,30 @@ gd_chkimagefmt(GD__Image image, int truecolor) {
   }
 }
 
+/* GLOBAL THREAD-SAFE DATA */
+
+#define MY_CXT_KEY "GD::_guts" XS_VERSION
+typedef struct {
+  /* Current image true color default
+   *  0 - create palette based images by default
+   *  1 - create true color images by default
+   */
+  int truecolor_default;
+} my_cxt_t;
+
+START_MY_CXT
+
 MODULE = GD		PACKAGE = GD
 
 double
 constant(name)
 	char *		name
+
+BOOT:
+{
+  MY_CXT_INIT;
+  MY_CXT.truecolor_default = 0;
+}
 
 MODULE = GD		PACKAGE = GD::Image	PREFIX=gd
 
@@ -529,12 +542,13 @@ gdtrueColor(packname="GD::Image", ...)
 	char *	packname
 	PROTOTYPE: $$
         PREINIT:
+        dMY_CXT;
         int previous_value;
 	CODE:
 	{
-	  previous_value = truecolor_default;
+	  previous_value = MY_CXT.truecolor_default;
           if (items > 1)
-	    truecolor_default = (int)SvIV(ST(1));
+	    MY_CXT.truecolor_default = (int)SvIV(ST(1));
           RETVAL = previous_value;
 	}
         OUTPUT:
@@ -547,7 +561,8 @@ gd_new(packname="GD::Image", x=64, y=64, ...)
 	int	y
         PROTOTYPE: $;$$$
         PREINIT:
-	int truecolor = truecolor_default;
+        dMY_CXT;
+	int truecolor = MY_CXT.truecolor_default;
 	CODE:
 	{
 		gdImagePtr theImage;
@@ -570,8 +585,8 @@ gd_newFromPng(packname="GD::Image", filehandle, ...)
 	InputStream	filehandle
 	PROTOTYPE: $$;$
         PREINIT:
-	int truecolor = truecolor_default;
-        SV* errormsg;
+        dMY_CXT;
+	int truecolor = MY_CXT.truecolor_default;
 	CODE:
 	RETVAL = (GD__Image) GDIMAGECREATEFROMPNG(filehandle);
         if (items > 2) truecolor = (int)SvIV(ST(2));
@@ -585,11 +600,11 @@ gdnewFromPngData(packname="GD::Image", imageData, ...)
 	SV *	imageData
 	PROTOTYPE: $$;$
         PREINIT:
+	  dMY_CXT;
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
-          SV*      errormsg;
-	  int truecolor = truecolor_default;
+	  int truecolor = MY_CXT.truecolor_default;
 	CODE:
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
@@ -613,7 +628,6 @@ gdnewFromGdData(packname="GD::Image", imageData)
 	CODE:
 	data = SvPV(imageData,len);
 	RETVAL = (GD__Image) gdImageCreateFromGdPtr(len,(void*) data);
-        safefree(data);
 	OUTPUT:
 	RETVAL
 
@@ -628,7 +642,6 @@ gdnewFromGd2Data(packname="GD::Image", imageData)
 	CODE:
 	data = SvPV(imageData,len);
 	RETVAL = (GD__Image) gdImageCreateFromGd2Ptr(len,(void*) data);
-        safefree(data);
 	OUTPUT:
 	RETVAL
 
@@ -639,11 +652,11 @@ gdnewFromJpegData(packname="GD::Image", imageData, ...)
 	SV *    imageData
 	PROTOTYPE: $$;$
         PREINIT:
+	  dMY_CXT;
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
-	  SV* errormsg;
-          int     truecolor = truecolor_default;
+          int     truecolor = MY_CXT.truecolor_default;
 	CODE:
 	  data = SvPV(imageData,len);
           ctx = newDynamicCtx(data,len);
@@ -662,10 +675,11 @@ gdnewFromWBMPData(packname="GD::Image", imageData, ...)
 	SV *    imageData
 	PROTOTYPE: $$;$
         PREINIT:
+	  dMY_CXT;
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
-         int     truecolor = truecolor_default;
+          int     truecolor = MY_CXT.truecolor_default;
 	CODE:
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
@@ -713,8 +727,8 @@ gd_newFromJpeg(packname="GD::Image", filehandle, ...)
 	InputStream	filehandle
 	PROTOTYPE: $$;$
         PREINIT:
-	  SV* errormsg;
-          int     truecolor = truecolor_default;
+	  dMY_CXT;
+          int     truecolor = MY_CXT.truecolor_default;
 	CODE:
 	  RETVAL = GDIMAGECREATEFROMJPEG(filehandle);
           if (items > 2) truecolor = (int)SvIV(ST(2));
@@ -791,8 +805,8 @@ gd_newFromGif(packname="GD::Image", filehandle)
 	InputStream	filehandle
 	PROTOTYPE: $$;$
         PREINIT:
-	  SV* errormsg;
-          int     truecolor = truecolor_default;
+	  dMY_CXT;
+          int     truecolor = MY_CXT.truecolor_default;
 	CODE:
 	  RETVAL = GDIMAGECREATEFROMGIF(filehandle);
 	OUTPUT:
@@ -804,11 +818,11 @@ gdnewFromGifData(packname="GD::Image", imageData)
 	SV *    imageData
 	PROTOTYPE: $$;$
         PREINIT:
+	  dMY_CXT;
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
-	  SV* errormsg;
-          int     truecolor = truecolor_default;
+          int     truecolor = MY_CXT.truecolor_default;
 	CODE:
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
@@ -834,7 +848,6 @@ gdpng(image, ...)
   GD::Image	image
   PROTOTYPE: $;$
   PREINIT:
-  SV* errormsg;
   CODE:
   {
 	void*         data;
@@ -846,7 +859,7 @@ gdpng(image, ...)
 	} else {
 	  data = (void *) gdImagePngPtr(image,&size);
 	}
-	RETVAL = newSVpv((char*) data,size);
+	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
   }
   OUTPUT:
@@ -873,7 +886,7 @@ gdjpeg(image,quality=-1)
 	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
 	  XSRETURN_EMPTY;
         }
-	RETVAL = newSVpv((char*) data,size);
+	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
   }
   OUTPUT:
@@ -888,14 +901,13 @@ gdgifanimbegin(image,globalcm=-1,loops=-1)
   int           loops
   PROTOTYPE: $$$
   PREINIT:
-  SV* errormsg;
   CODE:
   {
 	void*         data;
 	int           size;
 #ifdef HAVE_ANIMGIF
 	data = (void *) gdImageGifAnimBeginPtr(image,&size,globalcm,loops);
-	RETVAL = newSVpv((char*) data,size);
+	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
 #else
         die("libgd 2.0.33 or higher required for animated GIF support");
@@ -920,7 +932,7 @@ gdgifanimadd(image,localcm=-1,leftofs=-1,topofs=-1,delay=-1,disposal=-1,previm=0
 	int           size;
 #ifdef HAVE_ANIMGIF
 	data = (void *) gdImageGifAnimAddPtr(image,&size,localcm,leftofs,topofs,delay,disposal,previm);
-	RETVAL = newSVpv((char*) data,size);
+	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
 #else
         die("libgd 2.0.33 or higher required for animated GIF support");
@@ -939,7 +951,7 @@ gdgifanimend(image)
 	int           size;
 #ifdef HAVE_ANIMGIF
 	data = (void *) gdImageGifAnimEndPtr(&size);
-	RETVAL = newSVpv((char*) data,size);
+	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
 #else
         die("libgd 2.0.33 or higher required for animated GIF support");
@@ -966,7 +978,7 @@ gdwbmp(image,fg)
 	    sv_setpv(errormsg,"libgd was not built with WBMP support\n");
 	  XSRETURN_EMPTY;
         }
-	RETVAL = newSVpv((char*) data,size);
+	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
   }
   OUTPUT:
@@ -990,7 +1002,7 @@ gdgif(image)
 	    sv_setpv(errormsg,"libgd was not built with gif support\n");
 	  XSRETURN_EMPTY;
         }
-	RETVAL = newSVpv((char*) data,size);
+	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
   }
   OUTPUT:
@@ -1007,7 +1019,7 @@ gdgd(image)
 	void*         data;
 	int           size;
 	data = gdImageGdPtr(image,&size);
-	RETVAL = newSVpv((char*) data,size);
+	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
   }
   OUTPUT:
@@ -1022,7 +1034,7 @@ gdgd2(image)
 	void*         data;
 	int           size;
 	data = gdImageGd2Ptr(image,0,GD2_FMT_COMPRESSED,&size);
-	RETVAL = newSVpv((char*) data,size);
+	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
   }
   OUTPUT:
@@ -2156,7 +2168,7 @@ gdstringFTCircle(image,cx,cy,radius,textRadius,fillPortion,fontname,points,top,b
         int             fgcolor
         PROTOTYPE: $$$$$$$$$$$
         PREINIT:
-        char*      err;
+        char*      err;        
         SV*        errormsg;
         CODE:
 	{

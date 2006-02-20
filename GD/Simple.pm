@@ -678,6 +678,12 @@ sub translate_color {
   return $self->colorResolve($r,$g,$b);
 }
 
+sub transparent {
+  my $self = shift;
+  my $index = $self->translate_color(@_);
+  $self->gd->transparent($index);
+}
+
 =item $index = $img->alphaColor(@args,$alpha)
 
 Creates an alpha color.  You may pass either an (r,g,b) triple or a
@@ -724,8 +730,6 @@ sub color_names {
 Return the internal GD::Image object.  Usually you will not need to
 call this since all GD methods are automatically referred to this object.
 
-=back
-
 =cut
 
 sub gd { shift->{gd} }
@@ -748,6 +752,103 @@ sub setBrush {
   } else {
     $self->gd->setBrush($brush);
   }
+}
+
+=item ($red,$green,$blue) = GD::Simple->HSVtoRGB($hue,$saturation,$value)
+
+Convert a Hue/Saturation/Value (HSV) color into an RGB triple. The
+hue, saturation and value are integers from 0 to 255.
+
+=cut
+
+sub HSVtoRGB {
+  my $self = shift;
+  @_ == 3 or croak "Usage: GD::Simple->HSVtoRGB(\$hue,\$saturation,\$value)";
+
+  my ($h,$s,$v)=@_;
+  my ($r,$g,$b,$i,$f,$p,$q,$t);
+
+  if( $s == 0 ) {
+    ## achromatic (grey)
+    return ($v,$v,$v);
+  }
+  $h %= 255;
+  $s /= 255;                      ## scale saturation from 0.0-1.0
+  $h /= 255;                      ## scale hue from 0 to 1.0
+  $h *= 360;                      ## and now scale it to 0 to 360
+
+  $h /= 60;                       ## sector 0 to 5
+  $i = $h % 6;
+  $f = $h - $i;                   ## factorial part of h
+  $p = $v * ( 1 - $s );
+  $q = $v * ( 1 - $s * $f );
+  $t = $v * ( 1 - $s * ( 1 - $f ) );
+
+  if($i<1) {
+    $r = $v;
+    $g = $t;
+    $b = $p;
+  } elsif($i<2){
+    $r = $q;
+    $g = $v;
+    $b = $p;
+  } elsif($i<3){
+    $r = $p;
+    $g = $v;
+    $b = $t;
+  } elsif($i<4){
+    $r = $p;
+    $g = $q;
+    $b = $v;
+  } elsif($i<5){
+    $r = $t;
+    $g = $p;
+    $b = $v;
+  } else {
+    $r = $v;
+    $g = $p;
+    $b = $q;
+  }
+  return (int($r+0.5),int($g+0.5),int($b+0.5));
+}
+
+=item ($hue,$saturation,$value) = GD::Simple->RGBtoHSV($hue,$saturation,$value)
+
+Convert a Red/Green/Blue (RGB) value into a Hue/Saturation/Value (HSV)
+triple. The hue, saturation and value are integers from 0 to 255.
+
+=back
+
+=cut
+
+sub RGBtoHSV {
+  my $self = shift;
+  my ($r, $g ,$bl) = @_;
+  my ($min,undef,$max) = sort {$a<=>$b} ($r,$g,$bl);
+  return (0,0,0) unless $max > 0;
+
+  my $v = $max;
+  my $s = 255 * ($max - $min)/$max;
+  my $h;
+  my $range = $max - $min;
+
+  if ($range == 0) { # all colors are equal, so monochrome
+    return (0,0,$max);
+  }
+
+  if ($max == $r) {
+    $h = 60 * ($g-$bl)/$range;
+  }
+  elsif ($max == $g) {
+    $h = 60 * ($bl-$r)/$range + 120;
+  }
+  else {
+    $h = 60 * ($r-$g)/$range + 240;
+  }
+
+  $h = int($h*255/360 + 0.5);
+
+  return ($h, $s, $v);
 }
 
 1;

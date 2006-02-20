@@ -1,3 +1,9 @@
+2.31	Fixed GD::Simple->transparent to support symbolic color names.
+	Made changes that should render the module thread-safe.
+	Changed newSVpv calls to newSVpvn, in hopes of improving performance.
+	Added a GD::Simple->HSVtoRGB() method.
+	Fixed incorrect freeing of user-provided raw data in newFromGdData() and newFromGd2Data()
+		(this caused segfaults; patch provided by Nigel Sandever)
 2.30	Migrated polyline() support into GD::Simple.
 2.29	Better support for fonts and brushed patterns in GD::Simple
 2.28	Having troubles getting all the modules installed correctly. Should work now.
