@@ -52,6 +52,11 @@ sub DESTROY {
     undef $self->{'points'};
 }
 
+sub clear {
+  my $self = shift;
+  $self->{'points'} = [];
+}
+
 # add an x,y vertex to the polygon
 sub addPt {
     my($self,$x,$y) = @_;
