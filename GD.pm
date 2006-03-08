@@ -16,7 +16,7 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.31';
+$VERSION = '2.32';
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -1567,7 +1567,12 @@ a vertex that isn't already defined.
 
 Delete the specified vertex, returning its value.
 
-	($x,$y) = $poly->deletePt(1); 
+	($x,$y) = $poly->deletePt(1);
+
+
+=item B<$poly-E<gt>clear()>
+
+Delete all vertices, restoring the polygon to its initial empty state.
 
 =item B<$poly-E<gt>toPt($dx,$dy)>
 
