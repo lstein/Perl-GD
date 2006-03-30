@@ -51,6 +51,10 @@
 #define snprintf _snprintf
 #endif
 
+#ifndef START_MY_CXT
+static truecolor_default = 0;
+#endif
+
 static int
 not_here(char *s)
 {
@@ -509,6 +513,8 @@ gd_chkimagefmt(GD__Image image, int truecolor) {
 
 /* GLOBAL THREAD-SAFE DATA */
 
+#ifdef START_MY_CXT
+
 #define MY_CXT_KEY "GD::_guts" XS_VERSION
 typedef struct {
   /* Current image true color default
@@ -519,6 +525,7 @@ typedef struct {
 } my_cxt_t;
 
 START_MY_CXT
+#endif
 
 MODULE = GD		PACKAGE = GD
 
@@ -528,8 +535,10 @@ constant(name)
 
 BOOT:
 {
-  MY_CXT_INIT;
-  MY_CXT.truecolor_default = 0;
+#ifdef START_MY_CXT
+   MY_CXT_INIT;
+   MY_CXT.truecolor_default = 0;
+#endif
 }
 
 MODULE = GD		PACKAGE = GD::Image	PREFIX=gd
@@ -542,13 +551,20 @@ gdtrueColor(packname="GD::Image", ...)
 	char *	packname
 	PROTOTYPE: $$
         PREINIT:
+#ifdef START_MY_CXT
         dMY_CXT;
-        int previous_value;
+        int previous_value = MY_CXT.truecolor_default;
+#else
+        int previous_value = truecolor_default;
+#endif
 	CODE:
 	{
-	  previous_value = MY_CXT.truecolor_default;
           if (items > 1)
+#ifdef START_MY_CXT
 	    MY_CXT.truecolor_default = (int)SvIV(ST(1));
+#else
+            truecolor_default = (int)SvIV(ST(1));
+#endif
           RETVAL = previous_value;
 	}
         OUTPUT:
@@ -561,8 +577,12 @@ gd_new(packname="GD::Image", x=64, y=64, ...)
 	int	y
         PROTOTYPE: $;$$$
         PREINIT:
+#ifdef START_MY_CXT
         dMY_CXT;
 	int truecolor = MY_CXT.truecolor_default;
+#else
+        int truecolor = truecolor_default;
+#endif
 	CODE:
 	{
 		gdImagePtr theImage;
@@ -585,8 +605,12 @@ gd_newFromPng(packname="GD::Image", filehandle, ...)
 	InputStream	filehandle
 	PROTOTYPE: $$;$
         PREINIT:
+#ifdef START_MY_CXT
         dMY_CXT;
 	int truecolor = MY_CXT.truecolor_default;
+#else
+        int truecolor = truecolor_default;
+#endif
 	CODE:
 	RETVAL = (GD__Image) GDIMAGECREATEFROMPNG(filehandle);
         if (items > 2) truecolor = (int)SvIV(ST(2));
@@ -600,11 +624,15 @@ gdnewFromPngData(packname="GD::Image", imageData, ...)
 	SV *	imageData
 	PROTOTYPE: $$;$
         PREINIT:
-	  dMY_CXT;
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
+#ifdef START_MY_CXT
+	  dMY_CXT;
 	  int truecolor = MY_CXT.truecolor_default;
+#else
+          int truecolor = truecolor_default;
+#endif
 	CODE:
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
@@ -652,11 +680,15 @@ gdnewFromJpegData(packname="GD::Image", imageData, ...)
 	SV *    imageData
 	PROTOTYPE: $$;$
         PREINIT:
-	  dMY_CXT;
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
+#ifdef START_MY_CXT
+	  dMY_CXT;
           int     truecolor = MY_CXT.truecolor_default;
+#else
+          int     truecolor = truecolor_default;
+#endif
 	CODE:
 	  data = SvPV(imageData,len);
           ctx = newDynamicCtx(data,len);
@@ -675,11 +707,15 @@ gdnewFromWBMPData(packname="GD::Image", imageData, ...)
 	SV *    imageData
 	PROTOTYPE: $$;$
         PREINIT:
-	  dMY_CXT;
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
+#ifdef START_MY_CXT
+	  dMY_CXT;
           int     truecolor = MY_CXT.truecolor_default;
+#else
+          int     truecolor = truecolor_default;
+#endif
 	CODE:
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
@@ -727,8 +763,12 @@ gd_newFromJpeg(packname="GD::Image", filehandle, ...)
 	InputStream	filehandle
 	PROTOTYPE: $$;$
         PREINIT:
+#ifdef START_MY_CXT
 	  dMY_CXT;
           int     truecolor = MY_CXT.truecolor_default;
+#else
+          int     truecolor = truecolor_default;
+#endif
 	CODE:
 	  RETVAL = GDIMAGECREATEFROMJPEG(filehandle);
           if (items > 2) truecolor = (int)SvIV(ST(2));
@@ -805,8 +845,12 @@ gd_newFromGif(packname="GD::Image", filehandle)
 	InputStream	filehandle
 	PROTOTYPE: $$;$
         PREINIT:
+#ifdef START_MY_CXT
 	  dMY_CXT;
           int     truecolor = MY_CXT.truecolor_default;
+#else
+          int     truecolor = truecolor_default;
+#endif
 	CODE:
 	  RETVAL = GDIMAGECREATEFROMGIF(filehandle);
 	OUTPUT:
@@ -818,11 +862,15 @@ gdnewFromGifData(packname="GD::Image", imageData)
 	SV *    imageData
 	PROTOTYPE: $$;$
         PREINIT:
-	  dMY_CXT;
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
+#ifdef START_MY_CXT
+	  dMY_CXT;
           int     truecolor = MY_CXT.truecolor_default;
+#else
+          int     truecolor = truecolor_default;
+#endif
 	CODE:
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
