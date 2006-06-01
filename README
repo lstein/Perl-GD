@@ -282,7 +282,31 @@ FREQUENTLY ASKED QUESTIONS
 
    See (1).
 
-4. My scripts fail with "Can't locate object method 'png' via package "GD::Image".
+4. The %&#&#! thing doesn't compile at all! I'm getting lots of compile errors!
+
+   Does "make" fail with messages like these?
+
+   GD.xs: In function 'newDynamicCtx':
+   GD.xs:440: error: 'gdIOCtx' has no member named 'gd_free'
+   GD.xs: In function 'gd_cloneDim':
+   GD.xs:460: error: 'struct gdImageStruct' has no member named 'alpha'
+   GD.xs:460: error: 'struct gdImageStruct' has no member named 'alpha'
+   GD.xs:466: error: 'struct gdImageStruct' has no member named 'thick'
+   GD.xs:466: error: 'struct gdImageStruct' has no member named 'thick'
+
+   If so, then you may have an old gd.h include file located somewhere
+   in your system include path. Please find it and remove it. A typical
+   location is /usr/include/gd.h. The way to make sure you are removing
+   the correct gd.h is to run "gdlib-config --cflags" to find out where
+   the current gd.h lives:
+
+      % gdlib-config --cflags
+      -I/usr/local/include
+
+   This tells you that /usr/local/include/gd.h is the correct gd.h. Please
+   find and remove any other gd.h.
+
+5. My scripts fail with "Can't locate object method 'png' via package "GD::Image".
 
    libgd can now be built with support for one or more of the PNG, GIF, XPM or 
    JPEG formats. If one or more of these formats are not supported by libgd, then
@@ -299,25 +323,25 @@ FREQUENTLY ASKED QUESTIONS
    As of libgd 2.0.33, GIF support is always compiled in, so (for the time being!)
    this is a safe fallback.
    
-5. Is there a utility to convert X Windows BDF fonts into GD fonts.
+6. Is there a utility to convert X Windows BDF fonts into GD fonts.
 
    Yes.  See the utility bdf2gdfont.pl.  Run "bdf2gdfont.pl -h" to get help
    on using this.
 
-6. Does GD run with Macintosh OS X?
+7. Does GD run with Macintosh OS X?
 
    Yes.  GD compiles just fine under OSX.  However, you may need to
    remove old versions of libgd, libpng, and libz and reinstall the
    current versions before you try to install GD.
 
-7. Does GD run with Win32 Perl?
+8. Does GD run with Win32 Perl?
 
    The latest ActiveState binaries for Win32 systems come with GD
    already compiled in and ready to go. I don't own any Win32 systems,
    and cannot provide you with help in compiling GD from scratch on such 
    systems.
 
-8. GD won't compile on system XX.
+9. GD won't compile on system XX.
 
    Because libgd relies on multiple external libraries, GD does as well.  
    Unfortunately, different systems place their libraries in different
@@ -338,19 +362,19 @@ FREQUENTLY ASKED QUESTIONS
    thing to do is to recompile Perl from source code, thereby ensuring
    that it is complete.
 
-9. When I try to load an XPM file, all I get is blackness!
+10. When I try to load an XPM file, all I get is blackness!
 
    The libgd createFromXpm() function works with some XPM files, and
    not with others.  The problem is buried deep in the libXpm library
    somewhere.
 
-10. The stringFTCircle() method doesn't work!
+11. The stringFTCircle() method doesn't work!
 
    I know.  I think this might be a problem in libgd because I have
    never gotten it to work as a C program.  If you have any insight
    into this problem let me know.
 
-11. Test XX fails
+12. Test XX fails
 
    The regression tests for GD involve generating images, saving
    them as PNG, JPEG or GIF files, and then comparing the files bit-for-bit

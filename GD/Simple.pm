@@ -423,12 +423,12 @@ sub polyline {
 =item $img->string($string)
 
 This method draws the indicated string starting at the current
-position of the pen. The pen is B<not> moved.  Depending on the font
-selected with the font() method, this will use either a bitmapped GD
-font or a TrueType font.  The angle of the pen will be consulted when
-drawing the text. For TrueType fonts, any angle is accepted.  For GD
-bitmapped fonts, the angle can be either 0 (draw horizontal) or -90
-(draw upwards).
+position of the pen. The pen is moved to the end of the drawn string.
+Depending on the font selected with the font() method, this will use
+either a bitmapped GD font or a TrueType font.  The angle of the pen
+will be consulted when drawing the text. For TrueType fonts, any angle
+is accepted.  For GD bitmapped fonts, the angle can be either 0 (draw
+horizontal) or -90 (draw upwards).
 
 For consistency between the TrueType and GD font behavior, the string
 is always drawn so that the current position of the pen corresponds to
