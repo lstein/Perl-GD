@@ -1,14 +1,12 @@
 use ExtUtils::MakeMaker qw(prompt WriteMakefile);
+use Config;
+use strict;
 
 require 5.6.0;
 
 unless (@ARGV) {
 warn <<END;
 NOTICE: This module requires libgd 2.0.28 or higher.
-        it will NOT work with earlier versions. If you are getting
-        compile or link errors, then please get and install a new
-        version of libgd from www.boutell.com. Do NOT ask Lincoln
-        for help until you try this.
 
         If you are using Math::Trig 1.01 or lower, it has a bug that
         causes a "prerequisite not found" warning to be issued.  You may
@@ -23,6 +21,8 @@ END
 # =====> PATHS: CHECK AND ADJUST <=====
 my (@INC,@LIBPATH,@LIBS);
 my $AUTOCONFIG = 0;      # global set by try_to_autoconfigure() below
+
+my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,$lib_zlib_path);
 
 try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS);
 
@@ -76,7 +76,7 @@ if( defined($options) )
 }
 if( defined($lib_gd_path) )
 {
-    print "GD library used from:       $lib_gd_path\n";   
+    print "GD library used from:       $lib_gd_path\n";
 }
 if( defined($lib_ft_path) )
 {
@@ -185,12 +185,12 @@ else
 
 my $FCGI    = 0;   # set to 1 to build compatability with fastCGI
 
-warn "\nIf you experience compile problems, please check the \@INC, \@LIBPATH and \@LIBS\n",
-     "arrays defined in Makefile.PL and manually adjust, if necessary.\n\n";
-
 #### no user-serviceable parts below #####
 
 if (!$AUTOCONFIG) {
+  warn "\nIf you experience compile problems, please check the \@INC, \@LIBPATH and \@LIBS\n",
+       "arrays defined in Makefile.PL and manually adjust, if necessary.\n\n";
+
   push @LIBS,'-lfreetype' if $FT;
   push @LIBS,'-ljpeg'     if $JPEG;
   push @LIBS, '-lm'       unless $^O eq 'MSWin32';
@@ -240,12 +240,15 @@ WriteMakefile(
     'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
 		    'GD/Image.pm.PLS' => 'GD/Image.pm',
 		   },
+#    'CFLAGS'    => '-nostdinclude',
     'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
     'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
     'ABSTRACT'  => 'Interface to Gd Graphics Library',
      $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
 );
+
+exit 0;
 
 sub try_to_autoconfigure {
   my ($options,$lib_gd_path,$INC,$LIBPATH,$LIBS) = @_;
@@ -256,11 +259,12 @@ sub try_to_autoconfigure {
   my ($version) = $config =~ /^GD library\s+(\S+)/m;
   warn "Configuring for libgd version $version.\n";
 
-  my ($cflags)   = $config =~ /^cflags:\s+(.+)/m;
-  my ($ldflags)  = $config =~ /^ldflags:\s+(.+)/m;
-  my ($libs)     = $config =~ /^libs:\s+(.+)/m;
-  my ($libdir)   = $config =~ /^libdir:\s+(.+)/m;
-  my ($features) = $config =~ /^features:\s+(.+)/m;
+  my ($cflags)     = $config =~ /^cflags:\s+(.+)/m;
+  my ($ldflags)    = $config =~ /^ldflags:\s+(.+)/m;
+  my ($libs)       = $config =~ /^libs:\s+(.+)/m;
+  my ($libdir)     = $config =~ /^libdir:\s+(.+)/m;
+  my ($features)   = $config =~ /^features:\s+(.+)/m;
+  my ($includedir) = $config =~ /^includedir:\s+(.+)/m;
 
   @$INC          = map {s/^-I// && "-I$_"} split /\s+/,$cflags;
   @$LIBPATH      = map {s/^-L// && "-L$_"} split /\s+/,$ldflags;
@@ -273,6 +277,31 @@ sub try_to_autoconfigure {
 
   my ($minor)    = $version =~ /^2\.\d+\.(\d+)$/;
   $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE VERSION_33" if defined($minor) && $minor >= 33;
+
+  my @correct_inc = map {s/^-I// && $_} split /\s+/,$cflags;
+  check_for_stray_headers(@correct_inc);
+}
+
+sub check_for_stray_headers {
+  my @official_libraries = @_;
+  my %official_libraries = map {$_=>1} @official_libraries;
+  print STDERR "Checking for stray libgd header files...";
+  my $cc          = $Config{'cc'};
+  my $data        = `$cc -print-search-dirs`;
+  $data         ||= '';
+  my ($libraries) = $data =~ /^libraries: =(.+)/m;
+  my %libraries   = map {$_=>1} (split /:/,$libraries),'/include','/usr/include','/usr/local/include','/opt/include','/usr/X11R6/include';
+  my $problems;
+  foreach (keys %libraries) {
+    s/\blib\b/include/;
+    next if $official_libraries{$_};
+
+    next unless -e "${_}/gd.h";
+    warn "\n\n** WARNING: found gd.h header file in ${_}gd.h, but it is expected at $official_libraries[0]/gd.h. This may cause compile errors! **\n";
+    $problems++;
+  }
+  print STDERR $problems ? "** Possible problems found **\n" : "none found.\n";
+  print STDERR "\n";
 }
 
 sub MY::postamble {

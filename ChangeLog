@@ -1,3 +1,9 @@
+2.34    Added a check for stray gd.h include files from older installations. If any are
+	      found, Makefile.PL will issue a warning.
+	Fixed incorrect documentation of GD::Simple->string() method. The method call
+	      *does* move the pen.
+2.33	Added appropriate #ifdefs to allow to compile under version 5.6.0 (due to lack of
+	      threading macros before 5.8).
 2.32	Added a GD::Simple->HSVtoRGB() method.
 	Documentation fixes from Mark Manning.
 	Added a clear() method to GD::Polygon to remove all vertices.
