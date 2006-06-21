@@ -339,10 +339,10 @@ sub rectangle {
   $gd->rectangle(@_,$fg)       if defined $fg && (!defined $bg || $bg != $fg);
 }
 
-=item $img->ellipse($cx,$cy,$width,$height)
+=item $img->ellipse($width,$height)
 
-This method draws the ellipse defined by center ($cx,$cy), width
-$width and height $height.  The ellipse's border is drawn in the
+This method draws the ellipse centered at the current location with
+width $width and height $height.  The ellipse's border is drawn in the
 foreground color and its contents are filled with the background
 color. To draw a solid ellipse set bgcolor equal to fgcolor. To draw
 an unfilled ellipse (transparent inside), set bgcolor to undef.
@@ -436,7 +436,7 @@ the bottom left of the first character of the text.  This is different
 from the GD behavior, in which the first character of bitmapped fonts
 hangs down from the pen point.
 
-This method returns a polygon indicating the bounding bod of the
+This method returns a polygon indicating the bounding box of the
 rendered text.  If an error occurred (such as invalid font
 specification) it returns undef and an error message in $@.
 
@@ -479,23 +479,106 @@ sub string {
   return $poly;
 }
 
-=item ($delta_x,$delta_y)= $img->stringWidth($string)
+=item $metrics = $img->fontMetrics
 
-This method indicates the X and Y offsets (which may be negative) that
-will occur when the given string is drawn using the current font,
-fontsize and angle.
+=item ($metrics,$width,$height) = GD::Simple->fontMetrics($font,$fontsize,$string)
+
+This method returns information about the current font, most commonly
+a TrueType font. It can be invoked as an instance method (on a
+previously-created GD::Simple object) or as a class method (on the
+'GD::Simple' class).
+
+When called as an instance method, fontMetrics() takes no arguments
+and returns a single hash reference containing the metrics that
+describe the currently selected font and size. The hash reference
+contains the following information:
+
+  xheight      the base height of the font from the bottom to the top of
+               a lowercase 'm'
+
+  ascent       the length of the upper stem of the lowercase 'd'
+
+  descent      the length of the lower step of the lowercase 'j'
+
+  lineheight   the distance from the bottom of the 'j' to the top of
+               the 'd'
+
+  leading      the distance between two adjacent lines
 
 =cut
 
-sub stringWidth {
+# return %$fontmetrics
+# keys: 'ascent', 'descent', 'lineheight', 'xheight', 'leading'
+sub fontMetrics {
+  my $self   = shift;
+
+  unless (ref $self) {  #class invocation -- create a scratch
+    $self = $self->new;
+    $self->font(shift)     if defined $_[0];
+    $self->fontsize(shift) if defined $_[0];
+  }
+
+  my $font   = $self->font;
+  my $metrics;
+
+  if (ref $font && $font->isa('GD::Font')) {
+    my $height = $font->height;
+    $metrics = {ascent     => 0,
+		descent    => 0,
+		lineheight => $height,
+		xheight    => $height,
+		leading    => 0};
+  }
+  else {
+    $self->useFontConfig(1);
+    my @mbounds   = GD::Image->stringFT($self->fgcolor,$font,
+					$self->fontsize,0,
+					0,0,'m');
+    my $xheight   = $mbounds[3]-$mbounds[5];
+    my @jbounds   = GD::Image->stringFT($self->fgcolor,$font,
+					$self->fontsize,0,
+					0,0,'j');
+    my $ascent    = $mbounds[7]-$jbounds[7];
+    my $descent   = $jbounds[3]-$mbounds[3];
+
+    my @mmbounds  = GD::Image->stringFT($self->fgcolor,$font,
+					$self->fontsize,0,
+					0,0,"m\nm");
+    my $twolines  = $mmbounds[3]-$mmbounds[5];
+    my $lineheight  = $twolines - 2*$xheight;
+    my $leading     = $lineheight - $ascent - $descent;
+    $metrics     = {ascent     => $ascent,
+		    descent    => $descent,
+		    lineheight => $lineheight,
+		    xheight    => $xheight,
+		    leading    => $leading};
+  }
+
+  if ((my $string = shift) && wantarray) {
+    my ($width,$height) = $self->stringBounds($string);
+    return ($metrics,abs($width),abs($height));
+  }
+  return $metrics;
+}
+
+=item ($delta_x,$delta_y)= $img->stringBounds($string)
+
+This method indicates the X and Y offsets (which may be negative) that
+will occur when the given string is drawn using the current font,
+fontsize and angle. When the string is drawn horizontally, it gives
+the width and height of the string's bounding box.
+
+=cut
+
+sub stringBounds {
   my $self = shift;
   my $string = shift;
   my $font   = $self->font;
   if (ref $font && $font->isa('GD::Font')) {
     if ($self->angle == -90) {
-      return (0,-length($string) * $font->width);
+      return ($font->height,-length($string) * $font->width);
     } else {
-      return (length($string) * $font->width,0);
+      return (length($string) * $font->width,$font->height);
     }
   }
   else {
@@ -507,11 +590,23 @@ sub stringWidth {
   }
 }
 
+=item $delta_x = $img->stringWidth($string)
+
+This method indicates the width of the string given the current font,
+fontsize and angle. It is the same as ($img->stringBounds($string))[0]
+
+=cut
+
+sub stringWidth {
+  return ((shift->stringBounds(@_))[0]);
+}
+
+
 sub _string_width {
   my $self   = shift;
   my @bounds = @_;
   my $delta_x = abs($bounds[2]-$bounds[0]);
-  my $delta_y = abs($bounds[7]-$bounds[5]);
+  my $delta_y = abs($bounds[5]-$bounds[3]);
   my $angle   = $self->angle % 360;
   if ($angle >= 0 && $angle < 90) {
     return ($delta_x,$delta_y);
@@ -536,7 +631,7 @@ using moveTo().
 
 sub curPos {  @{shift->{xy}}; }
 
-=item $font = $img->font([$newfont])
+=item $font = $img->font([$newfont] [,$newsize])
 
 Get or set the current font.  Fonts can be GD::Font objects, TrueType
 font file paths, or fontconfig font patterns like "Times:italic" (see
@@ -544,11 +639,16 @@ L<fontconfig>). The latter feature requires that you have the
 fontconfig library installed and are using libgd version 2.0.33 or
 higher.
 
+As a shortcut, you may pass two arguments to set the font and the
+fontsize simultaneously. The fontsize is only valid when drawing with
+TrueType fonts.
+
 =cut
 
 sub font {
   my $self = shift;
-  $self->{font} = shift if @_;
+  $self->{font}     = shift if @_;
+  $self->{fontsize} = shift if @_;
   $self->{font};
 }
 

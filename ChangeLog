@@ -1,3 +1,4 @@
+2.35	Some instructions on installation for Windows users.
 2.34    Added a check for stray gd.h include files from older installations. If any are
 	      found, Makefile.PL will issue a warning.
 	Fixed incorrect documentation of GD::Simple->string() method. The method call
