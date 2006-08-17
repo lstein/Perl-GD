@@ -39,9 +39,17 @@ package for details.
 
 INSTALLATION:
 
-1. Windows users can find a binary PPM package in the repository at
-http://stein.cshl.org/ppm. It is not very up to date but it provides
-the basic functionality.
+1. Windows users can find a binary PPM package in the repositories at
+either:
+
+	http://theoryx5.uwinnipeg.ca/ppms
+
+or
+	http://stein.cshl.org/ppm
+
+These packages are not always updated to the most recent version, but
+GD is pretty stable and you usually won't miss the bleeding edge
+version.
 
 For MacOSX/Unix users and those who have a developer's kit installed
 on Windows (e.g. cygwin):
