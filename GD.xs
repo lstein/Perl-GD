@@ -887,8 +887,41 @@ gdDESTROY(image)
 	PROTOTYPE: $
 	CODE:
 	{
-		gdImageDestroy(image);
+  	  gdImageDestroy(image);
 	}
+
+SV* gdSTORABLE_freeze(image,cloning)
+     GD::Image image
+     int       cloning
+     PROTOTYPE: $$
+     CODE:
+     {
+       void*     data;
+       int       size;
+
+       if (cloning) XSRETURN_UNDEF;
+       data = gdImageGd2Ptr(image,0,GD2_FMT_COMPRESSED,&size);
+       RETVAL=newSVpvn((char*)data,size);
+       gdFree(data);
+     }
+     OUTPUT:
+       RETVAL
+
+void gdSTORABLE_thaw(object,cloning,serialized)
+     SV*      object
+     int      cloning
+     SV*      serialized
+     PREINIT:
+     STRLEN    length;
+     void*     data;
+     GD__Image image;
+     CODE:
+     {
+       if (cloning) XSRETURN_UNDEF;
+       data = (void*) SvPV(serialized,length);
+       image = gdImageCreateFromGd2Ptr(length,data);
+       sv_setiv(SvRV(object),(int)image);
+     }
 
 #ifdef HAVE_PNG
 SV*

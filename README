@@ -39,9 +39,22 @@ package for details.
 
 INSTALLATION:
 
-Read these instructions all the way through before you start!
+1. Windows users can find a binary PPM package in the repositories at
+either:
 
-1.  Make sure you have downloaded and installed the following packages:
+	http://theoryx5.uwinnipeg.ca/ppms
+
+or
+	http://stein.cshl.org/ppm
+
+These packages are not always updated to the most recent version, but
+GD is pretty stable and you usually won't miss the bleeding edge
+version.
+
+For MacOSX/Unix users and those who have a developer's kit installed
+on Windows (e.g. cygwin):
+
+2.  Make sure you have downloaded and installed the following packages:
 
 	a. Perl 5.6.0 or higher:
 		http://www.perl.com/
@@ -77,14 +90,14 @@ have done this.
 
 Use GD 1.41 for libgd versions 1.8.4 and lower.
 
-2.  Unpack the tar file:
+3.  Unpack the tar file:
 
 	zcat GD-2.XX.tar.gz | tar xvf -
 
     (Where "XX" is the most recent revision number.)  This will create
     the directory GD-2.XX.
 
-3.  To compile GD.pm on a system that supports dynamic linking:
+4.  To compile GD.pm on a system that supports dynamic linking:
 
 	a.  cd GD-2.XX
 	b.  perl Makefile.PL
@@ -108,7 +121,7 @@ Use GD 1.41 for libgd versions 1.8.4 and lower.
     module will probably not link correctly, even though the warning may say
     "probably harmless".    
 
-4.  To compile GD.pm statically on systems that do not support dynamic
+5.  To compile GD.pm statically on systems that do not support dynamic
     linking:
 
 	a.  cd GD-2.XX
@@ -119,7 +132,7 @@ Use GD 1.41 for libgd versions 1.8.4 and lower.
      This will create a new version of Perl and install it in your system
      binaries directory, under the name "gdperl".  
 
-5.  Before you install GD, you will want to run the regression tests.  You
+6.  Before you install GD, you will want to run the regression tests.  You
     can do this after the "make" step by typing:
 
 	make test
@@ -128,7 +141,7 @@ Use GD 1.41 for libgd versions 1.8.4 and lower.
 
         make test TEST_VERBOSE=1
 
-6.  There are some demos you can run in ext/GD/demos.  They print PNG
+7.  There are some demos you can run in ext/GD/demos.  They print PNG
     files to standard output.  To view the files, pipe their
     output to "display" or "xv" in this way:
 
@@ -141,14 +154,13 @@ Use GD 1.41 for libgd versions 1.8.4 and lower.
     If you don't have any display programs handy, you can save to a
     temporary file and display with recent versions of Netscape or
     Internet Explorer.
-
-7.  A program named fonttest is included in this package under demos.  This 
+8.  A program named fonttest is included in this package under demos.  This 
     generates an image showing all the built-in fonts available.  If you have
     built libgd with TrueType support, and you have a directory containing
     some TrueType fonts, you can create a simple font listing by running
     the program truetype_test, also located in demos.
 
-8.  See demos/gd_example.cgi for an example of how to use GD to create
+9.  See demos/gd_example.cgi for an example of how to use GD to create
     a picture dynamically with a CGI script.  It's intended to be run
     under a Web server.  To see it work, install it in your server's
     cgi-bin/ directory and invoke it from a browser by fetching a URL like:

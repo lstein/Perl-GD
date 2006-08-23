@@ -28,7 +28,7 @@ try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS);
 
 @INC     = qw(-I/usr/include -I/usr/include/gd) unless @INC;
 @LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/lib) unless @LIBPATH;
-@LIBS    = qw(-lgd -lpng -lz) unless @LIBS;
+@LIBS    = qw(-lgd) unless @LIBS;
 
 # support for AMD64 libraries
 if (-d '/usr/lib64') {
@@ -191,8 +191,9 @@ if (!$AUTOCONFIG) {
   warn "\nIf you experience compile problems, please check the \@INC, \@LIBPATH and \@LIBS\n",
        "arrays defined in Makefile.PL and manually adjust, if necessary.\n\n";
 
-  push @LIBS,'-lfreetype' if $FT;
-  push @LIBS,'-ljpeg'     if $JPEG;
+  push @LIBS,'-lfreetype'      if $FT;
+  push @LIBS,'-ljpeg'          if $JPEG;
+  push @LIBS,'-lpng','-lz'     if $PNG;
   push @LIBS, '-lm'       unless $^O eq 'MSWin32';
   push @INC, '-I/lib_root/libjpeg' if ($JPEG && $^O eq 'VMS');
   push @INC, '-I/lib_root/ft2/include/freetype' if ($FT && $^O eq 'VMS');
