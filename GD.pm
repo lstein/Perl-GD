@@ -813,15 +813,17 @@ calling them.
 
 setAntiAliased() is used to specify the actual foreground color to be
 used when drawing antialiased lines. You may set any color to be the
-foreground, however as of libgd version 2.0.12 an alpha channel component is
-not supported.
+foreground, however as of libgd version 2.0.12 an alpha channel
+component is not supported.
 
 Antialiased lines can be drawn on both truecolor and palette-based
 images. However, attempts to draw antialiased lines on highly complex
 palette-based backgrounds may not give satisfactory results, due to
 the limited number of colors available in the palette. Antialiased
 line-drawing on simple backgrounds should work well with palette-based
-images; otherwise create or fetch a truecolor image instead.
+images; otherwise create or fetch a truecolor image instead. When
+using palette-based images, be sure to allocate a broad spectrum of
+colors in order to have sufficient colors for the antialiasing to use.
 
 =item B<$image-E<gt>setAntiAliasedDontBlend($color,[$flag])>
 

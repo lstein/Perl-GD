@@ -49,12 +49,6 @@ use vars qw($bezSegs $csr);
 $bezSegs = 20;	# number of bezier segs -- number of segments in each portion of the spline produces by toSpline()
 $csr = 1/3;		# control seg ratio -- the one possibly user-tunable parameter in the addControlPoints() algorithm
 
-sub scale {
-    my($self, $sx, $sy, $cx, $cy) = @_;
-    $self->offset(-$cx,-$cy) if $cx or $cy;
-    $self->transform($sx,0,0,$sy,$cx,$cy);
-}
-
 
 sub rotate {
     my ($self, $angle, $cx, $cy) = @_;

@@ -175,8 +175,9 @@ sub transform($$$$$$$) {
 }
 
 sub scale {
-    my($self, $sx, $sy) = @_;
-    $self->transform($sx,0,0,$sy,0,0);
+    my($self, $sx, $sy, $cx, $cy) = @_;
+    $self->offset(-$cx,-$cy) if defined $cx or defined $cy;
+    $self->transform($sx,0,0,$sy,$cx,$cy);
 }
 
 1;
