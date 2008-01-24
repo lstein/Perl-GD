@@ -290,14 +290,20 @@ sub check_for_stray_headers {
   my $cc          = $Config{'cc'};
   my $data        = `$cc -print-search-dirs`;
   $data         ||= '';
-  my ($libraries) = $data =~ /^libraries: =(.+)/m;
-  my %libraries   = map {$_=>1} (split /:/,$libraries),'/include','/usr/include','/usr/local/include','/opt/include','/usr/X11R6/include';
+  my ($libraries)    = $data =~ /^libraries: =(.+)/m;
+  my @cc_libs        = split /:/,$libraries;
+  foreach (@cc_libs) { s/\/$//; }
+
+  my %libraries   = map {$_=>1} (@cc_libs,'/include','/usr/include',
+				 '/usr/local/include','/opt/include',
+				 '/usr/X11R6/include');
   my $problems;
   foreach (keys %libraries) {
+
     s/\blib\b/include/;
     next if $official_libraries{$_};
+    next unless -e "$_/gd.h";
 
-    next unless -e "${_}/gd.h";
     warn "\n\n** WARNING: found gd.h header file in ${_}gd.h, but it is expected at $official_libraries[0]/gd.h. This may cause compile errors! **\n";
     $problems++;
   }

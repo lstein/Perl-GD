@@ -4,8 +4,9 @@ package GD::Image;
 use strict;
 use GD;
 use Symbol 'gensym','qualify_to_ref';
+use Carp 'croak';
 use vars '$VERSION';
-$VERSION = '2.27';
+$VERSION = '2.37';
 
 =head1 NAME
 

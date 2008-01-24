@@ -1,3 +1,4 @@
+2.37	GD/Image.pm did not bring in croak() properly, meaning that incorrect error messages are printed out when any of the newFromXXX() calls are made.
 2.36	Instructions on using gdAntiAliased with palette images.
 2.35	Some instructions on installation for Windows users.
 	Doesn't push libpng onto @LIBS unless png support is requested.
