@@ -6,13 +6,7 @@ require 5.6.0;
 
 unless (@ARGV) {
 warn <<END;
-NOTICE: This module requires libgd 2.0.28 or higher.
-
-        If you are using Math::Trig 1.01 or lower, it has a bug that
-        causes a "prerequisite not found" warning to be issued.  You may
-        safely ignore this warning.
-
-        Type perl Makefile.PL -h for command-line option summary
+Notice: Type perl Makefile.PL -h for command-line option summary.
 
 END
 }
@@ -22,9 +16,18 @@ END
 my (@INC,@LIBPATH,@LIBS);
 my $AUTOCONFIG = 0;      # global set by try_to_autoconfigure() below
 
-my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,$lib_zlib_path);
+my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,$lib_zlib_path,$force);
 
-try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS);
+use Getopt::Long;
+GetOptions("ignore_missing_gd" => \$force);
+
+unless (try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS) || $force) {
+    die <<END;
+**UNRECOVERABLE ERROR**
+Could not find gdlib-config in the search path. Please install libgd 2.0.28 or higher.
+If you want to try to compile anyway, please rerun this script with the option --ignore_missing_gd.
+END
+}
 
 @INC     = qw(-I/usr/include -I/usr/include/gd) unless @INC;
 @LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/lib) unless @LIBPATH;
@@ -39,7 +42,6 @@ if (-d '/usr/lib64') {
 #############################################################################################
 # Build options passed in to script to support reproducible builds via Makefiles
 #############################################################################################
-use Getopt::Long;
 my $result = GetOptions("options=s"       => \$options,
 			"lib_gd_path=s"   => \$lib_gd_path,
 			"lib_ft_path=s"   => \$lib_ft_path,
@@ -62,6 +64,7 @@ Configure GD module.
      -lib_jpeg_path path            path to libjpeg
      -lib_xpm_path  path            path to libxpm
      -lib_zlib_path path            path to libpng
+     -ignore_missing_gd             Ignore missing or old libgd installations and try to compile anyway
 
 If no options are passed on the command line.  The program will
 attempt to autoconfigure itself with the gdlib-config program (present
@@ -281,6 +284,7 @@ sub try_to_autoconfigure {
 
   my @correct_inc = map {s/^-I// && $_} split /\s+/,$cflags;
   check_for_stray_headers(@correct_inc);
+  return 1;
 }
 
 sub check_for_stray_headers {
@@ -290,14 +294,20 @@ sub check_for_stray_headers {
   my $cc          = $Config{'cc'};
   my $data        = `$cc -print-search-dirs`;
   $data         ||= '';
-  my ($libraries) = $data =~ /^libraries: =(.+)/m;
-  my %libraries   = map {$_=>1} (split /:/,$libraries),'/include','/usr/include','/usr/local/include','/opt/include','/usr/X11R6/include';
+  my ($libraries)    = $data =~ /^libraries: =(.+)/m;
+  my @cc_libs        = split /:/,$libraries;
+  foreach (@cc_libs) { s/\/$//; }
+
+  my %libraries   = map {$_=>1} (@cc_libs,'/include','/usr/include',
+				 '/usr/local/include','/opt/include',
+				 '/usr/X11R6/include');
   my $problems;
   foreach (keys %libraries) {
+
     s/\blib\b/include/;
     next if $official_libraries{$_};
+    next unless -e "$_/gd.h";
 
-    next unless -e "${_}/gd.h";
     warn "\n\n** WARNING: found gd.h header file in ${_}gd.h, but it is expected at $official_libraries[0]/gd.h. This may cause compile errors! **\n";
     $problems++;
   }

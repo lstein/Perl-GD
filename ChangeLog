@@ -1,3 +1,7 @@
+2.39	Makefile.PL will refuse to run if the proper version of libgd is unavailable.
+2.38	Fixed bizarre warning about /usr/include/gd.h != /usr/include/gd.h.
+2.37	GD/Image.pm did not bring in croak() properly, meaning that incorrect error messages are printed out when any of the newFromXXX() calls are made.
+2.36	Instructions on using gdAntiAliased with palette images.
 2.35	Some instructions on installation for Windows users.
 	Doesn't push libpng onto @LIBS unless png support is requested.
 	Supports Storable's freeze/thaw via a custom serializer.

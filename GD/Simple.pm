@@ -153,8 +153,6 @@ The rest of this section describes GD::Simple-specific methods.
 
 =cut
 
-
-
 use strict;
 use GD;
 use Math::Trig;
@@ -185,16 +183,18 @@ sub AUTOLOAD {
   }
 }
 
-sub class {
-  my $pack    = shift;
-  if (@_) {
-    $IMAGECLASS = shift;
-    eval "require $IMAGECLASS; 1" or die $@;
-    $IMAGECLASS = "$IMAGECLASS\:\:Image" 
-      if $IMAGECLASS eq 'GD::SVG';
-  }
-  $IMAGECLASS;
-}
+=over 4
+
+=item $img = GD::Simple->new($x,$y [,$truecolor])
+
+=item $img = GD::Simple->new($gd)
+
+Create a new GD::Simple object. There are two forms of new(). In the
+first form, pass the width and height of the desired canvas, and
+optionally a boolean flag to request a truecolor image. In the second
+form, pass a previously-created GD::Image object.
+
+=cut
 
 # dual-purpose code - beware
 sub new {
@@ -226,7 +226,28 @@ sub new {
   }
 }
 
-=over 4
+=item GD::Simple->class('GD');
+
+=item GD::Simple->class('GD::SVG');
+
+Select whether new() should use GD or GD::SVG internally. Call
+GD::Simple->class('GD::SVG') before calling new() if you wish to
+generate SVG images.
+
+If future GD subclasses are created, this method will subport them.
+
+=cut
+
+sub class {
+  my $pack    = shift;
+  if (@_) {
+    $IMAGECLASS = shift;
+    eval "require $IMAGECLASS; 1" or die $@;
+    $IMAGECLASS = "$IMAGECLASS\:\:Image" 
+      if $IMAGECLASS eq 'GD::SVG';
+  }
+  $IMAGECLASS;
+}
 
 =item $img->moveTo($x,$y)
 
@@ -241,8 +262,6 @@ sub moveTo {
   my ($x,$y) = @_;
   $self->{xy} = [$x,$y];
 }
-
-=cut
 
 =item $img->move($dx,$dy)
 
