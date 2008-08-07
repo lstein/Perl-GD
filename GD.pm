@@ -16,7 +16,7 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.39';
+$VERSION = '2.40';
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -118,6 +118,13 @@ sub GD::gdTinyFont {
 
 sub GD::gdGiantFont {
     return GD::Font->Giant;
+}
+
+sub startGroup { } # does nothing - used by GD::SVG
+sub endGroup   { } # does nothing - used by GD::SVG
+sub newGroup   {
+    my $self = shift;
+    GD::Group->new($self,$self->startGroup);
 }
 
 =head1 NAME
@@ -1525,6 +1532,24 @@ The boundsSafe() method will return true if the point indicated by
 ($x,$y) is within the clipping rectangle, or false if it is not.  If
 the clipping rectangle has not been set, then it will return true if
 the point lies within the image boundaries.
+
+=back
+
+=head2 Grouping Methods
+
+GD does not support grouping of objects, but GD::SVG does. In that
+subclass, the following methods declare new groups of graphical
+objects:
+
+=over 4
+
+=item $image->startGroup([$id,\%style])
+
+=item $image->endGroup()
+
+=item $group = $image->newGroup
+
+See L<GD::SVG> for information.
 
 =back
 
