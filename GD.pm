@@ -16,7 +16,7 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.40';
+$VERSION = '2.41';
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -120,9 +120,9 @@ sub GD::gdGiantFont {
     return GD::Font->Giant;
 }
 
-sub startGroup { } # does nothing - used by GD::SVG
-sub endGroup   { } # does nothing - used by GD::SVG
-sub newGroup   {
+sub GD::Image::startGroup { } # does nothing - used by GD::SVG
+sub GD::Image::endGroup   { } # does nothing - used by GD::SVG
+sub GD::Image::newGroup   {
     my $self = shift;
     GD::Group->new($self,$self->startGroup);
 }
