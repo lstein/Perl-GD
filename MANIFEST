@@ -5,6 +5,7 @@ GD/Image.pm.PLS
 GD/Polygon.pm
 GD/Polyline.pm
 GD/Simple.pm
+GD/Group.pm
 MANIFEST
 META.yml			Module meta-data (added by MakeMaker)
 Makefile.PL

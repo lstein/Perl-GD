@@ -155,6 +155,7 @@ The rest of this section describes GD::Simple-specific methods.
 
 use strict;
 use GD;
+use GD::Group;
 use Math::Trig;
 use Carp 'croak';
 
@@ -968,6 +969,11 @@ sub RGBtoHSV {
   $h = int($h*255/360 + 0.5);
 
   return ($h, $s, $v);
+}
+
+sub newGroup {
+    my $self  = shift;
+    return $self->GD::newGroup(@_);
 }
 
 1;
