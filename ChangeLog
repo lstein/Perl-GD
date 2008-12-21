@@ -1,3 +1,4 @@
+2.43    Added "transparent" color to GD::Simple.
 2.42	Fixed magic number detection to autodetect certain missed jpeg files (thanks to Mike Walker)
 	
 2.41    Added backend support for grouping features in GD::SVG module.
