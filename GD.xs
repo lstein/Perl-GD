@@ -10,6 +10,8 @@
 #include <gdfontmb.h>
 #include <gdfonts.h>
 #include <gdfontt.h>
+#include <errno.h>
+
 #ifdef FCGI
  #include <fcgi_stdio.h>
 #else
@@ -431,7 +433,7 @@ static void bufFree(gdIOCtxPtr ctx) {
 static gdIOCtx* newDynamicCtx (char* data, int length) {
   bufIOCtxPtr   ctx;
   
-  Newz(0,ctx,1,bufIOCtx);
+  Newxz(ctx,1,bufIOCtx);
   if (ctx == NULL) return NULL;
   ctx->data   = data;
   ctx->pos    = 0;
@@ -920,7 +922,8 @@ void gdSTORABLE_thaw(object,cloning,serialized)
        if (cloning) XSRETURN_UNDEF;
        data = (void*) SvPV(serialized,length);
        image = gdImageCreateFromGd2Ptr(length,data);
-       sv_setiv(SvRV(object),(int)image);
+/*       sv_setiv(SvRV(object),(int)image); */
+       sv_setiv(SvRV(object),(long int)image);
      }
 
 #ifdef HAVE_PNG
@@ -2397,19 +2400,19 @@ gdload(packname="GD::Font",fontpath)
 	 croak("safemalloc() returned NULL while trying to allocate font struct.\n");
        /* read header from font - note that the file is assumed to be littleendian*/
        if (read(fontfile,word,4) < 4)
-	 croak(strerror(errno));
+	 croak("error while reading font file: %s",strerror(errno));
        font->nchars = littleendian(word);
 
        if (read(fontfile,word,4) < 4)
-	 croak(strerror(errno));
+	 croak("error while reading font file: %s",strerror(errno));
        font->offset = littleendian(word);
 
        if (read(fontfile,word,4) < 4)
-	 croak(strerror(errno));
+	 croak("error while reading font file: %s",strerror(errno));
        font->w = littleendian(word);
 
        if (read(fontfile,word,4) < 4)
-	 croak(strerror(errno));
+	 croak("error while reading font file: %s",strerror(errno));
        font->h = littleendian(word);
 
        datasize = font->nchars * font->w * font->h;
@@ -2418,7 +2421,7 @@ gdload(packname="GD::Font",fontpath)
 	 croak("safemalloc() returned NULL while trying to allocate font bitmap.\n");
 
        if (read(fontfile,fontdata,datasize) < datasize)
-	 croak(strerror(errno));
+	 croak("error while reading font file: %s",strerror(errno));
 
        font->data = fontdata;
 
