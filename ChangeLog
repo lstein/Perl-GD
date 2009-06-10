@@ -1,3 +1,7 @@
+2.43    Added "transparent" color to GD::Simple.
+	Fixed Makefile so that GD/Image.pm depends both on GD/Image.pm.PLS and .config.cache
+2.42	Fixed magic number detection to autodetect certain missed jpeg files (thanks to Mike Walker)
+	
 2.41    Added backend support for grouping features in GD::SVG module.
 2.40    ** Do not use - contains a bug **
 2.39	Makefile.PL will refuse to run if the proper version of libgd is unavailable.

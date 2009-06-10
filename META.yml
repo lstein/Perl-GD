@@ -1,11 +1,11 @@
 --- #YAML:1.0
 name:                GD
-version:             2.41
+version:             2.43
 abstract:            Interface to Gd Graphics Library
 license:             ~
 author:              
     - Lincoln Stein (lstein@cshl.org)
-generated_by:        ExtUtils::MakeMaker version 6.44
+generated_by:        ExtUtils::MakeMaker version 6.42
 distribution_type:   module
 requires:     
     Math::Trig:                    0

@@ -324,3 +324,11 @@ END
     $postamble;
 }
 
+package MY;
+
+sub processPL {
+    my $inherited = shift->SUPER::processPL(@_);
+    $inherited    =~ s/(:: GD\/Image.pm.PLS)/$1 .config.cache/;
+    $inherited;
+}
+
