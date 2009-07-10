@@ -1,3 +1,5 @@
+2.44    GD::Group now installed properly.
+	Quenched compiler warning caused by Newxs() calls.
 2.43    Added "transparent" color to GD::Simple.
 	Fixed Makefile so that GD/Image.pm depends both on GD/Image.pm.PLS and .config.cache
 2.42	Fixed magic number detection to autodetect certain missed jpeg files (thanks to Mike Walker)
