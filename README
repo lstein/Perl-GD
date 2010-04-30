@@ -32,9 +32,11 @@ documentation. Also check the FAQ at the bottom of this document.
 
 COPYRIGHT INFO
 
-The GD.pm interface is copyright 1995-2004, Lincoln D. Stein.  It is
-covered by the Perl "Artistic License", which allows for free usage
-and redistribution.  See the Artistic License in the Perl source
+The GD.pm interface is copyright 1995-2010, Lincoln D. Stein. This
+package and its accompanying libraries is free software; you can
+redistribute it and/or modify it under the terms of the GPL (either
+version 1, or at your option, any later version) or the Artistic
+License 2.0.  Refer to LICENSE for the full license text.
 package for details.
 
 INSTALLATION:

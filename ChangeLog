@@ -1,3 +1,4 @@
+2.45	Clarified the GD license. There is now a formal LICENSE file in the package.
 2.44    GD::Group now installed properly.
 	Quenched compiler warning caused by Newxs() calls.
 2.43    Added "transparent" color to GD::Simple.

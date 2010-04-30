@@ -16,7 +16,7 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.44';
+$VERSION = '2.45';
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -1763,8 +1763,12 @@ libgd.
 
 =head1 AUTHOR
 
-The GD.pm interface is copyright 1995-2007, Lincoln D. Stein.  It is
-distributed under GPL and the Artistic License 2.0.
+The GD.pm interface is copyright 1995-2010, Lincoln D. Stein. This
+package and its accompanying libraries is free software; you can
+redistribute it and/or modify it under the terms of the GPL (either
+version 1, or at your option, any later version) or the Artistic
+License 2.0.  Refer to LICENSE for the full license text.
+package for details.
 
 The latest versions of GD.pm are available at
 

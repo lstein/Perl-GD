@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                GD
-version:             2.44
+version:             2.45
 abstract:            Interface to Gd Graphics Library
 license:             ~
 author:              
