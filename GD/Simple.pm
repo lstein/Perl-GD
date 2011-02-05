@@ -308,6 +308,8 @@ sub lineTo {
   $self->moveTo(@_);
 }
 
+=item $img->line($x1,$y1,$x2,$y2 [,$color])
+
 =item $img->line($dx,$dy)
 
 =item $img->line($dr)
@@ -318,15 +320,25 @@ pen to the position $dx pixels to the right and $dy pixels down.  When
 called with one argument, it draws a line $dr pixels long along the
 angle defined by the current pen angle.
 
+When called with four or five arguments, line() behaves like
+GD::Image->line().
+
 =cut
 
 sub line {
   my $self = shift;
-  croak 'Usage GD::Simple->line($dx,$dy) or line($r)' unless @_ >= 1;
+
+  if (@_ >= 4) {
+      my ($x1,$x2,$y1,$y2,$color) = @_;
+      $color ||= $self->fgcolor;
+      return $self->gd->line($x1,$x2,$y1,$y2,$color);
+  }
+
+  croak 'Usage GD::Simple->line($dx,$dy) or line($r) or line($x1,$y1,$x2,$y2 [,$color])' unless @_ >= 1;
   my @curPos = $self->curPos;
   $self->move(@_);
   my @newPos = $self->curPos;
-  $self->gd->line(@curPos,@newPos,$self->fgcolor);
+  return $self->gd->line(@curPos,@newPos,$self->fgcolor);
 }
 
 =item $img->clear
@@ -353,6 +365,9 @@ rectangle set bgcolor equal to fgcolor. To draw an unfilled rectangle
 
 sub rectangle {
   my $self = shift;
+
+  return $self->gd->rectangle(@_) if @_ == 5;
+
   croak 'Usage GD::Simple->rectangle($x1,$y1,$x2,$y2)' unless @_ == 4;
   my $gd = $self->gd;
   my ($bg,$fg) = ($self->bgcolor,$self->fgcolor);
@@ -372,6 +387,8 @@ an unfilled ellipse (transparent inside), set bgcolor to undef.
 
 sub ellipse {
   my $self = shift;
+  return $self->gd->ellipse(@_) if @_ == 5;
+
   croak 'Usage GD::Simple->ellipse($width,$height)' unless @_ == 2;
   my $gd = $self->gd;
   my ($bg,$fg) = ($self->bgcolor,$self->fgcolor);
@@ -390,6 +407,8 @@ bgcolor to undef.
 
 sub arc {
   my $self = shift;
+  return $self->gd->arc(@_) if @_ == 7;
+
   croak 'Usage GD::Simple->arc($width,$height,$start,$end,$style)' unless @_ >= 4;
   my ($width,$height,$start,$end,$style) = @_;
   my $gd = $self->gd;
@@ -465,6 +484,8 @@ specification) it returns undef and an error message in $@.
 
 sub string {
   my $self   = shift;
+  return $self->gd->string(@_) if @_ == 5;
+
   my $string = shift;
   my $font   = $self->font;
   my @bounds;
