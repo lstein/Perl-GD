@@ -12,6 +12,7 @@ Makefile.PL
 README
 README.QUICKDRAW
 README.unix
+LICENSE
 bdf_scripts/README
 bdf_scripts/bdf2gdfont.PLS
 bdf_scripts/bdf2gdfont.pl
