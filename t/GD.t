@@ -12,6 +12,7 @@ BEGIN {$| = 1; $loaded = 0; print "1..12\n"; }
 END {print "not ok 1\n" unless $loaded;}
 
 use GD qw(:DEFAULT GD_CMP_IMAGE);
+use GD::Simple;
 $loaded++;
 
 if ($suffix = $ENV{GDIMAGETYPE}) {
