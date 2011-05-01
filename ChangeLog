@@ -1,3 +1,4 @@
+2.46    Added a basic "use" test for GD::Simple
 2.45	Clarified the GD license. There is now a formal LICENSE file in the package.
 2.44    GD::Group now installed properly.
 	Quenched compiler warning caused by Newxs() calls.
