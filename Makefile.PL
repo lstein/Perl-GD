@@ -252,6 +252,14 @@ WriteMakefile(
     'ABSTRACT'  => 'Interface to Gd Graphics Library',
      $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
+    (eval { ExtUtils::MakeMaker->VERSION(6.46) }
+      ? (META_MERGE => {
+          resources => {
+            Repository => 'http://github.com/lstein/Perl-GD',
+          }
+        })
+      : ()
+    ),
 );
 
 exit 0;
