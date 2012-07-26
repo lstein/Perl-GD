@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
 
+use strict;
+
 use lib './blib/lib','./blib/arch','../blib/lib','../blib/arch';
 use FileHandle;
 use FindBin qw($Bin);
@@ -34,7 +36,7 @@ print "ok 1\n";
 
 chdir 't' || die "Couldn't change to 't' directory: $!";
 
-$arg = shift;
+my $arg = shift;
 
 if (defined $arg && $arg eq '--write') {
   warn "Writing regression files...";
@@ -138,12 +140,12 @@ sub test2 {
     my($red) = $im->colorAllocate(255, 0, 0);
     my($green) = $im->colorAllocate(0,255,0);
     my($yellow) = $im->colorAllocate(255,250,205);
-    open (TILE,"./tile.$suffix") || die "Can't open tile file: $!";
-    my($tile) =   $suffix eq 'png' ? GD::Image->newFromPng(TILE)
-                : $suffix eq 'gif' ? GD::Image->newFromGif(TILE)
-                : $suffix eq 'jpeg'? GD::Image->newFromJpeg(TILE)
+    open (my $TILE, '<', "./tile.$suffix") || die "Can't open tile file: $!";
+    my($tile) =   $suffix eq 'png' ? GD::Image->newFromPng($TILE)
+                : $suffix eq 'gif' ? GD::Image->newFromGif($TILE)
+                : $suffix eq 'jpeg'? GD::Image->newFromJpeg($TILE)
                 : die "Regression tests require PNG, GIF or JPEG support in libgd";
-    close TILE;
+    close $TILE;
     return unless $tile;
     $im->setBrush($tile);
     $im->arc(100,100,100,150,0,360,gdBrushed);
@@ -246,7 +248,7 @@ sub test6 {
     $im->charUp(gdMediumBoldFont,280,280,"Q",$black);
     $im->setBrush($brush);
     $im->arc(100,100,100,150,0,360,gdBrushed);
-    $poly = new GD::Polygon;
+    my $poly = new GD::Polygon;
     $poly->addPt(30,30);
     $poly->addPt(100,10);
     $poly->addPt(190,290);
@@ -269,7 +271,7 @@ sub test7 {
     my $col_fg = $im->colorAllocate(255,255,0);
     my $col_fill = $im->colorAllocate(255,0,0);
     my $r_0 = 100;     my $theta_0 = 20;      my $spring_factor = 30;
-    for($theta=0;$theta<=360;$theta++) {
+    for(my $theta=0;$theta<=360;$theta++) {
 	my $r = $r_0 + $spring_factor*sin(2*$pi*$theta/$theta_0);
 	my $x = int($r * cos($theta*$dtor))*$scale+$x_offset;
 	my $y = int($r * sin($theta*$dtor))*$scale+$y_offset;
