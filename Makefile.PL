@@ -25,6 +25,10 @@ unless (try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS) || 
     die <<END;
 **UNRECOVERABLE ERROR**
 Could not find gdlib-config in the search path. Please install libgd 2.0.28 or higher.
+In Debian and its derivatives (e.g. Ubuntu), it is provided by the libgd2-xpm-dev package.
+On FreeBSD it is installed by the graphics/gd port.
+On OpenSUSE you need gd-devel.
+Mandriva has libgd-devel.
 If you want to try to compile anyway, please rerun this script with the option --ignore_missing_gd.
 END
 }
@@ -251,6 +255,14 @@ WriteMakefile(
     'ABSTRACT'  => 'Interface to Gd Graphics Library',
      $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
+    (eval { ExtUtils::MakeMaker->VERSION(6.46) }
+      ? (META_MERGE => {
+          resources => {
+            Repository => 'http://github.com/lstein/Perl-GD',
+          }
+        })
+      : ()
+    ),
 );
 
 exit 0;
