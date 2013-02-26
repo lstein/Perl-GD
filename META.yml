@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               GD
-version:            2.48
+version:            2.49
 abstract:           Interface to Gd Graphics Library
 author:
     - Lincoln Stein (lstein@cshl.org)

@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl
 
-# $Id: qd.pl,v 1.1.1.1 2001/12/06 23:25:48 lstein Exp $
+# $Id: qd.pl,v 1.1 2001-12-06 23:25:48 lstein Exp $
 
 # This is a package of routines that let you create Macintosh 
 # PICT files from within perl.  It implements a subset of Quickdraw
