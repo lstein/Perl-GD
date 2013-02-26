@@ -245,7 +245,7 @@ WriteMakefile(
     'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
 		    'GD/Image.pm.PLS' => 'GD/Image.pm',
 		   },
-    'CCFLAGS'    => '-Wformat=0',
+    'CCFLAGS'    => "$Config{ccflags} -Wformat=0",
     'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
     'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
     'ABSTRACT'  => 'Interface to Gd Graphics Library',

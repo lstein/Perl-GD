@@ -433,7 +433,11 @@ static void bufFree(gdIOCtxPtr ctx) {
 static gdIOCtx* newDynamicCtx (char* data, int length) {
   bufIOCtxPtr   ctx;
   
+#ifdef Newz
+  Newz(0,ctx,1,bufIOCtx);
+#else
   Newxz(ctx,1,bufIOCtx);
+#endif
   if (ctx == NULL) return NULL;
   ctx->data   = data;
   ctx->pos    = 0;

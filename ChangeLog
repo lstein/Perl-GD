@@ -1,3 +1,5 @@
+2.48    Fix compile crash on windows and strawberry (https://rt.cpan.org/Public/Bug/Display.html?id=67990).
+2.47	Fix compilation on older perl's without the Newxz macros.
 2.46    Added a basic "use" test for GD::Simple
 2.45	Clarified the GD license. There is now a formal LICENSE file in the package.
 2.44    GD::Group now installed properly.
@@ -5,7 +7,6 @@
 2.43    Added "transparent" color to GD::Simple.
 	Fixed Makefile so that GD/Image.pm depends both on GD/Image.pm.PLS and .config.cache
 2.42	Fixed magic number detection to autodetect certain missed jpeg files (thanks to Mike Walker)
-	
 2.41    Added backend support for grouping features in GD::SVG module.
 2.40    ** Do not use - contains a bug **
 2.39	Makefile.PL will refuse to run if the proper version of libgd is unavailable.
