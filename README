@@ -425,10 +425,11 @@ wrote libgd.
 
 UPDATES:
 
-The current version of GD can be found in CPAN.
+The current version of GD can be found in CPAN. The development
+version can be found on GitHub at https://github.com/lstein/Perl-GD.
 
 AUTHOR:
 
 Lincoln Stein
-lstein@cshl.org
-http://stein.cshl.org/~lstein
+lincoln.stein@gmail.com
+
