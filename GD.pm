@@ -16,7 +16,7 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.49';
+$VERSION = '2.50';
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -1375,6 +1375,8 @@ Call useFontConfig() with a value of 1 in order to enable support for
 fontconfig font patterns (see stringFT).  Regardless of the value of
 $flag, this method will return a true value if the fontconfig library
 is present, or false otherwise.
+
+This method can also be called as a class method of GD::Image;
 
 =item B<$result = $image->stringFTCircle($cx,$cy,$radius,$textRadius,$fillPortion,$font,$points,$top,$bottom,$fgcolor)>
 

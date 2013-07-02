@@ -2291,7 +2291,7 @@ gdstringFTCircle(image,cx,cy,radius,textRadius,fillPortion,fontname,points,top,b
 
 int
 gduseFontConfig(image,flag)
-     GD::Image   image
+     SV*         image
      int         flag
 PROTOTYPE: $$
 PREINIT:
