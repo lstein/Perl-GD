@@ -1,3 +1,4 @@
+2.50	Fix gdUseFontConfig so that it can be called as a class method.
 2.49    Add GitHub information to README.
 2.48    Fix compile crash on windows and strawberry (https://rt.cpan.org/Public/Bug/Display.html?id=67990).
 2.47	Fix compilation on older perl's without the Newxz macros.
