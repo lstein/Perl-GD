@@ -1759,7 +1759,7 @@ These return the width and height of the font.
 =head1 Obtaining the C-language version of gd
 
 libgd, the C-language version of gd, can be obtained at URL
-http://www.boutell.com/gd/.  Directions for installing and using it
+http://libgd.org/  Directions for installing and using it
 can be found at that site.  Please do not contact me for help with
 libgd.
 

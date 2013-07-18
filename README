@@ -26,7 +26,7 @@ documentation. Also check the FAQ at the bottom of this document.
 => IMPORTANT: This version of GD REQUIRES libgd 2.0.28 or higher.  If you <=
 => have an older version of libgd installed you must remove libgd.a,      <=
 => libgd.so (if present) and gd.h.  Then install the new version of       <=
-=> libgd from www.boutell.com (see below).  This particularly             <=
+=> libgd from http://libgd.org (see below).  This particularly           <=
 => applies to users of Linux systems.  Older versions of GD are           <=
 => available at http://www.cpan.org.                                      <=
 
@@ -42,12 +42,10 @@ package for details.
 INSTALLATION:
 
 1. Windows users can find a binary PPM package in the repositories at
-either:
+these sites:
 
-	http://theoryx5.uwinnipeg.ca/ppms
-
-or
-	http://stein.cshl.org/ppm
+        http://trouchelle.com/perl/ppmrepview.pl
+        http://www.bribes.org/perl/ppmdir.html
 
 These packages are not always updated to the most recent version, but
 GD is pretty stable and you usually won't miss the bleeding edge
@@ -62,7 +60,7 @@ on Windows (e.g. cygwin):
 		http://www.perl.com/
 
 	b. The gd graphics library:
-		http://www.boutell.com/gd/
+		http://libgd.org
 
 	c. The PNG graphics library:
 		http://www.libpng.org/pub/png/libpng.html
@@ -81,6 +79,12 @@ on Windows (e.g. cygwin):
         g. The XPM library, a standard part of modern X Windows 
 	   distributions.  If you don't have a modern
            version of X, don't try to get XPM working.
+
+3. On MacOSX, you can use these package managers to resolve dependencies and
+build libgd:
+
+        i.  MacPorts http://www.macports.org/
+	ii. Homebrew http://mxcl.github.io/homebrew/
 
 If this module fails to compile and link, you are probably using an
 older version of libgd.  Symptoms of this problem include errors about
@@ -287,7 +291,7 @@ FREQUENTLY ASKED QUESTIONS
 
    You need libgd (the C library that does all the work) version 2.0.28 or
    higher.  Older versions will give you errors during GD
-   installation. Get the latest version from www.boutell.com and install it.
+   installation. Get the latest version from http://libgd.org and install it.
    Sometimes just installing the new version of libgd is not enough: you must
    remove the old library first. Find the gd.h include file and all libgd files
    and remove them from your system.
@@ -414,8 +418,9 @@ hand, and cannot help you out.
 
 Also do NOT contact me for issues involving the images looking
 distorted, having the wrong color tables, or other such low-level
-issues.  These problems should be referred to Tom Boutell because they
-pertain to the underlying libgd library.
+issues.  These problems should be referred to the libgb project
+bug tracker at https://bitbucket.org/libgd/gd-libgd/issues
+because they pertain to the underlying libgd library.
 
 ACKNOWLEDGEMENTS:
 

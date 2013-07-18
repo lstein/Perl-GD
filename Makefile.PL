@@ -2,6 +2,11 @@ use ExtUtils::MakeMaker qw(prompt WriteMakefile);
 use Config;
 use strict;
 
+# if this is a dev version the version number can be a string with underscores
+# remove them to prevent a warning and that's what perl will do it it was
+# a number. 1_05 vs "1_05"
+(my $MAKEMAKER_VERSION = $ExtUtils::MakeMaker::VERSION || 0) =~ s/_//g;
+
 require 5.6.0;
 
 unless (@ARGV) {
@@ -251,6 +256,17 @@ WriteMakefile(
     'ABSTRACT'  => 'Interface to Gd Graphics Library',
      $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
+
+    ( $MAKEMAKER_VERSION > 6.45 ? (
+	META_MERGE => {
+	    'meta-spec' => { version => 2 },
+	    repository => {
+		type => 'git',
+		url  => 'git://github.com/lstein/Perl-GD.git',
+		web  => 'https://github.com/lstein/Perl-GD',
+	    },
+        },
+    ):()),
 );
 
 exit 0;
