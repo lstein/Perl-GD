@@ -325,7 +325,7 @@ sub check_for_stray_headers {
     next if $official_libraries{$_};
     next unless -e "$_/gd.h";
 
-    warn "\n\n** WARNING: found gd.h header file in ${_}gd.h, but it is expected at $official_libraries[0]/gd.h. This may cause compile errors! **\n";
+    warn "\n\n** WARNING: found gd.h header file in ${_}/gd.h, but it is expected at $official_libraries[0]/gd.h. This may cause compile errors! **\n";
     $problems++;
   }
   print STDERR $problems ? "** Possible problems found **\n" : "none found.\n";
