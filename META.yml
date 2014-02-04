@@ -4,8 +4,6 @@ author:
   - 'Lincoln Stein (lstein@cshl.org)'
 build_requires:
   ExtUtils::MakeMaker: 0
-configure_requires:
-  ExtUtils::MakeMaker: 0
 dynamic_config: 1
 generated_by: 'ExtUtils::MakeMaker version 6.68, CPAN::Meta::Converter version 2.112621'
 license: unknown
@@ -19,4 +17,8 @@ no_index:
     - inc
 requires:
   Math::Trig: 0
-version: 2.50
+version: 2.51
+x_repository:
+  type: git
+  url: git://github.com/lstein/Perl-GD.git
+  web: https://github.com/lstein/Perl-GD
