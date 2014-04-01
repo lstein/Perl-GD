@@ -300,7 +300,7 @@ sub try_to_autoconfigure {
   $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE VERSION_33" if defined($minor) && $minor >= 33;
 
   my @correct_inc = map {s/^-I// && $_} split /\s+/,$cflags;
-  check_for_stray_headers(@correct_inc);
+  check_for_stray_headers($includedir,@correct_inc);
   return 1;
 }
 
