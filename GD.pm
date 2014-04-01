@@ -1774,7 +1774,7 @@ package for details.
 
 The latest versions of GD.pm are available at
 
-  http://stein.cshl.org/WWW/software/GD
+  https://github.com/lstein/Perl-GD
 
 =head1 SEE ALSO
 

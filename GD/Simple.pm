@@ -6,6 +6,9 @@ GD::Simple - Simplified interface to GD library
 
 =head1 SYNOPSIS
 
+For a nice tutorial on using this module, see Gabor Szabo's article at
+http://perlmaven.com/drawing-images-using-gd-simple.
+
     use GD::Simple;
 
     # create a new image
@@ -1243,9 +1246,7 @@ The GD::Simple module is copyright 2004, Lincoln D. Stein.  It is
 distributed under the same terms as Perl itself.  See the "Artistic
 License" in the Perl source code distribution for licensing terms.
 
-The latest versions of GD.pm are available at
-
-  http://stein.cshl.org/WWW/software/GD
+The latest versions of GD.pm are available at https://github.com/lstein/Perl-GD
 
 =head1 SEE ALSO
 
