@@ -1,3 +1,4 @@
+2.53	Points to Gabor Szabo's GD::Simple tutorial, and fix link to repository.
 2.52    Fix regression tests to run on Ubuntu 12.04 64bit.
 2.51	Fix misleading warning message about location of gd.h file.
 2.50	Fix gdUseFontConfig so that it can be called as a class method.

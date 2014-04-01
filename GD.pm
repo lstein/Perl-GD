@@ -16,7 +16,7 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.52';
+$VERSION = '2.53';
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
@@ -1774,7 +1774,7 @@ package for details.
 
 The latest versions of GD.pm are available at
 
-  http://stein.cshl.org/WWW/software/GD
+  https://github.com/lstein/Perl-GD
 
 =head1 SEE ALSO
 

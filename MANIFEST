@@ -108,3 +108,4 @@ t/tile.gif
 t/tile.jpeg
 t/tile.png
 typemap
+META.json                                Module JSON meta-data (added by MakeMaker)
