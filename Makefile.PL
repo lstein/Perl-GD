@@ -35,13 +35,15 @@ END
 }
 
 push @LIBS, "-lgd";
-@INC     = qw(-I/usr/include -I/usr/include/gd) unless @INC;
-@LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/lib) unless @LIBPATH;
+unless ($force) {
+  @INC     = qw(-I/usr/include -I/usr/include/gd) unless @INC;
+  @LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/lib) unless @LIBPATH;
 
-# support for AMD64 libraries
-if (-d '/usr/lib64') {
-  my @libs64 = map {my $a = $_; $a=~ s/lib$/lib64/; $a} @LIBPATH;
-  @LIBPATH = (@LIBPATH,@libs64);
+  # support for AMD64 libraries
+  if (-d '/usr/lib64') {
+    my @libs64 = map {my $a = $_; $a=~ s/lib$/lib64/; $a} @LIBPATH;
+    @LIBPATH = (@LIBPATH,@libs64);
+  }
 }
 
 #############################################################################################
