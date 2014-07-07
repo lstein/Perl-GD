@@ -1400,6 +1400,13 @@ gdrotate180(src)
 		      GDSetImagePixel(src,i,j,tmp);
 		   }
 		}
+               if(y % 2 == 1) {
+                  for (i=0;i<x2;i++) {
+                     tmp = GDGetImagePixel(src,x1-i,j);
+                     GDCopyImagePixel(src,x1-i,j,src,i,j);
+                     GDSetImagePixel(src,i,j,tmp);
+                  }
+               }
 	}
 
 void
