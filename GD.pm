@@ -460,6 +460,8 @@ support.
 NOTE: The libgd library is unable to read certain XPM files, returning
 an all-black image instead.
 
+=back
+
 =head1 GD::Image Methods
 
 Once a GD::Image object is created, you can draw with it, copy it, and
@@ -471,6 +473,8 @@ a file.
 
 The following methods convert the internal drawing format into
 standard output file formats.
+
+=over
 
 =item B<$pngdata = $image-E<gt>png([$compression_level])>
 
