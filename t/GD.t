@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 
-use lib '../lib','./blib/lib','./blib/arch','../blib/lib','../blib/arch';
 use FileHandle;
 use FindBin qw($Bin);
 use constant FONT=>"$Bin/test_data/Generic.ttf";
