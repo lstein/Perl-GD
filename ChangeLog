@@ -1,3 +1,4 @@
+2.55	Great simplification of regression framework ought to fix make test problems.
 2.54	Patch from yurly@unet.net to fix image corruption in rotate180 when image height is odd.
 2.53	Points to Gabor Szabo's GD::Simple tutorial, and fix link to repository.
 2.52    Fix regression tests to run on Ubuntu 12.04 64bit.

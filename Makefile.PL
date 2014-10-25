@@ -232,23 +232,26 @@ close F;
 
 WriteMakefile(
     'NAME'	=> 'GD',
-    'VERSION_FROM'	=> 'GD.pm',
+    'VERSION_FROM'	=> 'lib/GD.pm',
     'PREREQ_PM' => {
 		    'Math::Trig' => 0,
 		    },
-    'PM'        => { 'GD.pm' => '$(INST_LIBDIR)/GD.pm',
-                     'GD/Polyline.pm' => '$(INST_LIBDIR)/GD/Polyline.pm',
-                     'GD/Polygon.pm' => '$(INST_LIBDIR)/GD/Polygon.pm',
-                     'GD/Simple.pm' => '$(INST_LIBDIR)/GD/Simple.pm',
-                     'GD/Image.pm' => '$(INST_LIBDIR)/GD/Image.pm',
-                     'GD/Group.pm' => '$(INST_LIBDIR)/GD/Group.pm',
+    'PM'        => { 'lib/GD.pm' => '$(INST_LIBDIR)/GD.pm',
+                     'lib/GD/Polyline.pm' => '$(INST_LIBDIR)/GD/Polyline.pm',
+                     'lib/GD/Polygon.pm' => '$(INST_LIBDIR)/GD/Polygon.pm',
+                     'lib/GD/Simple.pm' => '$(INST_LIBDIR)/GD/Simple.pm',
+                     'lib/GD/Image.pm' => '$(INST_LIBDIR)/GD/Image.pm',
+                     'lib/GD/Group.pm' => '$(INST_LIBDIR)/GD/Group.pm',
                      'qd.pl' => '$(INST_LIBDIR)/qd.pl'},
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
     'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],
     'INC'       => join(' ',$ENV{'GD_INC'},@INC),
+
+
+
     'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
-		    'GD/Image.pm.PLS' => 'GD/Image.pm',
+		    'lib/GD/Image.pm.PLS' => 'lib/GD/Image.pm',
 		   },
     'CCFLAGS'    => "$Config{ccflags} -Wformat=0",
     'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
@@ -334,8 +337,8 @@ sub check_for_stray_headers {
 
 sub MY::postamble {
     my $postamble = <<'END';
-html: GD.pm
-	pod2html --outfile=GD.html GD.pm
+html: lib/GD.pm
+	pod2html --outfile=GD.html lib/GD.pm
 
 END
     $postamble;
@@ -345,7 +348,7 @@ package MY;
 
 sub processPL {
     my $inherited = shift->SUPER::processPL(@_);
-    $inherited    =~ s/(:: GD\/Image.pm.PLS)/$1 .config.cache/;
+    $inherited    =~ s/(:: \/libGD\/Image.pm.PLS)/$1 .config.cache/;
     $inherited;
 }
 
