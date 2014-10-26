@@ -5,6 +5,7 @@ use warnings;
 
 use FileHandle;
 use FindBin qw($Bin);
+use lib "$Bin/../blib/lib","$Bin/../blib/arch","$Bin/../lib";
 use constant FONT=>"$Bin/test_data/Generic.ttf";
 use constant IMAGE_TESTS => 7;
 use Test::More tests => 11;
@@ -238,12 +239,12 @@ sub test7 {
 }
 
 sub run_image_regression_tests {
-    my $suffix = $ENV{GDIMAGETYPE} || 'gd';
+    my $suffix = $ENV{GDIMAGETYPE} || 'gd2';
     print STDERR "# Testing using $suffix support.\n";
     for my $t (1..IMAGE_TESTS) {
 	my $gd   = eval "test${t}('$suffix')";
 	if (!$gd) {
-	    fail("unable to generate comparison image for test $t");
+	    fail("unable to generate comparison image for test $t: $@");
 	} else {
 	    ok(compare($gd,$t,$suffix),"image comparison test $t");
 	}
