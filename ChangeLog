@@ -1,3 +1,8 @@
+2.55	* Great simplification of regression framework ought to fix make test problems.
+	* Replace ExtUtils::MakeMaker script with Module::Build system 
+	  (just in time for Module::Build to be deprecated).
+	* Remove archaic qd.pl (for creating QuickDraw picts) from distribution.
+2.54	Patch from yurly@unet.net to fix image corruption in rotate180 when image height is odd.
 2.53	Points to Gabor Szabo's GD::Simple tutorial, and fix link to repository.
 2.52    Fix regression tests to run on Ubuntu 12.04 64bit.
 2.51	Fix misleading warning message about location of gd.h file.

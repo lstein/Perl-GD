@@ -23,22 +23,6 @@ l.  produces output in svg format via GD::SVG.
 For full information on usage, see the accompanying man and html
 documentation. Also check the FAQ at the bottom of this document.
 
-=> IMPORTANT: This version of GD REQUIRES libgd 2.0.28 or higher.  If you <=
-=> have an older version of libgd installed you must remove libgd.a,      <=
-=> libgd.so (if present) and gd.h.  Then install the new version of       <=
-=> libgd from http://libgd.org (see below).  This particularly           <=
-=> applies to users of Linux systems.  Older versions of GD are           <=
-=> available at http://www.cpan.org.                                      <=
-
-COPYRIGHT INFO
-
-The GD.pm interface is copyright 1995-2010, Lincoln D. Stein. This
-package and its accompanying libraries is free software; you can
-redistribute it and/or modify it under the terms of the GPL (either
-version 1, or at your option, any later version) or the Artistic
-License 2.0.  Refer to LICENSE for the full license text.
-package for details.
-
 INSTALLATION:
 
 1. Windows users can find a binary PPM package in the repositories at
@@ -103,16 +87,15 @@ Use GD 1.41 for libgd versions 1.8.4 and lower.
     (Where "XX" is the most recent revision number.)  This will create
     the directory GD-2.XX.
 
-4.  To compile GD.pm on a system that supports dynamic linking:
+4.  To compile GD.pm:
 
 	a.  cd GD-2.XX
-	b.  perl Makefile.PL
-	c.  make
-        d.  make test (optional)
-	e.  make html (optional)
-	f.  make install
+	b.  perl ./Build.PL
+	c.  ./Build
+        d.  ./Build test (optional)
+	f.  sudo ./Build install
 
-    This will create GD.pm, its HTML manual page, and install GD into
+    This will create GD.pm and install it into
     the system-wide Perl library directory.  You'll need root
     privileges to do the install step.  If you don't have them, see below.
 
@@ -127,27 +110,16 @@ Use GD 1.41 for libgd versions 1.8.4 and lower.
     module will probably not link correctly, even though the warning may say
     "probably harmless".    
 
-5.  To compile GD.pm statically on systems that do not support dynamic
-    linking:
-
-	a.  cd GD-2.XX
-        b.  perl Makefile.PL LINKTYPE=static
-        c.  make perl
-        d.  make -f Makefile.aperl inst_perl MAP_TARGET=gdperl
-
-     This will create a new version of Perl and install it in your system
-     binaries directory, under the name "gdperl".  
-
-6.  Before you install GD, you will want to run the regression tests.  You
+5.  Before you install GD, you will want to run the regression tests.  You
     can do this after the "make" step by typing:
 
-	make test
+	./Build test
 
     If any tests fail, you might want to run them verbosely with:
 
-        make test TEST_VERBOSE=1
+        ./Build test --verbose
 
-7.  There are some demos you can run in ext/GD/demos.  They print PNG
+6.  There are some demos you can run in ext/GD/demos.  They print PNG
     files to standard output.  To view the files, pipe their
     output to "display" or "xv" in this way:
 
@@ -160,78 +132,21 @@ Use GD 1.41 for libgd versions 1.8.4 and lower.
     If you don't have any display programs handy, you can save to a
     temporary file and display with recent versions of Netscape or
     Internet Explorer.
-8.  A program named fonttest is included in this package under demos.  This 
+
+7.  A program named fonttest is included in this package under demos.  This 
     generates an image showing all the built-in fonts available.  If you have
     built libgd with TrueType support, and you have a directory containing
     some TrueType fonts, you can create a simple font listing by running
     the program truetype_test, also located in demos.
 
-9.  See demos/gd_example.cgi for an example of how to use GD to create
+8.  See demos/gd_example.cgi for an example of how to use GD to create
     a picture dynamically with a CGI script.  It's intended to be run
     under a Web server.  To see it work, install it in your server's
     cgi-bin/ directory and invoke it from a browser by fetching a URL like:
 
 	http://your.site/cgi-bin/gd_example.cgi
 
-INSTALLING GD IN YOUR HOME DIRECTORY
-
-IF YOU DON'T HAVE PRIVILEGES TO INSTALL GD.pm in your system's main
-Perl library directory, don't despair.  You can install it into your
-home directory using the following feature of Makefile.PL:
-
-	a.  cd GD-2.XX
-	b.  perl Makefile.PL LIB=/home/fred/lib
-	c.  make
-	d.  make install
-
-(change /home/fred/lib as appropriate for your home directory). This
-will install GD.pm in /home/fred/lib.  You may get some errors about
-not being able to install the manual pages.  Either don't worry about
-it, or run the "perl Makefile.PL" step with the INST_MAN3DIR variable
-set to some directory you have write permission for.
-
-You'll now need to modify your GD-using scripts to tell Perl where to
-find GD.  This example assumes that your home directory is at path
-"/home/fred"; change it as appropriate.
-
-	#!/usr/local/bin/perl
-        use lib '/home/fred/lib';
-        use GD;
-	... etc ...
-
-USING GD WITH FAST CGI
-
-FastCGI is a protocol from OpenMarket Corporation that markedly speeds
-up the execution of CGI scripts.  To use FastCGI with Perl scripts,
-you need a specially-modified version of the Perl interpreter which
-you can obtain in binary and/or source form from:
-
-	http://www.fastcgi.com/
-
-To use GD with a FastCGI version of Perl you'll need to recompile it
-using the modified Perl.  In this example, I assume that this version
-of Perl is found at '/usr/local/fcgi/bin/perl': modify as appropriate
-for your system.
-
-	a. cd GD-2.XX
-	b. edit Makefile.PL and uncomment the line 
-               'DEFINE'	=> '-DFCGI'
-        c. /usr/local/fcgi/bin/perl Makefile.PL
-        d. make
-        e. make install
-
-Note that these instructions have not been verified for a long time,
-and may no longer work.  If you successfully use this module with
-FastCGI and find that the instructions are no longer valid, please
-send me the updated information.
-
 IF YOU RUN INTO PROBLEMS
-
-Some versions of Unix and Unix-like systems such as Linux ship with an
-incomplete version of the Perl distribution.  If you get warnings such
-as "Module ExtUtils::MakeMaker not found", you may have such a
-system.  Your only option is to obtain the full Perl distribution and
-reinstall it.
 
 If the make and install all seem to go well but you get errors like
 "Fatal error: can't load module GD.so", or "Fatal error: unknown
@@ -271,11 +186,7 @@ GD method calls. For this subset, you can create images in SVG
 
 THE QUICKDRAW LIBRARY
 
-Also included in this package is qd.pl, a package of Quickdraw
-routines.  If you are familiar with the Quickdraw Macintosh library,
-you can create Macintosh pictures (complete with scaleable fonts,
-draggable objects, etc. etc.) directly in Perl.  See README.QUICKDRAW
-and qd.pl for more information.
+This is no longer supported.
 
 FREQUENTLY ASKED QUESTIONS
 
@@ -407,20 +318,9 @@ FREQUENTLY ASKED QUESTIONS
 
 BUG REPORTS
 
-Feel free to contact me via e-mail, subject to the caveats below.
-Provide the version numbers of GD, Perl, make and model of your
-operating system, and make and model of your Web server, if
-appropriate.  Provide a small script that demonstrates the bug.
-
-Do NOT contact me for issues involving compilation failures on
-Windows, VMS, or Macintosh systems.  I do not have any such systems on
-hand, and cannot help you out.
-
-Also do NOT contact me for issues involving the images looking
-distorted, having the wrong color tables, or other such low-level
-issues.  These problems should be referred to the libgb project
-bug tracker at https://bitbucket.org/libgd/gd-libgd/issues
-because they pertain to the underlying libgd library.
+Please report bugs, feature requests and propose code changes using
+the GitHub repository at https://github.com/lstein/Perl-GD. I do not
+check the CPAN RT bug system with any frequency.
 
 ACKNOWLEDGEMENTS:
 
@@ -428,13 +328,18 @@ I'd like to thank Jan Pazdziora, Geoff Baysinger, and David Kilzer for
 their contributions to the library, as well as Thomas Boutell who
 wrote libgd.
 
-UPDATES:
+SOURCE CODE AND UPDATES:
 
 The current version of GD can be found in CPAN. The development
 version can be found on GitHub at https://github.com/lstein/Perl-GD.
 
-AUTHOR:
+AUTHOR and LICENSE
 
-Lincoln Stein
-lincoln.stein@gmail.com
+Copyright 1995-2014 Lincoln Stein <lincoln.stein@gmail.com>
+
+This package and its accompanying libraries is free software; you can
+redistribute it and/or modify it under the terms of the GPL (either
+version 1, or at your option, any later version) or the Artistic
+License 2.0.  Refer to LICENSE for the full license text.
+package for details.
 

@@ -1,38 +1,62 @@
 {
-   "abstract" : "Interface to Gd Graphics Library",
+   "abstract" : "Perl interface to the gd2 graphics library",
    "author" : [
-      "Lincoln Stein (lstein@cshl.org)"
+      "Lincoln Stein <lincoln.stein@gmail.com>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "ExtUtils::MakeMaker version 6.68, CPAN::Meta::Converter version 2.112621",
+   "generated_by" : "Module::Build version 0.4205",
    "license" : [
-      "unknown"
+      "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : "2"
+      "version" : 2
    },
    "name" : "GD",
-   "no_index" : {
-      "directory" : [
-         "t",
-         "inc"
-      ]
-   },
    "prereqs" : {
       "build" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : 0
+            "ExtUtils::CBuilder" : "0"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "Module::Build" : "0.42"
          }
       },
       "runtime" : {
          "requires" : {
-            "Math::Trig" : 0
+            "Math::Trig" : "0"
          }
       }
    },
+   "provides" : {
+      "GD" : {
+         "file" : "lib/GD.pm",
+         "version" : "2.55"
+      },
+      "GD::Group" : {
+         "file" : "lib/GD/Group.pm",
+         "version" : "1"
+      },
+      "GD::Polygon" : {
+         "file" : "lib/GD/Polygon.pm"
+      },
+      "GD::Polyline" : {
+         "file" : "lib/GD/Polyline.pm",
+         "version" : "0.2"
+      },
+      "GD::Simple" : {
+         "file" : "lib/GD/Simple.pm"
+      }
+   },
    "release_status" : "stable",
-   "version" : "2.53",
+   "resources" : {
+      "license" : [
+         "http://dev.perl.org/licenses/"
+      ]
+   },
+   "version" : "2.55",
    "x_repository" : {
       "type" : "git",
       "url" : "git://github.com/lstein/Perl-GD.git",

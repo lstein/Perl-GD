@@ -1,36 +1,20 @@
-use ExtUtils::MakeMaker qw(prompt WriteMakefile);
-use Config;
+#!/usr/bin/perl
+
 use strict;
-
-# if this is a dev version the version number can be a string with underscores
-# remove them to prevent a warning and that's what perl will do it it was
-# a number. 1_05 vs "1_05"
-(my $MAKEMAKER_VERSION = $ExtUtils::MakeMaker::VERSION || 0) =~ s/_//g;
-
-require 5.6.0;
-
-unless (@ARGV) {
-warn <<END;
-Notice: Type perl Makefile.PL -h for command-line option summary.
-
-END
-}
-
+use Module::Build;
+use Getopt::Long;
+use Config;
 
 # =====> PATHS: CHECK AND ADJUST <=====
 my (@INC,@LIBPATH,@LIBS);
 my $AUTOCONFIG = 0;      # global set by try_to_autoconfigure() below
 
-my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,$lib_zlib_path,$force);
+my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,$lib_zlib_path);
 
-use Getopt::Long;
-GetOptions("ignore_missing_gd" => \$force);
-
-unless (try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS) || $force) {
+unless (try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS)) {
     die <<END;
 **UNRECOVERABLE ERROR**
 Could not find gdlib-config in the search path. Please install libgd 2.0.28 or higher.
-If you want to try to compile anyway, please rerun this script with the option --ignore_missing_gd.
 END
 }
 
@@ -56,8 +40,8 @@ my $result = GetOptions("options=s"       => \$options,
 			"lib_zlib_path=s" => \$lib_zlib_path,
 		       );
 unless ($result) {
-  print STDERR <<END;
-Usage: perl Makefile.PL [options]
+  die <<END;
+Usage: perl Build.PL [options]
 
 Configure GD module.
 
@@ -213,7 +197,6 @@ if (!$AUTOCONFIG) {
   }
 }
 
-my $CAPI = defined $ExtUtils::MakeMaker::CAPI_support;
 my $DEFINES = '';
 $DEFINES    .= ' -DHAVE_JPEG'    if $JPEG;
 $DEFINES    .= ' -DHAVE_FT'      if $FT;
@@ -230,48 +213,45 @@ open F,">.config.cache";
 print F $DEFINES,"\n";
 close F;
 
-WriteMakefile(
-    'NAME'	=> 'GD',
-    'VERSION_FROM'	=> 'lib/GD.pm',
-    'PREREQ_PM' => {
-		    'Math::Trig' => 0,
-		    },
-    'PM'        => { 'lib/GD.pm' => '$(INST_LIBDIR)/GD.pm',
-                     'lib/GD/Polyline.pm' => '$(INST_LIBDIR)/GD/Polyline.pm',
-                     'lib/GD/Polygon.pm' => '$(INST_LIBDIR)/GD/Polygon.pm',
-                     'lib/GD/Simple.pm' => '$(INST_LIBDIR)/GD/Simple.pm',
-                     'lib/GD/Image.pm' => '$(INST_LIBDIR)/GD/Image.pm',
-                     'lib/GD/Group.pm' => '$(INST_LIBDIR)/GD/Group.pm',
-                     'qd.pl' => '$(INST_LIBDIR)/qd.pl'},
-    'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
-	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
-    'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],
-    'INC'       => join(' ',$ENV{'GD_INC'},@INC),
+# @INC code was originally written for Makefile.PL. Get rid of -I prefix
+foreach (@INC) {
+    s/^-I//;
+}
+unshift @INC,$ENV{GD_INC} if $ENV{GD_INC};
 
-
-
-    'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
-		    'lib/GD/Image.pm.PLS' => 'lib/GD/Image.pm',
+my $build = Module::Build->new(
+    module_name         => 'GD',
+    dist_version_from	=> 'lib/GD.pm',
+    dist_author         => 'Lincoln Stein <lincoln.stein@gmail.com>',
+    dist_abstract       => 'Perl interface to the gd2 graphics library',
+    license             => 'perl',
+    requires            => {
+	'Math::Trig'    => 0,
+    },
+    build_requires      => {
+	'ExtUtils::CBuilder' => 0,
+    },
+    configure_requires => {
+	'Module::Build' => 0.42,
+    },
+    include_dirs        => \@INC,
+    extra_linker_flags  => "$ENV{'GD_LIBS'} @LIBPATH @LIBS",
+    PL_files            => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
+			    'lib/GD/Image.pm.PLS' => 'lib/GD/Image.pm',
 		   },
-    'CCFLAGS'    => "$Config{ccflags} -Wformat=0",
-    'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
-    'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
-    'ABSTRACT'  => 'Interface to Gd Graphics Library',
-     $CAPI ? ('CAPI'      => 'TRUE') : (),
-    'DEFINE'	=> $DEFINES,
+    extra_compiler_flags => $DEFINES,
+    script_files        => 'bdf_scripts',
+    meta_merge => {
+	'meta-spec' => { version => 2 },
+	x_repository => {
+	    type => 'git',
+	    url  => 'git://github.com/lstein/Perl-GD.git',
+	    web  => 'https://github.com/lstein/Perl-GD',
+	},
+    }
+    );
 
-    ( $MAKEMAKER_VERSION > 6.45 ? (
-	META_MERGE => {
-	    'meta-spec' => { version => 2 },
-	    repository => {
-		type => 'git',
-		url  => 'git://github.com/lstein/Perl-GD.git',
-		web  => 'https://github.com/lstein/Perl-GD',
-	    },
-        },
-    ):()),
-);
-
+$build->create_build_script;
 exit 0;
 
 sub try_to_autoconfigure {
