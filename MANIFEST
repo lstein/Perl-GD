@@ -3,6 +3,7 @@ bdf_scripts/bdf2gdfont.PLS
 bdf_scripts/bdftogd
 bdf_scripts/cvtbdf.pl
 bdf_scripts/README
+Build.PL
 ChangeLog
 demos/brushes.pl
 demos/copies.pl
@@ -21,19 +22,17 @@ demos/ttf.pl
 lib/GD.pm
 lib/GD.xs
 lib/GD/Group.pm
-lib/GD/Image.pm
 lib/GD/Image.pm.PLS
 lib/GD/Polygon.pm
 lib/GD/Polyline.pm
 lib/GD/Simple.pm
 LICENSE
+Makefile.old
 Makefile.PL
 MANIFEST
-META.yml			Module meta-data (added by MakeMaker)
-qd.pl
+MANIFEST.SKIP
 README
 README.QUICKDRAW
-README.unix
 t/GD.t
 t/Polyline.t
 t/test_data/frog.jpg
@@ -81,3 +80,5 @@ t/test_data/tile.gif
 t/test_data/tile.jpeg
 t/test_data/tile.png
 typemap
+META.yml
+META.json

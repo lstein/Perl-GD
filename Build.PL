@@ -9,15 +9,12 @@ use Config;
 my (@INC,@LIBPATH,@LIBS);
 my $AUTOCONFIG = 0;      # global set by try_to_autoconfigure() below
 
-my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,$lib_zlib_path,$force);
+my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,$lib_zlib_path);
 
-GetOptions("ignore_missing_gd" => \$force);
-
-unless (try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS) || $force) {
+unless (try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS)) {
     die <<END;
 **UNRECOVERABLE ERROR**
 Could not find gdlib-config in the search path. Please install libgd 2.0.28 or higher.
-If you want to try to compile anyway, please rerun this script with the option --ignore_missing_gd.
 END
 }
 
@@ -43,7 +40,7 @@ my $result = GetOptions("options=s"       => \$options,
 			"lib_zlib_path=s" => \$lib_zlib_path,
 		       );
 unless ($result) {
-  print STDERR <<END;
+  die <<END;
 Usage: perl Build.PL [options]
 
 Configure GD module.
@@ -216,6 +213,12 @@ open F,">.config.cache";
 print F $DEFINES,"\n";
 close F;
 
+# @INC code was originally written for Makefile.PL. Get rid of -I prefix
+foreach (@INC) {
+    s/^-I//;
+}
+unshift @INC,$ENV{GD_INC} if $ENV{GD_INC};
+
 my $build = Module::Build->new(
     module_name         => 'GD',
     dist_version_from	=> 'lib/GD.pm',
@@ -228,16 +231,19 @@ my $build = Module::Build->new(
     build_requires      => {
 	'ExtUtils::CBuilder' => 0,
     },
-    include_dirs        => [$ENV{'GD_INC'},@INC],
-    extra_linker_flags  => [$ENV{'GD_LIBS'},@LIBPATH,@LIBS],
-    pl_files            => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
+    configure_requires => {
+	'Module::Build' => 0.42,
+    },
+    include_dirs        => \@INC,
+    extra_linker_flags  => "$ENV{'GD_LIBS'} @LIBPATH @LIBS",
+    PL_files            => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
 			    'lib/GD/Image.pm.PLS' => 'lib/GD/Image.pm',
 		   },
-    extra_compiler_flags=> [ "$Config{ccflags} -Wformat=0" ],
+    extra_compiler_flags => $DEFINES,
     script_files        => 'bdf_scripts',
     meta_merge => {
 	'meta-spec' => { version => 2 },
-	repository => {
+	x_repository => {
 	    type => 'git',
 	    url  => 'git://github.com/lstein/Perl-GD.git',
 	    web  => 'https://github.com/lstein/Perl-GD',

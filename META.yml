@@ -1,11 +1,40 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         GD
-version:      2.35
-version_from: GD.pm
-installdirs:  site
+---
+abstract: 'Perl interface to the gd2 graphics library'
+author:
+  - 'Lincoln Stein <lincoln.stein@gmail.com>'
+build_requires:
+  ExtUtils::CBuilder: '0'
+configure_requires:
+  Module::Build: '0.42'
+dynamic_config: 1
+generated_by: 'Module::Build version 0.4205, CPAN::Meta::Converter version 2.120351'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: '1.4'
+name: GD
+provides:
+  GD:
+    file: lib/GD.pm
+    version: '2.55'
+  GD::Group:
+    file: lib/GD/Group.pm
+    version: '1'
+  GD::Polygon:
+    file: lib/GD/Polygon.pm
+    version: 0
+  GD::Polyline:
+    file: lib/GD/Polyline.pm
+    version: '0.2'
+  GD::Simple:
+    file: lib/GD/Simple.pm
+    version: 0
 requires:
-    Math::Trig:                    0
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.17
+  Math::Trig: '0'
+resources:
+  license: http://dev.perl.org/licenses/
+version: '2.55'
+x_repository:
+  type: git
+  url: git://github.com/lstein/Perl-GD.git
+  web: https://github.com/lstein/Perl-GD
