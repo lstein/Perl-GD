@@ -8,3 +8,5 @@
 ~$
 \.bak$
 ^_build
+\b#
+lib/GD/Image.pm
