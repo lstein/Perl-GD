@@ -1,0 +1,10 @@
+^\.config
+\bGD-\d+
+\bGD\.c$
+^MYMETA\.yml$
+^MYMETA\.json$
+\.git
+^Build$
+~$
+\.bak$
+^_build
