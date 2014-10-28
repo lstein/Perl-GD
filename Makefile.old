@@ -1,7 +1,7 @@
 # This Makefile is for the GD extension to perl.
 #
 # It was generated automatically by MakeMaker version
-# 6.94 (Revision: 69400) from the contents of
+# 6.66 (Revision: 66600) from the contents of
 # Makefile.PL. Don't edit this file, edit Makefile.PL instead.
 #
 #       ANY CHANGES MADE HERE WILL BE LOST!
@@ -14,27 +14,27 @@
 #     ABSTRACT => q[Interface to Gd Graphics Library]
 #     AUTHOR => [q[Lincoln Stein (lstein@cshl.org)]]
 #     BUILD_REQUIRES => {  }
-#     CCFLAGS => q[-D_REENTRANT -D_GNU_SOURCE -DDEBIAN -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wformat=0]
+#     CCFLAGS => q[-D_REENTRANT -D_GNU_SOURCE -DDEBIAN -fstack-protector -fno-strict-aliasing -pipe -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wformat=0]
 #     CONFIGURE_REQUIRES => {  }
-#     DEFINE => q[ -DHAVE_JPEG -DHAVE_FT -DHAVE_XPM -DHAVE_GIF -DHAVE_PNG -DHAVE_ANIMGIF -DVERSION_33 -DHAVE_UNCLOSEDPOLY -DHAVE_FONTCONFIG -DHAVE_FTCIRCLE]
+#     DEFINE => q[ -DHAVE_JPEG -DHAVE_FT -DHAVE_XPM -DHAVE_GIF -DHAVE_PNG -DHAVE_FONTCONFIG]
 #     EXE_FILES => [q[bdf_scripts/bdf2gdfont.pl]]
-#     INC => q[ -I/usr/include]
-#     LIBS => [q[-L/usr/lib/x86_64-linux-gnu -L/usr/lib/x86_64-linux-gnu   -L/usr/lib/x86_64-linux-gnu -lXpm -lX11 -ljpeg -lfontconfig -lfreetype -lpng12 -lz -lm -lgd]]
-#     META_MERGE => { repository=>{ web=>q[https://github.com/lstein/Perl-GD], url=>q[git://github.com/lstein/Perl-GD.git], type=>q[git] }, meta-spec=>{ version=>q[2] } }
+#     INC => q[ ]
+#     LIBS => [q[-L/usr/lib/x86_64-linux-gnu -lgd -lgd]]
+#     META_MERGE => { meta-spec=>{ version=>q[2] }, repository=>{ web=>q[https://github.com/lstein/Perl-GD], type=>q[git], url=>q[git://github.com/lstein/Perl-GD.git] } }
 #     NAME => q[GD]
-#     PL_FILES => { lib/GD/Image.pm.PLS=>q[lib/GD/Image.pm], bdf_scripts/bdf2gdfont.PLS=>q[bdf_scripts/bdf2gdfont.pl] }
-#     PM => { lib/GD/Image.pm=>q[$(INST_LIBDIR)/GD/Image.pm], qd.pl=>q[$(INST_LIBDIR)/qd.pl], lib/GD/Group.pm=>q[$(INST_LIBDIR)/GD/Group.pm], lib/GD.pm=>q[$(INST_LIBDIR)/GD.pm], lib/GD/Polygon.pm=>q[$(INST_LIBDIR)/GD/Polygon.pm], lib/GD/Simple.pm=>q[$(INST_LIBDIR)/GD/Simple.pm], lib/GD/Polyline.pm=>q[$(INST_LIBDIR)/GD/Polyline.pm] }
+#     PL_FILES => { bdf_scripts/bdf2gdfont.PLS=>q[bdf_scripts/bdf2gdfont.pl], lib/GD/Image.pm.PLS=>q[lib/GD/Image.pm] }
+#     PM => { lib/GD/Group.pm=>q[$(INST_LIBDIR)/GD/Group.pm], lib/GD/Polygon.pm=>q[$(INST_LIBDIR)/GD/Polygon.pm], lib/GD/Polyline.pm=>q[$(INST_LIBDIR)/GD/Polyline.pm], lib/GD/Simple.pm=>q[$(INST_LIBDIR)/GD/Simple.pm], lib/GD/Image.pm=>q[$(INST_LIBDIR)/GD/Image.pm], lib/GD.pm=>q[$(INST_LIBDIR)/GD.pm] }
 #     PREREQ_PM => { Math::Trig=>q[0] }
 #     TEST_REQUIRES => {  }
 #     VERSION_FROM => q[lib/GD.pm]
-#     dist => { ZIPFLAGS=>q[-rl], ZIP=>q[/usr/bin/zip], COMPRESS=>q[gzip -9f], SUFFIX=>q[gz] }
+#     dist => { SUFFIX=>q[gz], COMPRESS=>q[gzip -9f], ZIPFLAGS=>q[-rl], ZIP=>q[/usr/bin/zip] }
 
 # --- MakeMaker post_initialize section:
 
 
 # --- MakeMaker const_config section:
 
-# These definitions are from config.sh (via /usr/lib/perl/5.14/Config.pm).
+# These definitions are from config.sh (via /usr/lib/perl/5.18/Config.pm).
 # They may have been overridden via Makefile.PL or on the command line.
 AR = ar
 CC = cc
@@ -45,16 +45,16 @@ DLSRC = dl_dlopen.xs
 EXE_EXT = 
 FULL_AR = /usr/bin/ar
 LD = cc
-LDDLFLAGS = -shared -O2 -g -L/usr/local/lib -fstack-protector
+LDDLFLAGS = -shared -L/usr/local/lib -fstack-protector
 LDFLAGS =  -fstack-protector -L/usr/local/lib
 LIBC = 
 LIB_EXT = .a
 OBJ_EXT = .o
 OSNAME = linux
-OSVERS = 2.6.42-37-generic
+OSVERS = 3.2.0-58-generic
 RANLIB = :
-SITELIBEXP = /usr/local/share/perl/5.14.2
-SITEARCHEXP = /usr/local/lib/perl/5.14.2
+SITELIBEXP = /usr/local/share/perl/5.18.2
+SITEARCHEXP = /usr/local/lib/perl/5.18.2
 SO = so
 VENDORARCHEXP = /usr/lib/perl5
 VENDORLIBEXP = /usr/share/perl5
@@ -66,11 +66,11 @@ DIRFILESEP = /
 DFSEP = $(DIRFILESEP)
 NAME = GD
 NAME_SYM = GD
-VERSION = 2.55
+VERSION = 2.56
 VERSION_MACRO = VERSION
-VERSION_SYM = 2_55
+VERSION_SYM = 2_56
 DEFINE_VERSION = -D$(VERSION_MACRO)=\"$(VERSION)\"
-XS_VERSION = 2.55
+XS_VERSION = 2.56
 XS_VERSION_MACRO = XS_VERSION
 XS_DEFINE_VERSION = -D$(XS_VERSION_MACRO)=\"$(XS_VERSION)\"
 INST_ARCHLIB = blib/arch
@@ -83,54 +83,54 @@ MAN1EXT = 1p
 MAN3EXT = 3pm
 INSTALLDIRS = site
 DESTDIR = 
-PREFIX = $(SITEPREFIX)
-PERLPREFIX = /usr
-SITEPREFIX = /usr/local
-VENDORPREFIX = /usr
-INSTALLPRIVLIB = /usr/share/perl/5.14
+PREFIX = /usr
+PERLPREFIX = $(PREFIX)
+SITEPREFIX = $(PREFIX)/local
+VENDORPREFIX = $(PREFIX)
+INSTALLPRIVLIB = $(PERLPREFIX)/share/perl/5.18
 DESTINSTALLPRIVLIB = $(DESTDIR)$(INSTALLPRIVLIB)
-INSTALLSITELIB = /usr/local/share/perl/5.14.2
+INSTALLSITELIB = $(SITEPREFIX)/share/perl/5.18.2
 DESTINSTALLSITELIB = $(DESTDIR)$(INSTALLSITELIB)
-INSTALLVENDORLIB = /usr/share/perl5
+INSTALLVENDORLIB = $(VENDORPREFIX)/share/perl5
 DESTINSTALLVENDORLIB = $(DESTDIR)$(INSTALLVENDORLIB)
-INSTALLARCHLIB = /usr/lib/perl/5.14
+INSTALLARCHLIB = $(PERLPREFIX)/lib/perl/5.18
 DESTINSTALLARCHLIB = $(DESTDIR)$(INSTALLARCHLIB)
-INSTALLSITEARCH = /usr/local/lib/perl/5.14.2
+INSTALLSITEARCH = $(SITEPREFIX)/lib/perl/5.18.2
 DESTINSTALLSITEARCH = $(DESTDIR)$(INSTALLSITEARCH)
-INSTALLVENDORARCH = /usr/lib/perl5
+INSTALLVENDORARCH = $(VENDORPREFIX)/lib/perl5
 DESTINSTALLVENDORARCH = $(DESTDIR)$(INSTALLVENDORARCH)
-INSTALLBIN = /usr/bin
+INSTALLBIN = $(PERLPREFIX)/bin
 DESTINSTALLBIN = $(DESTDIR)$(INSTALLBIN)
-INSTALLSITEBIN = /usr/local/bin
+INSTALLSITEBIN = $(SITEPREFIX)/bin
 DESTINSTALLSITEBIN = $(DESTDIR)$(INSTALLSITEBIN)
-INSTALLVENDORBIN = /usr/bin
+INSTALLVENDORBIN = $(VENDORPREFIX)/bin
 DESTINSTALLVENDORBIN = $(DESTDIR)$(INSTALLVENDORBIN)
-INSTALLSCRIPT = /usr/bin
+INSTALLSCRIPT = $(PERLPREFIX)/bin
 DESTINSTALLSCRIPT = $(DESTDIR)$(INSTALLSCRIPT)
-INSTALLSITESCRIPT = /usr/local/bin
+INSTALLSITESCRIPT = $(SITEPREFIX)/bin
 DESTINSTALLSITESCRIPT = $(DESTDIR)$(INSTALLSITESCRIPT)
-INSTALLVENDORSCRIPT = /usr/bin
+INSTALLVENDORSCRIPT = $(VENDORPREFIX)/bin
 DESTINSTALLVENDORSCRIPT = $(DESTDIR)$(INSTALLVENDORSCRIPT)
-INSTALLMAN1DIR = /usr/share/man/man1
+INSTALLMAN1DIR = $(PERLPREFIX)/share/man/man1
 DESTINSTALLMAN1DIR = $(DESTDIR)$(INSTALLMAN1DIR)
-INSTALLSITEMAN1DIR = /usr/local/man/man1
+INSTALLSITEMAN1DIR = $(SITEPREFIX)/man/man1
 DESTINSTALLSITEMAN1DIR = $(DESTDIR)$(INSTALLSITEMAN1DIR)
-INSTALLVENDORMAN1DIR = /usr/share/man/man1
+INSTALLVENDORMAN1DIR = $(VENDORPREFIX)/share/man/man1
 DESTINSTALLVENDORMAN1DIR = $(DESTDIR)$(INSTALLVENDORMAN1DIR)
-INSTALLMAN3DIR = /usr/share/man/man3
+INSTALLMAN3DIR = $(PERLPREFIX)/share/man/man3
 DESTINSTALLMAN3DIR = $(DESTDIR)$(INSTALLMAN3DIR)
-INSTALLSITEMAN3DIR = /usr/local/man/man3
+INSTALLSITEMAN3DIR = $(SITEPREFIX)/man/man3
 DESTINSTALLSITEMAN3DIR = $(DESTDIR)$(INSTALLSITEMAN3DIR)
-INSTALLVENDORMAN3DIR = /usr/share/man/man3
+INSTALLVENDORMAN3DIR = $(VENDORPREFIX)/share/man/man3
 DESTINSTALLVENDORMAN3DIR = $(DESTDIR)$(INSTALLVENDORMAN3DIR)
-PERL_LIB = /usr/share/perl/5.14
-PERL_ARCHLIB = /usr/lib/perl/5.14
+PERL_LIB = /usr/share/perl/5.18
+PERL_ARCHLIB = /usr/lib/perl/5.18
 LIBPERL_A = libperl.a
 FIRST_MAKEFILE = Makefile
 MAKEFILE_OLD = Makefile.old
 MAKE_APERL_FILE = Makefile.aperl
 PERLMAINCC = $(CC)
-PERL_INC = /usr/lib/perl/5.14/CORE
+PERL_INC = /usr/lib/perl/5.18/CORE
 PERL = /usr/bin/perl
 FULLPERL = /usr/bin/perl
 ABSPERL = $(PERL)
@@ -145,9 +145,9 @@ PERM_DIR = 755
 PERM_RW = 644
 PERM_RWX = 755
 
-MAKEMAKER   = /usr/local/share/perl/5.14.2/ExtUtils/MakeMaker.pm
-MM_VERSION  = 6.94
-MM_REVISION = 69400
+MAKEMAKER   = /usr/share/perl/5.18/ExtUtils/MakeMaker.pm
+MM_VERSION  = 6.66
+MM_REVISION = 66600
 
 # FULLEXT = Pathname for extension directory (eg Foo/Bar/Oracle).
 # BASEEXT = Basename part of FULLEXT. May be just equal FULLEXT. (eg Oracle)
@@ -159,8 +159,8 @@ BASEEXT = GD
 PARENT_NAME = 
 DLBASE = $(BASEEXT)
 VERSION_FROM = lib/GD.pm
-INC =  -I/usr/include
-DEFINE =  -DHAVE_JPEG -DHAVE_FT -DHAVE_XPM -DHAVE_GIF -DHAVE_PNG -DHAVE_ANIMGIF -DVERSION_33 -DHAVE_UNCLOSEDPOLY -DHAVE_FONTCONFIG -DHAVE_FTCIRCLE
+INC =  
+DEFINE =  -DHAVE_JPEG -DHAVE_FT -DHAVE_XPM -DHAVE_GIF -DHAVE_PNG -DHAVE_FONTCONFIG
 OBJECT = $(BASEEXT)$(OBJ_EXT)
 LDFROM = $(OBJECT)
 LINKTYPE = dynamic
@@ -203,27 +203,24 @@ TO_INST_PM = lib/GD.pm \
 	lib/GD/Image.pm \
 	lib/GD/Polygon.pm \
 	lib/GD/Polyline.pm \
-	lib/GD/Simple.pm \
-	qd.pl
+	lib/GD/Simple.pm
 
-PM_TO_BLIB = lib/GD.pm \
-	$(INST_LIBDIR)/GD.pm \
-	lib/GD/Group.pm \
+PM_TO_BLIB = lib/GD/Group.pm \
 	$(INST_LIBDIR)/GD/Group.pm \
-	lib/GD/Image.pm \
-	$(INST_LIBDIR)/GD/Image.pm \
 	lib/GD/Polygon.pm \
 	$(INST_LIBDIR)/GD/Polygon.pm \
 	lib/GD/Polyline.pm \
 	$(INST_LIBDIR)/GD/Polyline.pm \
 	lib/GD/Simple.pm \
 	$(INST_LIBDIR)/GD/Simple.pm \
-	qd.pl \
-	$(INST_LIBDIR)/qd.pl
+	lib/GD/Image.pm \
+	$(INST_LIBDIR)/GD/Image.pm \
+	lib/GD.pm \
+	$(INST_LIBDIR)/GD.pm
 
 
 # --- MakeMaker platform_constants section:
-MM_Unix_VERSION = 6.94
+MM_Unix_VERSION = 6.66
 PERL_MALLOC_DEF = -DPERL_EXTMALLOC_DEF -Dmalloc=Perl_malloc -Dfree=Perl_mfree -Drealloc=Perl_realloc -Dcalloc=Perl_calloc
 
 
@@ -235,13 +232,13 @@ AUTOSPLITFILE = $(ABSPERLRUN)  -e 'use AutoSplit;  autosplit($$$$ARGV[0], $$$$AR
 
 # --- MakeMaker tool_xsubpp section:
 
-XSUBPPDIR = /usr/share/perl/5.14/ExtUtils
+XSUBPPDIR = /usr/share/perl/5.18/ExtUtils
 XSUBPP = $(XSUBPPDIR)$(DFSEP)xsubpp
 XSUBPPRUN = $(PERLRUN) $(XSUBPP)
 XSPROTOARG = 
-XSUBPPDEPS = /usr/share/perl/5.14/ExtUtils/typemap typemap $(XSUBPP)
-XSUBPPARGS = -typemap /usr/share/perl/5.14/ExtUtils/typemap -typemap typemap
-XSUBPP_EXTRA_ARGS =
+XSUBPPDEPS = /usr/share/perl/5.18/ExtUtils/typemap typemap $(XSUBPP)
+XSUBPPARGS = -typemap /usr/share/perl/5.18/ExtUtils/typemap -typemap typemap
+XSUBPP_EXTRA_ARGS = 
 
 
 # --- MakeMaker tools_other section:
@@ -273,7 +270,6 @@ MACROSTART =
 MACROEND = 
 USEMAKEFILE = -f
 FIXIN = $(ABSPERLRUN) -MExtUtils::MY -e 'MY->fixin(shift)' --
-CP_NONEMPTY = $(ABSPERLRUN) -MExtUtils::Command::MM -e 'cp_nonempty' --
 
 
 # --- MakeMaker makemakerdflt section:
@@ -287,7 +283,7 @@ TARFLAGS = cvf
 ZIP = /usr/bin/zip
 ZIPFLAGS = -rl
 COMPRESS = gzip -9f
-SUFFIX = .gz
+SUFFIX = gz
 SHAR = shar
 PREOP = $(NOECHO) $(NOOP)
 POSTOP = $(NOECHO) $(NOOP)
@@ -297,7 +293,7 @@ RCS_LABEL = rcs -Nv$(VERSION_SYM): -q
 DIST_CP = best
 DIST_DEFAULT = tardist
 DISTNAME = GD
-DISTVNAME = GD-2.55
+DISTVNAME = GD-2.56
 
 
 # --- MakeMaker macro section:
@@ -308,7 +304,7 @@ DISTVNAME = GD-2.55
 
 # --- MakeMaker cflags section:
 
-CCFLAGS = -D_REENTRANT -D_GNU_SOURCE -DDEBIAN -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wformat=0
+CCFLAGS = -D_REENTRANT -D_GNU_SOURCE -DDEBIAN -fstack-protector -fno-strict-aliasing -pipe -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wformat=0
 OPTIMIZE = -O2 -g
 PERLTYPE = 
 MPOLLUTE = 
@@ -319,10 +315,9 @@ MPOLLUTE =
 # GD might depend on some other libraries:
 # See ExtUtils::Liblist for details
 #
-EXTRALIBS = -L/usr/lib/x86_64-linux-gnu -L/usr/lib/x86_64-linux-gnu -L/usr/lib/x86_64-linux-gnu -lXpm -lX11 -ljpeg -lfontconfig -lfreetype -lpng12 -lz -lgd
-LDLOADLIBS = -L/usr/lib/x86_64-linux-gnu -L/usr/lib/x86_64-linux-gnu -L/usr/lib/x86_64-linux-gnu -lXpm -lX11 -ljpeg -lfontconfig -lfreetype -lpng12 -lz -lm -lgd
+EXTRALIBS = -L/usr/lib/x86_64-linux-gnu -lgd -lgd
+LDLOADLIBS = -L/usr/lib/x86_64-linux-gnu -lgd -lgd
 BSLOADLIBS = 
-LD_RUN_PATH = /usr/lib/x86_64-linux-gnu
 
 
 # --- MakeMaker const_cccmd section:
@@ -339,6 +334,7 @@ CCCMD = $(CC) -c $(PASTHRU_INC) $(INC) \
 PASTHRU = LIBPERL_A="$(LIBPERL_A)"\
 	LINKTYPE="$(LINKTYPE)"\
 	OPTIMIZE="$(OPTIMIZE)"\
+	LD="$(LD)"\
 	PREFIX="$(PREFIX)"\
 	PASTHRU_DEFINE="$(PASTHRU_DEFINE)"\
 	PASTHRU_INC="$(PASTHRU_INC)"
@@ -468,6 +464,12 @@ linkext :: $(LINKTYPE)
 # --- MakeMaker dlsyms section:
 
 
+# --- MakeMaker dynamic section:
+
+dynamic :: $(FIRST_MAKEFILE) $(INST_DYNAMIC) $(INST_BOOT)
+	$(NOECHO) $(NOOP)
+
+
 # --- MakeMaker dynamic_bs section:
 BOOTSTRAP = $(BASEEXT).bs
 
@@ -482,11 +484,10 @@ $(BOOTSTRAP) : $(FIRST_MAKEFILE) $(BOOTDEP) $(INST_ARCHAUTODIR)$(DFSEP).exists
 	$(NOECHO) $(TOUCH) $@
 	$(CHMOD) $(PERM_RW) $@
 
-
-# --- MakeMaker dynamic section:
-
-dynamic :: $(FIRST_MAKEFILE) $(BOOTSTRAP) $(INST_DYNAMIC)
-	$(NOECHO) $(NOOP)
+$(INST_BOOT) : $(BOOTSTRAP) $(INST_ARCHAUTODIR)$(DFSEP).exists
+	$(NOECHO) $(RM_RF) $@
+	- $(CP) $(BOOTSTRAP) $@
+	$(CHMOD) $(PERM_RW) $@
 
 
 # --- MakeMaker dynamic_lib section:
@@ -498,14 +499,12 @@ OTHERLDFLAGS =
 INST_DYNAMIC_DEP = 
 INST_DYNAMIC_FIX = 
 
-$(INST_DYNAMIC): $(OBJECT) $(MYEXTLIB) $(INST_ARCHAUTODIR)$(DFSEP).exists $(EXPORT_LIST) $(PERL_ARCHIVE) $(PERL_ARCHIVE_AFTER) $(INST_DYNAMIC_DEP)
+$(INST_DYNAMIC): $(OBJECT) $(MYEXTLIB) $(BOOTSTRAP) $(INST_ARCHAUTODIR)$(DFSEP).exists $(EXPORT_LIST) $(PERL_ARCHIVE) $(PERL_ARCHIVE_AFTER) $(INST_DYNAMIC_DEP)
 	$(RM_F) $@
-	LD_RUN_PATH="$(LD_RUN_PATH)" $(LD)  $(LDDLFLAGS) $(LDFROM) $(OTHERLDFLAGS) -o $@ $(MYEXTLIB)	\
+	$(LD)  $(LDDLFLAGS) $(LDFROM) $(OTHERLDFLAGS) -o $@ $(MYEXTLIB)	\
 	  $(PERL_ARCHIVE) $(LDLOADLIBS) $(PERL_ARCHIVE_AFTER) $(EXPORT_LIST)	\
 	  $(INST_DYNAMIC_FIX)
 	$(CHMOD) $(PERM_RWX) $@
-	$(NOECHO) $(RM_RF) $(BOOTSTRAP)
-	- $(CP_NONEMPTY) $(BOOTSTRAP) $(INST_BOOT) $(PERM_RW)
 
 
 # --- MakeMaker static section:
@@ -533,19 +532,19 @@ POD2MAN = $(POD2MAN_EXE)
 
 manifypods : pure_all  \
 	bdf_scripts/bdf2gdfont.pl \
-	lib/GD.pm \
-	lib/GD/Image.pm \
-	lib/GD/Polygon.pm \
+	lib/GD/Simple.pm \
 	lib/GD/Polyline.pm \
-	lib/GD/Simple.pm
-	$(NOECHO) $(POD2MAN) --section=1 --perm_rw=$(PERM_RW) \
+	lib/GD/Image.pm \
+	lib/GD.pm \
+	lib/GD/Polygon.pm
+	$(NOECHO) $(POD2MAN) --section=$(MAN1EXT) --perm_rw=$(PERM_RW) \
 	  bdf_scripts/bdf2gdfont.pl $(INST_MAN1DIR)/bdf2gdfont.pl.$(MAN1EXT) 
-	$(NOECHO) $(POD2MAN) --section=3 --perm_rw=$(PERM_RW) \
-	  lib/GD.pm $(INST_MAN3DIR)/GD.$(MAN3EXT) \
-	  lib/GD/Image.pm $(INST_MAN3DIR)/GD::Image.$(MAN3EXT) \
-	  lib/GD/Polygon.pm $(INST_MAN3DIR)/GD::Polygon.$(MAN3EXT) \
+	$(NOECHO) $(POD2MAN) --section=$(MAN3EXT) --perm_rw=$(PERM_RW) \
+	  lib/GD/Simple.pm $(INST_MAN3DIR)/GD::Simple.$(MAN3EXT) \
 	  lib/GD/Polyline.pm $(INST_MAN3DIR)/GD::Polyline.$(MAN3EXT) \
-	  lib/GD/Simple.pm $(INST_MAN3DIR)/GD::Simple.$(MAN3EXT) 
+	  lib/GD/Image.pm $(INST_MAN3DIR)/GD::Image.$(MAN3EXT) \
+	  lib/GD.pm $(INST_MAN3DIR)/GD.$(MAN3EXT) \
+	  lib/GD/Polygon.pm $(INST_MAN3DIR)/GD::Polygon.$(MAN3EXT) 
 
 
 
@@ -600,25 +599,24 @@ clean_subdirs :
 
 clean :: clean_subdirs
 	- $(RM_F) \
-	  $(BASEEXT).bso $(BASEEXT).def \
-	  $(BASEEXT).exp $(BASEEXT).x \
-	  $(BOOTSTRAP) $(INST_ARCHAUTODIR)/extralibs.all \
-	  $(INST_ARCHAUTODIR)/extralibs.ld $(MAKE_APERL_FILE) \
-	  *$(LIB_EXT) *$(OBJ_EXT) \
-	  *perl.core MYMETA.json \
-	  MYMETA.yml blibdirs.ts \
-	  core core.*perl.*.? \
-	  core.[0-9] core.[0-9][0-9] \
-	  core.[0-9][0-9][0-9] core.[0-9][0-9][0-9][0-9] \
-	  core.[0-9][0-9][0-9][0-9][0-9] lib$(BASEEXT).def \
-	  mon.out perl \
-	  perl$(EXE_EXT) perl.exe \
-	  perlmain.c pm_to_blib \
-	  pm_to_blib.ts so_locations \
-	  tmon.out 
+	  so_locations $(BOOTSTRAP) \
+	  $(INST_ARCHAUTODIR)/extralibs.all core.[0-9] \
+	  perl core.*perl.*.? \
+	  *$(LIB_EXT) perl$(EXE_EXT) \
+	  *$(OBJ_EXT) $(INST_ARCHAUTODIR)/extralibs.ld \
+	  perl.exe $(BASEEXT).exp \
+	  mon.out MYMETA.json \
+	  core.[0-9][0-9] lib$(BASEEXT).def \
+	  $(BASEEXT).bso $(MAKE_APERL_FILE) \
+	  core.[0-9][0-9][0-9][0-9][0-9] blibdirs.ts \
+	  pm_to_blib.ts perlmain.c \
+	  core.[0-9][0-9][0-9][0-9] core.[0-9][0-9][0-9] \
+	  core tmon.out \
+	  $(BASEEXT).x $(BASEEXT).def \
+	  pm_to_blib MYMETA.yml \
+	  *perl.core 
 	- $(RM_RF) \
 	  blib 
-	  $(NOECHO) $(RM_F) $(MAKEFILE_OLD)
 	- $(MV) $(FIRST_MAKEFILE) $(MAKEFILE_OLD) $(DEV_NULL)
 
 
@@ -631,8 +629,8 @@ realclean_subdirs :
 # Delete temporary files (via clean) and also delete dist files
 realclean purge ::  clean realclean_subdirs
 	- $(RM_F) \
-	  $(OBJECT) $(MAKEFILE_OLD) \
-	  $(FIRST_MAKEFILE) 
+	  $(FIRST_MAKEFILE) $(MAKEFILE_OLD) \
+	  $(OBJECT) 
 	- $(RM_RF) \
 	  $(DISTVNAME) 
 
@@ -644,12 +642,9 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) 'abstract: '\''Interface to Gd Graphics Library'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) 'author:' >> META_new.yml
 	$(NOECHO) $(ECHO) '  - '\''Lincoln Stein (lstein@cshl.org)'\''' >> META_new.yml
-	$(NOECHO) $(ECHO) 'build_requires:' >> META_new.yml
-	$(NOECHO) $(ECHO) '  ExtUtils::MakeMaker: '\''0'\''' >> META_new.yml
-	$(NOECHO) $(ECHO) 'configure_requires:' >> META_new.yml
-	$(NOECHO) $(ECHO) '  ExtUtils::MakeMaker: '\''0'\''' >> META_new.yml
+	$(NOECHO) $(ECHO) 'build_requires: {}' >> META_new.yml
 	$(NOECHO) $(ECHO) 'dynamic_config: 1' >> META_new.yml
-	$(NOECHO) $(ECHO) 'generated_by: '\''ExtUtils::MakeMaker version 6.94, CPAN::Meta::Converter version 2.120351'\''' >> META_new.yml
+	$(NOECHO) $(ECHO) 'generated_by: '\''ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.142690'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) 'license: unknown' >> META_new.yml
 	$(NOECHO) $(ECHO) 'meta-spec:' >> META_new.yml
 	$(NOECHO) $(ECHO) '  url: http://module-build.sourceforge.net/META-spec-v1.4.html' >> META_new.yml
@@ -659,9 +654,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '  directory:' >> META_new.yml
 	$(NOECHO) $(ECHO) '    - t' >> META_new.yml
 	$(NOECHO) $(ECHO) '    - inc' >> META_new.yml
-	$(NOECHO) $(ECHO) 'requires:' >> META_new.yml
-	$(NOECHO) $(ECHO) '  Math::Trig: '\''0'\''' >> META_new.yml
-	$(NOECHO) $(ECHO) 'version: '\''2.55'\''' >> META_new.yml
+	$(NOECHO) $(ECHO) 'version: '\''2.56'\''' >> META_new.yml
 	$(NOECHO) $(ECHO) 'x_repository:' >> META_new.yml
 	$(NOECHO) $(ECHO) '  type: git' >> META_new.yml
 	$(NOECHO) $(ECHO) '  url: git://github.com/lstein/Perl-GD.git' >> META_new.yml
@@ -674,7 +667,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '      "Lincoln Stein (lstein@cshl.org)"' >> META_new.json
 	$(NOECHO) $(ECHO) '   ],' >> META_new.json
 	$(NOECHO) $(ECHO) '   "dynamic_config" : 1,' >> META_new.json
-	$(NOECHO) $(ECHO) '   "generated_by" : "ExtUtils::MakeMaker version 6.94, CPAN::Meta::Converter version 2.120351",' >> META_new.json
+	$(NOECHO) $(ECHO) '   "generated_by" : "ExtUtils::MakeMaker version 6.66, CPAN::Meta::Converter version 2.142690",' >> META_new.json
 	$(NOECHO) $(ECHO) '   "license" : [' >> META_new.json
 	$(NOECHO) $(ECHO) '      "unknown"' >> META_new.json
 	$(NOECHO) $(ECHO) '   ],' >> META_new.json
@@ -689,25 +682,8 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '         "inc"' >> META_new.json
 	$(NOECHO) $(ECHO) '      ]' >> META_new.json
 	$(NOECHO) $(ECHO) '   },' >> META_new.json
-	$(NOECHO) $(ECHO) '   "prereqs" : {' >> META_new.json
-	$(NOECHO) $(ECHO) '      "build" : {' >> META_new.json
-	$(NOECHO) $(ECHO) '         "requires" : {' >> META_new.json
-	$(NOECHO) $(ECHO) '            "ExtUtils::MakeMaker" : "0"' >> META_new.json
-	$(NOECHO) $(ECHO) '         }' >> META_new.json
-	$(NOECHO) $(ECHO) '      },' >> META_new.json
-	$(NOECHO) $(ECHO) '      "configure" : {' >> META_new.json
-	$(NOECHO) $(ECHO) '         "requires" : {' >> META_new.json
-	$(NOECHO) $(ECHO) '            "ExtUtils::MakeMaker" : "0"' >> META_new.json
-	$(NOECHO) $(ECHO) '         }' >> META_new.json
-	$(NOECHO) $(ECHO) '      },' >> META_new.json
-	$(NOECHO) $(ECHO) '      "runtime" : {' >> META_new.json
-	$(NOECHO) $(ECHO) '         "requires" : {' >> META_new.json
-	$(NOECHO) $(ECHO) '            "Math::Trig" : "0"' >> META_new.json
-	$(NOECHO) $(ECHO) '         }' >> META_new.json
-	$(NOECHO) $(ECHO) '      }' >> META_new.json
-	$(NOECHO) $(ECHO) '   },' >> META_new.json
 	$(NOECHO) $(ECHO) '   "release_status" : "stable",' >> META_new.json
-	$(NOECHO) $(ECHO) '   "version" : "2.55",' >> META_new.json
+	$(NOECHO) $(ECHO) '   "version" : "2.56",' >> META_new.json
 	$(NOECHO) $(ECHO) '   "x_repository" : {' >> META_new.json
 	$(NOECHO) $(ECHO) '      "type" : "git",' >> META_new.json
 	$(NOECHO) $(ECHO) '      "url" : "git://github.com/lstein/Perl-GD.git",' >> META_new.json
@@ -736,7 +712,7 @@ manifest :
 	$(PERLRUN) "-MExtUtils::Manifest=mkmanifest" -e mkmanifest
 
 veryclean : realclean
-	$(RM_F) *~ */*~ *.orig */*.orig *.bak */*.bak *.old */*.old
+	$(RM_F) *~ */*~ *.orig */*.orig *.bak */*.bak *.old */*.old 
 
 
 
@@ -751,7 +727,6 @@ tardist : $(DISTVNAME).tar$(SUFFIX)
 
 uutardist : $(DISTVNAME).tar$(SUFFIX)
 	uuencode $(DISTVNAME).tar$(SUFFIX) $(DISTVNAME).tar$(SUFFIX) > $(DISTVNAME).tar$(SUFFIX)_uu
-	$(NOECHO) $(ECHO) 'Created $(DISTVNAME).tar$(SUFFIX)_uu'
 
 $(DISTVNAME).tar$(SUFFIX) : distdir
 	$(PREOP)
@@ -759,7 +734,6 @@ $(DISTVNAME).tar$(SUFFIX) : distdir
 	$(TAR) $(TARFLAGS) $(DISTVNAME).tar $(DISTVNAME)
 	$(RM_RF) $(DISTVNAME)
 	$(COMPRESS) $(DISTVNAME).tar
-	$(NOECHO) $(ECHO) 'Created $(DISTVNAME).tar$(SUFFIX)'
 	$(POSTOP)
 
 zipdist : $(DISTVNAME).zip
@@ -769,14 +743,12 @@ $(DISTVNAME).zip : distdir
 	$(PREOP)
 	$(ZIP) $(ZIPFLAGS) $(DISTVNAME).zip $(DISTVNAME)
 	$(RM_RF) $(DISTVNAME)
-	$(NOECHO) $(ECHO) 'Created $(DISTVNAME).zip'
 	$(POSTOP)
 
 shdist : distdir
 	$(PREOP)
 	$(SHAR) $(DISTVNAME) > $(DISTVNAME).shar
 	$(RM_RF) $(DISTVNAME)
-	$(NOECHO) $(ECHO) 'Created $(DISTVNAME).shar'
 	$(POSTOP)
 
 
@@ -821,7 +793,7 @@ distmeta : create_distdir metafile
 
 # --- MakeMaker distsignature section:
 distsignature : create_distdir
-	$(NOECHO) cd $(DISTVNAME) && $(ABSPERLRUN) -MExtUtils::Manifest=maniadd -e 'eval { maniadd({q{SIGNATURE} => q{Public-key signature (added by MakeMaker)}}) }' \
+	$(NOECHO) cd $(DISTVNAME) && $(ABSPERLRUN) -MExtUtils::Manifest=maniadd -e 'eval { maniadd({q{SIGNATURE} => q{Public-key signature (added by MakeMaker)}}) } ' \
 	  -e '    or print "Could not add SIGNATURE to MANIFEST: $$$${'\''@'\''}\n"' --
 	$(NOECHO) cd $(DISTVNAME) && $(TOUCH) SIGNATURE
 	cd $(DISTVNAME) && cpansign -s
@@ -855,9 +827,7 @@ doc__install : doc_site_install
 	$(NOECHO) $(ECHO) INSTALLDIRS not defined, defaulting to INSTALLDIRS=site
 
 pure_perl_install :: all
-	$(NOECHO) $(MOD_INSTALL) \
-		read $(PERL_ARCHLIB)/auto/$(FULLEXT)/.packlist \
-		write $(DESTINSTALLARCHLIB)/auto/$(FULLEXT)/.packlist \
+	$(NOECHO) umask 022; $(MOD_INSTALL) \
 		$(INST_LIB) $(DESTINSTALLPRIVLIB) \
 		$(INST_ARCHLIB) $(DESTINSTALLARCHLIB) \
 		$(INST_BIN) $(DESTINSTALLBIN) \
@@ -869,7 +839,7 @@ pure_perl_install :: all
 
 
 pure_site_install :: all
-	$(NOECHO) $(MOD_INSTALL) \
+	$(NOECHO) umask 02; $(MOD_INSTALL) \
 		read $(SITEARCHEXP)/auto/$(FULLEXT)/.packlist \
 		write $(DESTINSTALLSITEARCH)/auto/$(FULLEXT)/.packlist \
 		$(INST_LIB) $(DESTINSTALLSITELIB) \
@@ -882,9 +852,7 @@ pure_site_install :: all
 		$(PERL_ARCHLIB)/auto/$(FULLEXT)
 
 pure_vendor_install :: all
-	$(NOECHO) $(MOD_INSTALL) \
-		read $(VENDORARCHEXP)/auto/$(FULLEXT)/.packlist \
-		write $(DESTINSTALLVENDORARCH)/auto/$(FULLEXT)/.packlist \
+	$(NOECHO) umask 022; $(MOD_INSTALL) \
 		$(INST_LIB) $(DESTINSTALLVENDORLIB) \
 		$(INST_ARCHLIB) $(DESTINSTALLVENDORARCH) \
 		$(INST_BIN) $(DESTINSTALLVENDORBIN) \
@@ -892,52 +860,32 @@ pure_vendor_install :: all
 		$(INST_MAN1DIR) $(DESTINSTALLVENDORMAN1DIR) \
 		$(INST_MAN3DIR) $(DESTINSTALLVENDORMAN3DIR)
 
-
 doc_perl_install :: all
-	$(NOECHO) $(ECHO) Appending installation info to $(DESTINSTALLARCHLIB)/perllocal.pod
-	-$(NOECHO) $(MKPATH) $(DESTINSTALLARCHLIB)
-	-$(NOECHO) $(DOC_INSTALL) \
-		"Module" "$(NAME)" \
-		"installed into" "$(INSTALLPRIVLIB)" \
-		LINKTYPE "$(LINKTYPE)" \
-		VERSION "$(VERSION)" \
-		EXE_FILES "$(EXE_FILES)" \
-		>> $(DESTINSTALLARCHLIB)/perllocal.pod
 
 doc_site_install :: all
-	$(NOECHO) $(ECHO) Appending installation info to $(DESTINSTALLARCHLIB)/perllocal.pod
-	-$(NOECHO) $(MKPATH) $(DESTINSTALLARCHLIB)
-	-$(NOECHO) $(DOC_INSTALL) \
+	$(NOECHO) $(ECHO) Appending installation info to $(DESTINSTALLSITEARCH)/perllocal.pod
+	-$(NOECHO) umask 02; $(MKPATH) $(DESTINSTALLSITEARCH)
+	-$(NOECHO) umask 02; $(DOC_INSTALL) \
 		"Module" "$(NAME)" \
 		"installed into" "$(INSTALLSITELIB)" \
 		LINKTYPE "$(LINKTYPE)" \
 		VERSION "$(VERSION)" \
 		EXE_FILES "$(EXE_FILES)" \
-		>> $(DESTINSTALLARCHLIB)/perllocal.pod
+		>> $(DESTINSTALLSITEARCH)/perllocal.pod
 
 doc_vendor_install :: all
-	$(NOECHO) $(ECHO) Appending installation info to $(DESTINSTALLARCHLIB)/perllocal.pod
-	-$(NOECHO) $(MKPATH) $(DESTINSTALLARCHLIB)
-	-$(NOECHO) $(DOC_INSTALL) \
-		"Module" "$(NAME)" \
-		"installed into" "$(INSTALLVENDORLIB)" \
-		LINKTYPE "$(LINKTYPE)" \
-		VERSION "$(VERSION)" \
-		EXE_FILES "$(EXE_FILES)" \
-		>> $(DESTINSTALLARCHLIB)/perllocal.pod
 
 
 uninstall :: uninstall_from_$(INSTALLDIRS)dirs
 	$(NOECHO) $(NOOP)
 
 uninstall_from_perldirs ::
-	$(NOECHO) $(UNINSTALL) $(PERL_ARCHLIB)/auto/$(FULLEXT)/.packlist
 
 uninstall_from_sitedirs ::
 	$(NOECHO) $(UNINSTALL) $(SITEARCHEXP)/auto/$(FULLEXT)/.packlist
 
 uninstall_from_vendordirs ::
-	$(NOECHO) $(UNINSTALL) $(VENDORARCHEXP)/auto/$(FULLEXT)/.packlist
+
 
 
 # --- MakeMaker force section:
@@ -953,6 +901,7 @@ PERL_HDRS = \
         $(PERL_INC)/XSUB.h            \
         $(PERL_INC)/av.h            \
         $(PERL_INC)/bitcount.h            \
+        $(PERL_INC)/charclass_invlists.h            \
         $(PERL_INC)/config.h            \
         $(PERL_INC)/cop.h            \
         $(PERL_INC)/cv.h            \
@@ -961,11 +910,14 @@ PERL_HDRS = \
         $(PERL_INC)/embedvar.h            \
         $(PERL_INC)/fakesdio.h            \
         $(PERL_INC)/fakethr.h            \
+        $(PERL_INC)/feature.h            \
         $(PERL_INC)/form.h            \
         $(PERL_INC)/git_version.h            \
         $(PERL_INC)/gv.h            \
         $(PERL_INC)/handy.h            \
         $(PERL_INC)/hv.h            \
+        $(PERL_INC)/hv_func.h            \
+        $(PERL_INC)/inline.h            \
         $(PERL_INC)/intrpvar.h            \
         $(PERL_INC)/iperlsys.h            \
         $(PERL_INC)/keywords.h            \
@@ -973,6 +925,9 @@ PERL_HDRS = \
         $(PERL_INC)/malloc_ctl.h            \
         $(PERL_INC)/metaconfig.h            \
         $(PERL_INC)/mg.h            \
+        $(PERL_INC)/mg_data.h            \
+        $(PERL_INC)/mg_raw.h            \
+        $(PERL_INC)/mg_vtable.h            \
         $(PERL_INC)/mydtrace.h            \
         $(PERL_INC)/nostdio.h            \
         $(PERL_INC)/op.h            \
@@ -1006,6 +961,7 @@ PERL_HDRS = \
         $(PERL_INC)/time64.h            \
         $(PERL_INC)/time64_config.h            \
         $(PERL_INC)/uconfig.h            \
+        $(PERL_INC)/unicode_constants.h            \
         $(PERL_INC)/unixish.h            \
         $(PERL_INC)/utf8.h            \
         $(PERL_INC)/utfebcdic.h            \
@@ -1069,7 +1025,7 @@ subdirs-test ::
 
 
 test_dynamic :: pure_all
-	PERL_DL_NONLAZY=1 $(FULLPERLRUN) "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
+	PERL_DL_NONLAZY=1 $(FULLPERLRUN) "-MExtUtils::Command::MM" "-e" "test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
 
 testdb_dynamic :: pure_all
 	PERL_DL_NONLAZY=1 $(FULLPERLRUN) $(TESTDB_SW) "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
@@ -1077,7 +1033,7 @@ testdb_dynamic :: pure_all
 test_ : test_dynamic
 
 test_static :: pure_all $(MAP_TARGET)
-	PERL_DL_NONLAZY=1 ./$(MAP_TARGET) "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
+	PERL_DL_NONLAZY=1 ./$(MAP_TARGET) "-MExtUtils::Command::MM" "-e" "test_harness($(TEST_VERBOSE), '$(INST_LIB)', '$(INST_ARCHLIB)')" $(TEST_FILES)
 
 testdb_static :: pure_all $(MAP_TARGET)
 	PERL_DL_NONLAZY=1 ./$(MAP_TARGET) $(TESTDB_SW) "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
@@ -1092,7 +1048,7 @@ ppd :
 	$(NOECHO) $(ECHO) '    <AUTHOR>Lincoln Stein (lstein@cshl.org)</AUTHOR>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Math::Trig" />' >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="x86_64-linux-gnu-thread-multi-5.14" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="x86_64-linux-gnu-thread-multi-5.18" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '        <CODEBASE HREF="" />' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '    </IMPLEMENTATION>' >> $(DISTNAME).ppd
 	$(NOECHO) $(ECHO) '</SOFTPKG>' >> $(DISTNAME).ppd
@@ -1102,13 +1058,12 @@ ppd :
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
-	  lib/GD.pm $(INST_LIBDIR)/GD.pm \
 	  lib/GD/Group.pm $(INST_LIBDIR)/GD/Group.pm \
-	  lib/GD/Image.pm $(INST_LIBDIR)/GD/Image.pm \
 	  lib/GD/Polygon.pm $(INST_LIBDIR)/GD/Polygon.pm \
 	  lib/GD/Polyline.pm $(INST_LIBDIR)/GD/Polyline.pm \
 	  lib/GD/Simple.pm $(INST_LIBDIR)/GD/Simple.pm \
-	  qd.pl $(INST_LIBDIR)/qd.pl 
+	  lib/GD/Image.pm $(INST_LIBDIR)/GD/Image.pm \
+	  lib/GD.pm $(INST_LIBDIR)/GD.pm 
 	$(NOECHO) $(TOUCH) pm_to_blib
 
 

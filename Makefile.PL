@@ -241,8 +241,8 @@ WriteMakefile(
                      'lib/GD/Polygon.pm' => '$(INST_LIBDIR)/GD/Polygon.pm',
                      'lib/GD/Simple.pm' => '$(INST_LIBDIR)/GD/Simple.pm',
                      'lib/GD/Image.pm' => '$(INST_LIBDIR)/GD/Image.pm',
-                     'lib/GD/Group.pm' => '$(INST_LIBDIR)/GD/Group.pm',
-                     'qd.pl' => '$(INST_LIBDIR)/qd.pl'},
+                     'lib/GD/Group.pm' => '$(INST_LIBDIR)/GD/Group.pm'
+    },
     'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
     'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],

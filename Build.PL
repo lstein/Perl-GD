@@ -217,7 +217,8 @@ close F;
 foreach (@INC) {
     s/^-I//;
 }
-unshift @INC,$ENV{GD_INC} if $ENV{GD_INC};
+unshift @INC,$ENV{GD_INC};
+@INC = grep {/\S/} @INC;
 
 my $build = Module::Build->new(
     module_name         => 'GD',

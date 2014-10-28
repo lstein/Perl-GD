@@ -4,13 +4,13 @@
       "Lincoln Stein <lincoln.stein@gmail.com>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4205",
+   "generated_by" : "Module::Build version 0.421",
    "license" : [
       "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : 2
+      "version" : "2"
    },
    "name" : "GD",
    "prereqs" : {
@@ -33,7 +33,7 @@
    "provides" : {
       "GD" : {
          "file" : "lib/GD.pm",
-         "version" : "2.55"
+         "version" : "2.56"
       },
       "GD::Group" : {
          "file" : "lib/GD/Group.pm",
@@ -56,7 +56,7 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "2.55",
+   "version" : "2.56",
    "x_repository" : {
       "type" : "git",
       "url" : "git://github.com/lstein/Perl-GD.git",
