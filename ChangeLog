@@ -1,3 +1,4 @@
+2.56	* Fix Makefile.PL so that it works again.
 2.55	* Great simplification of regression framework ought to fix make test problems.
 	* Replace ExtUtils::MakeMaker script with Module::Build system 
 	  (just in time for Module::Build to be deprecated).
