@@ -22,7 +22,7 @@ my (@INC,@LIBPATH,@LIBS,$LIBGD_VERSION);
 my $AUTOCONFIG = 0;      # global set by try_to_autoconfigure() below
 
 my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,
-    $lib_zlib_path,$lib_fontconfig_path,$force,$FCGI);
+    $lib_zlib_path,$lib_fontconfig_path,$force,$FCGI,$gdlib_config_path);
 
 use Getopt::Long;
 my $result = GetOptions("ignore_missing_gd" => \$force,
@@ -34,6 +34,7 @@ my $result = GetOptions("ignore_missing_gd" => \$force,
 			"lib_xpm_path=s"  => \$lib_xpm_path,
 			"lib_zlib_path=s" => \$lib_zlib_path,
                         "lib_fontconfig_path=s" => \$lib_fontconfig_path,
+                        "gdlib_config_path" => \$gdlib_config_path,
                         "fcgi"            => \$FCGI,
 		       );
 
@@ -78,6 +79,7 @@ Configure GD module.
      --lib_xpm_path  path            path to libxpm (/usr)
      --lib_zlib_path path            path to libpng (/usr)
      --lib_fontconfig_path path      path to libfontconfig (/usr)
+     --gdlib_config_path path        path to gdlib-config (/usr/bin)
      --ignore_missing_gd             Ignore missing or old libgd installations and try to compile anyway
      --fcgi                          build for FastCGI compatibility, i.e. no PerlIO
 
@@ -131,6 +133,15 @@ if( defined($lib_fontconfig_path) )
     print "Fontconfig library used from:     $lib_fontconfig_path\n";
     @INC     = ("-I$lib_fontconfig_path/include", @INC);
     @LIBPATH = ("-L$lib_fontconfig_path/lib", @LIBPATH);
+}
+if( defined($gdlib_config_path) )
+{
+    print "gdlib-config used:          $gdlib_config_path\n";
+}
+else
+{
+    $gdlib_config_path = "gdlib-config";
+    print "$gdlib_config_path used from the PATH\n";
 }
 #############################################################################################
 
@@ -320,7 +331,7 @@ sub try_to_autoconfigure {
   my ($prefix) = $$lib_gd_path ? ($$lib_gd_path =~ m|(^.*)/lib|) : "";
   my $bindir = $prefix ? "$prefix/bin/" : "";
   my $config = `${bindir}gdlib-config --all` if -e "${bindir}gdlib-config";
-  $config = `gdlib-config --all` if !$config;
+  $config = `$gdlib_config_path --all` if !$config;
   unless ($config) {
       my %config;
       require ExtUtils::PkgConfig;
