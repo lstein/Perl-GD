@@ -157,7 +157,7 @@ if( defined($options) )
   $XPM       = $options =~ m/XPM/i;
   $GIF       = $options =~ m/GIF/i;
   $PNG       = $options =~ m/PNG/i;
-  $ANIMGIF   = $GIF && $options =~ m/ANIMGIF/i;
+  $ANIMGIF   = $GIF && ($options =~ m/ANIMGIF/i || $options =~ m/GIFANIM/i);
   $VERSION_33= $options =~ m/VERSION_33/i;
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
   $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
