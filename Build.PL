@@ -243,12 +243,14 @@ my $build = Module::Build->new(
     extra_compiler_flags => $DEFINES,
     script_files        => 'bdf_scripts',
     meta_merge => {
-	'meta-spec' => { version => 2 },
-	x_repository => {
-	    type => 'git',
-	    url  => 'git://github.com/lstein/Perl-GD.git',
-	    web  => 'https://github.com/lstein/Perl-GD',
-	},
+        'meta-spec' => { version => 2 },
+        resources => {
+            repository => {
+                type => 'git',
+                url  => 'git://github.com/lstein/Perl-GD.git',
+                web  => 'https://github.com/lstein/Perl-GD',
+            },
+        },
     }
     );
 
