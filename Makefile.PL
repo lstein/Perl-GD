@@ -34,14 +34,16 @@ If you want to try to compile anyway, please rerun this script with the option -
 END
 }
 
-@INC     = qw(-I/usr/include -I/usr/include/gd) unless @INC;
-@LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/lib) unless @LIBPATH;
-@LIBS    = qw(-lgd) unless @LIBS;
+push @LIBS, "-lgd";
+unless ($force) {
+  @INC     = qw(-I/usr/include -I/usr/include/gd) unless @INC;
+  @LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/lib) unless @LIBPATH;
 
-# support for AMD64 libraries
-if (-d '/usr/lib64') {
-  my @libs64 = map {my $a = $_; $a=~ s/lib$/lib64/; $a} @LIBPATH;
-  @LIBPATH = (@LIBPATH,@libs64);
+  # support for AMD64 libraries
+  if (-d '/usr/lib64') {
+    my @libs64 = map {my $a = $_; $a=~ s/lib$/lib64/; $a} @LIBPATH;
+    @LIBPATH = (@LIBPATH,@libs64);
+  }
 }
 
 #############################################################################################
@@ -296,7 +298,6 @@ sub try_to_autoconfigure {
   @$LIBPATH      = map {s/^-L// && "-L$_"} split /\s+/,$ldflags;
   @$LIBS         = split /\s+/,$libs;
 
-  push @$LIBS,"-lgd";
   push @$LIBPATH,"-L$libdir";
   ($$lib_gd_path = $libdir) =~ s!/[^/]+$!!;
   $$options      = $features;
