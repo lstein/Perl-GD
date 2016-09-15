@@ -1197,6 +1197,19 @@ gdrgb(image,color)
 		PUSHs(sv_2mortal(newSViv(b)));
 	}
 
+void
+gdalpha(image,color)
+	GD::Image	image
+	int		color
+        PROTOTYPE: $$
+	PPCODE:
+	{
+		int a;
+		a = gdImageAlpha(image,color);
+		EXTEND(sp,1);
+		PUSHs(sv_2mortal(newSViv(a)));
+	}
+
 int
 gdboundsSafe(image,x,y)
 	GD::Image	image
