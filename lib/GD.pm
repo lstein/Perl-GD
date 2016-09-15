@@ -696,6 +696,15 @@ Example:
 
 	@RGB = $myImage->rgb($peachy);
 
+=item B<($alpha) = $image-E<gt>alpha($index)>
+
+This returns an item containing the alpha component of the specified
+color index.
+
+Example:
+
+	@RGB = $myImage->rgb($peachy);
+
 =item B<$image-E<gt>transparent($colorIndex)>
 
 This marks the color at the specified index as being transparent.
