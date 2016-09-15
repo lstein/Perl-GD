@@ -1,0 +1,7 @@
+/.config.cache
+/MYMETA.json
+/MYMETA.yml
+/Makefile
+/bdf_scripts/bdf2gdfont.pl
+/blib/*
+/pm_to_blib
