@@ -1,4 +1,3 @@
-bdf_scripts/bdf2gdfont.pl
 bdf_scripts/bdf2gdfont.PLS
 bdf_scripts/bdftogd
 bdf_scripts/cvtbdf.pl
@@ -27,7 +26,6 @@ lib/GD/Polygon.pm
 lib/GD/Polyline.pm
 lib/GD/Simple.pm
 LICENSE
-Makefile.old
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
