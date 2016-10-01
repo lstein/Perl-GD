@@ -276,8 +276,11 @@ sub try_to_autoconfigure {
   @$LIBS         = split /\s+/,$libs;
 
   push @$LIBS,"-lgd";
-  push @$LIBPATH,"-L$libdir";
-  ($$lib_gd_path = $libdir) =~ s!/[^/]+$!!;
+  if ( $libdir ) {
+      push @$LIBPATH,"-L$libdir";
+      ($$lib_gd_path = $libdir) =~ s!/[^/]+$!!;
+  }
+
   $$options      = $features;
 
   my ($minor, $patch)    = $version =~ /^2\.(\d+)\.(\d+)$/;
