@@ -264,12 +264,12 @@ sub try_to_autoconfigure {
   my ($version) = $config =~ /^GD library\s+(\S+)/m;
   warn "Configuring for libgd version $version.\n";
 
-  my ($cflags)     = $config =~ /^cflags:\s*?(.*?)$/m;
-  my ($ldflags)    = $config =~ /^ldflags:\s*?(.*?)$/m;
-  my ($libs)       = $config =~ /^libs:\s*?(.*?)$/m;
-  my ($libdir)     = $config =~ /^libdir:\s*?(.*?)$/m;
-  my ($features)   = $config =~ /^features:\s*?(.*?)$/m;
-  my ($includedir) = $config =~ /^includedir:\s*?(.*?)$/m;
+  my ($cflags)     = $config =~ /^cflags:     \h*(.*?)\h*$/mx;
+  my ($ldflags)    = $config =~ /^ldflags:    \h*(.*?)\h*$/mx;
+  my ($libs)       = $config =~ /^libs:       \h*(.*?)\h*$/mx;
+  my ($libdir)     = $config =~ /^libdir:     \h*(.*?)\h*$/mx;
+  my ($features)   = $config =~ /^features:   \h*(.*?)\h*$/mx;
+  my ($includedir) = $config =~ /^includedir: \h*(.*?)\h*$/mx;
 
   @$INC          = map {s/^-I// && "-I$_"} split /\s+/,$cflags;
   @$LIBPATH      = map {s/^-L// && "-L$_"} split /\s+/,$ldflags;
