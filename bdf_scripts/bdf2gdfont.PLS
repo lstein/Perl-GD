@@ -8,6 +8,10 @@ chdir dirname($0);
 $file = basename($0, '.PL','.PLS');
 $file .= $^O eq 'VMS' ? '.com' : '.pl';
 
+if (-e $file) {
+    unlink($file);
+}
+
 open OUT,">$file" or die "Can't create $file: $!";
 
 print "Extracting $file (with variable substitutions)\n";
