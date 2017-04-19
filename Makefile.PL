@@ -232,6 +232,7 @@ close F;
 
 WriteMakefile(
     'NAME'	=> 'GD',
+    'ABSTRACT_FROM'     => 'lib/GD.pm',
     'VERSION_FROM'	=> 'lib/GD.pm',
     'PREREQ_PM' => {
           'Math::Trig' => 0,
@@ -262,13 +263,16 @@ WriteMakefile(
     ( $MAKEMAKER_VERSION > 6.45 ? (
 	META_MERGE => {
 	    'meta-spec' => { version => 2 },
-	    repository => {
-		type => 'git',
-		url  => 'git://github.com/lstein/Perl-GD.git',
-		web  => 'https://github.com/lstein/Perl-GD',
-	    },
+            resources => {
+                repository => {
+                    type => 'git',
+                    url  => 'git://github.com/lstein/Perl-GD.git',
+                    web  => 'https://github.com/lstein/Perl-GD',
+                },
+            },
         },
     ):()),
+    SIGN => 1,
 );
 
 exit 0;
