@@ -315,9 +315,12 @@ sub try_to_autoconfigure {
   push @$LIBPATH,"-L$libdir";
   $$options      = $features;
 
-  my ($minor)    = $version =~ /^2\.\d+\.(\d+)$/;
+  my ($release, $major, $minor) = $version =~ /^(\d+)\.(\d+)\.(\d+)$/;
   $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE VERSION_33"
-    if defined($minor) && $minor >= 33;
+    if defined($minor)
+    && ($release > 2
+        || ($release == 2 && $major > 0) 
+        || ($release == 2 && $major == 0 && $minor >= 33));
 
   if ($config) {
       my @correct_inc = map {s/^-I// && $_} split /\s+/,$cflags;
