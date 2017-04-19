@@ -3,11 +3,11 @@ abstract: 'Perl interface to the gd2 graphics library'
 author:
   - 'Lincoln Stein <lincoln.stein@gmail.com>'
 build_requires:
-  ExtUtils::CBuilder: '0'
+  ExtUtils::MakeMaker: '0'
 configure_requires:
-  Module::Build: '0.42'
-dynamic_config: 1
-generated_by: 'Module::Build version 0.421, CPAN::Meta::Converter version 2.142690'
+  ExtUtils::MakeMaker: '0'
+dynamic_config: 0
+generated_by: 'Module::Build version 0.421, CPAN::Meta::Converter version 2.142690, CPAN::Meta::Converter version 2.150010'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -28,6 +28,7 @@ provides:
   GD::Simple:
     file: lib/GD/Simple.pm
 requires:
+  ExtUtils::PkgConfig: '0'
   Math::Trig: '0'
 resources:
   license: http://dev.perl.org/licenses/
@@ -36,3 +37,4 @@ x_repository:
   type: git
   url: git://github.com/lstein/Perl-GD.git
   web: https://github.com/lstein/Perl-GD
+x_serialization_backend: 'CPAN::Meta::YAML version 0.018'

@@ -3,6 +3,7 @@
         * fix -print-search-dirs errors RT #106265
         * co-maint to rurban
         * add hv_fetchs, CI smokers
+        * add GD::VERSION_STRING api
 2.56_03 * add alpha method
         * improve option handling
         * fix meta data

@@ -264,11 +264,8 @@ WriteMakefile(
 	META_MERGE => {
 	    'meta-spec' => { version => 2 },
             resources => {
-                repository => {
-                    type => 'git',
-                    url  => 'git://github.com/lstein/Perl-GD.git',
-                    web  => 'https://github.com/lstein/Perl-GD',
-                },
+                repository => 'http://github.com/lstein/Perl-GD',
+                license    => 'http://dev.perl.org/licenses/',
             },
         },
     ):()),

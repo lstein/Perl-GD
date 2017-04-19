@@ -1,0 +1,18 @@
+# see https://github.com/libgd/libgd/blob/master/appveyor.yml for the full
+# matrix
+skip_tags: true
+
+cache:
+  - C:\strawberry
+
+install:
+  - if not exist "C:\strawberry" cinst strawberryperl -y
+  - set PATH=C:\strawberry\perl\bin;C:\strawberry\perl\site\bin;C:\strawberry\c\bin;%PATH%
+  - cd C:\projects\%APPVEYOR_PROJECT_NAME%
+
+build_script:
+  - perl Makefile.PL
+  - dmake
+
+test_script:
+  - dmake test TEST_VERBOSE=1
