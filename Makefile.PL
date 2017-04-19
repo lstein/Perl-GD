@@ -18,7 +18,7 @@ END
 
 
 # =====> PATHS: CHECK AND ADJUST <=====
-my (@INC,@LIBPATH,@LIBS);
+my (@INC,@LIBPATH,@LIBS,$LIBGD_VERSION);
 my $AUTOCONFIG = 0;      # global set by try_to_autoconfigure() below
 
 my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,$lib_zlib_path,$force);
@@ -226,6 +226,7 @@ $DEFINES    .= ' -DVERSION_33'   if $VERSION_33;
 $DEFINES    .= ' -DHAVE_UNCLOSEDPOLY' if $UNCLOSEDPOLY;
 $DEFINES    .= ' -DHAVE_FONTCONFIG'   if $FONTCONFIG;
 $DEFINES    .= ' -DHAVE_FTCIRCLE'  if $FTCIRCLE;
+$DEFINES    .= " -DLIBGD_VERSION=\"$LIBGD_VERSION\"" if defined($LIBGD_VERSION);
 open F,">.config.cache";
 print F $DEFINES,"\n";
 close F;
@@ -252,7 +253,7 @@ WriteMakefile(
     'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
 		    'lib/GD/Image.pm.PLS' => 'lib/GD/Image.pm',
 		   },
-    'CCFLAGS'    => "$Config{ccflags} -Wformat=0",
+    #'CCFLAGS'   => "$Config{ccflags} -Wformat=0",
     'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
     'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
     'ABSTRACT'  => 'Interface to Gd Graphics Library',
@@ -306,6 +307,7 @@ sub try_to_autoconfigure {
       ($includedir) = $config =~ /^includedir:\s+(.+)/m;
   }
 
+  $LIBGD_VERSION = $version;
   @$INC          = map {s/^-I// && "-I$_"} split /\s+/,$cflags;
   @$LIBS         = split /\s+/,$libs;
   if ($config) {

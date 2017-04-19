@@ -49,6 +49,16 @@
 #endif
 #endif /* 5.00503 */
 
+#ifndef mPUSHp
+#define mPUSHp(p,l)	PUSHs(sv_2mortal(newSVpvn((p), (l))))
+#endif
+#ifndef mXPUSHp
+# define mXPUSHp(p,l)	STMT_START { EXTEND(sp,1); mPUSHp((p), (l)); } STMT_END
+#endif
+#ifndef hv_fetchs
+# define hv_fetchs(H, K, L) hv_fetch((H), (K), sizeof(K)-1, (L))
+#endif
+
 #ifdef WIN32
 #define snprintf _snprintf
 #endif
@@ -538,6 +548,11 @@ MODULE = GD		PACKAGE = GD
 double
 constant(name)
 	char *		name
+
+void
+VERSION_STRING()
+    PPCODE:
+    mXPUSHp(GD_VERSION_STRING,sizeof(GD_VERSION_STRING)-1);
 
 BOOT:
 {

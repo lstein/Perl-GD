@@ -1772,6 +1772,20 @@ These return the width and height of the font.
 
 =back
 
+=head1 Helper Functions
+
+=over
+
+=item GD::LIBGD_VERSION
+
+Returns the string of the libgd VERSION, like "2.2.4".
+
+=item GD::LIBGD_VERSION
+
+Returns the string of the libgd VERSION, like "2.2.4".
+
+=back
+
 =head1 Obtaining the C-language version of gd
 
 libgd, the C-language version of gd, can be obtained at URL

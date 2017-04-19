@@ -246,7 +246,9 @@ sub run_image_regression_tests {
 	if (!$gd) {
 	    fail("unable to generate comparison image for test $t: $@");
 	} else {
-	    ok(compare($gd,$t,$suffix),"image comparison test $t");
+            ok(compare($gd,$t,$suffix), "image comparison test $t $suffix")
+              or diag("gd: ",GD::VERSION_STRING(),
+                      " files: ",join(" ",glob("$images/t${t}/*.$suffix")));
 	}
     }
 }
