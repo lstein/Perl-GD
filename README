@@ -315,7 +315,7 @@ FREQUENTLY ASKED QUESTIONS
 BUG REPORTS
 
 Please report bugs, feature requests and propose code changes using
-the GitHub repository at https://github.com/lstein/Perl-GD. I do not
+the GitHub repository at https://github.com/lstein/Perl-GD. We do not
 check the CPAN RT bug system with any frequency.
 
 ACKNOWLEDGEMENTS:
@@ -332,6 +332,7 @@ version can be found on GitHub at https://github.com/lstein/Perl-GD.
 AUTHOR and LICENSE
 
 Copyright 1995-2014 Lincoln Stein <lincoln.stein@gmail.com>
+Maintainance taken over by Reini Urban 2017.
 
 This package and its accompanying libraries is free software; you can
 redistribute it and/or modify it under the terms of the GPL (either

@@ -60,7 +60,7 @@
 #endif
 
 #ifdef WIN32
-#define snprintf _snprintf
+# define snprintf _snprintf
 #endif
 
 #ifndef START_MY_CXT
@@ -96,55 +96,55 @@ constant(char *name)
 #ifdef GD_CMP_IMAGE
 	  return GD_CMP_IMAGE;
 #else
-	    goto not_there;
+          goto not_there;
 #endif
 	if (strEQ(name, "GD_CMP_NUM_COLORS"))
 #ifdef GD_CMP_NUM_COLORS
 	  return GD_CMP_NUM_COLORS;
 #else
-	goto not_there;
+	  goto not_there;
 #endif
 	if (strEQ(name, "GD_CMP_COLOR"))
 #ifdef GD_CMP_COLOR
 	  return GD_CMP_COLOR;
 #else
-	goto not_there;
+	  goto not_there;
 #endif
 	if (strEQ(name, "GD_CMP_SIZE_X"))
 #ifdef GD_CMP_SIZE_X
 	  return GD_CMP_SIZE_X;
 #else
-	goto not_there;
+	  goto not_there;
 #endif
 	if (strEQ(name, "GD_CMP_SIZE_Y"))
 #ifdef GD_CMP_SIZE_Y
 	  return GD_CMP_SIZE_Y;
 #else
-	goto not_there;
+	  goto not_there;
 #endif
 	if (strEQ(name, "GD_CMP_TRANSPARENT"))
 #ifdef GD_CMP_TRANSPARENT
 	  return GD_CMP_TRANSPARENT;
 #else
-	goto not_there;
+	  goto not_there;
 #endif
 	if (strEQ(name, "GD_CMP_BACKGROUND"))
 #ifdef GD_CMP_BACKGROUND
 	  return GD_CMP_BACKGROUND;
 #else
-	goto not_there;
+	  goto not_there;
 #endif
 	if (strEQ(name, "GD_CMP_INTERLACE"))
 #ifdef GD_CMP_INTERLACE
 	  return GD_CMP_INTERLACE;
 #else
-	goto not_there;
+	  goto not_there;
 #endif
 	if (strEQ(name, "GD_CMP_TRUECOLOR"))
 #ifdef GD_CMP_TRUECOLOR
 	  return GD_CMP_TRUECOLOR;
 #else
-	goto not_there;
+	  goto not_there;
 #endif
 	break;
     case 'H':
@@ -256,49 +256,49 @@ constant(char *name)
 #ifdef gdArc
 	  return gdArc;
 #else
-	    goto not_there;
+	  goto not_there;
 #endif
         if (strEQ(name,"gdPie"))
 #ifdef gdPie
 	  return gdPie;
 #else
-	    goto not_there;
+          goto not_there;
 #endif
         if (strEQ(name,"gdChord"))
 #ifdef gdChord
 	  return gdChord;
 #else
-	    goto not_there;
+          goto not_there;
 #endif
         if (strEQ(name,"gdNoFill"))
 #ifdef gdNoFill
 	  return gdNoFill;
 #else
-	    goto not_there;
+	  goto not_there;
 #endif
         if (strEQ(name,"gdEdged"))
 #ifdef gdEdged
 	  return gdEdged;
 #else
-	    goto not_there;
+	  goto not_there;
 #endif
-		if (strEQ(name,"gdAlphaMax"))
+        if (strEQ(name,"gdAlphaMax"))
 #ifdef gdAlphaMax
-		return gdAlphaMax;
+          return gdAlphaMax;
 #else
-		goto not_there;
+          goto not_there;
 #endif
-		if (strEQ(name,"gdAlphaOpaque"))
+        if (strEQ(name,"gdAlphaOpaque"))
 #ifdef gdAlphaOpaque
-		return gdAlphaOpaque;
+          return gdAlphaOpaque;
 #else
-		goto not_there;
+          goto not_there;
 #endif
-		if (strEQ(name,"gdAlphaTransparent"))
+          if (strEQ(name,"gdAlphaTransparent"))
 #ifdef gdAlphaTransparent
-		return gdAlphaTransparent;
+            return gdAlphaTransparent;
 #else
-		goto not_there;
+            goto not_there;
 #endif
 
 	break;
@@ -941,8 +941,7 @@ void gdSTORABLE_thaw(object,cloning,serialized)
        if (cloning) XSRETURN_UNDEF;
        data = (void*) SvPV(serialized,length);
        image = gdImageCreateFromGd2Ptr(length,data);
-/*       sv_setiv(SvRV(object),(int)image); */
-       sv_setiv(SvRV(object),(long int)image);
+       sv_setiv(SvRV(object),(IV)image);
      }
 
 #ifdef HAVE_PNG
@@ -2016,7 +2015,7 @@ compare(image1,image2)
 	  RETVAL = gdImageCompare(image1,image2);
 	}
 	OUTPUT:
-		RETVAL
+          RETVAL
 
 void
 colorDeallocate(image,color)
@@ -2224,11 +2223,11 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
 	    strex.flags       = 0;
 	    strex.linespacing = 0;
 	    strex.charmap     = 0;
-	    if (value = hv_fetch(hash,"linespacing",strlen("linespacing"),0)) {
+	    if ((value = hv_fetchs(hash,"linespacing",0))) {
 	      strex.flags |= gdFTEX_LINESPACE;
 	      strex.linespacing = SvNV(*value);
 	    }
-	    if (value = hv_fetch(hash,"charmap",strlen("charmap"),0)) {
+	    if ((value = hv_fetchs(hash,"charmap",0))) {
 	      strex.flags |= gdFTEX_CHARMAP;
 	      if (strEQ(SvPV_nolen(*value),"Unicode"))
 		strex.charmap = gdFTEX_Unicode;
@@ -2240,7 +2239,7 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
 		croak("Unknown charmap %s",SvPV_nolen(*value));
 	    }
 #ifdef VERSION_33
-            if (value = hv_fetch(hash,"resolution",strlen("resolution"),0)) {
+            if ((value = hv_fetchs(hash,"resolution",0))) {
 	      strex.flags |= gdFTEX_RESOLUTION;
 	      a = SvPV_nolen(*value);
 	      if (sscanf(a,"%d,%d",&hdpi,&vdpi) == 2) {
@@ -2248,7 +2247,7 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
 		strex.vdpi = vdpi;
 	      }
 	    }
-            if (value = hv_fetch(hash,"kerning",strlen("kerning"),0)) {
+            if ((value = hv_fetchs(hash,"kerning",0))) {
 	      if (!SvTRUE(*value)) {
 		strex.flags |= gdFTEX_DISABLE_KERNING;
 	      }

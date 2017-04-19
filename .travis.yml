@@ -1,0 +1,49 @@
+language: perl
+sudo: false
+dist: trusty
+addons:
+  apt:
+    packages:
+      - libgd-dev
+
+perl:
+  - "5.10"
+  - "5.12"
+  - "5.14"
+  - "5.16"
+  - "5.18"
+  - "5.20-thr"
+  - "5.22-thr"
+  - "5.24"
+  - "5.24-thr"
+  - "dev"
+
+# not run tag pushes
+branches:
+  except:
+  - /^v?[0-9]+\.[0-9]+/
+
+before_install:
+  - mkdir $HOME/bin || true
+  - ln -s `which true` $HOME/bin/cpansign
+  - eval $(curl https://travis-perl.github.io/init) --perl
+
+install:
+  - export AUTOMATED_TESTING=1 HARNESS_TIMER=1 AUTHOR_TESTING=0 RELEASE_TESTING=0
+  - cpan-install --deps       # installs prereqs, including recommends
+  - cpan-install --coverage   # installs converage prereqs, if enabled
+  - cpan-install Math::Trig ExtUtils::PkgConfig
+
+#notifications:
+#  email:
+#    on_success: change
+#    on_failure: always
+
+matrix:
+  fast_finish: true
+  include:
+    - perl: "5.24"
+      env: COVERAGE=1 AUTHOR_TESTING=1 RELEASE_TESTING=1 # enables coverage+coveralls reporting
+  allow_failures:
+    - perl: "dev"
+
