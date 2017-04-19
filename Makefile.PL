@@ -24,7 +24,15 @@ my $AUTOCONFIG = 0;      # global set by try_to_autoconfigure() below
 my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,$lib_zlib_path,$force);
 
 use Getopt::Long;
-GetOptions("ignore_missing_gd" => \$force);
+my $result = GetOptions("ignore_missing_gd" => \$force,
+                        "options=s"       => \$options,
+			"lib_gd_path=s"   => \$lib_gd_path,
+			"lib_ft_path=s"   => \$lib_ft_path,
+			"lib_png_path=s"  => \$lib_png_path,
+			"lib_jpeg_path=s" => \$lib_jpeg_path,
+			"lib_xpm_path=s"  => \$lib_xpm_path,
+			"lib_zlib_path=s" => \$lib_zlib_path,
+		       );
 
 unless (try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS) || $force) {
     die <<END;
@@ -47,14 +55,6 @@ if (-d '/usr/lib64') {
 #############################################################################################
 # Build options passed in to script to support reproducible builds via Makefiles
 #############################################################################################
-my $result = GetOptions("options=s"       => \$options,
-			"lib_gd_path=s"   => \$lib_gd_path,
-			"lib_ft_path=s"   => \$lib_ft_path,
-			"lib_png_path=s"  => \$lib_png_path,
-			"lib_jpeg_path=s" => \$lib_jpeg_path,
-			"lib_xpm_path=s"  => \$lib_xpm_path,
-			"lib_zlib_path=s" => \$lib_zlib_path,
-		       );
 unless ($result) {
   print STDERR <<END;
 Usage: perl Makefile.PL [options]
@@ -232,7 +232,6 @@ close F;
 
 WriteMakefile(
     'NAME'	=> 'GD',
-    'ABSTRACT_FROM'     => 'lib/GD.pm',
     'VERSION_FROM'	=> 'lib/GD.pm',
     'PREREQ_PM' => {
           'Math::Trig' => 0,
