@@ -234,8 +234,9 @@ WriteMakefile(
     'NAME'	=> 'GD',
     'VERSION_FROM'	=> 'lib/GD.pm',
     'PREREQ_PM' => {
-		    'Math::Trig' => 0,
-		    },
+          'Math::Trig' => 0,
+          'ExtUtils::PkgConfig' => 0,
+    },
     'PM'        => { 'lib/GD.pm' => '$(INST_LIBDIR)/GD.pm',
                      'lib/GD/Polyline.pm' => '$(INST_LIBDIR)/GD/Polyline.pm',
                      'lib/GD/Polygon.pm' => '$(INST_LIBDIR)/GD/Polygon.pm',
@@ -247,8 +248,6 @@ WriteMakefile(
 	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
     'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],
     'INC'       => join(' ',$ENV{'GD_INC'},@INC),
-
-
 
     'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
 		    'lib/GD/Image.pm.PLS' => 'lib/GD/Image.pm',
@@ -278,27 +277,44 @@ exit 0;
 
 sub try_to_autoconfigure {
   my ($options,$lib_gd_path,$INC,$LIBPATH,$LIBS) = @_;
+  my ($version, $cflags, $ldflags, $libs, $libdir, $features, $includedir);
   my $config = `gdlib-config --all`;
-  return unless $config;
-  $AUTOCONFIG++;
+  unless ($config) {
+      require ExtUtils::PkgConfig;
+      my %config = ExtUtils::PkgConfig->find ('gdlib');
+      return unless %config;
+      $version  = $config{modversion};
+      warn "Configuring for libgd version $version.\n";
+      $cflags   = $config{cflags};
+      $libs     = $config{libs};
+      $libdir   = ExtUtils::PkgConfig->variable('gdlib', 'libdir');
+      $features = 'GD_GIF GD_GIFANIM GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';
+      $AUTOCONFIG++;
+  } else {
+      $AUTOCONFIG++;
 
-  my ($version) = $config =~ /^GD library\s+(\S+)/m;
-  warn "Configuring for libgd version $version.\n";
+      ($version) = $config =~ /^GD library\s+(\S+)/m;
+      warn "Configuring for libgd version $version.\n";
 
-  my ($cflags)     = $config =~ /^cflags:\s+(.+)/m;
-  my ($ldflags)    = $config =~ /^ldflags:\s+(.+)/m;
-  my ($libs)       = $config =~ /^libs:\s+(.+)/m;
-  my ($libdir)     = $config =~ /^libdir:\s+(.+)/m;
-  my ($features)   = $config =~ /^features:\s+(.+)/m;
-  my ($includedir) = $config =~ /^includedir:\s+(.+)/m;
+      ($includedir) = $config =~ /^includedir:\s+(.+)/m;
+      ($cflags)     = $config =~ /^cflags:\s+(.+)/m;
+      ($ldflags)    = $config =~ /^ldflags:\s+(.+)/m;
+      ($libs)       = $config =~ /^libs:\s+(.+)/m;
+      ($libdir)     = $config =~ /^libdir:\s+(.+)/m;
+      ($features)   = $config =~ /^features:\s+(.+)/m;
+      ($includedir) = $config =~ /^includedir:\s+(.+)/m;
+  }
 
   @$INC          = map {s/^-I// && "-I$_"} split /\s+/,$cflags;
-  @$LIBPATH      = map {s/^-L// && "-L$_"} split /\s+/,$ldflags;
   @$LIBS         = split /\s+/,$libs;
-
-  push @$LIBS,"-lgd";
+  if ($config) {
+      @$LIBPATH      = map {s/^-L// && "-L$_"} split /\s+/,$ldflags;
+      push @$LIBS,"-lgd";
+      ($$lib_gd_path = $libdir) =~ s!/[^/]+$!!;
+  } else {
+      $$lib_gd_path = $libdir;
+  }
   push @$LIBPATH,"-L$libdir";
-  ($$lib_gd_path = $libdir) =~ s!/[^/]+$!!;
   $$options      = $features;
 
   my ($minor, $patch)    = $version =~ /^2\.(\d+)\.(\d+)$/;
@@ -306,8 +322,10 @@ sub try_to_autoconfigure {
     $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE VERSION_33";
   }
 
-  my @correct_inc = map {s/^-I// && $_} split /\s+/,$cflags;
-  check_for_stray_headers($includedir,@correct_inc);
+  if ($config) {
+      my @correct_inc = map {s/^-I// && $_} split /\s+/,$cflags;
+      check_for_stray_headers($includedir,@correct_inc);
+  }
   return 1;
 }
 
