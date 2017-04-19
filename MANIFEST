@@ -1,9 +1,7 @@
-bdf_scripts/bdf2gdfont.pl
 bdf_scripts/bdf2gdfont.PLS
 bdf_scripts/bdftogd
 bdf_scripts/cvtbdf.pl
 bdf_scripts/README
-Build.PL
 ChangeLog
 demos/brushes.pl
 demos/copies.pl
@@ -19,15 +17,14 @@ demos/tile.png
 demos/transform.pl
 demos/truetype_test
 demos/ttf.pl
+GD.xs
 lib/GD.pm
-lib/GD.xs
 lib/GD/Group.pm
 lib/GD/Image.pm.PLS
 lib/GD/Polygon.pm
 lib/GD/Polyline.pm
 lib/GD/Simple.pm
 LICENSE
-Makefile.old
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
