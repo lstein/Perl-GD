@@ -1,3 +1,6 @@
+2.56_03 * add alpha method
+        * improve option handling
+        * fix meta data
 2.56_02 * fix feature extraction >= 2.2 [RT #119459]
 2.56_01 * rm Build.PL, fix permissions, fix for missing gdlib-config
 2.56	* Fix Makefile.PL so that it works again.
