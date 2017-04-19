@@ -16,7 +16,9 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.57';
+$VERSION = '2.56_01';
+our $XS_VERSION = $VERSION;
+$VERSION = eval $VERSION;
 
 @ISA = qw(Exporter DynaLoader);
 # Items to export into callers namespace by default. Note: do not export
