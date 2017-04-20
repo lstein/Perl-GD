@@ -171,10 +171,8 @@ sub _image_type {
   my $data = shift;
   my $magic = substr($data,0,4);
   return 'Png'  if $magic eq "\x89PNG";
-  return 'Jpeg' if $magic eq "\377\330\377\340";
-  return 'Jpeg' if $magic eq "\377\330\377\341";
-  return 'Jpeg' if $magic eq "\377\330\377\355";
-  return 'Jpeg' if $magic eq "\377\330\377\356";
+  return 'Jpeg' if ((substr($data,0,3) eq "\377\330\377") &&
+    ord(substr($data,3,1)) >= 0xc0);
   return 'Gif'  if $magic eq "GIF8";
   return 'Gd2'  if $magic eq "gd2\000";
   return 'Xpm'  if substr($data,0,9) eq "/* XPM */";

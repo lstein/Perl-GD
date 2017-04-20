@@ -1,4 +1,5 @@
-2.57    * fix RGB - HSV roundtrips: RT #120572 by J2N-FORGET
+2.57    * fix Jpeg magic number detection RT #26146
+        * fix RGB - HSV roundtrips: RT #120572 by J2N-FORGET
         * co-maint to rurban
         * add hv_fetchs, CI smokers
 2.56_03 * add alpha method
