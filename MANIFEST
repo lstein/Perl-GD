@@ -31,6 +31,7 @@ MANIFEST.SKIP
 README
 README.QUICKDRAW
 t/GD.t
+t/HSV.t
 t/Polyline.t
 t/test_data/frog.jpg
 t/test_data/frog.xpm

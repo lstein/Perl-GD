@@ -1,3 +1,6 @@
+2.57    * fix RGB - HSV roundtrips: RT #120572 by J2N-FORGET
+        * co-maint to rurban
+        * add hv_fetchs, CI smokers
 2.56_03 * add alpha method
         * improve option handling
         * fix meta data

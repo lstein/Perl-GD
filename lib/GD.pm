@@ -16,7 +16,7 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.56_03';
+$VERSION = '2.57';
 our $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 

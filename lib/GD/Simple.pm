@@ -963,7 +963,7 @@ sub HSVtoRGB {
   return (int($r+0.5),int($g+0.5),int($b+0.5));
 }
 
-=item ($hue,$saturation,$value) = GD::Simple->RGBtoHSV($hue,$saturation,$value)
+=item ($hue,$saturation,$value) = GD::Simple->RGBtoHSV($red,$green,$blue)
 
 Convert a Red/Green/Blue (RGB) value into a Hue/Saturation/Value (HSV)
 triple. The hue, saturation and value are integers from 0 to 255.
@@ -997,6 +997,7 @@ sub RGBtoHSV {
     $h = 60 * ($r-$g)/$range + 240;
   }
 
+  $h += 360 if $h < 0;
   $h = int($h*255/360 + 0.5);
 
   return ($h, $s, $v);
