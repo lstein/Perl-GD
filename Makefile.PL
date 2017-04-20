@@ -339,7 +339,7 @@ sub check_for_stray_headers {
   my %official_libraries = map {$_=>1} @official_libraries;
   print STDERR "Checking for stray libgd header files...";
   my $cc          = $Config{'cc'};
-  my $data        = `$cc -print-search-dirs`;
+  my $data        = `$cc -print-search-dirs 2>/dev/null`;
   $data         ||= '';
   my ($libraries)    = $data =~ /^libraries: =(.+)/m;
   my @cc_libs        = split /:/,$libraries;
