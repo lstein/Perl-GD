@@ -255,8 +255,8 @@ WriteMakefile(
     'ABSTRACT'  => 'Perl interface to the gd2 graphics library',
     'VERSION_FROM'	=> 'lib/GD.pm',
     'PREREQ_PM' => {
-          'Math::Trig' => 0,
-          'ExtUtils::PkgConfig' => 0,
+        'Math::Trig' => 0,
+        'ExtUtils::PkgConfig' => 0,
     },
     'PL_FILES'  => {'bdf_scripts/bdf2gdfont_pl.PL' => 'bdf_scripts/bdf2gdfont.pl',
                     'lib/GD/Image_pm.PL' => 'lib/GD/Image.pm'},
@@ -273,10 +273,19 @@ WriteMakefile(
 
     ( $MAKEMAKER_VERSION > 6.45 ? (
 	META_MERGE => {
-            resoqurces => {
-                repository => 'http://github.com/lstein/Perl-GD',
-                license    => 'http://dev.perl.org/licenses/',
-            },
+          recommends => {
+            'Test::More'   => '0.88',
+            'Test::Kwalitee'    => 0,
+            'Class::XSAccessor' => 0,
+            'Text::CSV_XS'      => 0,
+            'List::MoreUtils'   => 0,
+            'Pod::Spell::CommonMistakes' => 0,
+            'Test::Pod'         => '1.00',
+          },
+          resources => {
+            repository => 'http://github.com/lstein/Perl-GD',
+            license    => 'http://dev.perl.org/licenses/',
+          },
         },
     ):()),
     SIGN => 1,
