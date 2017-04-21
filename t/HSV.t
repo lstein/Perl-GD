@@ -8,7 +8,7 @@
 # So I compare the Manhattan distance between the two triples and
 # compare it with a fuzz value.
 
-use Test::More;
+use Test::More tests => 1;
 use strict;
 use warnings;
 use GD::Simple;
@@ -27,11 +27,10 @@ for     (my $r0 = 0; $r0 <= 255; $r0 += $step) {
       if ($delta > $fuzz) {
 	diag(sprintf $fmt, $h, $s, $v, $r0, $g0, $b0, $r1, $g1, $b1, $delta);
         fail();
-        done_testing();
+        exit;
       }
     }
   }
 }
 
 pass();
-done_testing();
