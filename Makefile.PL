@@ -71,13 +71,13 @@ Configure GD module.
 
  Options:
      --options       "JPEG,FT,PNG,GIF,XPM,ANIMGIF"   feature options, separated by commas
-     --lib_gd_path   path            path to libgd
-     --lib_ft_path   path            path to Freetype library
-     --lib_png_path  path            path to libpng
-     --lib_jpeg_path path            path to libjpeg
-     --lib_xpm_path  path            path to libxpm
-     --lib_zlib_path path            path to libpng
-     --lib_fontconfig_path path      path to libfontconfig
+     --lib_gd_path   path            path to libgd (/usr/lib)
+     --lib_ft_path   path            path to Freetype library (/usr)
+     --lib_png_path  path            path to libpng (/usr)
+     --lib_jpeg_path path            path to libjpeg (/usr)
+     --lib_xpm_path  path            path to libxpm (/usr)
+     --lib_zlib_path path            path to libpng (/usr)
+     --lib_fontconfig_path path      path to libfontconfig (/usr)
      --ignore_missing_gd             Ignore missing or old libgd installations and try to compile anyway
      --fcgi                          build for FastCGI compatibility, i.e. no PerlIO
 
