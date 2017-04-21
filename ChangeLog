@@ -1,5 +1,7 @@
 2.60    * add missing methods newFromWBMP, newFromXbm,
-          RT #68784
+          (RT #68784) and some missing docs
+        * Add --lib_fontconfig_path, --fcgi options
+        * rewrote most of the XS code
         * cleanup Makefile.PL #20
 2.59    * error on failing libgd calls
         * fix colorClosestAlpha, colorAllocateAlpha
