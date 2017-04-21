@@ -21,7 +21,8 @@ END
 my (@INC,@LIBPATH,@LIBS,$LIBGD_VERSION);
 my $AUTOCONFIG = 0;      # global set by try_to_autoconfigure() below
 
-my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,$lib_zlib_path,$force);
+my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,
+    $lib_zlib_path,$lib_fontconfig_path,$force,$FCGI);
 
 use Getopt::Long;
 my $result = GetOptions("ignore_missing_gd" => \$force,
@@ -32,6 +33,8 @@ my $result = GetOptions("ignore_missing_gd" => \$force,
 			"lib_jpeg_path=s" => \$lib_jpeg_path,
 			"lib_xpm_path=s"  => \$lib_xpm_path,
 			"lib_zlib_path=s" => \$lib_zlib_path,
+                        "lib_fontconfig_path=s" => \$lib_fontconfig_path,
+                        "fcgi"            => \$FCGI,
 		       );
 
 unless (try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS) || $force) {
@@ -67,18 +70,20 @@ Usage: perl Makefile.PL [options]
 Configure GD module.
 
  Options:
-     -options       "JPEG,FT,PNG,GIF,XPM,ANIMGIF"   feature options, separated by commas
-     -lib_gd_path   path            path to libgd
-     -lib_ft_path   path            path to Freetype library
-     -lib_png_path  path            path to libpng
-     -lib_jpeg_path path            path to libjpeg
-     -lib_xpm_path  path            path to libxpm
-     -lib_zlib_path path            path to libpng
-     -ignore_missing_gd             Ignore missing or old libgd installations and try to compile anyway
+     --options       "JPEG,FT,PNG,GIF,XPM,ANIMGIF"   feature options, separated by commas
+     --lib_gd_path   path            path to libgd
+     --lib_ft_path   path            path to Freetype library
+     --lib_png_path  path            path to libpng
+     --lib_jpeg_path path            path to libjpeg
+     --lib_xpm_path  path            path to libxpm
+     --lib_zlib_path path            path to libpng
+     --lib_fontconfig_path path      path to libfontconfig
+     --ignore_missing_gd             Ignore missing or old libgd installations and try to compile anyway
+     --fcgi                          build for FastCGI compatibility, i.e. no PerlIO
 
 If no options are passed on the command line.  The program will
-attempt to autoconfigure itself with the gdlib-config program (present
-in GD versions 2.0.27 or later).  Otherwise it will prompt for these
+attempt to autoconfigure itself with the gdlib-config program or pkgconfig/libgd.pc
+(present in GD versions 2.0.27 or later).  Otherwise it will prompt for these
 values interactively.
 END
 }
@@ -120,6 +125,12 @@ if( defined($lib_zlib_path) )
     print "Zlib library used from:     $lib_zlib_path\n";
     @INC     = ("-I$lib_zlib_path/include", @INC);
     @LIBPATH = ("-L$lib_zlib_path/lib", @LIBPATH); 
+}
+if( defined($lib_fontconfig_path) )
+{
+    print "Fontconfig library used from:     $lib_fontconfig_path\n";
+    @INC     = ("-I$lib_fontconfig_path/include", @INC);
+    @LIBPATH = ("-L$lib_fontconfig_path/lib", @LIBPATH);
 }
 #############################################################################################
 
@@ -195,8 +206,6 @@ else
     $XPM     = $^O !~ /^freebsd|MSWin32$/ && lc prompt('Build XPM support?','y') eq 'y';
 }
 ##################################################################################################################
-
-my $FCGI    = 0;   # set to 1 to build compatability with fastCGI
 
 #### no user-serviceable parts below #####
 
