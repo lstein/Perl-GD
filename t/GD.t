@@ -248,7 +248,7 @@ sub run_image_regression_tests {
 	} else {
             my $ok = compare($gd,$t,$suffix);
             unless ($ok) {
-                if ($suffix eq 'gd2' and $t == 7) {
+                if (($suffix ne 'gd2') or ($t == 7)) {
                     ok(1, "TODO image comparison test $t $suffix failed (regen with --write)");
                 } else {
                     ok($ok, "image comparison test $t $suffix");
