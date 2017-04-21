@@ -52,11 +52,17 @@
 #ifndef PL_na
 # define PL_na na
 #endif
-
 #ifndef SvPV_nolen
 # define SvPV_nolen(sv) SvPV(sv, PL_na)
 #endif
 #endif /* 5.00503 */
+
+#ifndef dMY_CXT
+# define dMY_CXT (void)0
+#endif
+#ifndef PERL_UNUSED_ARG
+# define PERL_UNUSED_ARG(x) ((void)sizeof(x))
+#endif
 
 #ifndef mPUSHp
 #define mPUSHp(p,l)	PUSHs(sv_2mortal(newSVpvn((p), (l))))
@@ -552,6 +558,7 @@ typedef struct {
    */
   int truecolor_default;
 } my_cxt_t;
+#define truecolor_default MY_CXT.truecolor_default
 
 START_MY_CXT
 #endif
@@ -571,8 +578,8 @@ BOOT:
 {
 #ifdef START_MY_CXT
    MY_CXT_INIT;
-   MY_CXT.truecolor_default = 0;
 #endif
+   truecolor_default = 0;
 }
 
 MODULE = GD		PACKAGE = GD::Image	PREFIX=gd
@@ -583,58 +590,44 @@ MODULE = GD		PACKAGE = GD::Image	PREFIX=gd
 int
 gdtrueColor(packname="GD::Image", ...)
 	char *	packname
-	PROTOTYPE: $$
-        PREINIT:
-#ifdef START_MY_CXT
+  PROTOTYPE: $$
+  PREINIT:
         dMY_CXT;
-        int previous_value = MY_CXT.truecolor_default;
-#else
         int previous_value = truecolor_default;
-#endif
-	CODE:
-	{
-          if (items > 1)
-#ifdef START_MY_CXT
-	    MY_CXT.truecolor_default = (int)SvIV(ST(1));
-#else
-            truecolor_default = (int)SvIV(ST(1));
-#endif
-          RETVAL = previous_value;
-	}
-        OUTPUT:
-	  RETVAL
+  CODE:
+        PERL_UNUSED_ARG(packname);
+        if (items > 1)
+          truecolor_default = (int)SvIV(ST(1));
+        RETVAL = previous_value;
+  OUTPUT:
+        RETVAL
 
 GD::Image
 gd_new(packname="GD::Image", x=64, y=64, ...)
 	char *	packname
 	int	x
 	int	y
-        PROTOTYPE: $;$$$
-        PREINIT:
-#ifdef START_MY_CXT
+  PROTOTYPE: $;$$$
+  PREINIT:
+        gdImagePtr theImage;
         dMY_CXT;
-	int truecolor = MY_CXT.truecolor_default;
-#else
         int truecolor = truecolor_default;
-#endif
-	CODE:
-	{
-		gdImagePtr theImage;
-                if (items > 3)
-		  truecolor = (int)SvIV(ST(3));
-		if (truecolor) {
-		   theImage = (GD__Image) gdImageCreateTrueColor(x,y);
-                   if (!theImage)
-                     croak("gdImageCreateTrueColor error");
-		} else {
-		   theImage = (GD__Image) gdImageCreate(x,y);
-                   if (!theImage)
-                     croak("gdImageCreate error");
-		}
-		RETVAL = theImage;
-	}
-	OUTPUT:
-		RETVAL
+  CODE:
+    PERL_UNUSED_ARG(packname);
+    if (items > 3)
+      truecolor = (int)SvIV(ST(3));
+    if (truecolor) {
+      theImage = (GD__Image) gdImageCreateTrueColor(x,y);
+      if (!theImage)
+        croak("gdImageCreateTrueColor error");
+    } else {
+      theImage = (GD__Image) gdImageCreate(x,y);
+      if (!theImage)
+        croak("gdImageCreate error");
+    }
+    RETVAL = theImage;
+  OUTPUT:
+    RETVAL
 
 #ifdef HAVE_PNG
 GD::Image
@@ -643,13 +636,10 @@ gd_newFromPng(packname="GD::Image", filehandle, ...)
 	InputStream	filehandle
   PROTOTYPE: $$;$
   PREINIT:
-#ifdef START_MY_CXT
         dMY_CXT;
-	int truecolor = MY_CXT.truecolor_default;
-#else
         int truecolor = truecolor_default;
-#endif
   CODE:
+	PERL_UNUSED_ARG(packname);
 	RETVAL = (GD__Image) GDIMAGECREATEFROMPNG(filehandle);
         if (!RETVAL)
           croak("gdImageCreateFromPng error");
@@ -664,16 +654,13 @@ gdnewFromPngData(packname="GD::Image", imageData, ...)
 	SV *	imageData
   PROTOTYPE: $$;$
   PREINIT:
-	  gdIOCtx* ctx;
-          char*    data;
-          STRLEN   len;
-#ifdef START_MY_CXT
-	  dMY_CXT;
-	  int truecolor = MY_CXT.truecolor_default;
-#else
-          int truecolor = truecolor_default;
-#endif
+	gdIOCtx* ctx;
+        char*    data;
+        STRLEN   len;
+	dMY_CXT;
+        int truecolor = truecolor_default;
   CODE:
+	PERL_UNUSED_ARG(packname);
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromPngCtx(ctx);
@@ -693,9 +680,10 @@ gdnewFromGdData(packname="GD::Image", imageData)
 	SV *	imageData
   PROTOTYPE: $$
   PREINIT:
-          char*    data;
-          STRLEN   len;
+        char*    data;
+        STRLEN   len;
   CODE:
+	PERL_UNUSED_ARG(packname);
 	data = SvPV(imageData,len);
 	RETVAL = (GD__Image) gdImageCreateFromGdPtr(len,(void*) data);
         if (!RETVAL)
@@ -712,6 +700,7 @@ gdnewFromGd2Data(packname="GD::Image", imageData)
           char*    data;
           STRLEN   len;
   CODE:
+        PERL_UNUSED_ARG(packname);
 	data = SvPV(imageData,len);
 	RETVAL = (GD__Image) gdImageCreateFromGd2Ptr(len,(void*) data);
         if (!RETVAL)
@@ -726,26 +715,23 @@ gdnewFromJpegData(packname="GD::Image", imageData, ...)
 	SV *    imageData
   PROTOTYPE: $$;$
   PREINIT:
-	  gdIOCtx* ctx;
-          char*    data;
-          STRLEN   len;
-#ifdef START_MY_CXT
-	  dMY_CXT;
-          int     truecolor = MY_CXT.truecolor_default;
-#else
-          int     truecolor = truecolor_default;
-#endif
+	gdIOCtx* ctx;
+        char*    data;
+        STRLEN   len;
+	dMY_CXT;
+	int     truecolor = truecolor_default;
   CODE:
-	  data = SvPV(imageData,len);
-          ctx = newDynamicCtx(data,len);
-          RETVAL = (GD__Image) gdImageCreateFromJpegCtx(ctx);
-          (ctx->gd_free)(ctx);
-          if (!RETVAL)
-            croak("gdImageCreateFromJpegCtx error");
-          if (items > 2) truecolor = (int)SvIV(ST(2));
-	  gd_chkimagefmt(RETVAL, truecolor);
+	PERL_UNUSED_ARG(packname);
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+        RETVAL = (GD__Image) gdImageCreateFromJpegCtx(ctx);
+        (ctx->gd_free)(ctx);
+        if (!RETVAL)
+          croak("gdImageCreateFromJpegCtx error");
+        if (items > 2) truecolor = (int)SvIV(ST(2));
+	gd_chkimagefmt(RETVAL, truecolor);
   OUTPUT:
-	  RETVAL
+	RETVAL
 
 #endif
 
@@ -755,16 +741,13 @@ gdnewFromWBMPData(packname="GD::Image", imageData, ...)
 	SV *    imageData
   PROTOTYPE: $$;$
   PREINIT:
-	  gdIOCtx* ctx;
-          char*    data;
-          STRLEN   len;
-#ifdef START_MY_CXT
-	  dMY_CXT;
-          int     truecolor = MY_CXT.truecolor_default;
-#else
-          int     truecolor = truecolor_default;
-#endif
+	gdIOCtx* ctx;
+        char*    data;
+        STRLEN   len;
+	dMY_CXT;
+	int      truecolor = truecolor_default;
   CODE:
+	PERL_UNUSED_ARG(packname);
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromWBMPCtx(ctx);
@@ -782,6 +765,7 @@ gd_newFromXbm(packname="GD::Image", filehandle)
 	InputStream	filehandle
   PROTOTYPE: $$
   CODE:
+	PERL_UNUSED_ARG(packname);
 	RETVAL = GDIMAGECREATEFROMXBM(filehandle);
         if (!RETVAL)
           croak("gdImageCreateFromXbm error");
@@ -794,6 +778,7 @@ gd_newFromGd(packname="GD::Image", filehandle)
 	InputStream	filehandle
   PROTOTYPE: $$
   CODE:
+	PERL_UNUSED_ARG(packname);
 	RETVAL = GDIMAGECREATEFROMGD(filehandle);
         if (!RETVAL)
           croak("gdImageCreateFromGd error");
@@ -806,6 +791,7 @@ gd_newFromGd2(packname="GD::Image", filehandle)
 	InputStream	filehandle
   PROTOTYPE: $$
   CODE:
+	PERL_UNUSED_ARG(packname);
 	RETVAL = GDIMAGECREATEFROMGD2(filehandle);
         if (!RETVAL)
           croak("gdImageCreateFromGd2 error");
@@ -819,20 +805,17 @@ gd_newFromJpeg(packname="GD::Image", filehandle, ...)
 	InputStream	filehandle
   PROTOTYPE: $$;$
   PREINIT:
-#ifdef START_MY_CXT
-	  dMY_CXT;
-          int     truecolor = MY_CXT.truecolor_default;
-#else
-          int     truecolor = truecolor_default;
-#endif
+	dMY_CXT;
+        int     truecolor = truecolor_default;
   CODE:
-	  RETVAL = GDIMAGECREATEFROMJPEG(filehandle);
-          if (!RETVAL)
-            croak("gdImageCreateFromJpeg error");
-          if (items > 2) truecolor = (int)SvIV(ST(2));
-	  gd_chkimagefmt(RETVAL, truecolor);
+	PERL_UNUSED_ARG(packname);
+	RETVAL = GDIMAGECREATEFROMJPEG(filehandle);
+        if (!RETVAL)
+          croak("gdImageCreateFromJpeg error");
+        if (items > 2) truecolor = (int)SvIV(ST(2));
+	gd_chkimagefmt(RETVAL, truecolor);
   OUTPUT:
-          RETVAL
+        RETVAL
 
 #endif
 
@@ -842,9 +825,10 @@ gd_newFromWBMP(packname="GD::Image", filehandle)
 	InputStream	filehandle
   PROTOTYPE: $$
   PREINIT:
-	  gdImagePtr img;
-	  SV* errormsg;
+	gdImagePtr img;
+	SV* errormsg;
   CODE:
+	PERL_UNUSED_ARG(packname);
 	img = GDIMAGECREATEFROMWBMP(filehandle);
         if (img == NULL) {
           errormsg = perl_get_sv("@",0);
@@ -862,11 +846,12 @@ GD::Image
 gdnewFromXpm(packname="GD::Image", filename)
 	char *	packname
 	char *	filename
-	PROTOTYPE: $$
-        PREINIT:
-	  gdImagePtr img;
-	  SV* errormsg;
-	CODE:
+  PROTOTYPE: $$
+  PREINIT:
+  	gdImagePtr img;
+	SV* errormsg;
+  CODE:
+	PERL_UNUSED_ARG(packname);
 #ifdef HAVE_XPM
         img = (GD__Image) gdImageCreateFromXpm(filename);
         if (img == NULL) {
@@ -883,7 +868,7 @@ gdnewFromXpm(packname="GD::Image", filename)
         sv_setpv(errormsg,"libgd was not built with xpm support\n");
         XSRETURN_EMPTY;
 #endif
-        OUTPUT:
+  OUTPUT:
         RETVAL
 
 GD::Image
@@ -896,6 +881,7 @@ gd_newFromGd2Part(packname="GD::Image", filehandle,srcX,srcY,width,height)
 	int	height
   PROTOTYPE: $$$$$$
   CODE:
+	PERL_UNUSED_ARG(packname);
 	RETVAL = GDIMAGECREATEFROMGD2PART(filehandle,srcX,srcY,width,height);
         if (!RETVAL)
             croak("gdImageCreateFromGd2Part error");
@@ -907,20 +893,14 @@ GD::Image
 gd_newFromGif(packname="GD::Image", filehandle)
 	char *	packname
 	InputStream	filehandle
-	PROTOTYPE: $$;$
-        PREINIT:
-#ifdef START_MY_CXT
-	  dMY_CXT;
-          int     truecolor = MY_CXT.truecolor_default;
-#else
-          int     truecolor = truecolor_default;
-#endif
-	CODE:
-	  RETVAL = GDIMAGECREATEFROMGIF(filehandle);
-          if (!RETVAL)
+  PROTOTYPE: $$;$
+  CODE:
+	PERL_UNUSED_ARG(packname);
+	RETVAL = GDIMAGECREATEFROMGIF(filehandle);
+	if (!RETVAL)
             croak("gdImageCreateFromGif error");
-	OUTPUT:
-          RETVAL
+  OUTPUT:
+	RETVAL
 
 GD::Image
 gdnewFromGifData(packname="GD::Image", imageData)
@@ -928,16 +908,11 @@ gdnewFromGifData(packname="GD::Image", imageData)
 	SV *    imageData
   PROTOTYPE: $$;$
   PREINIT:
-	  gdIOCtx* ctx;
-          char*    data;
-          STRLEN   len;
-#ifdef START_MY_CXT
-	  dMY_CXT;
-          int     truecolor = MY_CXT.truecolor_default;
-#else
-          int     truecolor = truecolor_default;
-#endif
+	gdIOCtx* ctx;
+        char*    data;
+        STRLEN   len;
   CODE:
+	PERL_UNUSED_ARG(packname);
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromGifCtx(ctx);
@@ -952,11 +927,9 @@ gdnewFromGifData(packname="GD::Image", imageData)
 void
 gdDESTROY(image)
 	GD::Image	image
-	PROTOTYPE: $
-	CODE:
-	{
-  	  gdImageDestroy(image);
-	}
+  PROTOTYPE: $
+  CODE:
+	gdImageDestroy(image);
 
 SV* gdSTORABLE_freeze(image,cloning)
      GD::Image image
@@ -1031,23 +1004,21 @@ gdjpeg(image,quality=-1)
   int           quality
   PROTOTYPE: $
   PREINIT:
-  SV* errormsg;
-  CODE:
-  {
+	SV* errormsg;
 	void*         data;
 	int           size;
-	data = (void *) gdImageJpegPtr(image,&size,quality);
-        if (data == NULL) {
-          errormsg = perl_get_sv("@",0);
-	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
-          else
-            croak("gdImageJpegPtr error");
-	  XSRETURN_EMPTY;
-        }
-	RETVAL = newSVpvn((char*) data,size);
-	gdFree(data);
-  }
+  CODE:
+    data = (void *) gdImageJpegPtr(image,&size,quality);
+    if (data == NULL) {
+      errormsg = perl_get_sv("@",0);
+      if (errormsg != NULL)
+        sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+      else
+        croak("gdImageJpegPtr error");
+      XSRETURN_EMPTY;
+    }
+    RETVAL = newSVpvn((char*) data,size);
+    gdFree(data);
   OUTPUT:
     RETVAL
 
@@ -1060,48 +1031,45 @@ gdgifanimbegin(image,globalcm=-1,loops=-1)
   int           loops
   PROTOTYPE: $$$
   PREINIT:
-  CODE:
-  {
 	void*         data;
 	int           size;
+  CODE:
 #ifdef HAVE_ANIMGIF
-	data = (void *) gdImageGifAnimBeginPtr(image,&size,globalcm,loops);
-        if (!data)
-          croak("gdImageGifAnimBeginPtr error");
-	RETVAL = newSVpvn((char*) data,size);
-	gdFree(data);
+    data = (void *) gdImageGifAnimBeginPtr(image,&size,globalcm,loops);
+    if (!data)
+      croak("gdImageGifAnimBeginPtr error");
+    RETVAL = newSVpvn((char*) data,size);
+    gdFree(data);
 #else
-        die("libgd 2.0.33 or higher required for animated GIF support");
+    die("libgd 2.0.33 or higher required for animated GIF support");
 #endif
-  }
   OUTPUT:
     RETVAL
 
 SV*
 gdgifanimadd(image,localcm=-1,leftofs=-1,topofs=-1,delay=-1,disposal=-1,previm=0)
-  GD::Image	image
-  int           localcm
-  int           leftofs
-  int           topofs
-  int           delay
-  int           disposal
-  GD::Image	previm
+      GD::Image	image
+      int           localcm
+      int           leftofs
+      int           topofs
+      int           delay
+      int           disposal
+      GD::Image	previm
   PROTOTYPE: $$$$$$$
-  CODE:
-  {
+  PREINIT:
 	void*         data;
 	int           size;
+  CODE:
 #ifdef HAVE_ANIMGIF
-	data = (void *) gdImageGifAnimAddPtr(image,&size,localcm,leftofs,topofs,
+    data = (void *) gdImageGifAnimAddPtr(image,&size,localcm,leftofs,topofs,
                                              delay,disposal,previm);
-        if (!data)
-          croak("gdImageGifAnimAddPtr error");
-	RETVAL = newSVpvn((char*) data,size);
-	gdFree(data);
+    if (!data)
+      croak("gdImageGifAnimAddPtr error");
+    RETVAL = newSVpvn((char*) data,size);
+    gdFree(data);
 #else
-        die("libgd 2.0.33 or higher required for animated GIF support");
+    die("libgd 2.0.33 or higher required for animated GIF support");
 #endif
-  }
   OUTPUT:
     RETVAL
 
@@ -1109,20 +1077,20 @@ SV*
 gdgifanimend(image)
   GD::Image	image
   PROTOTYPE: $
-  CODE:
-  {
+  PREINIT:
 	void*         data;
 	int           size;
+  CODE:
+    PERL_UNUSED_ARG(image);
 #ifdef HAVE_ANIMGIF
-	data = (void *) gdImageGifAnimEndPtr(&size);
-        if (!data)
-          croak("gdImageGifAnimEndPtr error");
-	RETVAL = newSVpvn((char*) data,size);
-	gdFree(data);
+    data = (void *) gdImageGifAnimEndPtr(&size);
+    if (!data)
+      croak("gdImageGifAnimEndPtr error");
+    RETVAL = newSVpvn((char*) data,size);
+    gdFree(data);
 #else
-        die("libgd 2.0.33 or higher required for animated GIF support");
+    die("libgd 2.0.33 or higher required for animated GIF support");
 #endif
-  }
   OUTPUT:
     RETVAL
 
@@ -1132,23 +1100,21 @@ gdwbmp(image,fg)
   int           fg
   PROTOTYPE: $
   PREINIT:
-  SV* errormsg;
-  CODE:
-  {
+	SV* errormsg;
 	void*         data;
 	int           size;
-	data = (void *) gdImageWBMPPtr(image,&size,fg);
-        if (data == NULL) {
-          errormsg = perl_get_sv("@",0);
-	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with WBMP support\n");
-          else
-            croak("gdImageWBMPPtr error");
-	  XSRETURN_EMPTY;
-        }
-	RETVAL = newSVpvn((char*) data,size);
-	gdFree(data);
-  }
+  CODE:
+    data = (void *) gdImageWBMPPtr(image,&size,fg);
+    if (data == NULL) {
+      errormsg = perl_get_sv("@",0);
+      if (errormsg != NULL)
+        sv_setpv(errormsg,"libgd was not built with WBMP support\n");
+      else
+        croak("gdImageWBMPPtr error");
+      XSRETURN_EMPTY;
+    }
+    RETVAL = newSVpvn((char*) data,size);
+    gdFree(data);
   OUTPUT:
     RETVAL
 
@@ -1158,23 +1124,21 @@ gdgif(image)
   GD::Image	image
   PROTOTYPE: $
   PREINIT:
-  SV* errormsg;
-  CODE:
-  {
+	SV* errormsg;
 	void*         data;
 	int           size;
-	data = (void *) gdImageGifPtr(image,&size);
-        if (data == NULL) {
-          errormsg = perl_get_sv("@",0);
-	  if (errormsg != NULL)
-	    sv_setpv(errormsg,"libgd was not built with gif support\n");
-          else
-            croak("gdImageGifPtr error");
-	  XSRETURN_EMPTY;
-        }
-	RETVAL = newSVpvn((char*) data,size);
-	gdFree(data);
-  }
+  CODE:
+    data = (void *) gdImageGifPtr(image,&size);
+    if (data == NULL) {
+      errormsg = perl_get_sv("@",0);
+      if (errormsg != NULL)
+        sv_setpv(errormsg,"libgd was not built with gif support\n");
+      else
+        croak("gdImageGifPtr error");
+      XSRETURN_EMPTY;
+    }
+    RETVAL = newSVpvn((char*) data,size);
+    gdFree(data);
   OUTPUT:
     RETVAL
 
@@ -2357,13 +2321,14 @@ gduseFontConfig(image,flag)
      SV*         image
      int         flag
   PROTOTYPE: $$
-  PREINIT:
-     SV* errormsg;
   CODE:
   {
 #ifdef HAVE_FONTCONFIG
+    PERL_UNUSED_ARG(image);
     RETVAL = gdFTUseFontConfig(flag);
 #else
+    SV* errormsg;
+    PERL_UNUSED_ARG(image);
     errormsg = perl_get_sv("@",0);
     sv_setpv(errormsg,"libgd was not built with fontconfig support\n");
     XSRETURN_EMPTY;
@@ -2375,12 +2340,10 @@ gduseFontConfig(image,flag)
 void
 gdalphaBlending(image,blending)
      GD::Image       image
-        int             blending
-PROTOTYPE: $$
-CODE:
-{
-  gdImageAlphaBlending(image,blending);
-}
+     int             blending
+  PROTOTYPE: $$
+  CODE:
+    gdImageAlphaBlending(image,blending);
 
 void
 gdsaveAlpha(image,saveAlphaArg)
@@ -2398,7 +2361,6 @@ gdclip(image,...)
         int		coords[4];
         int             i;
   PPCODE:
-  {
     if (items == 5) {
       for (i=0;i<4;i++)
         coords[i] = (int)SvIV(ST(i+1));
@@ -2411,7 +2373,6 @@ gdclip(image,...)
     EXTEND(sp,4);
     for (i=0;i<4;i++)
       PUSHs(sv_2mortal(newSViv(coords[i])));
-  }
 
 void
 gdsetAntiAliased(image,color)
@@ -2446,7 +2407,7 @@ gdload(packname="GD::Font",fontpath)
        unsigned char   word[4];
        char*           fontdata;
   CODE:
-  {
+    PERL_UNUSED_ARG(packname);
     fontfile = open(fontpath,O_RDONLY);
     if (fontfile < 0) {
       errormsg = perl_get_sv("@",0);
@@ -2486,7 +2447,6 @@ gdload(packname="GD::Font",fontpath)
 
     close(fontfile); /* please don't leak file descriptors! */
     RETVAL = font;
-  }
   OUTPUT:
     RETVAL
 
@@ -2495,22 +2455,21 @@ gdDESTROY(self)
      GD::Font      self
   PROTOTYPE: $
   CODE:
-     {
-       if (self == gdFontGetSmall()      ||
-	   self == gdFontGetLarge()      ||
-	   self == gdFontGetGiant()      ||
-	   self == gdFontGetMediumBold() ||
-	   self == gdFontGetTiny() )
-	 XSRETURN_EMPTY;
-       safefree(self->data);
-       safefree(self);
-     }
+    if (self == gdFontGetSmall()      ||
+        self == gdFontGetLarge()      ||
+        self == gdFontGetGiant()      ||
+        self == gdFontGetMediumBold() ||
+        self == gdFontGetTiny() )
+      XSRETURN_EMPTY;
+    safefree(self->data);
+    safefree(self);
 
 GD::Font
 gdSmall(packname="GD::Font")
 	char *	packname
   PROTOTYPE: $
   CODE:
+    PERL_UNUSED_ARG(packname);
     RETVAL = gdFontGetSmall();
     if (!RETVAL)
       croak("gdFontGetSmall error");
@@ -2522,6 +2481,7 @@ gdLarge(packname="GD::Font")
 	char *	packname
   PROTOTYPE: $
   CODE:
+    PERL_UNUSED_ARG(packname);
     RETVAL = gdFontGetLarge();
     if (!RETVAL)
       croak("gdFontGetLarge error");
@@ -2533,6 +2493,7 @@ gdGiant(packname="GD::Font")
 	char *	packname
   PROTOTYPE: $
   CODE:
+    PERL_UNUSED_ARG(packname);
     RETVAL = gdFontGetGiant();	
     if (!RETVAL)
       croak("gdFontGetGiant error");
@@ -2544,6 +2505,7 @@ gdMediumBold(packname="GD::Font")
 	char *	packname
   PROTOTYPE: $
   CODE:
+    PERL_UNUSED_ARG(packname);
     RETVAL = gdFontGetMediumBold();
     if (!RETVAL)
       croak("gdFontGetMediumBold error");
@@ -2555,6 +2517,7 @@ gdTiny(packname="GD::Font")
 	char *	packname
   PROTOTYPE: $
   CODE:
+    PERL_UNUSED_ARG(packname);
     RETVAL = gdFontGetTiny();
     if (!RETVAL)
       croak("gdFontGetTiny error");

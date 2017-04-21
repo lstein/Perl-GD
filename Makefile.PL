@@ -237,7 +237,7 @@ print F $DEFINES,"\n";
 close F;
 
 my $CCFLAGS = $Config{ccflags};
-$CCFLAGS .= " -Wformat=0" if $Config{gccversion};
+$CCFLAGS .= " -Wall -Wextra -Wformat=0" if $Config{gccversion} and $] > 5.020;
 
 WriteMakefile(
     'NAME'	=> 'GD',
