@@ -399,7 +399,7 @@ sub ellipse {
   $gd->ellipse($self->curPos,@_,$fg)       if defined $fg && (!defined $bg || $bg != $fg);
 }
 
-=item $img->arc($cx,$cy,$width,$height,$start,$end [,$style])
+=item $img->arc([$cx,$cy,] $width,$height,$start,$end [,$style])
 
 This method draws filled and unfilled arcs.  See L<GD> for a
 description of the arguments. To draw a solid arc (such as a pie

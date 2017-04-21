@@ -609,8 +609,8 @@ If no colors are allocated, then this function returns -1.
 
 Example:
 
-	$white = $myImage->colorAllocate(0,0,0); #background color
-	$black = $myImage->colorAllocate(255,255,255);
+	$black = $myImage->colorAllocate(0,0,0); #background color
+	$white = $myImage->colorAllocate(255,255,255);
 	$peachpuff = $myImage->colorAllocate(255,218,185);
 
 =item B<$index = $image-E<gt>colorAllocateAlpha(reg,green,blue,alpha)>
