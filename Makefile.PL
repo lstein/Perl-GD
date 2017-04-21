@@ -342,7 +342,7 @@ sub try_to_autoconfigure {
       }
       push @$LIBPATH,"-L$libdir";
   }
-  push @$LIBS,"-lgd" unless $libs;
+  push @$LIBS,"-lgd" unless $libs =~ /-lgd/;
   $$options      = $features;
 
   my ($release, $major, $minor) = $version =~ /^(\d+)\.(\d+)\.(\d+)$/;
