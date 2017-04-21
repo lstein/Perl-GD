@@ -234,7 +234,7 @@ sub newFromGif {
 !NO!SUBS!
 }
 
-if ($DEFINES =~ /HAVE_DBM/) {
+if ($DEFINES =~ /HAVE_XBM/) {
   print OUT <<'!NO!SUBS!'
 sub newFromXbm {
     croak("Usage: newFromXbm(class,filehandle)") unless @_==2;
@@ -246,6 +246,18 @@ sub newFromXbm {
 
 !NO!SUBS!
 }
+
+print OUT <<'!NO!SUBS!';
+sub newFromWBMP {
+    croak("Usage: newFromWBMP(class,filehandle,[truecolor])") unless @_>=2;
+    my($class) = shift;
+    my($f)     = shift;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromWBMP($fh,@_);
+}
+
+!NO!SUBS!
 
 print OUT <<'!NO!SUBS!';
 # Autoload methods go after __END__, and are processed by the autosplit program.

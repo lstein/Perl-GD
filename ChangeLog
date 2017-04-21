@@ -1,3 +1,5 @@
+2.60    * add missing methods newFromWBMP, newFromXbm,
+          RT #68784
 2.59    * error on failing libgd calls
         * fix colorClosestAlpha, colorAllocateAlpha
         * add missing documentation
