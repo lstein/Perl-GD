@@ -12,3 +12,10 @@ lib/GD/Image.pm
 pm_to_blib
 GD-*.tar.gz
 log.*
+GD.c.gcov
+GD.gcda
+GD.gcno
+GD.xs.gcov
+cover_db/
+inline.h.gcov
+test_data/
