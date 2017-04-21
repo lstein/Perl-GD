@@ -36,6 +36,7 @@ t/Polyline.t
 t/test_data/frog.jpg
 t/test_data/frog.xpm
 t/test_data/Generic.ttf
+t/test_data/images/corrupt.png
 t/test_data/images/t1/1-00.gd
 t/test_data/images/t1/1-00.gd2
 t/test_data/images/t1/1-00.gif

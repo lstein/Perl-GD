@@ -8,7 +8,7 @@ use FindBin qw($Bin);
 use lib "$Bin/../blib/lib","$Bin/../blib/arch","$Bin/../lib";
 use constant FONT=>"$Bin/test_data/Generic.ttf";
 use constant IMAGE_TESTS => 7;
-use Test::More tests => 11;
+use Test::More tests => 13;
 use IO::Dir;
 
 use_ok('GD',':DEFAULT',':cmp');
@@ -21,6 +21,7 @@ my $arg = shift;
 write_regression_tests() if (defined $arg && $arg eq '--write');
 run_image_regression_tests();
 run_round_trip_test();
+catch_libgd_error();
 
 exit 0;
 
@@ -277,3 +278,9 @@ sub run_round_trip_test {
     ok(!$image->compare($image2) & GD_CMP_IMAGE(),'round trip gd2');
 }
 
+sub catch_libgd_error {
+    diag("ignore corrupt png error messages...");
+    my $image = eval { GD::Image->newFromPng("test_data/images/corrupt.png") };
+    is($image, undef);
+    ok($@, 'caught corrupt png');
+}
