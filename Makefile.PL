@@ -410,17 +410,18 @@ release : dist
 	git push
 	git push --tags
 
+GCOV = gcov
 test_cover :: pure_all
 	\$(RM_RF) cover_db
-	\$(PERLRUNINST) -S cover -test
+	+\$(PERLRUNINST) -S cover -test
 test_coveralls :: pure_all
-	\$(PERLRUNINST) -S cover -test -report coveralls
+	+\$(PERLRUNINST) -S cover -test -report coveralls
 
 gcov : \$(BASEEXT).c.gcov \$(BASEEXT).gcov cover_db/\$(BASEEXT)-xs.html
 
 \$(BASEEXT).c.gcov \$(BASEEXT).xs.gcov : \$(BASEEXT).xs
 	\$(MAKE) CCFLAGS=\"\$(CCFLAGS) -fprofile-arcs -ftest-coverage\" LDDLFLAGS=\"\$(LDDLFLAGS) -fprofile-arcs -ftest-coverage\"
-	gcov \$(BASEEXT).c \$(BASEEXT).xs
+	\$(GCOV) \$(BASEEXT).c \$(BASEEXT).xs
 
 cover_db/\$(BASEEXT)-xs.html : \$(BASEEXT).xs.gcov
 	PERL5OPT=-MDevel::Cover make test
