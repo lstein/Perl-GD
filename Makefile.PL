@@ -38,6 +38,11 @@ unless (try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS) || 
     die <<END;
 **UNRECOVERABLE ERROR**
 Could not find gdlib-config in the search path. Please install libgd 2.0.28 or higher.
+In Debian and its derivatives (e.g. Ubuntu), it is provided by the libgd-dev or
+libgd2-xpm-dev package. Their libgd3 is the latest 2.2.4
+On Redhat and derivatives or OpenSUSE you need gd-devel.
+On FreeBSD it is installed by the graphics/gd port.
+Mandriva has libgd2-devel, libgd-devel or lib64gd-devel.
 If you want to try to compile anyway, please rerun this script with the option --ignore_missing_gd.
 END
 }
