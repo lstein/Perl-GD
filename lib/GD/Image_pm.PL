@@ -10,11 +10,11 @@ if (open F,".config.cache") {
   close F;
 }
 
-$origdir = cwd;
+my $origdir = cwd;
 chdir dirname($0);
-$file = basename($0, '.PL','.PLS');
+my $file = 'Image.pm';
 
-open OUT,">$file" or die "Can't create $file: $!";
+open OUT,">",$file or die "Can't create $file: $!";
 
 print "Extracting $file (with variable substitutions)\n";
 

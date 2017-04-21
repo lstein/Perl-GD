@@ -3,13 +3,11 @@ GD.xs
 LICENSE
 MANIFEST
 MANIFEST.SKIP
-META.json
-META.yml
 Makefile.PL
 README
 README.QUICKDRAW
 bdf_scripts/README
-bdf_scripts/bdf2gdfont.PLS
+bdf_scripts/bdf2gdfont_pl.PL
 bdf_scripts/bdftogd
 bdf_scripts/cvtbdf.pl
 demos/brushes.pl
@@ -28,7 +26,7 @@ demos/truetype_test
 demos/ttf.pl
 lib/GD.pm
 lib/GD/Group.pm
-lib/GD/Image.pm.PLS
+lib/GD/Image_pm.PL
 lib/GD/Polygon.pm
 lib/GD/Polyline.pm
 lib/GD/Simple.pm

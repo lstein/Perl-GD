@@ -3,12 +3,13 @@ use Config;
 use File::Basename qw(&basename &dirname);
 use Cwd;
 
-$origdir = cwd;
-chdir dirname($0);
-$file = basename($0, '.PL','.PLS');
+my $origdir = cwd;
+my $dir = dirname($0);
+chdir $dir;
+my $file = 'bdf2gdfont';
 $file .= $^O eq 'VMS' ? '.com' : '.pl';
 
-open OUT,">$file" or die "Can't create $file: $!";
+open OUT,">",$file or die "Can't create $file: $!";
 
 print "Extracting $file (with variable substitutions)\n";
 

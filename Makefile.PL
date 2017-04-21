@@ -241,36 +241,26 @@ $CCFLAGS .= " -Wformat=0" if $Config{gccversion};
 
 WriteMakefile(
     'NAME'	=> 'GD',
+    'ABSTRACT'  => 'Perl interface to the gd2 graphics library',
     'VERSION_FROM'	=> 'lib/GD.pm',
     'PREREQ_PM' => {
           'Math::Trig' => 0,
           'ExtUtils::PkgConfig' => 0,
     },
-    'PM'        => { 'lib/GD.pm' => '$(INST_LIBDIR)/GD.pm',
-                     'lib/GD/Polyline.pm' => '$(INST_LIBDIR)/GD/Polyline.pm',
-                     'lib/GD/Polygon.pm' => '$(INST_LIBDIR)/GD/Polygon.pm',
-                     'lib/GD/Simple.pm' => '$(INST_LIBDIR)/GD/Simple.pm',
-                     'lib/GD/Image.pm' => '$(INST_LIBDIR)/GD/Image.pm',
-                     'lib/GD/Group.pm' => '$(INST_LIBDIR)/GD/Group.pm'
-    },
-    'dist'      => {'COMPRESS'=>'gzip -9f', 'SUFFIX' => 'gz',
-	            'ZIP'=>'/usr/bin/zip','ZIPFLAGS'=>'-rl'},
+    'PL_FILES'  => {'bdf_scripts/bdf2gdfont_pl.PL' => 'bdf_scripts/bdf2gdfont.pl',
+                    'lib/GD/Image_pm.PL' => 'lib/GD/Image.pm'},
     'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],
     'INC'       => join(' ',$ENV{'GD_INC'},@INC),
 
-    'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
-		    'lib/GD/Image.pm.PLS' => 'lib/GD/Image.pm',
-		   },
     'CCFLAGS'   => $CCFLAGS,
     'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
-    'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
-    'ABSTRACT'  => 'Interface to Gd Graphics Library',
+    'AUTHOR'    => 'Lincoln Stein <lincoln.stein@gmail.com>',
      $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
+    clean       => { FILES => '.config.cache cover_db MANIFEST.git *.gcov GD.gcda GD.gcno' },
 
     ( $MAKEMAKER_VERSION > 6.45 ? (
 	META_MERGE => {
-	    'meta-spec' => { version => 2 },
             resources => {
                 repository => 'http://github.com/lstein/Perl-GD',
                 license    => 'http://dev.perl.org/licenses/',
@@ -386,9 +376,16 @@ END
 
 package MY;
 
+# Ignore templates
+sub libscan {
+    return 0 if $_[1] =~ /_p[ml].PL$/;
+    return $_[1];
+}
+
+
 sub processPL {
     my $inherited = shift->SUPER::processPL(@_);
-    $inherited    =~ s/(:: \/libGD\/Image.pm.PLS)/$1 .config.cache/;
+    $inherited    =~ s/(:: \/libGD\/Image_pm\.PL)/$1 .config.cache/;
     $inherited;
 }
 
