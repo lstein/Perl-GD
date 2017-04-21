@@ -67,8 +67,14 @@
 #ifndef mPUSHp
 #define mPUSHp(p,l)	PUSHs(sv_2mortal(newSVpvn((p), (l))))
 #endif
+#ifndef mPUSHi
+#define mPUSHi(i)	PUSHs(sv_2mortal(newSViv((i))))
+#endif
 #ifndef mXPUSHp
 # define mXPUSHp(p,l)	STMT_START { EXTEND(sp,1); mPUSHp((p), (l)); } STMT_END
+#endif
+#ifndef mXPUSHi
+# define mXPUSHi(i)	STMT_START { EXTEND(sp,1); mPUSHi((i)); } STMT_END
 #endif
 #ifndef hv_fetchs
 # define hv_fetchs(H, K, L) hv_fetch((H), (K), sizeof(K)-1, (L))
@@ -1197,55 +1203,38 @@ gdtransparent(image, ...)
 void
 gdgetBounds(image)
 	GD::Image	image
-	PROTOTYPE: $
-	PPCODE:
-	{
-		int sx,sy;
-		sx = gdImageSX(image);
-		sy = gdImageSY(image);
-		EXTEND(sp,2);
-		PUSHs(sv_2mortal(newSViv(sx)));
-		PUSHs(sv_2mortal(newSViv(sy)));
-	}
+  PROTOTYPE: $
+  PPCODE:
+    mXPUSHi(gdImageSX(image));
+    mXPUSHi(gdImageSY(image));
 
 int
 gdisTrueColor(image)
 	GD::Image	image
-	PROTOTYPE: $
-	CODE:
-	{
-		RETVAL=gdImageTrueColor(image);
-	}
-	OUTPUT:
-		RETVAL
+  PROTOTYPE: $
+  CODE:
+    RETVAL = gdImageTrueColor(image);
+  OUTPUT:
+    RETVAL
 
 void
 gdtrueColorToPalette(image, dither=0, colors=gdMaxColors)
 	GD::Image	image
 	int		dither
 	int		colors
-        PROTOTYPE: $;$$
-	CODE:
-	{
-		gdImageTrueColorToPalette(image,dither,colors);
-	}
+  PROTOTYPE: $;$$
+  CODE:
+    gdImageTrueColorToPalette(image,dither,colors);
 
 void
 gdrgb(image,color)
 	GD::Image	image
 	int		color
-        PROTOTYPE: $$
-	PPCODE:
-	{
-		int r,g,b;
-		r = gdImageRed(image,color);
-		g = gdImageGreen(image,color);
-		b = gdImageBlue(image,color);
-		EXTEND(sp,3);
-		PUSHs(sv_2mortal(newSViv(r)));
-		PUSHs(sv_2mortal(newSViv(g)));
-		PUSHs(sv_2mortal(newSViv(b)));
-	}
+  PROTOTYPE: $$
+  PPCODE:
+    mXPUSHi(gdImageRed(image,color));
+    mXPUSHi(gdImageGreen(image,color));
+    mXPUSHi(gdImageBlue(image,color));
 
 void
 gdalpha(image,color)
@@ -1253,40 +1242,31 @@ gdalpha(image,color)
 	int		color
   PROTOTYPE: $$
   PPCODE:
-        {
-		int a;
-		a = gdImageAlpha(image,color);
-		EXTEND(sp,1);
-		PUSHs(sv_2mortal(newSViv(a)));
-	}
+    mXPUSHi(gdImageAlpha(image,color));
 
 int
 gdboundsSafe(image,x,y)
 	GD::Image	image
 	int		x
 	int		y
-        PROTOTYPE: $$$
-	CODE:
-	{
-	  RETVAL=gdImageBoundsSafe(image,x,y);
-	  if (RETVAL == 0)
-	    XSRETURN_UNDEF;
-	}
-	OUTPUT:
-            RETVAL
+  PROTOTYPE: $$$
+  CODE:
+    RETVAL = gdImageBoundsSafe(image,x,y);
+    if (RETVAL == 0)
+      XSRETURN_UNDEF;
+  OUTPUT:
+    RETVAL
 
 int
 gdgetPixel(image,x,y)
 	GD::Image	image
 	int		x
 	int		y
-	PROTOTYPE: $$$
-	CODE:
-	{
-		RETVAL=gdImageGetPixel(image,x,y);
-	}
-	OUTPUT:
-		RETVAL
+  PROTOTYPE: $$$
+  CODE:
+    RETVAL = gdImageGetPixel(image,x,y);
+  OUTPUT:
+    RETVAL
 
 void
 gdsetPixel(image,x,y,color)
@@ -1294,183 +1274,159 @@ gdsetPixel(image,x,y,color)
 	int		x
 	int		y
 	int		color
-	PROTOTYPE: $$$$
-	CODE:
-	{
-		gdImageSetPixel(image,x,y,color);
-	}
+  PROTOTYPE: $$$$
+  CODE:
+    gdImageSetPixel(image,x,y,color);
 
 GD::Image
 gdcopyRotate90(src)
 	GD::Image	src
-	PROTOTYPE: $
-	CODE:
-	{
-		int x, y, x1, y1, x2, y2, i, j;
-		GD__Image dst;
-		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
-		dst = (GD__Image) gd_cloneDim(src, y, x);
+  PROTOTYPE: $
+  PREINIT:
+	int x, y, x1, y1, x2, y2, i, j;
+  CODE:
+	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+	RETVAL = gd_cloneDim(src, y, x);
 
-		for (j=0;j<y;j++) {
-		   for (i=0;i<x;i++) {
-		      GDCopyImagePixel(dst,y1-j,i,src,i,j);
-		   }
-		}
-		RETVAL = dst;
+	for (j=0;j<y;j++) {
+	   for (i=0;i<x;i++) {
+	      GDCopyImagePixel(RETVAL,y1-j,i,src,i,j);
+	   }
 	}
-	OUTPUT:
-		RETVAL
+  OUTPUT:
+  	RETVAL
 
 GD::Image
 gdcopyRotate180(src)
 	GD::Image	src
-	PROTOTYPE: $
-	CODE:
-	{
-		int x, y, x1, y1, x2, y2, i, j;
-		GD__Image dst;
-		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
-		dst = (GD__Image) gd_cloneDim(src, x, y);
+  PROTOTYPE: $
+  PREINIT:
+	int x, y, x1, y1, x2, y2, i, j;
+  CODE:
+	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+	RETVAL = gd_cloneDim(src, x, y);
 
-		for (j=0;j<y;j++) {
-		   for (i=0;i<x;i++) {
-		      GDCopyImagePixel(dst,x1-i,y1-j,src,i,j);
-		   }
-		}
-		RETVAL = dst;
-	}
-	OUTPUT:
-		RETVAL
+	for (j=0;j<y;j++) {
+          for (i=0;i<x;i++) {
+            GDCopyImagePixel(RETVAL,x1-i,y1-j,src,i,j);
+          }
+        }
+  OUTPUT:
+	RETVAL
 
 GD::Image
 gdcopyRotate270(src)
 	GD::Image	src
-	PROTOTYPE: $
-	CODE:
-	{
-		int x, y, x1, y1, x2, y2, i, j;
-		GD__Image dst;
-		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
-		dst = (GD__Image) gd_cloneDim(src, y, x);
+  PROTOTYPE: $
+  PREINIT:
+	int x, y, x1, y1, x2, y2, i, j;
+  CODE:
+	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+	RETVAL = gd_cloneDim(src, y, x);
 		
-		for (i=0;i<x;i++) {
-		   for (j=0;j<y;j++) {
-		      GDCopyImagePixel(dst,j,x1-i,src,i,j);
-		   }
-		}
-		RETVAL = dst;
+	for (i=0;i<x;i++) {
+	   for (j=0;j<y;j++) {
+	      GDCopyImagePixel(RETVAL,j,x1-i,src,i,j);
+	   }
 	}
-	OUTPUT:
-		RETVAL
+  OUTPUT:
+	RETVAL
 
 GD::Image
 gdcopyFlipHorizontal(src)
 	GD::Image	src
-	PROTOTYPE: $
-	CODE:
-	{
-		int x, y, x1, y1, x2, y2, i, j;
-		GD__Image dst;
-		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
-		dst = (GD__Image) gd_cloneDim(src, x, y);
+  PROTOTYPE: $
+  PREINIT:
+	int x, y, x1, y1, x2, y2, i, j;
+  CODE:
+	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+	RETVAL = gd_cloneDim(src, x, y);
 
-		for (j=0;j<y;j++) {
-		   for (i=0;i<x;i++) {
-		      GDCopyImagePixel(dst,x1-i,j,src,i,j);
-		   }
-		}
-		RETVAL = dst;
+	for (j=0;j<y;j++) {
+	   for (i=0;i<x;i++) {
+	      GDCopyImagePixel(RETVAL,x1-i,j,src,i,j);
+	   }
 	}
-	OUTPUT:
-		RETVAL
+  OUTPUT:
+	RETVAL
 
 GD::Image
 gdcopyFlipVertical(src)
 	GD::Image	src
-	PROTOTYPE: $
-	CODE:
-	{
-		int x, y, x1, y1, x2, y2, i, j;
-		GD__Image dst;
-		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
-		dst = (GD__Image) gd_cloneDim(src, x, y);
+  PROTOTYPE: $
+  PREINIT:
+	int x, y, x1, y1, x2, y2, i, j;
+  CODE:
+	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+	RETVAL = gd_cloneDim(src, x, y);
 
-		for (j=0;j<y;j++) {
-		   for (i=0;i<x;i++) {
-		      GDCopyImagePixel(dst,i,y1-j,src,i,j);
-		   }
-		}
-		RETVAL = dst;
-	}
-	OUTPUT:
-		RETVAL
+	for (j=0;j<y;j++) {
+          for (i=0;i<x;i++) {
+            GDCopyImagePixel(RETVAL,i,y1-j,src,i,j);
+          }
+        }
+  OUTPUT:
+	RETVAL
 
 GD::Image
 gdcopyTranspose(src)
 	GD::Image	src
-	PROTOTYPE: $
-	CODE:
-	{
-		int x, y, x1, y1, x2, y2, i, j;
-		GD__Image dst;
-		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
-		dst = (GD__Image) gd_cloneDim(src, y, x);
+  PROTOTYPE: $
+  PREINIT:
+	int x, y, x1, y1, x2, y2, i, j;
+  CODE:
+	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+	RETVAL = gd_cloneDim(src, x, y);
 
-		for (j=0;j<y;j++) {
-		   for (i=0;i<x;i++) {
-		      GDCopyImagePixel(dst,j,i,src,i,j);
-		   }
-		}
-		RETVAL = dst;
-	}
-	OUTPUT:
-		RETVAL
+	for (j=0;j<y;j++) {
+          for (i=0;i<x;i++) {
+            GDCopyImagePixel(RETVAL,j,i,src,i,j);
+          }
+        }
+  OUTPUT:
+	RETVAL
 
 GD::Image
 gdcopyReverseTranspose(src)
 	GD::Image	src
-	PROTOTYPE: $
-	CODE:
-	{
-		int x, y, x1, y1, x2, y2, i, j;
-		GD__Image dst;
-		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
-		dst = (GD__Image) gd_cloneDim(src, y, x);
+  PROTOTYPE: $
+  PREINIT:
+	int x, y, x1, y1, x2, y2, i, j;
+  CODE:
+	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+	RETVAL = gd_cloneDim(src, x, y);
 
-		for (j=0;j<y;j++) {
-		   for (i=0;i<x;i++) {
-		      GDCopyImagePixel(dst,y1-j,x1-i,src,i,j);
-		   }
-		}
-		RETVAL = dst;
-	}
-	OUTPUT:
-		RETVAL
+	for (j=0;j<y;j++) {
+          for (i=0;i<x;i++) {
+            GDCopyImagePixel(RETVAL,y1-j,x1-i,src,i,j);
+          }
+        }
+  OUTPUT:
+	RETVAL
 
 void
 gdrotate180(src)
 	GD::Image	src
   PROTOTYPE: $
+  PREINIT:
+	int x, y, x1, y1, x2, y2, i, j;
   CODE:
-	{
-		int x, y, x1, y1, x2, y2, i, j, tmp;
-		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
 
-		for (j=0;j<y2;j++) {
-		   for (i=0;i<x;i++) {
-		      tmp = GDGetImagePixel(src,x1-i,y1-j);
-		      GDCopyImagePixel(src,x1-i,y1-j,src,i,j);
-		      GDSetImagePixel(src,i,j,tmp);
-		   }
-		}
-               if(y % 2 == 1) {
-                  for (i=0;i<x2;i++) {
-                     tmp = GDGetImagePixel(src,x1-i,j);
-                     GDCopyImagePixel(src,x1-i,j,src,i,j);
-                     GDSetImagePixel(src,i,j,tmp);
-                  }
-               }
-	}
+	for (j=0; j<y2; j++) {
+          for (i=0; i<x; i++) {
+            int tmp = GDGetImagePixel(src,x1-i,y1-j);
+            GDCopyImagePixel(src,x1-i,y1-j,src,i,j);
+            GDSetImagePixel(src,i,j,tmp);
+          }
+        }
+        if (y % 2 == 1) {
+          for (i=0; i<x2; i++) {
+            int tmp = GDGetImagePixel(src,x1-i,j);
+            GDCopyImagePixel(src,x1-i,j,src,i,j);
+            GDSetImagePixel(src,i,j,tmp);
+          }
+        }
 
 void
 gdcopyRotated(dst,src,dstX,dstY,srcX,srcY,srcW,srcH,angle)
@@ -1485,49 +1441,47 @@ gdcopyRotated(dst,src,dstX,dstY,srcX,srcY,srcW,srcH,angle)
         int             angle
   PROTOTYPE: $$$$$$$$$
   CODE:
-	{
+    {
 #ifdef VERSION_33
         gdImageCopyRotated(dst,src,dstX,dstY,srcX,srcY,srcW,srcH,angle);
 #else
         die("libgd 2.0.33 or higher required for copyRotated support");
 #endif
-	}
+    }
 
 void
 gdflipHorizontal(src)
 	GD::Image	src
   PROTOTYPE: $
+  PREINIT:
+	int x, y, x1, y1, x2, y2, i, j;
   CODE:
-	{
-		int x, y, x1, y1, x2, y2, i, j, tmp;
-		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
 
-		for (j=0;j<y;j++) {
-		   for (i=0;i<x2;i++) {
-		      tmp = GDGetImagePixel(src,x1-i,j);
-		      GDCopyImagePixel(src,x1-i,j,src,i,j);
-		      GDSetImagePixel(src,i,j,tmp);
-		   }
-		}
-	}
+	for (j=0;j<y;j++) {
+          for (i=0;i<x2;i++) {
+            int tmp = GDGetImagePixel(src,x1-i,j);
+            GDCopyImagePixel(src,x1-i,j,src,i,j);
+            GDSetImagePixel(src,i,j,tmp);
+          }
+        }
 
 void
 gdflipVertical(src)
 	GD::Image	src
   PROTOTYPE: $
+  PREINIT:
+	int x, y, x1, y1, x2, y2, i, j;
   CODE:
-	{
-		int x, y, x1, y1, x2, y2, i, j, tmp;
-		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
+	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
 
-		for (j=0;j<y2;j++) {
-		   for (i=0;i<x;i++) {
-		      tmp = GDGetImagePixel(src,i,y1-j);
-		      GDCopyImagePixel(src,i,y1-j,src,i,j);
-		      GDSetImagePixel(src,i,j,tmp);
-		   }
-		}
-	}
+	for (j=0; j<y2; j++) {
+          for (i=0; i<x; i++) {
+            int tmp = GDGetImagePixel(src,i,y1-j);
+            GDCopyImagePixel(src,i,y1-j,src,i,j);
+            GDSetImagePixel(src,i,j,tmp);
+          }
+        }
 
 void
 gdline(image,x1,y1,x2,y2,color)
@@ -1539,9 +1493,7 @@ gdline(image,x1,y1,x2,y2,color)
 	int		color
   PROTOTYPE: $$$$$$
   CODE:
-	{
-		gdImageLine(image,x1,y1,x2,y2,color);
-	}
+    gdImageLine(image,x1,y1,x2,y2,color);
 
 void
 gddashedLine(image,x1,y1,x2,y2,color)
@@ -1553,9 +1505,7 @@ gddashedLine(image,x1,y1,x2,y2,color)
 	int		color
   PROTOTYPE: $$$$$$
   CODE:
-	{
-		gdImageDashedLine(image,x1,y1,x2,y2,color);
-	}
+    gdImageDashedLine(image,x1,y1,x2,y2,color);
 
 void
 gdopenPolygon(image,poly,color)
@@ -1578,7 +1528,7 @@ gdopenPolygon(image,poly,color)
 		count = perl_call_method("length",G_SCALAR) ;
 		SPAGAIN ;
 		if (count != 1)
-			croak("Didn't get a single result from GD::Poly::length() call.\n");
+                  croak("Didn't get a single result from GD::Poly::length() call.\n");
 		length = POPi ;
 		PUTBACK ;
 		FREETMPS ;
@@ -1586,27 +1536,27 @@ gdopenPolygon(image,poly,color)
 
 		polyptr = (gdPointPtr)safemalloc(sizeof(gdPoint)*length);
 		if (polyptr == NULL)
-			croak("safemalloc() returned NULL in GD::Image::poly().\n");
+                  croak("safemalloc() returned NULL in GD::Image::poly().\n");
 		
 		for (i=0;i<length;i++) {
-			ENTER ;
-			SAVETMPS ;
-			PUSHMARK(sp) ;
-			XPUSHs(poly) ;
-			XPUSHs(sv_2mortal(newSViv(i))) ;
-			PUTBACK ;
-			count = perl_call_method("getPt",G_ARRAY) ;
-			SPAGAIN ;
-			if (count != 2)
-				croak("Didn't get a single result from GD::Poly::length() call.\n");
-			y = POPi ;
-			x = POPi ;
-			PUTBACK ;
-			FREETMPS ;
-			LEAVE ;
+                  ENTER ;
+                  SAVETMPS ;
+                  PUSHMARK(sp) ;
+                  XPUSHs(poly) ;
+                  mXPUSHi(i) ;
+                  PUTBACK ;
+                  count = perl_call_method("getPt",G_ARRAY) ;
+                  SPAGAIN ;
+                  if (count != 2)
+                    croak("Didn't get a single result from GD::Poly::length() call.\n");
+                  y = POPi ;
+                  x = POPi ;
+                  PUTBACK ;
+                  FREETMPS ;
+                  LEAVE ;
 
-			polyptr[i].x = x;
-			polyptr[i].y = y;
+                  polyptr[i].x = x;
+                  polyptr[i].y = y;
 		}
 
 		gdImagePolygon(image,polyptr,length,color);
@@ -1634,7 +1584,7 @@ gdunclosedPolygon(image,poly,color)
 		count = perl_call_method("length",G_SCALAR) ;
 		SPAGAIN ;
 		if (count != 1)
-			croak("Didn't get a single result from GD::Poly::length() call.\n");
+                  croak("Didn't get a single result from GD::Poly::length() call.\n");
 		length = POPi ;
 		PUTBACK ;
 		FREETMPS ;
@@ -1642,33 +1592,33 @@ gdunclosedPolygon(image,poly,color)
 
 		polyptr = (gdPointPtr)safemalloc(sizeof(gdPoint)*length);
 		if (polyptr == NULL)
-			croak("safemalloc() returned NULL in GD::Image::poly().\n");
+                  croak("safemalloc() returned NULL in GD::Image::poly().\n");
 		
 		for (i=0;i<length;i++) {
-			ENTER ;
-			SAVETMPS ;
-			PUSHMARK(sp) ;
-			XPUSHs(poly) ;
-			XPUSHs(sv_2mortal(newSViv(i))) ;
-			PUTBACK ;
-			count = perl_call_method("getPt",G_ARRAY) ;
-			SPAGAIN ;
-			if (count != 2)
-				croak("Didn't get a single result from GD::Poly::length() call.\n");
-			y = POPi ;
-			x = POPi ;
-			PUTBACK ;
-			FREETMPS ;
-			LEAVE ;
+                  ENTER ;
+                  SAVETMPS ;
+                  PUSHMARK(sp) ;
+                  XPUSHs(poly) ;
+                  mXPUSHi(i) ;
+                  PUTBACK ;
+                  count = perl_call_method("getPt",G_ARRAY) ;
+                  SPAGAIN ;
+                  if (count != 2)
+                    croak("Didn't get a single result from GD::Poly::length() call.\n");
+                  y = POPi ;
+                  x = POPi ;
+                  PUTBACK ;
+                  FREETMPS ;
+                  LEAVE ;
 
-			polyptr[i].x = x;
-			polyptr[i].y = y;
+                  polyptr[i].x = x;
+                  polyptr[i].y = y;
 		}
 
 		gdImageOpenPolygon(image,polyptr,length,color);
 		safefree((char*) polyptr);
 #else
-	die("libgd 2.0.33 or higher required for unclosed polygon support");
+                die("libgd 2.0.33 or higher required for unclosed polygon support");
 #endif
 	}
 
@@ -1693,7 +1643,7 @@ gdfilledPolygon(image,poly,color)
 		count = perl_call_method("length",G_SCALAR) ;
 		SPAGAIN ;
 		if (count != 1)
-			croak("Didn't get a single result from GD::Poly::length() call.\n");
+                  croak("Didn't get a single result from GD::Poly::length() call.\n");
 		length = POPi ;
 		PUTBACK ;
 		FREETMPS ;
@@ -1701,27 +1651,27 @@ gdfilledPolygon(image,poly,color)
 
 		polyptr = (gdPointPtr)safemalloc(sizeof(gdPoint)*length);
 		if (polyptr == NULL)
-			croak("safemalloc() returned NULL in GD::Image::poly().\n");
+                  croak("safemalloc() returned NULL in GD::Image::poly().\n");
 		
 		for (i=0;i<length;i++) {
-			ENTER ;
-			SAVETMPS ;
-			PUSHMARK(sp) ;
-			XPUSHs(poly) ;
-			XPUSHs(sv_2mortal(newSViv(i))) ;
-			PUTBACK ;
-			count = perl_call_method("getPt",G_ARRAY) ;
-			SPAGAIN ;
-			if (count != 2)
-				croak("Didn't get a single result from GD::Poly::length() call.\n");
-			y = POPi ;
-			x = POPi ;
-			PUTBACK ;
-			FREETMPS ;
-			LEAVE ;
+                  ENTER ;
+                  SAVETMPS ;
+                  PUSHMARK(sp) ;
+                  XPUSHs(poly) ;
+                  mXPUSHi(i) ;
+                  PUTBACK ;
+                  count = perl_call_method("getPt",G_ARRAY) ;
+                  SPAGAIN ;
+                  if (count != 2)
+                    croak("Didn't get a single result from GD::Poly::length() call.\n");
+                  y = POPi ;
+                  x = POPi ;
+                  PUTBACK ;
+                  FREETMPS ;
+                  LEAVE ;
 
-			polyptr[i].x = x;
-			polyptr[i].y = y;
+                  polyptr[i].x = x;
+                  polyptr[i].y = y;
 		}
 
 		gdImageFilledPolygon(image,polyptr,length,color);
@@ -1738,9 +1688,7 @@ gdrectangle(image,x1,y1,x2,y2,color)
 	int		color
   PROTOTYPE: $$$$$$
   CODE:
-	{
-		gdImageRectangle(image,x1,y1,x2,y2,color);
-	}
+    gdImageRectangle(image,x1,y1,x2,y2,color);
 
 void
 gdfilledRectangle(image,x1,y1,x2,y2,color)
@@ -1752,9 +1700,7 @@ gdfilledRectangle(image,x1,y1,x2,y2,color)
 	int		color
   PROTOTYPE: $$$$$$
   CODE:
-	{
-		gdImageFilledRectangle(image,x1,y1,x2,y2,color);
-	}
+    gdImageFilledRectangle(image,x1,y1,x2,y2,color);
 
 void
 gdfilledEllipse(image,cx,cy,w,h,color)
@@ -1766,9 +1712,7 @@ gdfilledEllipse(image,cx,cy,w,h,color)
 	int		color
   PROTOTYPE: $$$$$$
   CODE:
-	{
-		gdImageFilledEllipse(image,cx,cy,w,h,color);
-	}
+    gdImageFilledEllipse(image,cx,cy,w,h,color);
 
 void
 gdarc(image,cx,cy,w,h,s,e,color)
@@ -1782,9 +1726,7 @@ gdarc(image,cx,cy,w,h,s,e,color)
 	int		color
   PROTOTYPE: $$$$$$$$
   CODE:
-	{
-		gdImageArc(image,cx,cy,w,h,s,e,color);
-	}
+    gdImageArc(image,cx,cy,w,h,s,e,color);
 
 void
 gdfilledArc(image,cx,cy,w,h,s,e,color,arc_style=0)
@@ -1799,9 +1741,7 @@ gdfilledArc(image,cx,cy,w,h,s,e,color,arc_style=0)
 	int		arc_style
   PROTOTYPE: $$$$$$$$$
   CODE:
-	{
-		gdImageFilledArc(image,cx,cy,w,h,s,e,color,arc_style);
-	}
+    gdImageFilledArc(image,cx,cy,w,h,s,e,color,arc_style);
 
 void
 fillToBorder(image,x,y,border,color)
@@ -1812,9 +1752,7 @@ fillToBorder(image,x,y,border,color)
 	int		color
   PROTOTYPE: $$$$$
   CODE:
-	{
-		gdImageFillToBorder(image,x,y,border,color);
-	}
+    gdImageFillToBorder(image,x,y,border,color);
 
 void
 fill(image,x,y,color)
@@ -1824,9 +1762,7 @@ fill(image,x,y,color)
 	int		color
   PROTOTYPE: $$$$
   CODE:
-	{
-		gdImageFill(image,x,y,color);
-	}
+    gdImageFill(image,x,y,color);
 
 void
 setBrush(image,brush)
@@ -1834,19 +1770,15 @@ setBrush(image,brush)
 	GD::Image	brush
   PROTOTYPE: $$
   CODE:
-	{
-		gdImageSetBrush(image,brush);
-	}
+    gdImageSetBrush(image,brush);
 
 void
 setTile(image,tile)
 	GD::Image	image
 	GD::Image	tile
-        PROTOTYPE: $$
-	CODE:
-	{
-		gdImageSetTile(image,tile);
-	}
+  PROTOTYPE: $$
+  CODE:
+    gdImageSetTile(image,tile);
 
 void
 setThickness(image,thickness)
@@ -1854,31 +1786,26 @@ setThickness(image,thickness)
 	int		thickness
   PROTOTYPE: $$
   CODE:
-	{
-	  gdImageSetThickness(image,thickness);
-	}
-
+    gdImageSetThickness(image,thickness);
 
 void
 setStyle(image, ...)
 	GD::Image	image
   PROTOTYPE: $;$
+  PREINIT:
+	int	*style;
+	int	i;
   CODE:
-	{
-		int	*style;
-		int	i;
-
-		if (items < 2)
-			return;
-		style = (int*) safemalloc(sizeof(int)*(items-1));
-		if (style == NULL)
-			croak("malloc returned NULL at setStyle().\n");
-		for(i=1;i<items;i++) {
-			style[i-1]=(int)SvIV(ST(i));
-		}
-		gdImageSetStyle(image,style,items-1);
-		safefree((char*) style);
-	}
+	if (items < 2)
+          return;
+	style = (int*) safemalloc(sizeof(int)*(items-1));
+	if (style == NULL)
+          croak("malloc returned NULL at setStyle().\n");
+	for(i=1; i<items; i++) {
+          style[i-1]=(int)SvIV(ST(i));
+        }
+	gdImageSetStyle(image,style,items-1);
+	safefree((char*) style);
 
 int
 colorAllocate(image,r,g,b)
@@ -1997,11 +1924,9 @@ colorsTotal(image)
       GD::Image	image
       PROTOTYPE: $
   CODE:
-  {
     if (gdImageTrueColor(image))
       XSRETURN_UNDEF;
     RETVAL = gdImageColorsTotal(image);
-  }
   OUTPUT:
     RETVAL
 
@@ -2011,7 +1936,6 @@ interlaced(image, ...)
       GD::Image	image
   PROTOTYPE: $;$
   CODE:
-  {
     if (items > 1) {
       if (SvOK(ST(1)))
         gdImageInterlace(image,1);
@@ -2019,7 +1943,6 @@ interlaced(image, ...)
         gdImageInterlace(image,0);
     }
     RETVAL = gdImageGetInterlaced(image);
-  }
   OUTPUT:
     RETVAL
 
@@ -2263,7 +2186,7 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
         } else {
           EXTEND(sp,8);
           for (i=0;i<8;i++) {
-            PUSHs(sv_2mortal(newSViv(brect[i])));
+            mPUSHi(brect[i]);
           }
         }
   }
@@ -2372,7 +2295,7 @@ gdclip(image,...)
     gdImageGetClip(image,&coords[0],&coords[1],&coords[2],&coords[3]);
     EXTEND(sp,4);
     for (i=0;i<4;i++)
-      PUSHs(sv_2mortal(newSViv(coords[i])));
+      mPUSHi(coords[i]);
 
 void
 gdsetAntiAliased(image,color)
