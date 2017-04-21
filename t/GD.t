@@ -240,7 +240,7 @@ sub test7 {
 
 sub run_image_regression_tests {
     my $suffix = $ENV{GDIMAGETYPE} || 'gd2';
-    print STDERR "# Testing using $suffix support.\n";
+    print STDERR "# Testing gd ".GD::VERSION_STRING()." using $suffix support.\n";
     for my $t (1..IMAGE_TESTS) {
 	my $gd   = eval "test${t}('$suffix')";
 	if (!$gd) {

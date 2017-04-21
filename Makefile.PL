@@ -280,10 +280,16 @@ exit 0;
 sub try_to_autoconfigure {
   my ($options,$lib_gd_path,$INC,$LIBPATH,$LIBS) = @_;
   my ($version, $cflags, $ldflags, $libs, $libdir, $features, $includedir);
-  my $config = `gdlib-config --all`;
+  # perl Makefile.PL --lib_gd_path /opt/libgd/2.1.1/lib
+  my ($prefix) = $$lib_gd_path ? ($$lib_gd_path =~ m|(^.*)/lib|) : "";
+  my $bindir = $prefix ? "$prefix/bin/" : "";
+  my $config = `${bindir}gdlib-config --all` if -e "${bindir}gdlib-config";
+  $config = `gdlib-config --all` if !$config;
   unless ($config) {
+      my %config;
       require ExtUtils::PkgConfig;
-      my %config = ExtUtils::PkgConfig->find ('gdlib');
+      %config = ExtUtils::PkgConfig->find ("$prefix/lib/pkgconfig/gdlib.pc") if $prefix;
+      %config = ExtUtils::PkgConfig->find ("gdlib") unless %config;
       return unless %config;
       $version  = $config{modversion};
       warn "Configuring for libgd version $version.\n";
