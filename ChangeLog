@@ -1,5 +1,6 @@
 2.59    * error on failing libgd calls
-        * fix colorClosestAlpha
+        * fix colorClosestAlpha, colorAllocateAlpha
+        * add missing documentation
 2.58    * fix VERSION_STRING for 2.0.x
         * honor --lib_gd_path specific gdlib-config
         * Loosen the comparison tests with GDIMAGETYPE ne gd2

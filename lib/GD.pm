@@ -60,18 +60,7 @@ $VERSION = eval $VERSION;
 	GD_CMP_TRUECOLOR
 );
 
-%EXPORT_TAGS = ('cmp'  => [qw(GD_CMP_IMAGE 
-			      GD_CMP_NUM_COLORS
-			      GD_CMP_COLOR
-			      GD_CMP_SIZE_X
-			      GD_CMP_SIZE_Y
-			      GD_CMP_TRANSPARENT
-			      GD_CMP_BACKGROUND
-			      GD_CMP_INTERLACE
-			      GD_CMP_TRUECOLOR
-			     )
-			  ]
-	       );
+%EXPORT_TAGS = ('cmp'  => [ @EXPORT_OK ] );
 
 # documentation error
 *GD::Polygon::delete = \&GD::Polygon::deletePt;
@@ -204,7 +193,7 @@ L<GD::Simple> for a description of these methods.
 
 A Simple Example:
 
-	#!/usr/local/bin/perl
+	#!/usr/bin/perl
 
 	use GD;
 
@@ -321,7 +310,7 @@ by default.  To change this default to create true color images use:
 
 	GD::Image->trueColor(1);
 
-somewhere before creating new images.  To switch back to palette
+before creating new images.  To switch back to palette
 based by default, use:
 
 	GD::Image->trueColor(0);
@@ -641,6 +630,16 @@ Example:
 
 	$apricot = $myImage->colorClosest(255,200,180);
 
+=item B<$index = $image-E<gt>colorClosestAlpha(red,green,blue,alpha)>
+
+This returns the index of the color closest in the color table to the
+red green blue and alpha components specified.  If no colors have yet been
+allocated, then this call returns -1.
+
+Example:
+
+	$apricot = $myImage->colorClosestAlpha(255,200,180,0);
+
 =item B<$index = $image-E<gt>colorClosestHWB(red,green,blue)>
 
 This also attempts to return the color closest in the color table to the
@@ -664,6 +663,15 @@ table, this call returns -1.
 	$rosey = $myImage->colorExact(255,100,80);
 	warn "Everything's coming up roses.\n" if $rosey >= 0;
 
+=item B<$index = $image-E<gt>colorExactAlpha(red,green,blue,alpha)>
+
+This returns the index of a color that exactly matches the specified
+red green blue and alpha components.  If such a color is not in the color
+table, this call returns -1.
+
+	$rosey = $myImage->colorExactAlpha(255,100,80,0);
+	warn "Everything's coming up roses.\n" if $rosey >= 0;
+
 =item B<$index = $image-E<gt>colorResolve(red,green,blue)>
 
 This returns the index of a color that exactly matches the specified
@@ -672,6 +680,16 @@ table and there is room, then this method allocates the color in the
 color table and returns its index.
 
 	$rosey = $myImage->colorResolve(255,100,80);
+	warn "Everything's coming up roses.\n" if $rosey >= 0;
+
+=item B<$index = $image-E<gt>colorResolveAlpha(red,green,blue,alpha)>
+
+This returns the index of a color that exactly matches the specified
+red green blue and alpha components.  If such a color is not in the color
+table and there is room, then this method allocates the color in the
+color table and returns its index.
+
+	$rosey = $myImage->colorResolveAlpha(255,100,80,0);
 	warn "Everything's coming up roses.\n" if $rosey >= 0;
 
 =item B<$colorsTotal = $image-E<gt>colorsTotal> I<object method>
@@ -861,7 +879,7 @@ clearly against.
 Once turned on, you can turn this feature off by calling
 setAntiAliasedDontBlend() with a second argument of 0:
 
- $image->setAntiAliasedDontBlend($color,0);
+  $image->setAntiAliasedDontBlend($color,0);
 
 =back
 
@@ -925,8 +943,9 @@ Example:
 	$myImage->rectangle(10,10,100,100,$rose);
 
 =item B<$image-E<gt>filledRectangle($x1,$y1,$x2,$y2,$color)>
+=item B<$image-E<gt>setTile($otherimage)>
 
-This draws a rectangle filed with the specified color.  You can use a
+This draws a rectangle filled with the specified color.  You can use a
 real color, or the special fill color gdTiled to fill the polygon
 with a pattern.
 
@@ -1089,9 +1108,7 @@ attempt to find the best match, with varying results.
 
 =over 4
 
-=item B<$image-E<gt>copy($sourceImage,$dstX,$dstY,>
-
-B<				$srcX,$srcY,$width,$height)>
+=item B<$image-E<gt>copy($sourceImage,$dstX,$dstY,$srcX,$srcY,$width,$height)>
 
 This is the simplest of the several copy operations, copying the
 specified region from the source image to the destination image (the
@@ -1394,7 +1411,7 @@ is present, or false otherwise.
 
 This method can also be called as a class method of GD::Image;
 
-=item B<$result = $image->stringFTCircle($cx,$cy,$radius,$textRadius,$fillPortion,$font,$points,$top,$bottom,$fgcolor)>
+=item B<$result = $image-E<gt>stringFTCircle($cx,$cy,$radius,$textRadius,$fillPortion,$font,$points,$top,$bottom,$fgcolor)>
 
 This draws text in a circle. Currently (libgd 2.0.33) this function
 does not work for me, but the interface is provided for completeness.
@@ -1506,7 +1523,7 @@ is true color or not.
 =item B<$flag = $image1-E<gt>compare($image2)>
 
 Compare two images and return a bitmap describing the differences
-found, if any.  The return value must be logically ANDed with one or
+found, if any.  The return value must be logically AND'ed with one or
 more constants in order to determine the differences.  The following
 constants are available:
 
@@ -1561,11 +1578,11 @@ objects:
 
 =over 4
 
-=item $image->startGroup([$id,\%style])
+=item $image-E<gt>startGroup([$id,\%style])
 
-=item $image->endGroup()
+=item $image-E<gt>endGroup()
 
-=item $group = $image->newGroup
+=item $group = $image-E<gt>newGroup
 
 See L<GD::SVG> for information.
 
@@ -1776,13 +1793,11 @@ These return the width and height of the font.
 
 =over
 
-=item GD::LIBGD_VERSION
+=item GD::VERSION_STRING
 
 Returns the string of the libgd VERSION, like "2.2.4".
 
-=item GD::LIBGD_VERSION
-
-Returns the string of the libgd VERSION, like "2.2.4".
+=item GD::constant
 
 =back
 
