@@ -268,11 +268,12 @@ WriteMakefile(
     'AUTHOR'    => 'Lincoln Stein <lincoln.stein@gmail.com>',
      $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
-    clean       => { FILES => '.config.cache cover_db MANIFEST.git *.gcov GD.gcda GD.gcno' },
+    'clean'     => { FILES => '.config.cache cover_db MANIFEST.git *.gcov GD.gcda GD.gcno' },
+    'LICENSE'   => 'perl_5',
 
     ( $MAKEMAKER_VERSION > 6.45 ? (
 	META_MERGE => {
-            resources => {
+            resoqurces => {
                 repository => 'http://github.com/lstein/Perl-GD',
                 license    => 'http://dev.perl.org/licenses/',
             },
