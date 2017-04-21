@@ -478,9 +478,13 @@ gd_cloneDim(GD__Image src, int x, int y) {
   GD__Image dst;
   if (gdImageTrueColor(src)) {
      dst = (GD__Image) gdImageCreateTrueColor(x,y);
+     if (!dst)
+       croak("gdImageCreateTrueColor error");
   } else {
      int i;
      dst = (GD__Image) gdImageCreatePalette(x,y);
+     if (!dst)
+       croak("gdImageCreatePalette error");
      /* copy across the palette information */
      for (i = 0; i < gdMaxColors; i++) {
 	dst->red[i]   = src->red[i];
@@ -620,8 +624,12 @@ gd_new(packname="GD::Image", x=64, y=64, ...)
 		  truecolor = (int)SvIV(ST(3));
 		if (truecolor) {
 		   theImage = (GD__Image) gdImageCreateTrueColor(x,y);
+                   if (!theImage)
+                     croak("gdImageCreateTrueColor error");
 		} else {
 		   theImage = (GD__Image) gdImageCreate(x,y);
+                   if (!theImage)
+                     croak("gdImageCreate error");
 		}
 		RETVAL = theImage;
 	}
@@ -633,27 +641,29 @@ GD::Image
 gd_newFromPng(packname="GD::Image", filehandle, ...)
 	char *	packname
 	InputStream	filehandle
-	PROTOTYPE: $$;$
-        PREINIT:
+  PROTOTYPE: $$;$
+  PREINIT:
 #ifdef START_MY_CXT
         dMY_CXT;
 	int truecolor = MY_CXT.truecolor_default;
 #else
         int truecolor = truecolor_default;
 #endif
-	CODE:
+  CODE:
 	RETVAL = (GD__Image) GDIMAGECREATEFROMPNG(filehandle);
+        if (!RETVAL)
+          croak("gdImageCreateFromPng error");
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
-	OUTPUT:
+  OUTPUT:
 	RETVAL
 
 GD::Image
 gdnewFromPngData(packname="GD::Image", imageData, ...)
 	char *	packname
 	SV *	imageData
-	PROTOTYPE: $$;$
-        PREINIT:
+  PROTOTYPE: $$;$
+  PREINIT:
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
@@ -663,14 +673,16 @@ gdnewFromPngData(packname="GD::Image", imageData, ...)
 #else
           int truecolor = truecolor_default;
 #endif
-	CODE:
+  CODE:
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromPngCtx(ctx);
         (ctx->gd_free)(ctx);
+        if (!RETVAL)
+          croak("gdImageCreateFromPngCtx error");
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
-	OUTPUT:
+  OUTPUT:
 	RETVAL
 
 #endif
@@ -679,28 +691,32 @@ GD::Image
 gdnewFromGdData(packname="GD::Image", imageData)
 	char *	packname
 	SV *	imageData
-	PROTOTYPE: $$
-        PREINIT:
+  PROTOTYPE: $$
+  PREINIT:
           char*    data;
           STRLEN   len;
-	CODE:
+  CODE:
 	data = SvPV(imageData,len);
 	RETVAL = (GD__Image) gdImageCreateFromGdPtr(len,(void*) data);
-	OUTPUT:
+        if (!RETVAL)
+          croak("gdImageCreateFromGdPtr error");
+  OUTPUT:
 	RETVAL
 
 GD::Image
 gdnewFromGd2Data(packname="GD::Image", imageData)
 	char *	packname
 	SV *	imageData
-	PROTOTYPE: $$
-        PREINIT:
+  PROTOTYPE: $$
+  PREINIT:
           char*    data;
           STRLEN   len;
-	CODE:
+  CODE:
 	data = SvPV(imageData,len);
 	RETVAL = (GD__Image) gdImageCreateFromGd2Ptr(len,(void*) data);
-	OUTPUT:
+        if (!RETVAL)
+          croak("gdImageCreateFromGd2Ptr error");
+  OUTPUT:
 	RETVAL
 
 #ifdef HAVE_JPEG
@@ -708,8 +724,8 @@ GD::Image
 gdnewFromJpegData(packname="GD::Image", imageData, ...)
 	char *	packname
 	SV *    imageData
-	PROTOTYPE: $$;$
-        PREINIT:
+  PROTOTYPE: $$;$
+  PREINIT:
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
@@ -719,14 +735,16 @@ gdnewFromJpegData(packname="GD::Image", imageData, ...)
 #else
           int     truecolor = truecolor_default;
 #endif
-	CODE:
+  CODE:
 	  data = SvPV(imageData,len);
           ctx = newDynamicCtx(data,len);
           RETVAL = (GD__Image) gdImageCreateFromJpegCtx(ctx);
           (ctx->gd_free)(ctx);
+          if (!RETVAL)
+            croak("gdImageCreateFromJpegCtx error");
           if (items > 2) truecolor = (int)SvIV(ST(2));
 	  gd_chkimagefmt(RETVAL, truecolor);
-	OUTPUT:
+  OUTPUT:
 	  RETVAL
 
 #endif
@@ -735,8 +753,8 @@ GD::Image
 gdnewFromWBMPData(packname="GD::Image", imageData, ...)
 	char *	packname
 	SV *    imageData
-	PROTOTYPE: $$;$
-        PREINIT:
+  PROTOTYPE: $$;$
+  PREINIT:
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
@@ -746,44 +764,52 @@ gdnewFromWBMPData(packname="GD::Image", imageData, ...)
 #else
           int     truecolor = truecolor_default;
 #endif
-	CODE:
+  CODE:
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromWBMPCtx(ctx);
         (ctx->gd_free)(ctx);
+        if (!RETVAL)
+          croak("gdImageCreateFromWBMPCtx error");
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
-	OUTPUT:
+  OUTPUT:
 	RETVAL
 
 GD::Image
 gd_newFromXbm(packname="GD::Image", filehandle)
 	char *	packname
 	InputStream	filehandle
-	PROTOTYPE: $$
-	CODE:
+  PROTOTYPE: $$
+  CODE:
 	RETVAL = GDIMAGECREATEFROMXBM(filehandle);
-	OUTPUT:
+        if (!RETVAL)
+          croak("gdImageCreateFromXbm error");
+  OUTPUT:
 	RETVAL
 
 GD::Image
 gd_newFromGd(packname="GD::Image", filehandle)
 	char *	packname
 	InputStream	filehandle
-	PROTOTYPE: $$
-	CODE:
+  PROTOTYPE: $$
+  CODE:
 	RETVAL = GDIMAGECREATEFROMGD(filehandle);
-	OUTPUT:
+        if (!RETVAL)
+          croak("gdImageCreateFromGd error");
+  OUTPUT:
 	RETVAL
 
 GD::Image
 gd_newFromGd2(packname="GD::Image", filehandle)
 	char *	packname
 	InputStream	filehandle
-	PROTOTYPE: $$
-	CODE:
+  PROTOTYPE: $$
+  CODE:
 	RETVAL = GDIMAGECREATEFROMGD2(filehandle);
-	OUTPUT:
+        if (!RETVAL)
+          croak("gdImageCreateFromGd2 error");
+  OUTPUT:
 	RETVAL
 
 #ifdef HAVE_JPEG
@@ -791,19 +817,21 @@ GD::Image
 gd_newFromJpeg(packname="GD::Image", filehandle, ...)
 	char *	packname
 	InputStream	filehandle
-	PROTOTYPE: $$;$
-        PREINIT:
+  PROTOTYPE: $$;$
+  PREINIT:
 #ifdef START_MY_CXT
 	  dMY_CXT;
           int     truecolor = MY_CXT.truecolor_default;
 #else
           int     truecolor = truecolor_default;
 #endif
-	CODE:
+  CODE:
 	  RETVAL = GDIMAGECREATEFROMJPEG(filehandle);
+          if (!RETVAL)
+            croak("gdImageCreateFromJpeg error");
           if (items > 2) truecolor = (int)SvIV(ST(2));
 	  gd_chkimagefmt(RETVAL, truecolor);
-	OUTPUT:
+  OUTPUT:
           RETVAL
 
 #endif
@@ -812,20 +840,22 @@ GD::Image
 gd_newFromWBMP(packname="GD::Image", filehandle)
 	char *	packname
 	InputStream	filehandle
-	PROTOTYPE: $$
-        PREINIT:
+  PROTOTYPE: $$
+  PREINIT:
 	  gdImagePtr img;
 	  SV* errormsg;
-	CODE:
+  CODE:
 	img = GDIMAGECREATEFROMWBMP(filehandle);
         if (img == NULL) {
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
 	    sv_setpv(errormsg,"libgd was not built with WBMP support\n");
+          else
+            croak("gdImageCreateFromWbmp error");
 	  XSRETURN_EMPTY;
         }
         RETVAL = img;
-	OUTPUT:
+  OUTPUT:
         RETVAL
 
 GD::Image
@@ -843,7 +873,9 @@ gdnewFromXpm(packname="GD::Image", filename)
             errormsg = perl_get_sv("@",0);
             if (errormsg != NULL)
               sv_setpv(errormsg,"libgd was not built with xpm support\n");
-            XSRETURN_EMPTY;
+          else
+            croak("gdImageCreateFromXpm error");
+          XSRETURN_EMPTY;
         }
         RETVAL = img;
 #else
@@ -862,10 +894,12 @@ gd_newFromGd2Part(packname="GD::Image", filehandle,srcX,srcY,width,height)
 	int	srcY
 	int	width
 	int	height
-	PROTOTYPE: $$$$$$
-	CODE:
+  PROTOTYPE: $$$$$$
+  CODE:
 	RETVAL = GDIMAGECREATEFROMGD2PART(filehandle,srcX,srcY,width,height);
-	OUTPUT:
+        if (!RETVAL)
+            croak("gdImageCreateFromGd2Part error");
+  OUTPUT:
 	RETVAL
 
 #ifdef HAVE_GIF
@@ -883,6 +917,8 @@ gd_newFromGif(packname="GD::Image", filehandle)
 #endif
 	CODE:
 	  RETVAL = GDIMAGECREATEFROMGIF(filehandle);
+          if (!RETVAL)
+            croak("gdImageCreateFromGif error");
 	OUTPUT:
           RETVAL
 
@@ -890,8 +926,8 @@ GD::Image
 gdnewFromGifData(packname="GD::Image", imageData)
 	char *	packname
 	SV *    imageData
-	PROTOTYPE: $$;$
-        PREINIT:
+  PROTOTYPE: $$;$
+  PREINIT:
 	  gdIOCtx* ctx;
           char*    data;
           STRLEN   len;
@@ -901,12 +937,14 @@ gdnewFromGifData(packname="GD::Image", imageData)
 #else
           int     truecolor = truecolor_default;
 #endif
-	CODE:
+  CODE:
 	data = SvPV(imageData,len);
         ctx = newDynamicCtx(data,len);
 	RETVAL = (GD__Image) gdImageCreateFromGifCtx(ctx);
         (ctx->gd_free)(ctx);
-	OUTPUT:
+        if (!RETVAL)
+           croak("gdImageCreateFromGifCtx error");
+  OUTPUT:
 	RETVAL
 
 #endif
@@ -923,40 +961,44 @@ gdDESTROY(image)
 SV* gdSTORABLE_freeze(image,cloning)
      GD::Image image
      int       cloning
-     PROTOTYPE: $$
-     CODE:
+  PROTOTYPE: $$
+  CODE:
      {
        void*     data;
        int       size;
 
        if (cloning) XSRETURN_UNDEF;
        data = gdImageGd2Ptr(image,0,GD2_FMT_COMPRESSED,&size);
-       RETVAL=newSVpvn((char*)data,size);
+       if (!data)
+         croak("gdImageGd2Ptr error");
+       RETVAL = newSVpvn((char*)data,size);
        gdFree(data);
      }
-     OUTPUT:
-       RETVAL
+  OUTPUT:
+     RETVAL
 
 void gdSTORABLE_thaw(object,cloning,serialized)
      SV*      object
      int      cloning
      SV*      serialized
-     PREINIT:
+  PREINIT:
      STRLEN    length;
      void*     data;
      GD__Image image;
-     CODE:
+  CODE:
      {
        if (cloning) XSRETURN_UNDEF;
        data = (void*) SvPV(serialized,length);
        image = gdImageCreateFromGd2Ptr(length,data);
+       if (!image)
+         croak("gdImageCreateFromGd2Ptr error");
        sv_setiv(SvRV(object),(IV)image);
      }
 
 #ifdef HAVE_PNG
 SV*
 gdpng(image, ...)
-  GD::Image	image
+	GD::Image	image
   PROTOTYPE: $;$
   PREINIT:
   CODE:
@@ -967,8 +1009,12 @@ gdpng(image, ...)
         if (items > 1) {
 	  level = (int)SvIV(ST(1));
 	  data  = (void *) gdImagePngPtrEx(image,&size,level);
+          if (!data)
+            croak("gdImagePngPtrEx error");
 	} else {
 	  data = (void *) gdImagePngPtr(image,&size);
+          if (!data)
+            croak("gdImagePngPtr error");
 	}
 	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
@@ -995,6 +1041,8 @@ gdjpeg(image,quality=-1)
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
 	    sv_setpv(errormsg,"libgd was not built with jpeg support\n");
+          else
+            croak("gdImageJpegPtr error");
 	  XSRETURN_EMPTY;
         }
 	RETVAL = newSVpvn((char*) data,size);
@@ -1018,6 +1066,8 @@ gdgifanimbegin(image,globalcm=-1,loops=-1)
 	int           size;
 #ifdef HAVE_ANIMGIF
 	data = (void *) gdImageGifAnimBeginPtr(image,&size,globalcm,loops);
+        if (!data)
+          croak("gdImageGifAnimBeginPtr error");
 	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
 #else
@@ -1042,7 +1092,10 @@ gdgifanimadd(image,localcm=-1,leftofs=-1,topofs=-1,delay=-1,disposal=-1,previm=0
 	void*         data;
 	int           size;
 #ifdef HAVE_ANIMGIF
-	data = (void *) gdImageGifAnimAddPtr(image,&size,localcm,leftofs,topofs,delay,disposal,previm);
+	data = (void *) gdImageGifAnimAddPtr(image,&size,localcm,leftofs,topofs,
+                                             delay,disposal,previm);
+        if (!data)
+          croak("gdImageGifAnimAddPtr error");
 	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
 #else
@@ -1062,6 +1115,8 @@ gdgifanimend(image)
 	int           size;
 #ifdef HAVE_ANIMGIF
 	data = (void *) gdImageGifAnimEndPtr(&size);
+        if (!data)
+          croak("gdImageGifAnimEndPtr error");
 	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
 #else
@@ -1087,6 +1142,8 @@ gdwbmp(image,fg)
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
 	    sv_setpv(errormsg,"libgd was not built with WBMP support\n");
+          else
+            croak("gdImageWBMPPtr error");
 	  XSRETURN_EMPTY;
         }
 	RETVAL = newSVpvn((char*) data,size);
@@ -1111,6 +1168,8 @@ gdgif(image)
           errormsg = perl_get_sv("@",0);
 	  if (errormsg != NULL)
 	    sv_setpv(errormsg,"libgd was not built with gif support\n");
+          else
+            croak("gdImageGifPtr error");
 	  XSRETURN_EMPTY;
         }
 	RETVAL = newSVpvn((char*) data,size);
@@ -1130,6 +1189,8 @@ gdgd(image)
 	void*         data;
 	int           size;
 	data = gdImageGdPtr(image,&size);
+        if (!data)
+          croak("gdImageGdPtr error");
 	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
   }
@@ -1145,6 +1206,8 @@ gdgd2(image)
 	void*         data;
 	int           size;
 	data = gdImageGd2Ptr(image,0,GD2_FMT_COMPRESSED,&size);
+        if (!data)
+          croak("gdImageGd2Ptr error");
 	RETVAL = newSVpvn((char*) data,size);
 	gdFree(data);
   }
@@ -1224,9 +1287,9 @@ void
 gdalpha(image,color)
 	GD::Image	image
 	int		color
-        PROTOTYPE: $$
-	PPCODE:
-	{
+  PROTOTYPE: $$
+  PPCODE:
+        {
 		int a;
 		a = gdImageAlpha(image,color);
 		EXTEND(sp,1);
@@ -1423,8 +1486,8 @@ gdcopyReverseTranspose(src)
 void
 gdrotate180(src)
 	GD::Image	src
-	PROTOTYPE: $
-	CODE:
+  PROTOTYPE: $
+  CODE:
 	{
 		int x, y, x1, y1, x2, y2, i, j, tmp;
 		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
@@ -1456,8 +1519,8 @@ gdcopyRotated(dst,src,dstX,dstY,srcX,srcY,srcW,srcH,angle)
         int             srcW
         int             srcH
         int             angle
-	PROTOTYPE: $$$$$$$$$
-	CODE:
+  PROTOTYPE: $$$$$$$$$
+  CODE:
 	{
 #ifdef VERSION_33
         gdImageCopyRotated(dst,src,dstX,dstY,srcX,srcY,srcW,srcH,angle);
@@ -1469,8 +1532,8 @@ gdcopyRotated(dst,src,dstX,dstY,srcX,srcY,srcW,srcH,angle)
 void
 gdflipHorizontal(src)
 	GD::Image	src
-	PROTOTYPE: $
-	CODE:
+  PROTOTYPE: $
+  CODE:
 	{
 		int x, y, x1, y1, x2, y2, i, j, tmp;
 		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
@@ -1487,8 +1550,8 @@ gdflipHorizontal(src)
 void
 gdflipVertical(src)
 	GD::Image	src
-	PROTOTYPE: $
-	CODE:
+  PROTOTYPE: $
+  CODE:
 	{
 		int x, y, x1, y1, x2, y2, i, j, tmp;
 		get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
@@ -1510,8 +1573,8 @@ gdline(image,x1,y1,x2,y2,color)
 	int		x2
 	int		y2
 	int		color
-        PROTOTYPE: $$$$$$
-	CODE:
+  PROTOTYPE: $$$$$$
+  CODE:
 	{
 		gdImageLine(image,x1,y1,x2,y2,color);
 	}
@@ -1524,8 +1587,8 @@ gddashedLine(image,x1,y1,x2,y2,color)
 	int		x2
 	int		y2
 	int		color
-        PROTOTYPE: $$$$$$
-	CODE:
+  PROTOTYPE: $$$$$$
+  CODE:
 	{
 		gdImageDashedLine(image,x1,y1,x2,y2,color);
 	}
@@ -1535,8 +1598,8 @@ gdopenPolygon(image,poly,color)
 	GD::Image	image
 	SV *		poly
 	int		color
-        PROTOTYPE: $$$
-	CODE:
+  PROTOTYPE: $$$
+  CODE:
 	{
 		dSP ;
 		int length,count ;
@@ -1591,8 +1654,8 @@ gdunclosedPolygon(image,poly,color)
 	GD::Image	image
 	SV *		poly
 	int		color
-        PROTOTYPE: $$$
-	CODE:
+  PROTOTYPE: $$$
+  CODE:
 	{
 		dSP ;
 		int length,count ;
@@ -1650,8 +1713,8 @@ gdfilledPolygon(image,poly,color)
 	GD::Image	image
 	SV *		poly
 	int		color
-        PROTOTYPE: $$$
-	CODE:
+  PROTOTYPE: $$$
+  CODE:
 	{
 		dSP ;
 		int length,count ;
@@ -1709,8 +1772,8 @@ gdrectangle(image,x1,y1,x2,y2,color)
 	int		x2
 	int		y2
 	int		color
-        PROTOTYPE: $$$$$$
-	CODE:
+  PROTOTYPE: $$$$$$
+  CODE:
 	{
 		gdImageRectangle(image,x1,y1,x2,y2,color);
 	}
@@ -1723,8 +1786,8 @@ gdfilledRectangle(image,x1,y1,x2,y2,color)
 	int		x2
 	int		y2
 	int		color
-        PROTOTYPE: $$$$$$
-	CODE:
+  PROTOTYPE: $$$$$$
+  CODE:
 	{
 		gdImageFilledRectangle(image,x1,y1,x2,y2,color);
 	}
@@ -1737,8 +1800,8 @@ gdfilledEllipse(image,cx,cy,w,h,color)
 	int		w
 	int		h
 	int		color
-        PROTOTYPE: $$$$$$
-	CODE:
+  PROTOTYPE: $$$$$$
+  CODE:
 	{
 		gdImageFilledEllipse(image,cx,cy,w,h,color);
 	}
@@ -1753,8 +1816,8 @@ gdarc(image,cx,cy,w,h,s,e,color)
 	int		s
 	int		e
 	int		color
-        PROTOTYPE: $$$$$$$$
-	CODE:
+  PROTOTYPE: $$$$$$$$
+  CODE:
 	{
 		gdImageArc(image,cx,cy,w,h,s,e,color);
 	}
@@ -1770,8 +1833,8 @@ gdfilledArc(image,cx,cy,w,h,s,e,color,arc_style=0)
 	int		e
 	int		color
 	int		arc_style
-        PROTOTYPE: $$$$$$$$$
-	CODE:
+  PROTOTYPE: $$$$$$$$$
+  CODE:
 	{
 		gdImageFilledArc(image,cx,cy,w,h,s,e,color,arc_style);
 	}
@@ -1783,8 +1846,8 @@ fillToBorder(image,x,y,border,color)
 	int		y
 	int		border
 	int		color
-        PROTOTYPE: $$$$$
-	CODE:
+  PROTOTYPE: $$$$$
+  CODE:
 	{
 		gdImageFillToBorder(image,x,y,border,color);
 	}
@@ -1795,8 +1858,8 @@ fill(image,x,y,color)
 	int		x
 	int		y
 	int		color
-        PROTOTYPE: $$$$
-	CODE:
+  PROTOTYPE: $$$$
+  CODE:
 	{
 		gdImageFill(image,x,y,color);
 	}
@@ -1805,8 +1868,8 @@ void
 setBrush(image,brush)
 	GD::Image	image
 	GD::Image	brush
-        PROTOTYPE: $$
-	CODE:
+  PROTOTYPE: $$
+  CODE:
 	{
 		gdImageSetBrush(image,brush);
 	}
@@ -1825,8 +1888,8 @@ void
 setThickness(image,thickness)
 	GD::Image	image
 	int		thickness
-        PROTOTYPE: $$
-	CODE:
+  PROTOTYPE: $$
+  CODE:
 	{
 	  gdImageSetThickness(image,thickness);
 	}
@@ -1835,8 +1898,8 @@ setThickness(image,thickness)
 void
 setStyle(image, ...)
 	GD::Image	image
-        PROTOTYPE: $;$
-	CODE:
+  PROTOTYPE: $;$
+  CODE:
 	{
 		int	*style;
 		int	i;
@@ -1859,198 +1922,174 @@ colorAllocate(image,r,g,b)
 	int		r
 	int		g
 	int		b
-        PROTOTYPE: $$$$
-	CODE:
-	{
-		RETVAL = gdImageColorAllocate(image,r,g,b);
-	}
-	OUTPUT:
-		RETVAL
+  PROTOTYPE: $$$$
+  CODE:
+    RETVAL = gdImageColorAllocate(image,r,g,b);
+  OUTPUT:
+    RETVAL
 
 int
 colorAllocateAlpha(image,r,g,b,a)
-	GD::Image	image
-	int		r
-	int		g
-	int		b
-	int		a
-		PROTOTYPE: $$$$
-	CODE:
-	{
-		RETVAL = gdImageColorAllocateAlpha(image,r,g,b,a);
-	}
-	OUTPUT:
-		RETVAL
+      GD::Image	image
+      int		r
+      int		g
+      int		b
+      int		a
+  PROTOTYPE: $$$$$
+  CODE:
+    RETVAL = gdImageColorAllocateAlpha(image,r,g,b,a);
+  OUTPUT:
+    RETVAL
 
 int
 colorClosest(image,r,g,b)
-	GD::Image	image
-	int		r
-	int		g
-	int		b
-        PROTOTYPE: $$$$
-	CODE:
-	{
-		RETVAL = gdImageColorClosest(image,r,g,b);
-	}
-	OUTPUT:
-		RETVAL
+      GD::Image	image
+      int		r
+      int		g
+      int		b
+  PROTOTYPE: $$$$
+  CODE:
+    RETVAL = gdImageColorClosest(image,r,g,b);
+  OUTPUT:
+    RETVAL
 
 int
 colorClosestAlpha(image,r,g,b,a)
-	GD::Image	image
-	int		r
-	int		g
-	int		b
-	int		a
-		PROTOTYPE: $$$$
-	CODE:
-	{
-		RETVAL = gdImageColorClosest(image,r,g,b);
-	}
-	OUTPUT:
-		RETVAL
+      GD::Image	image
+      int		r
+      int		g
+      int		b
+      int		a
+  PROTOTYPE: $$$$$
+  CODE:
+    RETVAL = gdImageColorClosestAlpha(image,r,g,b,a);
+  OUTPUT:
+    RETVAL
 
 int
 colorClosestHWB(image,r,g,b)
-	GD::Image	image
-	int		r
-	int		g
-	int		b
-        PROTOTYPE: $$$$
-	CODE:
-	{
-		RETVAL = gdImageColorClosestHWB(image,r,g,b);
-	}
-	OUTPUT:
-		RETVAL
+      GD::Image	image
+      int		r
+      int		g
+      int		b
+  PROTOTYPE: $$$$
+  CODE:
+    RETVAL = gdImageColorClosestHWB(image,r,g,b);
+  OUTPUT:
+    RETVAL
 
 int
 colorExact(image,r,g,b)
-	GD::Image	image
-	int		r
-	int		g
-	int		b
-	PROTOTYPE: $$$$
-	CODE:
-	{
-		RETVAL = gdImageColorExact(image,r,g,b);
-	}
-	OUTPUT:
-		RETVAL
+      GD::Image	image
+      int		r
+      int		g
+      int		b
+  PROTOTYPE: $$$$
+  CODE:
+    RETVAL = gdImageColorExact(image,r,g,b);
+  OUTPUT:
+    RETVAL
 
 int
 colorExactAlpha(image,r,g,b,a)
-	GD::Image	image
-	int		r
-	int		g
-	int		b
-	int		a
-	PROTOTYPE: $$$$
-	CODE:
-	{
-		RETVAL = gdImageColorExactAlpha(image,r,g,b,a);
-	}
-	OUTPUT:
-		RETVAL
+      GD::Image	image
+      int		r
+      int		g
+      int		b
+      int		a
+  PROTOTYPE: $$$$$
+  CODE:
+    RETVAL = gdImageColorExactAlpha(image,r,g,b,a);
+  OUTPUT:
+    RETVAL
 
 int
 colorResolve(image,r,g,b)
-	GD::Image	image
-	int		r
-	int		g
-	int		b
-	PROTOTYPE: $$$$
-	CODE:
-	{
-		RETVAL = gdImageColorResolve(image,r,g,b);
-	}
-	OUTPUT:
-		RETVAL
+      GD::Image	image
+      int		r
+      int		g
+      int		b
+  PROTOTYPE: $$$$
+  CODE:
+    RETVAL = gdImageColorResolve(image,r,g,b);
+  OUTPUT:
+    RETVAL
 
 int
 colorResolveAlpha(image,r,g,b,a)
-	GD::Image	image
-	int		r
-	int		g
-	int		b
-	int		a
-	PROTOTYPE: $$$$
-	CODE:
-	{
-		RETVAL = gdImageColorResolveAlpha(image,r,g,b,a);
-	}
-	OUTPUT:
-		RETVAL
+      GD::Image	image
+      int		r
+      int		g
+      int		b
+      int		a
+  PROTOTYPE: $$$$$
+  CODE:
+    RETVAL = gdImageColorResolveAlpha(image,r,g,b,a);
+  OUTPUT:
+    RETVAL
 
 int
 colorsTotal(image)
-	GD::Image	image
-	PROTOTYPE: $
-	CODE:
-	{
-	   if (gdImageTrueColor(image))
- 	     XSRETURN_UNDEF;
-	   RETVAL = gdImageColorsTotal(image);
-	}
-	OUTPUT:
-		RETVAL
+      GD::Image	image
+      PROTOTYPE: $
+  CODE:
+  {
+    if (gdImageTrueColor(image))
+      XSRETURN_UNDEF;
+    RETVAL = gdImageColorsTotal(image);
+  }
+  OUTPUT:
+    RETVAL
 
 
 int
 interlaced(image, ...)
-	GD::Image	image
-	PROTOTYPE: $;$
-	CODE:
-	{
-	  if (items > 1) {
-	    if (SvOK(ST(1)))
-	      gdImageInterlace(image,1);
-	    else
-	      gdImageInterlace(image,0);
-	  }
-	  RETVAL = gdImageGetInterlaced(image);
-	}
-        OUTPUT:
-	  RETVAL
+      GD::Image	image
+  PROTOTYPE: $;$
+  CODE:
+  {
+    if (items > 1) {
+      if (SvOK(ST(1)))
+        gdImageInterlace(image,1);
+      else
+        gdImageInterlace(image,0);
+    }
+    RETVAL = gdImageGetInterlaced(image);
+  }
+  OUTPUT:
+    RETVAL
 
 int
 compare(image1,image2)
-	GD::Image	image1
-	GD::Image	image2
-	PROTOTYPE: $$
-	CODE:
-	{
-	  RETVAL = gdImageCompare(image1,image2);
-	}
-	OUTPUT:
-          RETVAL
+      GD::Image	image1
+      GD::Image	image2
+  PROTOTYPE: $$
+  CODE:
+    RETVAL = gdImageCompare(image1,image2);
+  OUTPUT:
+    RETVAL
 
 void
 colorDeallocate(image,color)
-	GD::Image	image
-	int		color
-	PROTOTYPE: $$
-	CODE:
-	{
-		gdImageColorDeallocate(image,color);
-	}
+      GD::Image	image
+      int		color
+  PROTOTYPE: $$
+  CODE:
+    gdImageColorDeallocate(image,color);
 
 void
 copy(destination,source,dstX,dstY,srcX,srcY,w,h)
-	GD::Image	destination
-	GD::Image	source
+        GD::Image	destination
+        GD::Image	source
 	int		dstX
 	int		dstY
 	int		srcX
 	int		srcY
 	int		w
 	int		h
-        PROTOTYPE: $$$$$$$$
-	CODE:
-	{
-		gdImageCopy(destination,source,dstX,dstY,srcX,srcY,w,h);
-	}
+  PROTOTYPE: $$$$$$$$
+  CODE:
+    gdImageCopy(destination,source,dstX,dstY,srcX,srcY,w,h);
 
 void
 copyResized(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH)
@@ -2064,11 +2103,9 @@ copyResized(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH)
 	int		destH
 	int		srcW
 	int		srcH
-        PROTOTYPE: $$$$$$$$$$
-	CODE:
-	{
-		gdImageCopyResized(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH);
-	}
+  PROTOTYPE: $$$$$$$$$$
+  CODE:
+    gdImageCopyResized(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH);
 
 void
 copyResampled(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH)
@@ -2082,11 +2119,9 @@ copyResampled(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH)
 	int		destH
 	int		srcW
 	int		srcH
-        PROTOTYPE: $$$$$$$$$$
-	CODE:
-	{
-		gdImageCopyResampled(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH);
-	}
+  PROTOTYPE: $$$$$$$$$$
+  CODE:
+    gdImageCopyResampled(destination,source,dstX,dstY,srcX,srcY,destW,destH,srcW,srcH);
 
 void
 copyMerge(destination,source,dstX,dstY,srcX,srcY,w,h,pct)
@@ -2099,11 +2134,9 @@ copyMerge(destination,source,dstX,dstY,srcX,srcY,w,h,pct)
 	int		w
 	int		h
         int             pct
-        PROTOTYPE: $$$$$$$$$
-	CODE:
-	{
-		gdImageCopyMerge(destination,source,dstX,dstY,srcX,srcY,w,h,pct);
-	}
+  PROTOTYPE: $$$$$$$$$
+  CODE:
+    gdImageCopyMerge(destination,source,dstX,dstY,srcX,srcY,w,h,pct);
 
 void
 copyMergeGray(destination,source,dstX,dstY,srcX,srcY,w,h,pct)
@@ -2116,21 +2149,17 @@ copyMergeGray(destination,source,dstX,dstY,srcX,srcY,w,h,pct)
 	int		w
 	int		h
         int             pct
-        PROTOTYPE: $$$$$$$$$
-	CODE:
-	{
-		gdImageCopyMergeGray(destination,source,dstX,dstY,srcX,srcY,w,h,pct);
-	}
+  PROTOTYPE: $$$$$$$$$
+  CODE:
+    gdImageCopyMergeGray(destination,source,dstX,dstY,srcX,srcY,w,h,pct);
 
 void
 paletteCopy(destination,source)
 	GD::Image	destination
 	GD::Image	source
-        PROTOTYPE: $$
-	CODE:
-	{
-		gdImagePaletteCopy(destination,source);
-	}
+  PROTOTYPE: $$
+  CODE:
+    gdImagePaletteCopy(destination,source);
 
 void
 gdchar(image,font,x,y,c,color)
@@ -2140,11 +2169,9 @@ gdchar(image,font,x,y,c,color)
 	int		y
 	char *		c
 	int		color
-        PROTOTYPE: $$$$$$
-	CODE:
-	{
-		gdImageChar(image,font,x,y,*c,color);
-	}
+  PROTOTYPE: $$$$$$
+  CODE:
+    gdImageChar(image,font,x,y,*c,color);
 
 void
 gdcharUp(image,font,x,y,c,color)
@@ -2154,11 +2181,9 @@ gdcharUp(image,font,x,y,c,color)
 	int		y
 	char *		c
 	int		color
-        PROTOTYPE: $$$$$$
-	CODE:
-	{
-		gdImageCharUp(image,font,x,y,*c,color);
-	}
+  PROTOTYPE: $$$$$$
+  CODE:
+    gdImageCharUp(image,font,x,y,*c,color);
 
 void
 gdstring(image,font,x,y,s,color)
@@ -2168,11 +2193,9 @@ gdstring(image,font,x,y,s,color)
 	int		y
 	char *		s
 	int		color
-        PROTOTYPE: $$$$$$
-	CODE:
-	{
-		gdImageString(image,font,x,y,(unsigned char*)s,color);
-	}
+  PROTOTYPE: $$$$$$
+  CODE:
+    gdImageString(image,font,x,y,(unsigned char*)s,color);
 
 void
 gdstringUp(image,font,x,y,s,color)
@@ -2182,11 +2205,9 @@ gdstringUp(image,font,x,y,s,color)
 	int		y
 	char *		s
 	int		color
-        PROTOTYPE: $$$$$$
-	CODE:
-	{
-		gdImageStringUp(image,font,x,y,(unsigned char*)s,color);
-	}
+  PROTOTYPE: $$$$$$
+  CODE:
+    gdImageStringUp(image,font,x,y,(unsigned char*)s,color);
 
 void
 gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
@@ -2198,8 +2219,8 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
 	int		x
         int             y
         char *          string
-        PROTOTYPE: $$$$$$$$;$
-        PREINIT:
+  PROTOTYPE: $$$$$$$$;$
+  PREINIT:
 	  gdImagePtr img;
 	  int        brect[8];
 	  char       *err;
@@ -2211,78 +2232,77 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
           int        hdpi;
           int        vdpi;
           gdFTStringExtra strex;
-	PPCODE:
-	{
+  PPCODE:
+  {
 #ifndef HAVE_FT
   	errormsg = perl_get_sv("@",0);
 	sv_setpv(errormsg,"libgd was not built with FreeType font support\n");
 	XSRETURN_EMPTY;
 #endif
-          if (sv_isobject(image) && sv_derived_from(image, "GD::Image")) {
-            IV tmp = SvIV((SV*)SvRV(image));
-            img = (gdImagePtr) tmp;
-	  } else {
-	    img = NULL;
-	  }
+        if (sv_isobject(image) && sv_derived_from(image, "GD::Image")) {
+          IV tmp = SvIV((SV*)SvRV(image));
+          img = (gdImagePtr) tmp;
+        } else {
+          img = NULL;
+        }
 
-	  if (items == 9) {  /* hashref options at end */
-	    if (SvTYPE(SvRV(ST(8))) != SVt_PVHV)
-	      croak ("Usage: $gd->stringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,[{options}])");
-	    hash  = (HV*)SvRV(ST(8));
-	    strex.flags       = 0;
-	    strex.linespacing = 0;
-	    strex.charmap     = 0;
-	    if ((value = hv_fetchs(hash,"linespacing",0))) {
-	      strex.flags |= gdFTEX_LINESPACE;
-	      strex.linespacing = SvNV(*value);
-	    }
-	    if ((value = hv_fetchs(hash,"charmap",0))) {
-	      strex.flags |= gdFTEX_CHARMAP;
-	      if (strEQ(SvPV_nolen(*value),"Unicode"))
-		strex.charmap = gdFTEX_Unicode;
-	      else if (strEQ(SvPV_nolen(*value),"Shift_JIS"))
-		strex.charmap = gdFTEX_Shift_JIS;
-	      else if (strEQ(SvPV_nolen(*value),"Big5"))
-		strex.charmap = gdFTEX_Big5;
-	      else
-		croak("Unknown charmap %s",SvPV_nolen(*value));
-	    }
+        if (items == 9) {  /* hashref options at end */
+          if (SvTYPE(SvRV(ST(8))) != SVt_PVHV)
+            croak ("Usage: $gd->stringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,[{options}])");
+          hash  = (HV*)SvRV(ST(8));
+          strex.flags       = 0;
+          strex.linespacing = 0;
+          strex.charmap     = 0;
+          if ((value = hv_fetchs(hash,"linespacing",0))) {
+            strex.flags |= gdFTEX_LINESPACE;
+            strex.linespacing = SvNV(*value);
+          }
+          if ((value = hv_fetchs(hash,"charmap",0))) {
+            strex.flags |= gdFTEX_CHARMAP;
+            if (strEQ(SvPV_nolen(*value),"Unicode"))
+              strex.charmap = gdFTEX_Unicode;
+            else if (strEQ(SvPV_nolen(*value),"Shift_JIS"))
+              strex.charmap = gdFTEX_Shift_JIS;
+            else if (strEQ(SvPV_nolen(*value),"Big5"))
+              strex.charmap = gdFTEX_Big5;
+            else
+              croak("Unknown charmap %s",SvPV_nolen(*value));
+          }
 #ifdef VERSION_33
-            if ((value = hv_fetchs(hash,"resolution",0))) {
-	      strex.flags |= gdFTEX_RESOLUTION;
-	      a = SvPV_nolen(*value);
-	      if (sscanf(a,"%d,%d",&hdpi,&vdpi) == 2) {
-		strex.hdpi = hdpi;
-		strex.vdpi = vdpi;
-	      }
-	    }
-            if ((value = hv_fetchs(hash,"kerning",0))) {
-	      if (!SvTRUE(*value)) {
-		strex.flags |= gdFTEX_DISABLE_KERNING;
-	      }
-              else
-                strex.flags &= gdFTEX_DISABLE_KERNING;
-	    }
+          if ((value = hv_fetchs(hash,"resolution",0))) {
+            strex.flags |= gdFTEX_RESOLUTION;
+            a = SvPV_nolen(*value);
+            if (sscanf(a,"%d,%d",&hdpi,&vdpi) == 2) {
+              strex.hdpi = hdpi;
+              strex.vdpi = vdpi;
+            }
+          }
+          if ((value = hv_fetchs(hash,"kerning",0))) {
+            if (!SvTRUE(*value)) {
+              strex.flags |= gdFTEX_DISABLE_KERNING;
+            }
+            else
+              strex.flags &= gdFTEX_DISABLE_KERNING;
+          }
 #endif
-	    err = gdImageStringFTEx(img,brect,fgcolor,fontname,ptsize,angle,x,y,string,&strex);
-	  }
+          err = gdImageStringFTEx(img,brect,fgcolor,fontname,ptsize,angle,x,y,string,&strex);
+        }
 
-	  else {
-	    err = gdImageStringFT(img,brect,fgcolor,fontname,ptsize,angle,x,y,string);
-	  }
-	  if (err) {
-	    errormsg = perl_get_sv("@",0);
-	    if (errormsg != NULL)
-	      sv_setpv(errormsg,err);
-	    XSRETURN_EMPTY;
-	  } else {
-	    EXTEND(sp,8);
-	    for (i=0;i<8;i++) {
-	      PUSHs(sv_2mortal(newSViv(brect[i])));
-	    }
-	  }
-
-	}
+        else {
+          err = gdImageStringFT(img,brect,fgcolor,fontname,ptsize,angle,x,y,string);
+        }
+        if (err) {
+          errormsg = perl_get_sv("@",0);
+          if (errormsg != NULL)
+            sv_setpv(errormsg,err);
+          XSRETURN_EMPTY;
+        } else {
+          EXTEND(sp,8);
+          for (i=0;i<8;i++) {
+            PUSHs(sv_2mortal(newSViv(brect[i])));
+          }
+        }
+  }
 
 int
 gdstringFTCircle(image,cx,cy,radius,textRadius,fillPortion,fontname,points,top,bottom,fgcolor)
@@ -2297,12 +2317,12 @@ gdstringFTCircle(image,cx,cy,radius,textRadius,fillPortion,fontname,points,top,b
         char *          top
         char *          bottom
         int             fgcolor
-        PROTOTYPE: $$$$$$$$$$$
-        PREINIT:
+  PROTOTYPE: $$$$$$$$$$$
+  PREINIT:
         char*      err;        
         SV*        errormsg;
-        CODE:
-	{
+  CODE:
+  {
 #ifdef HAVE_FT
 #ifdef HAVE_FTCIRCLE
 	fprintf(stderr,"cx=%d,cy=%d,radius=%f,textRadius=%f,fillPortion=%f,fontname=%s,points=%f,top=%s,bottom=%s,fgcolor=%d",
@@ -2328,29 +2348,29 @@ gdstringFTCircle(image,cx,cy,radius,textRadius,fillPortion,fontname,points,top,b
 	sv_setpv(errormsg,"libgd was not built with FreeType support\n");
 	XSRETURN_EMPTY;
 #endif
-	}
-        OUTPUT:
-           RETVAL
+  }
+  OUTPUT:
+    RETVAL
 
 int
 gduseFontConfig(image,flag)
      SV*         image
      int         flag
-PROTOTYPE: $$
-PREINIT:
+  PROTOTYPE: $$
+  PREINIT:
      SV* errormsg;
-CODE:
-{
+  CODE:
+  {
 #ifdef HAVE_FONTCONFIG
-   RETVAL = gdFTUseFontConfig(flag);
+    RETVAL = gdFTUseFontConfig(flag);
 #else
-   errormsg = perl_get_sv("@",0);
-   sv_setpv(errormsg,"libgd was not built with fontconfig support\n");
-   XSRETURN_EMPTY;
+    errormsg = perl_get_sv("@",0);
+    sv_setpv(errormsg,"libgd was not built with fontconfig support\n");
+    XSRETURN_EMPTY;
 #endif
-}
-OUTPUT:
-  RETVAL
+  }
+  OUTPUT:
+    RETVAL
 
 void
 gdalphaBlending(image,blending)
@@ -2365,58 +2385,50 @@ CODE:
 void
 gdsaveAlpha(image,saveAlphaArg)
      GD::Image       image
-        int             saveAlphaArg
-PROTOTYPE: $$
-CODE:
-{
-  gdImageSaveAlpha(image,saveAlphaArg) ;
-}
+     int             saveAlphaArg
+  PROTOTYPE: $$
+  CODE:
+    gdImageSaveAlpha(image,saveAlphaArg);
 
 void
 gdclip(image,...)
 	GD::Image	image
-        PROTOTYPE: $;$$$$
-        PREINIT:
+  PROTOTYPE: $;$$$$
+  PREINIT:
         int		coords[4];
         int             i;
-        PPCODE:
-	{
-	  if (items == 5) {
-	    for (i=0;i<4;i++)
-	      coords[i] = (int)SvIV(ST(i+1));
-	    gdImageSetClip(image,coords[0],coords[1],coords[2],coords[3]);
-	  }
-	  else if (items > 1) /* something weird */
-	    croak("Usage: $gd->clip() or $gd->clip(x1,x2,y1,y2)");
-
-	  gdImageGetClip(image,&coords[0],&coords[1],&coords[2],&coords[3]);
-	  EXTEND(sp,4);
-	  for (i=0;i<4;i++)
-	    PUSHs(sv_2mortal(newSViv(coords[i])));
-	}
+  PPCODE:
+  {
+    if (items == 5) {
+      for (i=0;i<4;i++)
+        coords[i] = (int)SvIV(ST(i+1));
+      gdImageSetClip(image,coords[0],coords[1],coords[2],coords[3]);
+    }
+    else if (items > 1) /* something weird */
+      croak("Usage: $gd->clip() or $gd->clip(x1,x2,y1,y2)");
+    
+    gdImageGetClip(image,&coords[0],&coords[1],&coords[2],&coords[3]);
+    EXTEND(sp,4);
+    for (i=0;i<4;i++)
+      PUSHs(sv_2mortal(newSViv(coords[i])));
+  }
 
 void
 gdsetAntiAliased(image,color)
      GD::Image       image
      int             color
-PROTOTYPE: $$
-CODE:
-{
-  gdImageSetAntiAliased(image,color);
-}
-
+  PROTOTYPE: $$
+  CODE:
+    gdImageSetAntiAliased(image,color);
 
 void
 gdsetAntiAliasedDontBlend(image,color,flag=1)
      GD::Image       image
      int             color
      int             flag
-PROTOTYPE: $$$
-CODE:
-{
-  gdImageSetAntiAliasedDontBlend(image,color,flag);
-}
-
+  PROTOTYPE: $$$
+  CODE:
+    gdImageSetAntiAliasedDontBlend(image,color,flag);
 
 MODULE = GD		PACKAGE = GD::Font	PREFIX=gd
 
@@ -2424,8 +2436,8 @@ GD::Font
 gdload(packname="GD::Font",fontpath)
      char * packname
      char * fontpath
-     PROTOTYPE: $$
-     PREINIT:
+  PROTOTYPE: $$
+  PREINIT:
        int             fontfile;
        int             datasize;
        SV*             errormsg;
@@ -2433,56 +2445,56 @@ gdload(packname="GD::Font",fontpath)
        gdFontPtr       font;
        unsigned char   word[4];
        char*           fontdata;
-     CODE:
-     {
-       fontfile = open(fontpath,O_RDONLY);
-       if (fontfile < 0) {
-         errormsg = perl_get_sv("@",0);
-	 snprintf(errstr,256,"could not open font file %s: %s",fontpath,strerror(errno));
-         sv_setpv(errormsg,errstr);
- 	 XSRETURN_EMPTY;
-       }
-       font = (gdFontPtr)safemalloc(sizeof(gdFont));
-       if (font == NULL)
-	 croak("safemalloc() returned NULL while trying to allocate font struct.\n");
-       /* read header from font - note that the file is assumed to be littleendian*/
-       if (read(fontfile,word,4) < 4)
-	 croak("error while reading font file: %s",strerror(errno));
-       font->nchars = littleendian(word);
+  CODE:
+  {
+    fontfile = open(fontpath,O_RDONLY);
+    if (fontfile < 0) {
+      errormsg = perl_get_sv("@",0);
+      snprintf(errstr,256,"could not open font file %s: %s",fontpath,strerror(errno));
+      sv_setpv(errormsg,errstr);
+      XSRETURN_EMPTY;
+    }
+    font = (gdFontPtr)safemalloc(sizeof(gdFont));
+    if (font == NULL)
+      croak("safemalloc() returned NULL while trying to allocate font struct.\n");
+    /* read header from font - note that the file is assumed to be littleendian*/
+    if (read(fontfile,word,4) < 4)
+      croak("error while reading font file: %s",strerror(errno));
+    font->nchars = littleendian(word);
 
-       if (read(fontfile,word,4) < 4)
-	 croak("error while reading font file: %s",strerror(errno));
-       font->offset = littleendian(word);
+    if (read(fontfile,word,4) < 4)
+      croak("error while reading font file: %s",strerror(errno));
+    font->offset = littleendian(word);
 
-       if (read(fontfile,word,4) < 4)
-	 croak("error while reading font file: %s",strerror(errno));
-       font->w = littleendian(word);
+    if (read(fontfile,word,4) < 4)
+      croak("error while reading font file: %s",strerror(errno));
+    font->w = littleendian(word);
 
-       if (read(fontfile,word,4) < 4)
-	 croak("error while reading font file: %s",strerror(errno));
-       font->h = littleendian(word);
+    if (read(fontfile,word,4) < 4)
+      croak("error while reading font file: %s",strerror(errno));
+    font->h = littleendian(word);
 
-       datasize = font->nchars * font->w * font->h;
-       fontdata = (char*)safemalloc(datasize);
-       if (fontdata == NULL)
-	 croak("safemalloc() returned NULL while trying to allocate font bitmap.\n");
+    datasize = font->nchars * font->w * font->h;
+    fontdata = (char*)safemalloc(datasize);
+    if (fontdata == NULL)
+      croak("safemalloc() returned NULL while trying to allocate font bitmap.\n");
 
-       if (read(fontfile,fontdata,datasize) < datasize)
-	 croak("error while reading font file: %s",strerror(errno));
+    if (read(fontfile,fontdata,datasize) < datasize)
+      croak("error while reading font file: %s",strerror(errno));
 
-       font->data = fontdata;
+    font->data = fontdata;
 
-       close(fontfile); /* please don't leak file descriptors! */
-       RETVAL = font;
-     }
-     OUTPUT:
-            RETVAL
+    close(fontfile); /* please don't leak file descriptors! */
+    RETVAL = font;
+  }
+  OUTPUT:
+    RETVAL
 
 void
 gdDESTROY(self)
      GD::Font      self
-     PROTOTYPE: $
-     CODE:
+  PROTOTYPE: $
+  CODE:
      {
        if (self == gdFontGetSmall()      ||
 	   self == gdFontGetLarge()      ||
@@ -2497,99 +2509,91 @@ gdDESTROY(self)
 GD::Font
 gdSmall(packname="GD::Font")
 	char *	packname
-        PROTOTYPE: $
-	CODE:
-	{
-		RETVAL = gdFontGetSmall();
-	}
-	OUTPUT:
-		RETVAL
+  PROTOTYPE: $
+  CODE:
+    RETVAL = gdFontGetSmall();
+    if (!RETVAL)
+      croak("gdFontGetSmall error");
+  OUTPUT:
+    RETVAL
 
 GD::Font
 gdLarge(packname="GD::Font")
 	char *	packname
-	PROTOTYPE: $
-	CODE:
-	{
-		RETVAL = gdFontGetLarge();
-	}
-	OUTPUT:
-		RETVAL
+  PROTOTYPE: $
+  CODE:
+    RETVAL = gdFontGetLarge();
+    if (!RETVAL)
+      croak("gdFontGetLarge error");
+  OUTPUT:
+    RETVAL
 
 GD::Font
 gdGiant(packname="GD::Font")
 	char *	packname
-	PROTOTYPE: $
-	CODE:
-	{
-		RETVAL = gdFontGetGiant();
-	}
-	OUTPUT:
-		RETVAL
+  PROTOTYPE: $
+  CODE:
+    RETVAL = gdFontGetGiant();	
+    if (!RETVAL)
+      croak("gdFontGetGiant error");
+  OUTPUT:
+    RETVAL
 
 GD::Font
 gdMediumBold(packname="GD::Font")
 	char *	packname
-	PROTOTYPE: $
-	CODE:
-	{
-		RETVAL = gdFontGetMediumBold();
-	}
-	OUTPUT:
-		RETVAL
+  PROTOTYPE: $
+  CODE:
+    RETVAL = gdFontGetMediumBold();
+    if (!RETVAL)
+      croak("gdFontGetMediumBold error");
+  OUTPUT:
+    RETVAL
 
 GD::Font
 gdTiny(packname="GD::Font")
 	char *	packname
-	PROTOTYPE: $
-	CODE:
-	{
-		RETVAL = gdFontGetTiny();
-	}
-	OUTPUT:
-		RETVAL
+  PROTOTYPE: $
+  CODE:
+    RETVAL = gdFontGetTiny();
+    if (!RETVAL)
+      croak("gdFontGetTiny error");
+  OUTPUT:
+    RETVAL
 
 int
 gdnchars(font)
 	GD::Font	font
-	PROTOTYPE: $
-	CODE:
-	{
-		RETVAL = font->nchars;
-	}
-	OUTPUT:
-		RETVAL
+  PROTOTYPE: $
+  CODE:
+    RETVAL = font->nchars;
+  OUTPUT:
+    RETVAL
 
 int
 gdoffset(font)
 	GD::Font	font
-	PROTOTYPE: $
-	CODE:
-	{
-		RETVAL = font->offset;
-	}
-	OUTPUT:
-		RETVAL
+  PROTOTYPE: $
+  CODE:
+    RETVAL = font->offset;
+  OUTPUT:
+    RETVAL
 
 int
 gdwidth(font)
 	GD::Font	font
-	PROTOTYPE: $
-	CODE:
-	{
-		RETVAL = font->w;
-	}
-	OUTPUT:
-		RETVAL
+  PROTOTYPE: $
+  CODE:
+    RETVAL = font->w;
+  OUTPUT:
+    RETVAL
 
 int
 gdheight(font)
-	GD::Font	font
-	PROTOTYPE: $
-	CODE:
-	{
-		RETVAL = font->h;
-	}
-	OUTPUT:
-		RETVAL
+         GD::Font	font
+  PROTOTYPE: $
+  CODE:
+    RETVAL = font->h;
+  OUTPUT:
+    RETVAL
 
