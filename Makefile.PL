@@ -40,7 +40,7 @@ my $result = GetOptions("ignore_missing_gd" => \$force,
 unless (try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS) || $force) {
     die <<END;
 **UNRECOVERABLE ERROR**
-Could not find gdlib-config in the search path. Please install libgd 2.0.28 or higher.
+Could not find gdlib-config nor pkgconfig/gdlib.pc. Please install libgd 2.0.28 or higher.
 In Debian and its derivatives (e.g. Ubuntu), it is provided by the libgd-dev or
 libgd2-xpm-dev package. Their libgd3 is the latest 2.2.4
 On Redhat and derivatives or OpenSUSE you need gd-devel.
@@ -82,7 +82,7 @@ Configure GD module.
      --fcgi                          build for FastCGI compatibility, i.e. no PerlIO
 
 If no options are passed on the command line.  The program will
-attempt to autoconfigure itself with the gdlib-config program or pkgconfig/libgd.pc
+attempt to autoconfigure itself with the gdlib-config program or pkgconfig/gdlib.pc
 (present in GD versions 2.0.27 or later).  Otherwise it will prompt for these
 values interactively.
 END
@@ -133,6 +133,8 @@ if( defined($lib_fontconfig_path) )
     @LIBPATH = ("-L$lib_fontconfig_path/lib", @LIBPATH);
 }
 #############################################################################################
+
+push @LIBS, '-lfcgi' if $FCGI;
 
 if ($^O eq 'VMS'){
   warn "This is a build on OpenVMS. In case of problems with the build\n";
