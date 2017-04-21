@@ -1,6 +1,7 @@
 2.58    * fix VERSION_STRING for 2.0.x
         * honor --lib_gd_path specific gdlib-config
         * Loosen the comparison tests with GDIMAGETYPE ne gd2
+        * Improve gdlib-config parsing (PR #17), esp. with 2.0.34
 2.57    * fix Jpeg magic number detection RT #26146
         * fix RGB - HSV roundtrips: RT #120572 by J2N-FORGET
         * fix -print-search-dirs errors RT #106265

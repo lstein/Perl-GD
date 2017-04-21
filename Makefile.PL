@@ -304,26 +304,28 @@ sub try_to_autoconfigure {
       ($version) = $config =~ /^GD library\s+(\S+)/m;
       warn "Configuring for libgd version $version.\n";
 
-      ($includedir) = $config =~ /^includedir:\s+(.+)/m;
-      ($cflags)     = $config =~ /^cflags:\s+(.+)/m;
-      ($ldflags)    = $config =~ /^ldflags:\s+(.+)/m;
-      ($libs)       = $config =~ /^libs:\s+(.+)/m;
-      ($libdir)     = $config =~ /^libdir:\s+(.+)/m;
-      ($features)   = $config =~ /^features:\s+(.+)/m;
-      ($includedir) = $config =~ /^includedir:\s+(.+)/m;
+      ($includedir) = $config =~ /^includedir:\s*(.+)$/m;
+      ($cflags)     = $config =~ /^cflags:\s*(.+)$/m;
+      ($ldflags)    = $config =~ /^ldflags:\s*(.+)$/m;
+      ($libs)       = $config =~ /^libs:\s*(.+)$/m;
+      ($libdir)     = $config =~ /^libdir:\s*(.+)$/m;
+      ($features)   = $config =~ /^features:\s*(.+)$/m;
+      ($includedir) = $config =~ /^includedir:\s*(.+)$/m;
   }
 
   $LIBGD_VERSION = $version;
   @$INC          = map {s/^-I// && "-I$_"} split /\s+/,$cflags;
   @$LIBS         = split /\s+/,$libs;
-  if ($config) {
-      @$LIBPATH      = map {s/^-L// && "-L$_"} split /\s+/,$ldflags;
-      push @$LIBS,"-lgd";
-      ($$lib_gd_path = $libdir) =~ s!/[^/]+$!!;
-  } else {
-      $$lib_gd_path = $libdir;
+  if ($libdir) {
+      if ($config) {
+          @$LIBPATH      = map {s/^-L// && "-L$_"} split /\s+/,$ldflags;
+          ($$lib_gd_path = $libdir) =~ s!/[^/]+$!!;
+      } else {
+          $$lib_gd_path = $libdir;
+      }
+      push @$LIBPATH,"-L$libdir";
   }
-  push @$LIBPATH,"-L$libdir";
+  push @$LIBS,"-lgd";
   $$options      = $features;
 
   my ($release, $major, $minor) = $version =~ /^(\d+)\.(\d+)\.(\d+)$/;
