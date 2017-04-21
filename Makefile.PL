@@ -398,7 +398,7 @@ sub libscan {
 
 sub processPL {
     my $inherited = shift->SUPER::processPL(@_);
-    $inherited    =~ s/(:: \/libGD\/Image_pm\.PL)/$1 .config.cache/;
+    $inherited    =~ s/(:: lib\/GD\/Image_pm\.PL)/$1 .config.cache/;
     $inherited;
 }
 

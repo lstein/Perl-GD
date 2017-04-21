@@ -26,6 +26,7 @@ demos/truetype_test
 demos/ttf.pl
 lib/GD.pm
 lib/GD/Group.pm
+lib/GD/Image.pm
 lib/GD/Image_pm.PL
 lib/GD/Polygon.pm
 lib/GD/Polyline.pm
