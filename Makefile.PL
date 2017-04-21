@@ -231,6 +231,9 @@ open F,">.config.cache";
 print F $DEFINES,"\n";
 close F;
 
+my $CCFLAGS = $Config{ccflags};
+$CCFLAGS .= " -Wformat=0" if $Config{gccversion};
+
 WriteMakefile(
     'NAME'	=> 'GD',
     'VERSION_FROM'	=> 'lib/GD.pm',
@@ -253,7 +256,7 @@ WriteMakefile(
     'PL_FILES'  => {'bdf_scripts/bdf2gdfont.PLS' => 'bdf_scripts/bdf2gdfont.pl',
 		    'lib/GD/Image.pm.PLS' => 'lib/GD/Image.pm',
 		   },
-    #'CCFLAGS'   => "$Config{ccflags} -Wformat=0",
+    'CCFLAGS'   => $CCFLAGS,
     'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
     'AUTHOR'    => 'Lincoln Stein (lstein@cshl.org)',
     'ABSTRACT'  => 'Interface to Gd Graphics Library',
