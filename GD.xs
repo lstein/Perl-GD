@@ -12,6 +12,15 @@
 #include <gdfontt.h>
 #include <errno.h>
 
+/* 2.0.x: < 2.1.0-alpha */
+#ifndef GD_VERSION_STRING
+# if defined(GD2_VERS) && (GD2_VERS==2)
+#   define GD_VERSION_STRING "2.0.x"
+# else
+#   define GD_VERSION_STRING "?"
+# endif
+#endif
+
 #ifdef FCGI
  #include <fcgi_stdio.h>
 #else
