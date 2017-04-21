@@ -580,7 +580,7 @@ color.  All other pixels will be considered background.
 =head2 Color Control
 
 These methods allow you to control and manipulate the GD::Image color
-table.
+table for palette, non-truecolor images.
 
 =over 4
 
@@ -647,8 +647,7 @@ red green and blue components specified. It uses a Hue/White/Black
 color representation to make the selected color more likely to match
 human perceptions of similar colors.
 
-If no colors have yet been
-allocated, then this call returns -1.
+If no colors have yet been allocated, then this call returns -1.
 
 Example:
 
