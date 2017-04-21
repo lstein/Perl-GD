@@ -378,7 +378,7 @@ Images created by reading JPEG images will always be truecolor.  To
 force the image to be palette-based, pass a value of 0 in the optional
 $truecolor argument.
 
-=item B<$image = GD::Image-E<gt>newFromGif($file)>
+=item B<$image = GD::Image-E<gt>newFromGif($file, [$truecolor])>
 
 =item B<$image = GD::Image-E<gt>newFromGifData($data)>
 
@@ -390,7 +390,7 @@ Images created from GIFs are always 8-bit palette images. To convert
 to truecolor, you must create a truecolor image and then perform a
 copy.
 
-=item B<$image = GD::Image-E<gt>newFromXbm($file)>
+=item B<$image = GD::Image-E<gt>newFromXbm($file, [$truecolor])>
 
 This works in exactly the same way as C<newFromPng>, but reads the
 contents of an X Bitmap (black & white) file:
@@ -400,6 +400,18 @@ contents of an X Bitmap (black & white) file:
 	close XBM;
 
 There is no newFromXbmData() function, because there is no
+corresponding function in the gd library.
+
+=item B<$image = GD::Image-E<gt>newFromWBMP($file, [$truecolor])>
+
+This works in exactly the same way as C<newFromPng>, but reads the
+contents of an Windows BMP Bitmap file:
+
+	open (BMP,"coredump.bmp") || die;
+	$myImage = newFromWBMP GD::Image(\*BMP) || die;
+	close BMP;
+
+There is no newFromWBMPData() function, because there is no
 corresponding function in the gd library.
 
 =item B<$image = GD::Image-E<gt>newFromGd($file)>
