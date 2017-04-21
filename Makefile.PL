@@ -218,7 +218,7 @@ if (!$AUTOCONFIG) {
   push @LIBS,'-lfreetype'      if $FT;
   push @LIBS,'-ljpeg'          if $JPEG;
   push @LIBS,'-lpng','-lz'     if $PNG;
-  push @LIBS, '-lm'       unless $^O eq 'MSWin32';
+  push @LIBS,'-lm'             unless $^O eq 'MSWin32';
   push @INC, '-I/lib_root/libjpeg' if ($JPEG && $^O eq 'VMS');
   push @INC, '-I/lib_root/ft2/include/freetype' if ($FT && $^O eq 'VMS');
   push @INC, '-I/X11' if ($XPM && $^O eq 'VMS');
@@ -302,6 +302,7 @@ sub try_to_autoconfigure {
       $cflags   = $config{cflags};
       $libs     = $config{libs};
       $libdir   = ExtUtils::PkgConfig->variable('gdlib', 'libdir');
+      $libs =~ s/-L$libdir //;
       $features = 'GD_GIF GD_GIFANIM GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';
       $AUTOCONFIG++;
   } else {
@@ -331,7 +332,7 @@ sub try_to_autoconfigure {
       }
       push @$LIBPATH,"-L$libdir";
   }
-  push @$LIBS,"-lgd";
+  push @$LIBS,"-lgd" unless $libs;
   $$options      = $features;
 
   my ($release, $major, $minor) = $version =~ /^(\d+)\.(\d+)\.(\d+)$/;
