@@ -408,28 +408,14 @@ my @constants_iv = qw(
   GD_AFFINE_SHEAR_VERTICAL
   );
 
-# Work around an old Perl core bug that affects ExtUtils::Constant on
-# pre-5.8.2 Perls.  EU:C should be amended to work around this itself.
-if ("$]" < 5.008002) {
-  require ExtUtils::Constant::ProxySubs;
-  no warnings "once";
-  $ExtUtils::Constant::ProxySubs::type_to_C_value{$_} = sub { () }
-    foreach qw(YES NO UNDEF), "";
-}
-
-# Note that perl5 ExtUtils::Constant creates code incompatible
-# with <5.14 threaded, croak_sv. Fixed manually.
-# Will have to use cperl for everything eventually.
+# Note that ExtUtils::Constant::ProxySubs creates code incompatible
+# with <5.14.
 if (!-e 'const-xs.inc' or !-e"const-c.inc") {
-  if (!ExtUtils::Constant->VERSION('0.23_04')) {
-    die "ExtUtils::Constant < 0.23_04 generates invalid code\nNo const-xs.inc written";
-  }
   WriteConstants(
-    PROXYSUBS => {autoload => 1},
+    #PROXYSUBS => {autoload => 1},
     NAME => 'GD',
     NAMES => \@constants_iv,
-    DEFAULT_TYPE => 'IV'
-    );
+    DEFAULT_TYPE => 'IV');
 }
 
 exit 0;
