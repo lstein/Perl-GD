@@ -331,7 +331,10 @@ sub try_to_autoconfigure {
   my ($prefix) = $$lib_gd_path ? ($$lib_gd_path =~ m|(^.*)/lib|) : "";
   my $bindir = $prefix ? "$prefix/bin/" : "";
   my $config = `${bindir}gdlib-config --all` if -e "${bindir}gdlib-config";
-  $config = `$gdlib_config_path --all` if !$config;
+  if (!$config) {
+    $gdlib_config_path = "gdlib-config" unless defined($gdlib_config_path);
+    $config = `$gdlib_config_path --all`;
+  }
   unless ($config) {
       my %config;
       require ExtUtils::PkgConfig;
