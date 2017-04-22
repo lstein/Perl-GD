@@ -283,8 +283,7 @@ my %WriteMakefileArgs = (
      $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
     'clean'     => { 
-      FILES => '.config.cache cover_db MANIFEST.git *.gcov GD.gcda GD.gcno'
-              .' const-xs.inc const-c.inc'
+        FILES => '.config.cache cover_db MANIFEST.git *.gcov GD.gcda GD.gcno',
      },
     'LICENSE'   => 'perl_5',
 
@@ -407,7 +406,7 @@ my @constants_iv = qw(
   GD_AFFINE_SHEAR_VERTICAL
   );
 
-# Work around an old Perl core bug that affects ExtUtils::Constants on
+# Work around an old Perl core bug that affects ExtUtils::Constant on
 # pre-5.8.2 Perls.  EU:C should be amended to work around this itself.
 if ("$]" < 5.008002) {
   require ExtUtils::Constant::ProxySubs;
@@ -416,15 +415,20 @@ if ("$]" < 5.008002) {
     foreach qw(YES NO UNDEF), "";
 }
 
-# Note that perl5.26 ExtUtils::Constants creates code incompatible
+# Note that perl5 ExtUtils::Constant creates code incompatible
 # with <5.14 threaded, croak_sv. Fixed manually.
 # Will have to use cperl for everything eventually.
-WriteConstants(
-  PROXYSUBS => {autoload => 1},
-  NAME => 'GD',
-  NAMES => \@constants_iv,
-  DEFAULT_TYPE => 'IV'
-) if (!-e 'const-xs.inc' or !-e"const-c.inc");
+if (!-e 'const-xs.inc' or !-e"const-c.inc") {
+  if (!ExtUtils::Constant->VERSION('0.23_04')) {
+    die "ExtUtils::Constant < 0.23_04 generates invalid code\nNo const-xs.inc written";
+  }
+  WriteConstants(
+    PROXYSUBS => {autoload => 1},
+    NAME => 'GD',
+    NAMES => \@constants_iv,
+    DEFAULT_TYPE => 'IV'
+    );
+}
 
 exit 0;
 
