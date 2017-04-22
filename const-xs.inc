@@ -261,7 +261,7 @@ BOOT:
 		       corner cases of sub foo (); and reporting errors correctly,
 		       so lets cheat a bit.  Start with a constant subroutine  */
 		    CV *cv = newCONSTSUB(symbol_table,
-					 value_for_notfound->name,
+					 (char *)value_for_notfound->name,
 					 &PL_sv_yes);
 		    /* and then turn it into a non constant declaration only.  */
 		    SvREFCNT_dec(CvXSUBANY(cv).any_ptr);
@@ -281,7 +281,7 @@ BOOT:
 	}
     /* As we've been creating subroutines, we better invalidate any cached
        methods  */
-    mro_method_changed_in(symbol_table);
+    ++PL_sub_generation;
   }
 
 void
@@ -300,13 +300,12 @@ AUTOLOAD()
 	    ? get_missing_hash(aTHX) : NULL;
 	if ((C_ARRAY_LENGTH(values_for_notfound) > 1)
 	    ? hv_exists_ent(constant_missing, sv, 0) : 0) {
-	    sv = newSVpvf("Your vendor has not defined GD macro %" SVf
+	    Perl_croak(aTHX_ "Your vendor has not defined GD macro %" SVf
 			  ", used at %" COP_FILE_F " line %d\n", sv,
 			  COP_FILE(cop), CopLINE(cop));
 	} else
 #endif
 	{
-	    sv = newSVpvf("%"SVf" is not a valid GD macro at %"
+	    Perl_croak(aTHX_ "%"SVf" is not a valid GD macro at %"
 			  COP_FILE_F " line %d\n", sv, COP_FILE(cop), CopLINE(cop));
 	}
-	croak_sv(sv_2mortal(sv));

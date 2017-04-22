@@ -416,12 +416,15 @@ if ("$]" < 5.008002) {
     foreach qw(YES NO UNDEF), "";
 }
 
+# Note that perl5.26 ExtUtils::Constants creates code incompatible
+# with <5.14 threaded, croak_sv. Fixed manually.
+# Will have to use cperl for everything eventually.
 WriteConstants(
   PROXYSUBS => {autoload => 1},
   NAME => 'GD',
   NAMES => \@constants_iv,
   DEFAULT_TYPE => 'IV'
-);
+) if (!-e 'const-xs.inc' or !-e"const-c.inc");
 
 exit 0;
 

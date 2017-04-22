@@ -31,23 +31,8 @@ typedef double NV; /* 5.6 and later define NVTYPE, and typedef NV to it.  */
 
 static void
 constant_add_symbol(pTHX_  HV *hash, const char *name, I32 namelen, SV *value) {
-    HE *he = (HE*) hv_common_key_len(hash, name, namelen, HV_FETCH_LVALUE, NULL,
-				     0);
-    SV *sv;
-
-    if (!he) {
-        Perl_croak(aTHX_  "Couldn't add key '%s' to %%GD::",
-		   name);
-    }
-    sv = HeVAL(he);
-    if (SvOK(sv) || SvTYPE(sv) == SVt_PVGV) {
-	/* Someone has been here before us - have to make a real sub.  */
-	newCONSTSUB(hash, name, value);
-    } else {
-	SvUPGRADE(sv, SVt_RV);
-	SvRV_set(sv, value);
-	SvROK_on(sv);
-	SvREADONLY_on(value);
+    if (namelen == namelen) {
+	newCONSTSUB(hash, (char *)name, value);
     }
 }
 
