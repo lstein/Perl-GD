@@ -30,7 +30,7 @@ my $result = GetOptions("ignore_missing_gd" => \$force,
 			"lib_xpm_path=s"  => \$lib_xpm_path,
 			"lib_zlib_path=s" => \$lib_zlib_path,
                         "lib_fontconfig_path=s" => \$lib_fontconfig_path,
-                        "gdlib_config_path" => \$gdlib_config_path,
+                        "gdlib_config_path=s" => \$gdlib_config_path,
                         "fcgi"            => \$FCGI,
 		       );
 
