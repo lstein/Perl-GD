@@ -329,7 +329,7 @@ sub try_to_autoconfigure {
   my ($version, $cflags, $ldflags, $libs, $libdir, $features, $includedir);
   # perl Makefile.PL --lib_gd_path /opt/libgd/2.1.1/lib
   my ($prefix) = $$lib_gd_path ? ($$lib_gd_path =~ m|(^.*)/lib|) : "";
-  my $bindir = $prefix ? "$prefix/bin/" : "";
+  my $bindir = $prefix ? "$prefix/bin/" : $$lib_gd_path ? "$$lib_gd_path/bin/" : "";
   my $config = `${bindir}gdlib-config --all` if -e "${bindir}gdlib-config";
   if (!$config) {
     $gdlib_config_path = "gdlib-config" unless defined($gdlib_config_path);
