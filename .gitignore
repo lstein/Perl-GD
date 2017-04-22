@@ -8,7 +8,6 @@ MYMETA.yml
 Makefile
 bdf_scripts/bdf2gdfont.pl
 blib/
-lib/GD/Image.pm
 pm_to_blib
 GD-*.tar.gz
 log.*
