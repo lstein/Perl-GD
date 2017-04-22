@@ -2747,7 +2747,7 @@ gdcopyGaussianBlurred(image, radius, sigma)
 #if GD_VERSION >= 20100
 
 GD::Image
-gdcopyScale(image, width, height)
+gdcopyScaleInterpolated(image, width, height)
       GD::Image	image
       int width
       int height

@@ -1335,7 +1335,7 @@ these interpolation methods:
 Gets or sets the interpolation methods for all subsequent interpolations.
 See above for the valid values.
 
-=item B<$image-E<gt>copyScale( width, height )>
+=item B<$image-E<gt>copyScaleInterpolated( width, height )>
 
 Returns a copy, using interpolation.
 
