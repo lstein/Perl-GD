@@ -164,8 +164,8 @@ if ($^O eq 'VMS'){
   @LIBS    = qw(-llibgd.olb -llibpng.olb -llibz.olb);
 }
 
-# workaround for solaris systems?
-elsif ($^O =~ /solaris/i) {
+# workaround for solaris and other systems
+elsif ($^O =~ /(solaris|hpux)/i) {
     push @LIBS,'-liconv';
 }
 
