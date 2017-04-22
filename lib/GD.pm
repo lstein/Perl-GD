@@ -1312,6 +1312,7 @@ these interpolation methods:
 
 Gets or sets the interpolation methods for all subsequent interpolations.
 See above for the valid values.
+Only available since libgd 2.2.0
 
 =item B<$image-E<gt>copyScaleInterpolated( width, height )>
 

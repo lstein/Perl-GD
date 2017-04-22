@@ -2421,7 +2421,6 @@ gdsmooth(image, weight)
     RETVAL
 
 #endif
-
 #if GD_VERSION >= 20200
 
 GD::Image
@@ -2468,6 +2467,9 @@ gdcopyRotateInterpolated(image, angle, bgcolor)
       XSRETURN_UNDEF;
   OUTPUT:
     RETVAL
+
+#endif
+#if GD_VERSION >= 20200
 
 int
 interpolationMethod(image, interpolationmethod=-1)
