@@ -250,12 +250,14 @@ close F;
 my $CCFLAGS = $Config{ccflags};
 $CCFLAGS .= " -Wall -Wextra -Wformat=0" if $Config{gccversion} and $] > 5.020;
 
-WriteMakefile(
+my %WriteMakefileArgs = (
     'NAME'	=> 'GD',
     'ABSTRACT'  => 'Perl interface to the gd2 graphics library',
     'VERSION_FROM'	=> 'lib/GD.pm',
     'PREREQ_PM' => {
         'Math::Trig' => 0,
+    },
+    'CONFIGURE_REQUIRES' => {
         'ExtUtils::PkgConfig' => 0,
     },
     'PL_FILES'  => {'bdf_scripts/bdf2gdfont_pl.PL' => 'bdf_scripts/bdf2gdfont.pl',
@@ -271,9 +273,8 @@ WriteMakefile(
     'clean'     => { FILES => '.config.cache cover_db MANIFEST.git *.gcov GD.gcda GD.gcno' },
     'LICENSE'   => 'perl_5',
 
-    ( $MAKEMAKER_VERSION > 6.45 ? (
-	META_MERGE => {
-          recommends => {
+    'META_MERGE' => {
+         recommends => {
             'Test::More'   => '0.88',
             'Test::Kwalitee'    => 0,
             'Class::XSAccessor' => 0,
@@ -281,15 +282,34 @@ WriteMakefile(
             'List::MoreUtils'   => 0,
             'Pod::Spell::CommonMistakes' => 0,
             'Test::Pod'         => '1.00',
-          },
-          resources => {
-            repository => 'http://github.com/lstein/Perl-GD',
-            license    => 'http://dev.perl.org/licenses/',
-          },
-        },
-    ):()),
+         },
+         resources => {
+             repository => 'http://github.com/lstein/Perl-GD',
+             license    => 'http://dev.perl.org/licenses/',
+         },
+    },
     SIGN => 1,
 );
+
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
+  my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};
+  my $pp = $WriteMakefileArgs{PREREQ_PM};
+  for my $mod ( keys %$br ) {
+    if ( exists $pp->{$mod} ) {
+      $pp->{$mod} = $br->{$mod} if $br->{$mod} > $pp->{$mod};
+    }
+    else {
+      $pp->{$mod} = $br->{$mod};
+    }
+  }
+}
+
+delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
+delete $WriteMakefileArgs{META_MERGE}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.46) };
+
+WriteMakefile(%WriteMakefileArgs);
 
 exit 0;
 
