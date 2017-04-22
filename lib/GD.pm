@@ -1234,11 +1234,24 @@ Both the dithering (0/1, default=0) and maximum number of colors used
 
 =item B<$image = $sourceImage-E<gt>createPaletteFromTrueColor([$dither], [$colors])>
 
-Creates a new palette image from a truecolor image. Same as above, but returns a new image.
+Creates a new palette image from a truecolor image. Same as above, but
+returns a new image.
 
 Don't use these function -- write real truecolor PNGs and JPEGs. The
 disk space gain of conversion to palette is not great (for small
 images it can be negative) and the quality loss is ugly.
+
+=item B<$error = $image-E<gt>colorMatch($otherimage)>
+
+Bring the palette colors in $otherimage to be closer to truecolor $image.
+A negative return value is a failure.
+
+  -1 image must be True Color
+  -2 otherimage must be indexed
+  -3 the images are meant to be the same dimensions
+  -4 At least 1 color in otherimage must be allocated
+
+This method is only available with libgd >= 2.1.0
 
 =item B<$image = $sourceImage-E<gt>neuQuant($maxcolor=256,$samplefactor=5)>
 

@@ -1296,6 +1296,16 @@ gdneuQuant(image, colors=gdMaxColors, samplefactor=5)
   OUTPUT:
     RETVAL
 
+int
+gdcolorMatch(image, im2)
+	GD::Image	image
+	GD::Image	im2
+  PROTOTYPE: $$
+  CODE:
+    RETVAL = gdImageColorMatch(image,im2);
+  OUTPUT:
+    RETVAL
+
 #endif
 
 void
