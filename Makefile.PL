@@ -199,7 +199,7 @@ if( defined($options) )
   $GIF       = $options =~ m/GIF/i;
   $PNG       = $options =~ m/PNG/i;
   $ANIMGIF   = $GIF && $options =~ m/ANIMGIF/i;
-  $VERSION_33= $options =~ m/VERSION_33/i;
+  $VERSION_33= $options =~ m/VERSION_33/i; # i.e. 2.0.33 or higher
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
   $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
   $FTCIRCLE  = $options =~ m/FTCIRCLE/i;
@@ -210,6 +210,10 @@ else
     $JPEG    = lc prompt('Build JPEG support?','y') eq 'y';
     $PNG     = lc prompt('Build PNG support?','y') eq 'y';
     $FT      = lc prompt('Build FreeType support?','y') eq 'y';
+    if ($FT) {
+      $FONTCONFIG = lc prompt('Build fontconfig support?','y') eq 'y';
+      $FTCIRCLE   = lc prompt('Build with FTCircle support?','y') eq 'y';
+    }
     $GIF     = lc prompt('Build GIF support?','y') eq 'y';
     $ANIMGIF = $GIF && lc prompt('Build support for animated GIFs?','y') eq 'y';
     $XPM     = $^O !~ /^freebsd|MSWin32$/ && lc prompt('Build XPM support?','y') eq 'y';
