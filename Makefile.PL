@@ -428,7 +428,10 @@ sub try_to_autoconfigure {
   my ($prefix) = $lib_gd_path ? ($lib_gd_path =~ m|(^.*)/lib|) : "";
   my $bindir = $prefix ? "$prefix/bin/" : $lib_gd_path ? "$lib_gd_path/bin/" : "";
   my $config = `${bindir}gdlib-config --all` if -e "${bindir}gdlib-config";
-  if (!$config) {
+  if (!$config
+      and !-e "$prefix/lib/pkgconfig/gdlib.pc"
+      and !-e "/usr/lib/pkgconfig/gdlib.pc")
+  {
     $gdlib_config_path = "gdlib-config" unless defined($gdlib_config_path);
     $config = `$gdlib_config_path --all`;
   }
@@ -442,9 +445,10 @@ sub try_to_autoconfigure {
       warn "Configuring for libgd version $version.\n";
       $cflags   = $config{cflags};
       $libs     = $config{libs};
-      $libdir   = ExtUtils::PkgConfig->variable('gdlib', 'libdir');
-      $libs =~ s/-L$libdir //;
-      $features = 'GD_GIF GD_GIFANIM GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';
+      ($libdir, $libs) = $libs =~ m/-L(.*) (-lgd.*)/;
+      # Libs.private:   -L/opt/local/lib -lz  -L/opt/local/lib -lpng16  -L/opt/local/lib -lfreetype  -L/opt/local/lib -lfontconfig -lfreetype   -ljpeg  -L/opt/local/lib -lXpm -lX11  -L/opt/local/lib -ltiff   -lwebp
+      # not in the hash!
+      $features = 'GD_GIF GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';
       $AUTOCONFIG++;
   } else {
       $AUTOCONFIG++;
@@ -462,8 +466,8 @@ sub try_to_autoconfigure {
   }
 
   $LIBGD_VERSION = $version;
-  @INC          = map {s/^-I// && "-I$_"} split /\s+/,$cflags;
-  @LIBS         = split /\s+/,$libs;
+  @INC           = map {s/^-I// && "-I$_"} split /\s+/,$cflags;
+  @LIBS          = split /\s+/,$libs;
   if ($libdir) {
       if ($config) {
           @LIBPATH      = map {s/^-L// && "-L$_"} split /\s+/,$ldflags;
