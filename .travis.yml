@@ -31,8 +31,9 @@ before_install:
 install:
   - export AUTOMATED_TESTING=1 HARNESS_TIMER=1 AUTHOR_TESTING=0 RELEASE_TESTING=0
   - cpan-install --deps       # installs prereqs, including recommends
+  - cpan-install ExtUtils::PkgConfig Math::Trig Test::Kwalitee Test::Pod
+                 Pod::Spell::CommonMistakes
   - cpan-install --coverage   # installs converage prereqs, if enabled
-  #- cpan-install Test::Kwalitee Test::Pod Pod::Spell::CommonMistakes
 
 #notifications:
 #  email:

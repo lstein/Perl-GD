@@ -457,6 +457,7 @@ GCOV = gcov
 test_cover :: pure_all
 	\$(RM_RF) cover_db
 	+\$(PERLRUNINST) -S cover -test
+
 test_coveralls :: pure_all
 	+\$(PERLRUNINST) -S cover -test -report coveralls
 
