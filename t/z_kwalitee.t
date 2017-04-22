@@ -22,7 +22,13 @@ eval "require Test::Kwalitee;";
 plan skip_all => "Test::Kwalitee required"
   if $@;
 
+if (!-e 'META.yml') {
+  require File::Copy;
+  File::Copy::cp('MYMETA.yml','META.yml');
+  File::Copy::cp('MYMETA.json','META.json');
+}
+
 #plan skip_all => 'Test::Kwalitee fails with clang -faddress-sanitizer'
 #  if $Config{ccflags} =~ /-faddress-sanitizer/;
 
-Test::Kwalitee->import; #( tests => [ qw( -use_strict ) ] );
+Test::Kwalitee->import( tests => [ qw( -has_test_pod_coverage ) ] );

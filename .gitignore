@@ -3,6 +3,8 @@ GD.bs
 GD.c
 GD.o
 GD.obj
+META.json
+META.yml
 MYMETA.json
 MYMETA.yml
 Makefile

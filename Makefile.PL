@@ -283,13 +283,15 @@ my %WriteMakefileArgs = (
      $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
     'clean'     => { 
-        FILES => '.config.cache cover_db MANIFEST.git *.gcov GD.gcda GD.gcno',
+        FILES => '.config.cache cover_db MANIFEST.git *.gcov GD.gcda GD.gcno'
+                .' META.yml META.json'
      },
     'LICENSE'   => 'perl_5',
 
     'META_MERGE' => {
          recommends => {
-            'Test::More'   => '0.88',
+            'ExtUtils::Constant'=> '0.23',
+            'Test::More'        => '0.88',
             'Test::Kwalitee'    => 0,
             'Class::XSAccessor' => 0,
             'Text::CSV_XS'      => 0,
