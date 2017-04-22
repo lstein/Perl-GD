@@ -168,6 +168,27 @@ constant(char *name)
 	  goto not_there;
 #endif
 	break;
+	if (strEQ(name, "GD_CMP_TRUECOLOR"))
+#ifdef GD_CMP_TRUECOLOR
+	  return GD_CMP_TRUECOLOR;
+#else
+	  goto not_there;
+#endif
+	break;
+	if (strEQ(name, "GD_PIXELATE_UPPERLEFT"))
+#ifdef GD_PIXELATE_UPPERLEFT
+	  return GD_PIXELATE_UPPERLEFT;
+#else
+	  goto not_there;
+#endif
+	break;
+	if (strEQ(name, "GD_PIXELATE_AVERAGE"))
+#ifdef GD_PIXELATE_AVERAGE
+	  return GD_PIXELATE_AVERAGE;
+#else
+	  goto not_there;
+#endif
+	break;
     case 'H':
 	break;
     case 'I':
@@ -1187,18 +1208,17 @@ gdgd2(image)
 int
 gdtransparent(image, ...)
 	GD::Image	image
-        PROTOTYPE: $;$
-	CODE:
-	{
-		int color;
-		if (items > 1) {
-			color=(int)SvIV(ST(1));
-			gdImageColorTransparent(image,color);
-		}
-		RETVAL = gdImageGetTransparent(image);
-	}
-	OUTPUT:
-		RETVAL
+  PROTOTYPE: $;$
+  PREINIT:
+	int color;
+  CODE:
+	if (items > 1) {
+          color=(int)SvIV(ST(1));
+          gdImageColorTransparent(image,color);
+        }
+        RETVAL = gdImageGetTransparent(image);
+  OUTPUT:
+	RETVAL
 
 void
 gdgetBounds(image)
@@ -2476,10 +2496,181 @@ gdwidth(font)
 
 int
 gdheight(font)
-         GD::Font	font
+	GD::Font	font
   PROTOTYPE: $
   CODE:
     RETVAL = font->h;
+  OUTPUT:
+    RETVAL
+
+# Image filters since 2.1.0
+
+MODULE = GD		PACKAGE = GD::Image	PREFIX=gd
+  
+#if GD_VERSION >= 20100
+
+bool
+gdscatter(image, sub, plus)
+      GD::Image	image
+      int sub
+      int plus
+  PROTOTYPE: $$$
+  CODE:
+    RETVAL = (bool)gdImageScatter(image,sub,plus);
+  OUTPUT:
+    RETVAL
+
+bool
+gdscatterColor(image, sub, plus, colorav)
+      GD::Image	image
+      int sub
+      int plus
+      AV *colorav
+  PROTOTYPE: $$$\@
+  PREINIT:
+	int i;
+	int *colors;
+	int numcolors;
+  CODE:
+    numcolors = AvFILL(colorav);
+    colors = safemalloc(numcolors * sizeof(int));
+    for (i=0;i<numcolors;i++) {
+      SV** svp = av_fetch(colorav, i, 0);
+      if (svp && SvIOK(*svp))
+        colors[i] = SvIV(*svp);
+    }
+    RETVAL = (bool)gdImageScatterColor(image,sub,plus,colors,numcolors);
+    safefree(colors);
+  OUTPUT:
+    RETVAL
+
+bool
+gdpixelate(image, blocksize, mode)
+      GD::Image	image
+      int blocksize
+      int mode
+  PROTOTYPE: $$$
+  CODE:
+    RETVAL = (bool)gdImagePixelate(image,blocksize,mode);
+  OUTPUT:
+    RETVAL
+    
+bool
+gdnegate(image)
+      GD::Image	image
+  PROTOTYPE: $
+  CODE:
+    RETVAL = (bool)gdImageNegate(image);
+  OUTPUT:
+    RETVAL
+
+bool
+gdgrayscale(image)
+      GD::Image	image
+  PROTOTYPE: $
+  CODE:
+    RETVAL = (bool)gdImageGrayScale(image);
+  OUTPUT:
+    RETVAL
+
+bool
+gdbrightness(image, brightness)
+      GD::Image	image
+      int brightness
+  PROTOTYPE: $$
+  CODE:
+    RETVAL = (bool)gdImageBrightness(image,brightness);
+  OUTPUT:
+    RETVAL
+
+bool
+gdcontrast(image, contrast)
+      GD::Image	image
+      NV contrast
+  PROTOTYPE: $$
+  CODE:
+    RETVAL = (bool)gdImageContrast(image,(double)contrast);
+  OUTPUT:
+    RETVAL
+
+bool
+gdcolor(image, red, green, blue, alpha)
+      GD::Image	image
+      int red
+      int green
+      int blue
+      int alpha
+  PROTOTYPE: $$$$$
+  CODE:
+    RETVAL = (bool)gdImageColor(image,red,green,blue,alpha);
+  OUTPUT:
+    RETVAL
+
+bool
+gdselectiveBlur(image)
+      GD::Image	image
+  PROTOTYPE: $
+  CODE:
+    RETVAL = (bool)gdImageSelectiveBlur(image);
+  OUTPUT:
+    RETVAL
+
+bool
+gdedgeDetectQuick(image)
+      GD::Image	image
+  PROTOTYPE: $
+  CODE:
+    RETVAL = (bool)gdImageEdgeDetectQuick(image);
+  OUTPUT:
+    RETVAL
+
+bool
+gdgaussianBlur(image)
+      GD::Image	image
+  PROTOTYPE: $
+  CODE:
+    RETVAL = (bool)gdImageGaussianBlur(image);
+  OUTPUT:
+    RETVAL
+
+bool
+gdemboss(image)
+      GD::Image	image
+  PROTOTYPE: $
+  CODE:
+    RETVAL = (bool)gdImageEmboss(image);
+  OUTPUT:
+    RETVAL
+
+bool
+gdmeanRemoval(image)
+      GD::Image	image
+  PROTOTYPE: $
+  CODE:
+    RETVAL = (bool)gdImageMeanRemoval(image);
+  OUTPUT:
+    RETVAL
+
+bool
+gdsmooth(image, weight)
+      GD::Image	image
+      double weight
+  PROTOTYPE: $$
+  CODE:
+    RETVAL = (bool)gdImageSmooth(image, (float)weight);
+  OUTPUT:
+    RETVAL
+
+GD::Image
+gdcopyGaussianBlurred(image, radius, sigma)
+      GD::Image	image
+      int radius
+      double sigma
+  PROTOTYPE: $$$
+  CODE:
+    RETVAL = gdImageCopyGaussianBlurred(image, radius, sigma);
+    if (!RETVAL)
+       croak("gdImageCopyGaussianBlurred error");
   OUTPUT:
     RETVAL
 

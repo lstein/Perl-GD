@@ -1268,6 +1268,82 @@ modify the image in place.
 
 =back
 
+=head2 Image Filter Commands
+
+Gd also provides some common image filters, they modify the image in
+place and return TRUE if modified or FALSE if not.
+
+=over 4
+
+=item B<$ok = $image-E<gt>scatter($sub, $plus)>
+
+if $sub and $plus are 0, nothing is changed, TRUE is returned.
+if $sub >= $plus, nothing is changed, FALSE is returned.
+else random pixels are changed.
+
+=item B<$ok = $image-E<gt>scatterColor($sub, $plus, @colors)>
+
+Similar to scatter, but using the given array of colors,
+i.e. palette indices.
+
+=item B<$ok = $image-E<gt>pixelate($blocksize, $mode)>
+
+if $blocksize <= 0, nothing is changed, FALSE is returned.
+if $blocksize == 1, nothing is changed, TRUE is returned.
+else the following modes are observed:
+  GD_PIXELATE_UPPERLEFT
+  GD_PIXELATE_AVERAGE
+
+=item B<$ok = $image-E<gt>negate()>
+
+=item B<$ok = $image-E<gt>grayscale()>
+
+=item B<$ok = $image-E<gt>brightness($add)>
+
+$add: -255..255
+
+=item B<$ok = $image-E<gt>contrast($contrast)>
+
+$contrast: a double value. The contrast adjustment value. Negative
+values increase, postive values decrease the contrast. The larger
+the absolute value, the stronger the effect.
+
+=item B<$ok = $image-E<gt>color($red,$green,$blue,$alpha)>
+
+Change channel values of an image
+
+  $red   - The value to add to the red channel of all pixels.
+  $green - The value to add to the green channel of all pixels.
+  $blue  - The value to add to the blue channel of all pixels.
+  $alpha - The value to add to the alpha channel of all pixels.
+
+=item B<$ok = $image-E<gt>selectiveBlur()>
+
+=item B<$ok = $image-E<gt>edgeDetectQuick()>
+
+=item B<$ok = $image-E<gt>gaussianBlur()>
+
+=item B<$ok = $image-E<gt>emboss()>
+
+=item B<$ok = $image-E<gt>meanRemoval()>
+
+=item B<$ok = $image-E<gt>smooth($weight)>
+
+=item B<$image = $sourceImage-E<gt>copyGaussianBlurred($radius, $sigma)>
+
+$radius: int, the blur radius (*not* diameter--range is 2*radius + 1)
+a radius, not a diameter so a radius of 2 (for example) will blur
+across a region 5 pixels across (2 to the center, 1 for the center
+itself and another 2 to the other edge).
+
+$sigma: the sigma value or a value <= 0.0 to use the computed default.
+represents the "fatness" of the curve (lower == fatter).
+
+The result is always truecolor.
+
+=back
+
+
 =head2 Character and String Drawing
 
 GD allows you to draw characters and strings, either in normal

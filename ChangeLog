@@ -1,5 +1,8 @@
 2.61    * add CONFIGURE_REQUIRES META
         * add --gdlib_config_path
+        * add Image Filters: scatter, pixelate, negate, grayscale, brightness,
+          contrast, color, selectiveBlur, edgeDetectQuick, gaussianBlur, emboss,
+          meanRemoval, smooth, copyGaussianBlurred
 2.60    * add missing methods newFromWBMP, newFromXbm,
           (RT #68784) and some missing docs
         * Add --lib_fontconfig_path, --fcgi options
