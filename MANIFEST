@@ -10,6 +10,8 @@ bdf_scripts/README
 bdf_scripts/bdf2gdfont_pl.PL
 bdf_scripts/bdftogd
 bdf_scripts/cvtbdf.pl
+const-c.inc
+const-xs.inc
 demos/brushes.pl
 demos/copies.pl
 demos/draw_colors.pl

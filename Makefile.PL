@@ -1,11 +1,7 @@
 use ExtUtils::MakeMaker qw(prompt WriteMakefile);
+use ExtUtils::Constant 'WriteConstants';
 use Config;
 use strict;
-
-# if this is a dev version the version number can be a string with underscores
-# remove them to prevent a warning and that's what perl will do it it was
-# a number. 1_05 vs "1_05"
-(my $MAKEMAKER_VERSION = $ExtUtils::MakeMaker::VERSION || 0) =~ s/_//g;
 
 require 5.6.0;
 
@@ -38,7 +34,7 @@ my $result = GetOptions("ignore_missing_gd" => \$force,
                         "fcgi"            => \$FCGI,
 		       );
 
-unless (try_to_autoconfigure(\$options,\$lib_gd_path,\@INC,\@LIBPATH,\@LIBS) || $force) {
+unless (try_to_autoconfigure() || $force) {
     die <<END;
 **UNRECOVERABLE ERROR**
 Could not find gdlib-config nor pkgconfig/gdlib.pc. Please install libgd 2.0.28 or higher.
@@ -269,6 +265,7 @@ my %WriteMakefileArgs = (
         'Math::Trig' => 0,
     },
     'CONFIGURE_REQUIRES' => {
+        'ExtUtils::Constant' => 0.22,
         'ExtUtils::PkgConfig' => 0,
     },
     'PL_FILES'  => {'bdf_scripts/bdf2gdfont_pl.PL' => 'bdf_scripts/bdf2gdfont.pl',
@@ -281,7 +278,10 @@ my %WriteMakefileArgs = (
     'AUTHOR'    => 'Lincoln Stein <lincoln.stein@gmail.com>',
      $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
-    'clean'     => { FILES => '.config.cache cover_db MANIFEST.git *.gcov GD.gcda GD.gcno' },
+    'clean'     => { 
+      FILES => '.config.cache cover_db MANIFEST.git *.gcov GD.gcda GD.gcno'
+              .' const-xs.inc const-c.inc'
+     },
     'LICENSE'   => 'perl_5',
 
     'META_MERGE' => {
@@ -322,14 +322,111 @@ delete $WriteMakefileArgs{META_MERGE}
 
 WriteMakefile(%WriteMakefileArgs);
 
+my @constants_iv = qw(
+  GD_CMP_IMAGE
+  GD_CMP_NUM_COLORS
+  GD_CMP_COLOR
+  GD_CMP_SIZE_X
+  GD_CMP_SIZE_Y
+  GD_CMP_TRANSPARENT
+  GD_CMP_BACKGROUND
+  GD_CMP_INTERLACE
+  GD_CMP_TRUECOLOR
+  GD_PIXELATE_UPPERLEFT
+  GD_PIXELATE_AVERAGE
+
+  gdBrushed
+  gdDashSize
+  gdMaxColors
+  gdStyled
+  gdStyledBrushed
+  gdTiled
+  gdTransparent
+  gdAntiAliased
+  gdArc
+  gdPie
+  gdChord
+  gdNoFill
+  gdEdged
+
+  gdEffectReplace
+  gdEffectAlphaBlend
+  gdEffectNormal
+  gdEffectOverlay
+  gdEffectMultiply
+
+  gdAlphaMax
+  gdAlphaOpaque
+  gdAlphaTransparent
+  gdRedMax
+  gdGreenMax
+  gdBlueMax
+
+  GD_MAJOR_VERSION
+  GD_MINOR_VERSION
+  GD_RELEASE_VERSION
+
+  GD_FLIP_HORINZONTAL
+  GD_FLIP_VERTICAL
+  GD_FLIP_BOTH
+  GD_RESOLUTION
+
+  GD_DEFAULT
+  GD_BELL
+  GD_BESSEL
+  GD_BILINEAR_FIXED
+  GD_BICUBIC
+  GD_BICUBIC_FIXED
+  GD_BLACKMAN
+  GD_BOX
+  GD_BSPLINE
+  GD_CATMULLROM
+  GD_GAUSSIAN
+  GD_GENERALIZED_CUBIC
+  GD_HERMITE
+  GD_HAMMING
+  GD_HANNING
+  GD_MITCHELL
+  GD_NEAREST_NEIGHBOUR
+  GD_POWER
+  GD_QUADRATIC
+  GD_SINC
+  GD_TRIANGLE
+  GD_WEIGHTED4
+  GD_LINEAR
+  GD_METHOD_COUNT
+
+  GD_AFFINE_TRANSLATE
+  GD_AFFINE_SCALE
+  GD_AFFINE_ROTATE
+  GD_AFFINE_SHEAR_HORIZONTAL
+  GD_AFFINE_SHEAR_VERTICAL
+  );
+
+# Work around an old Perl core bug that affects ExtUtils::Constants on
+# pre-5.8.2 Perls.  EU:C should be amended to work around this itself.
+if ("$]" < 5.008002) {
+  require ExtUtils::Constant::ProxySubs;
+  no warnings "once";
+  $ExtUtils::Constant::ProxySubs::type_to_C_value{$_} = sub { () }
+    foreach qw(YES NO UNDEF), "";
+}
+
+WriteConstants(
+  PROXYSUBS => {autoload => 1},
+  NAME => 'GD',
+  NAMES => \@constants_iv,
+  DEFAULT_TYPE => 'IV'
+);
+
 exit 0;
 
 sub try_to_autoconfigure {
-  my ($options,$lib_gd_path,$INC,$LIBPATH,$LIBS) = @_;
+  #my ($options,$lib_gd_path,$INC,$LIBPATH,$LIBS) = @_;
   my ($version, $cflags, $ldflags, $libs, $libdir, $features, $includedir);
   # perl Makefile.PL --lib_gd_path /opt/libgd/2.1.1/lib
-  my ($prefix) = $$lib_gd_path ? ($$lib_gd_path =~ m|(^.*)/lib|) : "";
-  my $bindir = $prefix ? "$prefix/bin/" : $$lib_gd_path ? "$$lib_gd_path/bin/" : "";
+  my ($prefix) = $lib_gd_path ? ($lib_gd_path =~ m|(^.*)/lib|) : "";
+  my $bindir = $prefix ? "$prefix/bin/" : $lib_gd_path ? "$lib_gd_path/bin/" : "";
   my $config = `${bindir}gdlib-config --all` if -e "${bindir}gdlib-config";
   if (!$config) {
     $gdlib_config_path = "gdlib-config" unless defined($gdlib_config_path);
@@ -365,25 +462,25 @@ sub try_to_autoconfigure {
   }
 
   $LIBGD_VERSION = $version;
-  @$INC          = map {s/^-I// && "-I$_"} split /\s+/,$cflags;
-  @$LIBS         = split /\s+/,$libs;
+  @INC          = map {s/^-I// && "-I$_"} split /\s+/,$cflags;
+  @LIBS         = split /\s+/,$libs;
   if ($libdir) {
       if ($config) {
-          @$LIBPATH      = map {s/^-L// && "-L$_"} split /\s+/,$ldflags;
-          ($$lib_gd_path = $libdir) =~ s!/[^/]+$!!;
+          @LIBPATH      = map {s/^-L// && "-L$_"} split /\s+/,$ldflags;
+          ($lib_gd_path = $libdir) =~ s!/[^/]+$!!;
       } else {
-          $$lib_gd_path = $libdir;
+          $lib_gd_path = $libdir;
       }
-      push @$LIBPATH,"-L$libdir";
+      push @LIBPATH,"-L$libdir";
   }
-  push @$LIBS,"-lgd" unless $libs =~ /-lgd/;
-  $$options      = $features;
+  push @LIBS,"-lgd" unless $libs =~ /-lgd/;
+  $options      = $features;
 
   my ($release, $major, $minor) = $version =~ /^(\d+)\.(\d+)\.(\d+)$/;
-  $$options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE VERSION_33"
+  $options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE VERSION_33"
     if defined($minor)
     && ($release > 2
-        || ($release == 2 && $major > 0) 
+        || ($release == 2 && $major > 0)
         || ($release == 2 && $major == 0 && $minor >= 33));
 
   if ($config) {
@@ -452,6 +549,8 @@ release : dist
 	cpan-upload \$(DISTVNAME).tar\$(SUFFIX)
 	git push
 	git push --tags
+
+const-c.inc const-xs.inc : Makefile.PL
 
 GCOV = gcov
 test_cover :: pure_all

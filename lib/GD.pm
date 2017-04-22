@@ -65,28 +65,6 @@ $VERSION = eval $VERSION;
 # documentation error
 *GD::Polygon::delete = \&GD::Polygon::deletePt;
 
-sub AUTOLOAD {
-    # This AUTOLOAD is used to 'autoload' constants from the constant()
-    # XS function.  If a constant is not found then control is passed
-    # to the AUTOLOAD in AutoLoader.
-
-    my($constname);
-    ($constname = $AUTOLOAD) =~ s/.*:://;
-    my $val = constant($constname);
-    if ($! != 0) {
-	if ($! =~ /Invalid/) {
-	    $AutoLoader::AUTOLOAD = $AUTOLOAD;
-	    goto &AutoLoader::AUTOLOAD;
-	}
-	else {
-	    my($pack,$file,$line) = caller;
-	    die "Your vendor has not defined GD macro $pack\:\:$constname, used at $file line $line.\n";
-	}
-    }
-    eval "sub $AUTOLOAD { $val }";
-    goto &$AUTOLOAD;
-}
-
 bootstrap GD;
 
 
@@ -1388,7 +1366,7 @@ the absolute value, the stronger the effect.
 
 =item B<$ok = $image-E<gt>color($red,$green,$blue,$alpha)>
 
-Change channel values of an image
+Change channel values of an image.
 
   $red   - The value to add to the red channel of all pixels.
   $green - The value to add to the green channel of all pixels.
