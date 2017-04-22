@@ -2741,3 +2741,53 @@ gdcopyGaussianBlurred(image, radius, sigma)
     RETVAL
 
 #endif
+
+# gd_interpolation
+
+#if GD_VERSION >= 20100
+
+GD::Image
+gdcopyScale(image, width, height)
+      GD::Image	image
+      int width
+      int height
+  PROTOTYPE: $$$
+  CODE:
+    RETVAL = gdImageScale(image,width,height);
+    if (!RETVAL)
+      XSRETURN_UNDEF;
+  OUTPUT:
+    RETVAL
+
+GD::Image
+gdcopyRotateInterpolated(image, angle, bgcolor)
+      GD::Image	image
+      float angle
+      int bgcolor
+  PROTOTYPE: $$$
+  CODE:
+    RETVAL = gdImageRotateInterpolated(image,angle,bgcolor);
+    if (!RETVAL)
+      XSRETURN_UNDEF;
+  OUTPUT:
+    RETVAL
+
+int
+interpolationMethod(image, interpolationmethod=-1)
+      GD::Image	image
+      int interpolationmethod
+  PROTOTYPE: $;$
+  CODE:
+    if (items > 1 && interpolationmethod >= 0) {
+      gdImageSetInterpolationMethod(image, interpolationmethod);
+    }
+    RETVAL = gdImageGetInterpolationMethod(image);
+  OUTPUT:
+    RETVAL
+
+#gdTransformAffineGetImage
+#gdTransformAffineCopy
+#gdTransformAffineBoundingBox
+
+#endif
+

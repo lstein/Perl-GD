@@ -1268,7 +1268,7 @@ This method is only available with libgd >= 2.1.0
 
 =head2 Image Transformation Commands
 
-Gd also provides some common image transformations:
+Gd provides these simple image transformations, non-interpolated.
 
 =over 4
 
@@ -1297,6 +1297,51 @@ The result of the method is a copy of the image.
 
 These methods are similar to the copy* versions, but instead
 modify the image in place.
+
+=back
+
+=head2 Image Interpolation Methods
+
+Since libgd 2.1.0 there are better transformation methods, with
+these interpolation methods:
+
+  GD_BELL		 - Bell
+  GD_BESSEL		 - Bessel
+  GD_BILINEAR_FIXED 	 - fixed point bilinear
+  GD_BICUBIC 		 - Bicubic
+  GD_BICUBIC_FIXED 	 - fixed point bicubic integer
+  GD_BLACKMAN		 - Blackman
+  GD_BOX		 - Box
+  GD_BSPLINE		 - BSpline
+  GD_CATMULLROM		 - Catmullrom
+  GD_GAUSSIAN		 - Gaussian
+  GD_GENERALIZED_CUBIC   - Generalized cubic
+  GD_HERMITE		 - Hermite
+  GD_HAMMING		 - Hamming
+  GD_HANNING		 - Hannig
+  GD_MITCHELL		 - Mitchell
+  GD_NEAREST_NEIGHBOUR   - Nearest neighbour interpolation
+  GD_POWER		 - Power
+  GD_QUADRATIC		 - Quadratic
+  GD_SINC		 - Sinc
+  GD_TRIANGLE		 - Triangle
+  GD_WEIGHTED4		 - 4 pixels weighted bilinear interpolation
+  GD_LINEAR              - bilinear interpolation
+
+=over 4
+
+=item B<$image-E<gt>interpolationMethod( [$method] )>
+
+Gets or sets the interpolation methods for all subsequent interpolations.
+See above for the valid values.
+
+=item B<$image-E<gt>copyScale( width, height )>
+
+Returns a copy, using interpolation.
+
+=item B<$image-E<gt>copyRotateInterpolated( angle, bgcolor )>
+
+Returns a copy, using interpolation.
 
 =back
 

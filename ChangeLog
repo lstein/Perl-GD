@@ -5,6 +5,8 @@
           meanRemoval, smooth, copyGaussianBlurred
         * add palette methods: createPaletteFromTrueColor,
           neuQuant (but discouraged), colorMatch.
+        * add interpolation methods: copyScale, copyRotateInterpolated,
+          interpolationMethod.
         * add double GD::VERSION
 2.60    * add missing methods newFromWBMP, newFromXbm,
           (RT #68784) and some missing docs
