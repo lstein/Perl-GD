@@ -1232,6 +1232,25 @@ output image instead, which guarantees the highest output quality.
 Both the dithering (0/1, default=0) and maximum number of colors used
 (<=256, default = gdMaxColors) can be specified.
 
+=item B<$image = $sourceImage-E<gt>createPaletteFromTrueColor([$dither], [$colors])>
+
+Creates a new palette image from a truecolor image. Same as above, but returns a new image.
+
+Don't use these function -- write real truecolor PNGs and JPEGs. The
+disk space gain of conversion to palette is not great (for small
+images it can be negative) and the quality loss is ugly.
+
+=item B<$image = $sourceImage-E<gt>neuQuant($maxcolor=256,$samplefactor=5)>
+
+Creates a new palette image from a truecolor image.
+
+  samplefactor	The quantization precision between 1 (highest quality) and 10 (fastest).
+  maxcolor	The number of desired palette entries.
+
+This is the same as createPaletteFromTrueColor with the
+quantization method GD_QUANT_NEUQUANT. This does not support dithering.
+This method is only available with libgd >= 2.1.0
+
 =back
 
 =head2 Image Transformation Commands

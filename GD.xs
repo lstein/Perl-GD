@@ -1268,6 +1268,36 @@ gdtrueColorToPalette(image, dither=0, colors=gdMaxColors)
   CODE:
     gdImageTrueColorToPalette(image,dither,colors);
 
+GD::Image
+gdcreatePaletteFromTrueColor(image, dither=0, colors=gdMaxColors)
+	GD::Image	image
+	int		dither
+	int		colors
+  PROTOTYPE: $;$$
+  CODE:
+    RETVAL = gdImageCreatePaletteFromTrueColor(image,dither,colors);
+    if (!RETVAL)
+      croak("gdImageCreatePaletteFromTrueColor error");
+  OUTPUT:
+    RETVAL
+
+#if GD_VERSION >= 20100
+
+GD::Image
+gdneuQuant(image, colors=gdMaxColors, samplefactor=5)
+	GD::Image	image
+	int		colors
+	int		samplefactor
+  PROTOTYPE: $;$$
+  CODE:
+    RETVAL = gdImageNeuQuant(image,colors,samplefactor);
+    if (!RETVAL)
+      XSRETURN_UNDEF;
+  OUTPUT:
+    RETVAL
+
+#endif
+
 void
 gdrgb(image,color)
 	GD::Image	image
