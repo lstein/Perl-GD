@@ -1272,6 +1272,7 @@ modify the image in place.
 
 Gd also provides some common image filters, they modify the image in
 place and return TRUE if modified or FALSE if not.
+Most of them need libgd >= 2.1.0, with older versions those functions are undefined.
 
 =over 4
 
@@ -1879,6 +1880,10 @@ These return the width and height of the font.
 =head1 Helper Functions
 
 =over
+
+=item GD::VERSION
+
+Returns a number of the VERSION, like 2.0204, 2.0033 or 2.01.
 
 =item GD::VERSION_STRING
 

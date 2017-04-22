@@ -15,10 +15,21 @@
 /* 2.0.x: < 2.1.0-alpha */
 #ifndef GD_VERSION_STRING
 # if defined(GD2_VERS) && (GD2_VERS==2)
-#   define GD_VERSION_STRING "2.0.x"
+#   ifdef VERSION_33
+#    define GD_VERSION 20033
+#    define GD_VERSION_STRING "2.0.33"
+#   else
+#    define GD_VERSION 20032
+#    define GD_VERSION_STRING "2.0.x"
+#   endif
 # else
+#   define GD_VERSION 10000
 #   define GD_VERSION_STRING "?"
 # endif
+#else
+#  define GD_VERSION ((GD_MAJOR_VERSION * 10000) +\
+                      (GD_MINOR_VERSION * 100) +\
+                      GD_RELEASE_VERSION)
 #endif
 
 #ifdef FCGI
@@ -70,11 +81,17 @@
 #ifndef mPUSHi
 #define mPUSHi(i)	PUSHs(sv_2mortal(newSViv((i))))
 #endif
+#ifndef mPUSHn
+#define mPUSHn(n)	PUSHs(sv_2mortal(newSVnv((n))))
+#endif
 #ifndef mXPUSHp
 # define mXPUSHp(p,l)	STMT_START { EXTEND(sp,1); mPUSHp((p), (l)); } STMT_END
 #endif
 #ifndef mXPUSHi
 # define mXPUSHi(i)	STMT_START { EXTEND(sp,1); mPUSHi((i)); } STMT_END
+#endif
+#ifndef mXPUSHn
+# define mXPUSHn(i)	STMT_START { EXTEND(sp,1); mPUSHn((i)); } STMT_END
 #endif
 #ifndef hv_fetchs
 # define hv_fetchs(H, K, L) hv_fetch((H), (K), sizeof(K)-1, (L))
@@ -600,6 +617,11 @@ void
 VERSION_STRING()
     PPCODE:
     mXPUSHp(GD_VERSION_STRING,sizeof(GD_VERSION_STRING)-1);
+
+void
+VERSION()
+    PPCODE:
+    mXPUSHn(GD_VERSION/10000.0);
 
 BOOT:
 {
@@ -2661,6 +2683,10 @@ gdsmooth(image, weight)
   OUTPUT:
     RETVAL
 
+#endif
+
+#if GD_VERSION >= 20200
+
 GD::Image
 gdcopyGaussianBlurred(image, radius, sigma)
       GD::Image	image
@@ -2674,3 +2700,4 @@ gdcopyGaussianBlurred(image, radius, sigma)
   OUTPUT:
     RETVAL
 
+#endif
