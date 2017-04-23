@@ -60,7 +60,10 @@ sub _make_filehandle {
 
   # otherwise treat it as a file to open
   $fh = gensym;
-  open($fh,$thing) || return;
+  if (!open($fh,$thing)) {
+    die "$thing not found: $!";
+    return undef;
+  }
   return $fh;
 }
 
