@@ -1,3 +1,4 @@
+2.64    * Update doc for LIBGD_VERSION()
 2.63    * renamed VERSION() to LIBGD_VERSION(), RT #121307.
           It was treated magically by "use GD 2.18"
 2.62    * fixed wrong <5.14 code generated with ExtUtils::Constants

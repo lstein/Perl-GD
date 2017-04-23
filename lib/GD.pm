@@ -16,7 +16,7 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.63';
+$VERSION = '2.64';
 our $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 
@@ -1960,9 +1960,9 @@ These return the width and height of the font.
 
 =over
 
-=item GD::VERSION
+=item GD::LIBGD_VERSION
 
-Returns a number of the VERSION, like 2.0204, 2.0033 or 2.01.
+Returns a number of the libgd VERSION, like 2.0204, 2.0033 or 2.01.
 
 =item GD::VERSION_STRING
 
