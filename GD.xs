@@ -2458,11 +2458,11 @@ gdcopyScaleInterpolated(image, width, height)
 GD::Image
 gdcopyRotateInterpolated(image, angle, bgcolor)
       GD::Image	image
-      float angle
+      NV angle
       int bgcolor
   PROTOTYPE: $$$
   CODE:
-    RETVAL = gdImageRotateInterpolated(image,angle,bgcolor);
+    RETVAL = gdImageRotateInterpolated(image,(float)angle,bgcolor);
     if (!RETVAL)
       XSRETURN_UNDEF;
   OUTPUT:
