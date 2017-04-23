@@ -82,6 +82,7 @@ t/test_data/tile.gd2
 t/test_data/tile.gif
 t/test_data/tile.jpeg
 t/test_data/tile.png
+t/transp.t
 t/z_kwalitee.t
 t/z_manifest.t
 t/z_pod-spell-mistakes.t
