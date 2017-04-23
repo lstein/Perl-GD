@@ -1,3 +1,5 @@
+2.63    * renamed VERSION() to LIBGD_VERSION(), RT #121307.
+          It was treated magically by "use GD 2.18"
 2.62    * fixed wrong <5.14 code generated with ExtUtils::Constants
           RT #121297. Don't generate const-xs.inc, only when missing.
         * add -liconv on hpux also (our pkgconfig parser cannot handle it)

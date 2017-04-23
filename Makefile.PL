@@ -409,7 +409,7 @@ my @constants_iv = qw(
   );
 
 # Note that ExtUtils::Constant::ProxySubs creates code incompatible
-# with <5.14.
+# with <5.14. Only 0.23_04 has that fixed.
 if (!-e 'const-xs.inc' or !-e"const-c.inc") {
   WriteConstants(
     #PROXYSUBS => {autoload => 1},
