@@ -464,6 +464,18 @@ support.
 NOTE: The libgd library is unable to read certain XPM files, returning
 an all-black image instead.
 
+=item B<$image = GD::Image-E<gt>_file($filename)>
+
+This creates a new GD::Image object starting from a B<filename>.
+This uses the libgd C<gdImageFile> method, which detects the image format
+from the given file extension.
+
+=item B<$bool = GD::supportsFileType($filename, $is_writing)>
+
+This returns a TRUE or FALSE value, if libgd supports reading or when
+the 2nd argument is 1, if libgd supports writing the given filetype,
+depending on the filename extension.
+
 =back
 
 =head1 GD::Image Methods

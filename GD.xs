@@ -320,6 +320,14 @@ LIBGD_VERSION()
     PPCODE:
     mXPUSHn(GD_VERSION/10000.0);
 
+bool
+supportsFileType(char *filename, int writing=0)
+  PROTOTYPE: $;$
+  CODE:
+    RETVAL = gdSupportsFileType(filename, writing);
+  OUTPUT:
+    RETVAL
+
 BOOT:
 {
 #ifdef START_MY_CXT
@@ -372,6 +380,16 @@ gd_new(packname="GD::Image", x=64, y=64, ...)
         croak("gdImageCreate error");
     }
     RETVAL = theImage;
+  OUTPUT:
+    RETVAL
+
+bool
+gd_file(image, filename)
+      GD::Image image
+      char *	filename
+  PROTOTYPE: $$
+  CODE:
+    RETVAL = gdImageFile(image, filename);
   OUTPUT:
     RETVAL
 
