@@ -401,7 +401,8 @@ sub ellipse {
 
 =item $img->arc([$cx,$cy,] $width,$height,$start,$end [,$style])
 
-This method draws filled and unfilled arcs.  See L<GD> for a
+This method draws filled and unfilled arcs, at the current position,
+with the current fore- and background colors.  See L<GD> for a
 description of the arguments. To draw a solid arc (such as a pie
 wedge) set bgcolor equal to fgcolor. To draw an unfilled arc, set
 bgcolor to undef.
@@ -412,7 +413,7 @@ sub arc {
   my $self = shift;
   return $self->gd->arc(@_) if @_ == 7;
 
-  croak 'Usage GD::Simple->arc($width,$height,$start,$end,$style)' unless @_ >= 4;
+  croak 'Usage GD::Simple->arc($width,$height,$start,$end[,$style])' unless @_ >= 4;
   my ($width,$height,$start,$end,$style) = @_;
   my $gd = $self->gd;
   my ($bg,$fg) = ($self->bgcolor,$self->fgcolor);
