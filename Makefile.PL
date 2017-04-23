@@ -508,11 +508,15 @@ sub check_for_stray_headers {
 				 '/usr/local/include','/opt/include',
 				 '/usr/X11R6/include');
   my $problems;
+  my $o = $official_libraries[0];
   foreach (keys %libraries) {
 
     s/\blib\b/include/;
     next if $official_libraries{$_};
     next unless -e "$_/gd.h";
+    if (-l "$_/gd.h" or -l "$o/gd.h") {
+      next if (stat("$_/gd.h"))[1] == (stat("$o/gd.h"))[1];
+    }
 
     warn "\n\n** WARNING: found gd.h header file in ${_}/gd.h, but it is expected at $official_libraries[0]/gd.h. This may cause compile errors! **\n";
     $problems++;
