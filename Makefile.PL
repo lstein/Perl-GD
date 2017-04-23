@@ -479,7 +479,7 @@ sub try_to_autoconfigure {
   push @LIBS,"-lgd" unless $libs =~ /-lgd/;
   $options      = $features;
 
-  my ($release, $major, $minor) = $version =~ /^(\d+)\.(\d+)\.(\d+)$/;
+  my ($release, $major, $minor) = $version =~ /^(\d+)\.(\d+)\.(\d+)/;
   $options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE VERSION_33"
     if defined($minor)
     && ($release > 2
