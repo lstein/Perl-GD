@@ -35,7 +35,7 @@ These packages are not always updated to the most recent version, but
 GD is pretty stable and you usually won't miss the bleeding edge
 version.
 
-For MacOSX/Unix users and those who have a developer's kit installed
+For Mac OS X/macOS/Unix users and those who have a developer's kit installed
 on Windows (e.g. cygwin):
 
 2.  Make sure you have downloaded and installed the following packages:
@@ -64,8 +64,8 @@ on Windows (e.g. cygwin):
 	   distributions.  If you don't have a modern
            version of X, don't try to get XPM working.
 
-3. On MacOSX, you can use these package managers to resolve dependencies and
-build libgd:
+3. On Mac OS X/macOS, you can use these package managers to resolve
+dependencies and build libgd:
 
         i.  MacPorts http://www.macports.org/
 	ii. Homebrew http://mxcl.github.io/homebrew/
@@ -255,7 +255,7 @@ FREQUENTLY ASKED QUESTIONS
 
 7. Does GD run with Macintosh OS X?
 
-   Yes.  GD compiles just fine under OSX.  However, you may need to
+   Yes.  GD compiles just fine under OS X/macOS.  However, you may need to
    remove old versions of libgd, libpng, and libz and reinstall the
    current versions before you try to install GD.
 
