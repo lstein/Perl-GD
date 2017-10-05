@@ -777,9 +777,9 @@ module is loaded.
 =item B<$image-E<gt>setBrush($image)>
 
 You can draw lines and shapes using a brush pattern.  Brushes are just
-images that you can create and manipulate in the usual way. When you
-draw with them, their contents are used for the color and shape of the
-lines.
+palette, not TrueColor, images that you can create and manipulate in
+the usual way. When you draw with them, their contents are used for
+the color and shape of the lines.
 
 To make a brushed line, you must create or load the brush first, then
 assign it to the image using setBrush().  You can then draw in that
