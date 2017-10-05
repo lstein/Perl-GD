@@ -1512,6 +1512,11 @@ In case of an error (such as the font not being available, or FT
 support not being available), the method returns an empty list and
 sets $@ to the error message.
 
+The B<fontname> argument is the name of the font, which can be a full
+pathname to a F<.ttf> file, or if not the paths in C<$ENV{GDFONTPATH}>
+will be searched or if empty the libgd compiled DEFAULT_FONTPATH.
+The TrueType extensions .ttf, .pfa, .pfb or .dfont can be omitted.
+
 The string may contain UTF-8 sequences like: "&#192;" 
 
 You may also call this method from the GD::Image class name, in which
@@ -1551,7 +1556,7 @@ default kerning of text.
 
 Example:
 
- $gd->stringFT($black,'/dosc/windows/Fonts/pala.ttf',40,0,20,90,
+ $gd->stringFT($black,'/c/windows/Fonts/pala.ttf',40,0,20,90,
               "hi there\r\nbye now",
 	      {linespacing=>0.6,
 	       charmap  => 'Unicode',
