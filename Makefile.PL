@@ -272,6 +272,10 @@ my %WriteMakefileArgs = (
         'ExtUtils::Constant' => 0.22,
         'ExtUtils::PkgConfig' => 0,
     },
+    'TEST_REQUIRES' => {
+        'Test::More' => 0.88,
+        'Test::Fork' => 0.02,
+    },
     'PL_FILES'  => {'bdf_scripts/bdf2gdfont_pl.PL' => 'bdf_scripts/bdf2gdfont.pl',
                     'lib/GD/Image_pm.PL' => 'lib/GD/Image.pm'},
     'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],
@@ -321,6 +325,8 @@ unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
 }
 
 delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
+  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
+delete $WriteMakefileArgs{TEST_REQUIRES}
   unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
 delete $WriteMakefileArgs{META_MERGE}
   unless eval { ExtUtils::MakeMaker->VERSION(6.46) };
