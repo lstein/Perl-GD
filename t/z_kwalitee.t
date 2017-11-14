@@ -18,17 +18,23 @@ for (qw( Class::XSAccessor Text::CSV_XS List::MoreUtils Algorithm::Diff )) {
     if $@;
 }
 
-eval "require Test::Kwalitee;";
-plan skip_all => "Test::Kwalitee required"
-  if $@;
-
 if (!-e 'META.yml') {
   require File::Copy;
   File::Copy::cp('MYMETA.yml','META.yml');
   File::Copy::cp('MYMETA.json','META.json');
 }
 
+eval {
+  require Test::Kwalitee;
+};
+plan skip_all => "Test::Kwalitee required"
+  if $@;
+
+my @args = ('-has_test_pod_coverage');
+if ($Test::Kwalitee::VERSION lt '1.02') {
+  push @args, '-proper_libs';
+}
+Test::Kwalitee->import(tests => [ @args ]);
+
 #plan skip_all => 'Test::Kwalitee fails with clang -faddress-sanitizer'
 #  if $Config{ccflags} =~ /-faddress-sanitizer/;
-
-Test::Kwalitee->import( tests => [ qw( -has_test_pod_coverage ) ] );
