@@ -1036,7 +1036,7 @@ This draws arcs and ellipses.  (cx,cy) are the center of the arc, and
 (width,height) specify the width and height, respectively.  The
 portion of the ellipse covered by the arc are controlled by start and
 end, both of which are given in degrees from 0 to 360.  Zero is at the
-top of the ellipse, and angles increase clockwise.  To specify a
+right end of the ellipse, and angles increase clockwise.  To specify a
 complete ellipse, use 0 and 360 as the starting and ending angles.  To
 draw a circle, use the same value for width and height.
 

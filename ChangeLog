@@ -1,3 +1,9 @@
+2.67    * fix thread-safety for GD::Simple %COLORS (#26 melak)
+        * fix arc start-angle docs, RT #123277 Andrew G Gray
+        * improve setBrush docs, RT #123194 Andrew G Gray
+        * improve StringFT docs, RT #123193
+        * replace MacOSX by darwin, and not by Mac OS X/macOS as suggested
+          in PR #24
 2.66    * throw proper error on newFrom* with not-existing file
         * add t/transp.t from RT #40525
         * Improve RT #54366 multiple gd.h warning
