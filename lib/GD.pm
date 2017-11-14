@@ -464,17 +464,28 @@ support.
 NOTE: The libgd library is unable to read certain XPM files, returning
 an all-black image instead.
 
-=item B<$image = GD::Image-E<gt>_file($filename)>
-
-This creates a new GD::Image object starting from a B<filename>.
-This uses the libgd C<gdImageFile> method, which detects the image format
-from the given file extension.
-
 =item B<$bool = GD::supportsFileType($filename, $is_writing)>
 
 This returns a TRUE or FALSE value, if libgd supports reading or when
 the 2nd argument is 1, if libgd supports writing the given filetype,
-depending on the filename extension.
+depending on the filename extension. Only with libgd versions E<gt>= gd-2.1.1.
+
+Assuming LibGD is compiled with support for these image types, the
+following extensions are supported:
+
+    .gif
+    .gd, .gd2
+    .wbmp
+    .bmp
+    .xbm
+    .tga
+    .png
+    .jpg, .jpeg
+    .tiff, .tif
+    .webp
+    .xpm
+
+Filenames are parsed case-insensitively.
 
 =back
 
@@ -599,6 +610,30 @@ format.
 This returns the image data in WBMP format, which is a black-and-white
 image format.  Provide the index of the color to become the foreground
 color.  All other pixels will be considered background.
+
+=item B<$success = $image-E<gt>_file($filename)>
+
+Writes an image to a file in the format indicated by the filename, with
+libgd versions E<gt>= gd-2.1.1.
+
+File type is determined by the extension of the file name.  See
+C<supportsFiletype> for an overview of the parsing.
+
+For file types that require extra arguments, C<_file> attempts to
+use sane defaults:
+
+  C<gdImageGd2>	chunk size = 0, compression is enabled.
+  C<gdImageJpeg>	quality = -1 (i.e. the reasonable default)
+  C<gdImageWBMP>	foreground is the darkest available color
+
+Everything else is called with the two-argument function and so will
+use the default values.
+
+C<_file> and the underlying libgd C<gdImageFile> has some rudimentary
+error detection and will return FALSE (0) if a detectable error
+occurred.  However, the image loaders do not normally return their
+error status so a result of TRUE (1) does **not** mean the file was
+saved successfully.
 
 =back
 
