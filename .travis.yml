@@ -16,6 +16,7 @@ perl:
   - "5.22-thr"
   - "5.24"
   - "5.24-thr"
+  - "5.26"
   - "dev"
 
 # not run tag pushes
@@ -32,7 +33,7 @@ install:
   - export AUTOMATED_TESTING=1 HARNESS_TIMER=1 AUTHOR_TESTING=0 RELEASE_TESTING=0
   - cpan-install --deps       # installs prereqs, including recommends
   - cpan-install ExtUtils::PkgConfig Math::Trig Test::Kwalitee Test::Pod
-                 Pod::Spell::CommonMistakes
+                 Pod::Spell::CommonMistakes Test::Fork
   - cpan-install --coverage   # installs converage prereqs, if enabled
 
 #notifications:

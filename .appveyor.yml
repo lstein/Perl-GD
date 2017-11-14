@@ -11,8 +11,8 @@ install:
   - cd C:\projects\%APPVEYOR_PROJECT_NAME%
 
 build_script:
-  - perl Makefile.PL
-  - dmake
+  - perl Makefile.PL MAKE=gmake
+  - gmake
 
 test_script:
-  - dmake test TEST_VERBOSE=1
+  - gmake test TEST_VERBOSE=1
