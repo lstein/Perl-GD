@@ -1432,7 +1432,7 @@ $add: -255..255
 =item B<$ok = $image-E<gt>contrast($contrast)>
 
 $contrast: a double value. The contrast adjustment value. Negative
-values increase, postive values decrease the contrast. The larger
+values increase, positive values decrease the contrast. The larger
 the absolute value, the stronger the effect.
 
 =item B<$ok = $image-E<gt>color($red,$green,$blue,$alpha)>
@@ -1487,7 +1487,7 @@ installed with GD (see the bdf_scripts directory if it wasn't).  The
 format happens to be identical to the old-style MSDOS bitmap ".fnt"
 files, so you can use one of those directly if you happen to have one.
 
-For writing proportional scaleable fonts, GD offers the stringFT()
+For writing proportional scalable fonts, GD offers the stringFT()
 method, which allows you to load and render any TrueType font on your
 system.
 
