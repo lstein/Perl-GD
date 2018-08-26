@@ -1,3 +1,4 @@
+2.69    * little spelling error, GH #29 Xavier Guimard
 2.68    * fix GD::Polygon->clear, RT #124463 Michael Cain
 2.67    * fix thread-safety for GD::Simple %COLORS (#26 melak)
         * fix arc start-angle docs, RT #123277 Andrew G Gray
