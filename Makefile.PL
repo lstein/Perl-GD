@@ -426,48 +426,59 @@ if (!-e 'const-xs.inc' or !-e"const-c.inc") {
 
 exit 0;
 
+sub try_old_gdlib_config {
+}
+
 sub try_to_autoconfigure {
   #my ($options,$lib_gd_path,$INC,$LIBPATH,$LIBS) = @_;
   my ($version, $cflags, $ldflags, $libs, $libdir, $features, $includedir);
   # perl Makefile.PL --lib_gd_path /opt/libgd/2.1.1/lib
   my ($prefix) = $lib_gd_path ? ($lib_gd_path =~ m|(^.*)/lib|) : "";
-  my $bindir = $prefix ? "$prefix/bin/" : $lib_gd_path ? "$lib_gd_path/bin/" : "";
-  my $config = `${bindir}gdlib-config --all` if -e "${bindir}gdlib-config";
-  if (!$config
-      and !-e "$prefix/lib/pkgconfig/gdlib.pc"
-      and !-e "/usr/lib/pkgconfig/gdlib.pc")
-  {
-    $gdlib_config_path = "gdlib-config" unless defined($gdlib_config_path);
-    $config = `$gdlib_config_path --all`;
-  }
-  unless ($config) {
-      my %config;
-      require ExtUtils::PkgConfig;
-      %config = ExtUtils::PkgConfig->find ("$prefix/lib/pkgconfig/gdlib.pc") if $prefix;
-      %config = ExtUtils::PkgConfig->find ("gdlib") unless %config;
-      return unless %config;
-      $version  = $config{modversion};
-      warn "Configuring for libgd version $version.\n";
-      $cflags   = $config{cflags};
-      $libs     = $config{libs};
-      ($libdir, $libs) = $libs =~ m/-L(.*) (-lgd.*)/;
-      # Libs.private:   -L/opt/local/lib -lz  -L/opt/local/lib -lpng16  -L/opt/local/lib -lfreetype  -L/opt/local/lib -lfontconfig -lfreetype   -ljpeg  -L/opt/local/lib -lXpm -lX11  -L/opt/local/lib -ltiff   -lwebp
-      # not in the hash!
-      $features = 'GD_GIF GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';
-      $AUTOCONFIG++;
+  my ($config, %config);
+  require ExtUtils::PkgConfig;
+  eval {
+    %config = ExtUtils::PkgConfig->find ("$prefix/lib/pkgconfig/gdlib.pc") if $prefix;
+    %config = ExtUtils::PkgConfig->find ("gdlib") unless %config;
+  };
+  unless (%config) {
+    my $bindir = $prefix ? "$prefix/bin/" : $lib_gd_path ? "$lib_gd_path/bin/" : "";
+    $config = `${bindir}gdlib-config --all` if -e "${bindir}gdlib-config";
+    if (!$config) {
+      $gdlib_config_path = "gdlib-config" unless defined($gdlib_config_path);
+      $config = `$gdlib_config_path --all`;
+    }
+    return unless $config;
+    $AUTOCONFIG++;
+
+    ($version) = $config =~ /^GD library\s+(\S+)/m;
+    warn "Configuring for libgd version $version.\n";
+
+    ($includedir) = $config =~ /^includedir:\s*(.+)$/m;
+    ($cflags)     = $config =~ /^cflags:\s*(.+)$/m;
+    ($ldflags)    = $config =~ /^ldflags:\s*(.+)$/m;
+    ($libs)       = $config =~ /^libs:\s*(.+)$/m;
+    ($libdir)     = $config =~ /^libdir:\s*(.+)$/m;
+    ($features)   = $config =~ /^features:\s*(.+)$/m;
+    ($includedir) = $config =~ /^includedir:\s*(.+)$/m;
   } else {
-      $AUTOCONFIG++;
+    $version  = $config{modversion};
+    warn "Configuring for libgd version $version.\n";
+    $cflags   = $config{cflags};
+    $libs     = $config{libs};
+    ($libdir, $libs) = $libs =~ m/-L(.*) (-lgd.*)/;
+    # Libs.private:   -L/opt/local/lib -lz  -L/opt/local/lib -lpng16  -L/opt/local/lib -lfreetype  -L/opt/local/lib -lfontconfig -lfreetype   -ljpeg  -L/opt/local/lib -lXpm -lX11  -L/opt/local/lib -ltiff   -lwebp
+    # not in the hash! TODO we need to parse the .pc by our own
+    $features = 'GD_GIF GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';
+    #$ZLIB      = $libs =~ m/ -lz /;
+    #$JPEG      = $libs =~ m/ -ljpeg /;
+    #$FT        = $libs =~ m/ -lfreetype /;
+    #$XPM       = $libs =~ m/ -lXpm /;
+    #$PNG       = $libs =~ m/ -lpng/;
+    #$FONTCONFIG= $libs =~ m/ -lfontconfig /;
+    #$TIFF      = $libs =~ m/ -ltiff/;
+    #$WEBP      = $libs =~ m/ -lwebp/;
 
-      ($version) = $config =~ /^GD library\s+(\S+)/m;
-      warn "Configuring for libgd version $version.\n";
-
-      ($includedir) = $config =~ /^includedir:\s*(.+)$/m;
-      ($cflags)     = $config =~ /^cflags:\s*(.+)$/m;
-      ($ldflags)    = $config =~ /^ldflags:\s*(.+)$/m;
-      ($libs)       = $config =~ /^libs:\s*(.+)$/m;
-      ($libdir)     = $config =~ /^libdir:\s*(.+)$/m;
-      ($features)   = $config =~ /^features:\s*(.+)$/m;
-      ($includedir) = $config =~ /^includedir:\s*(.+)$/m;
+    $AUTOCONFIG++;
   }
 
   $LIBGD_VERSION = $version;
