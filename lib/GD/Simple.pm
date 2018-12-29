@@ -7,7 +7,7 @@ GD::Simple - Simplified interface to GD library
 =head1 SYNOPSIS
 
 For a nice tutorial on using this module, see Gabor Szabo's article at
-http://perlmaven.com/drawing-images-using-gd-simple.
+L<http://perlmaven.com/drawing-images-using-gd-simple>.
 
     use GD::Simple;
 
