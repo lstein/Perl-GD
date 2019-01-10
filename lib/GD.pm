@@ -1305,8 +1305,13 @@ This method is only available with libgd >= 2.1.0
 
 Creates a new palette image from a truecolor image.
 
-  samplefactor	The quantization precision between 1 (highest quality) and 10 (fastest).
-  maxcolor	The number of desired palette entries.
+=over 4
+
+=item samplefactor	The quantization precision between 1 (highest quality) and 10 (fastest).
+
+=item maxcolor	The number of desired palette entries.
+
+=back
 
 This is the same as createPaletteFromTrueColor with the
 quantization method GD_QUANT_NEUQUANT. This does not support dithering.
