@@ -3,6 +3,8 @@ package GD::Polygon;
 use strict;
 use Carp 'carp';
 use GD;
+use vars '$VERSION';
+$VERSION = '2.70';
 
 # old documentation error
 *GD::Polygon::delete = \&deletePt;

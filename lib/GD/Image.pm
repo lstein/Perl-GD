@@ -5,7 +5,7 @@ use strict;
 use GD;
 use Symbol 'gensym','qualify_to_ref';
 use vars '$VERSION';
-$VERSION = '2.67';
+$VERSION = '2.70';
 
 =head1 NAME
 
