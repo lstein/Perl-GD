@@ -259,7 +259,9 @@ print F $DEFINES,"\n";
 close F;
 
 my $CCFLAGS = $Config{ccflags};
-$CCFLAGS .= " -Wall -Wextra -Wformat=0" if $Config{gccversion} and $] > 5.020;
+$CCFLAGS .= " -Wall -Wextra -Wformat=1" if $Config{gccversion} and $] > 5.020;
+# hardened CFLAGS for testing
+#$CCFLAGS .= ' -D_GNU_SOURCE -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches';
 
 my %WriteMakefileArgs = (
     'NAME'	=> 'GD',
