@@ -1,3 +1,4 @@
+2.71    * skip Test::Fork on freebsd (GH #25)
 2.70    * fixes for hardened CCFLAGS with -Werror (RT #128167)
 2.69    * little spelling error, GH #29 Xavier Guimard
 2.68    * fix GD::Polygon->clear, RT #124463 Michael Cain
