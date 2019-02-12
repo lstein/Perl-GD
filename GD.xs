@@ -621,7 +621,9 @@ gdnewFromXpm(packname="GD::Image", filename)
 	char *	filename
   PROTOTYPE: $$
   PREINIT:
+#ifdef HAVE_XPM
   	gdImagePtr img;
+#endif
 	SV* errormsg;
   CODE:
 	PERL_UNUSED_ARG(packname);
