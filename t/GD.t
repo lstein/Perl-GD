@@ -8,7 +8,7 @@ use FindBin qw($Bin);
 use lib "$Bin/../blib/lib","$Bin/../blib/arch","$Bin/../lib";
 use constant FONT=>"$Bin/test_data/Generic.ttf";
 use constant IMAGE_TESTS => 7;
-use Test::More tests => 13;
+use Test::More tests => 14;
 use IO::Dir;
 
 use_ok('GD',':DEFAULT',':cmp');
@@ -22,6 +22,7 @@ write_regression_tests() if (defined $arg && $arg eq '--write');
 run_image_regression_tests();
 run_round_trip_test();
 catch_libgd_error();
+test_cve2019_6977();
 
 exit 0;
 
@@ -283,4 +284,15 @@ sub catch_libgd_error {
     my $image = eval { GD::Image->newFromPng("test_data/images/corrupt.png") };
     is($image, undef);
     ok($@, 'caught corrupt png');
+}
+
+sub test_cve2019_6977 {
+  my $img1 = GD::Image->new(0xfff, 0xfff, 1);
+  my $img2 = GD::Image->new(0xfff, 0xfff, 0);
+  $img2->colorAllocate(0, 0, 0);
+  $img2->setPixel (0, 0, 255);
+  if (GD::LIBGD_VERSION() >= 2.10) {
+    $img1->colorMatch ($img2);
+  }
+  ok(1, 'survived CVE 2019-6977'); # fails only under valgrind or asan
 }

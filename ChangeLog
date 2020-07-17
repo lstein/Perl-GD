@@ -1,3 +1,6 @@
+2.72    * fix CVE 2019-6977 colorMatch for older unpatched libgd versions.
+          This is a severe security problem, an exploitable heap-overflow.
+          See https://nvd.nist.gov/vuln/detail/CVE-2019-6977
 2.71    * skip Test::Fork on freebsd (GH #25)
 2.70    * fixes for hardened CCFLAGS with -Werror (RT #128167)
 2.69    * little spelling error, GH #29 Xavier Guimard

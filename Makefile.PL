@@ -39,7 +39,7 @@ unless (try_to_autoconfigure() || $force) {
 **UNRECOVERABLE ERROR**
 Could not find gdlib-config nor pkgconfig/gdlib.pc. Please install libgd 2.0.28 or higher.
 In Debian and its derivatives (e.g. Ubuntu), it is provided by the libgd-dev or
-libgd2-xpm-dev package. Their libgd3 is the latest 2.2.4
+libgd2-xpm-dev package. Their libgd3 is the latest 2.2.5 (which has a severe security bug).
 On Redhat and derivatives or OpenSUSE you need gd-devel.
 On FreeBSD it is installed by the graphics/gd port.
 Mandriva has libgd2-devel, libgd-devel or lib64gd-devel.
@@ -193,6 +193,7 @@ unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
 my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$FTCIRCLE,$VERSION_33);
 if( defined($options) )
 {
+  # WBMP is builtin since at least 1.8.0
   $JPEG      = $options =~ m/JPEG/i;
   $FT        = $options =~ m/FT|FREETYPE/i;
   $XPM       = $options =~ m/XPM/i;
@@ -286,6 +287,7 @@ my %WriteMakefileArgs = (
     'CCFLAGS'   => $CCFLAGS,
     'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
     'AUTHOR'    => 'Lincoln Stein <lincoln.stein@gmail.com>',
+     # Maintained by Reini Urban now
      $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
     'clean'     => { 
@@ -453,6 +455,7 @@ sub try_to_autoconfigure {
       $cflags   = $config{cflags};
       $libs     = $config{libs};
       ($libdir, $libs) = $libs =~ m/-L(.*) (-lgd.*)/;
+      # Requires.private:   zlib  libpng  freetype2 >= 9.8.3  fontconfig  libjpeg  xpm  libtiff-4
       # Libs.private:   -L/opt/local/lib -lz  -L/opt/local/lib -lpng16  -L/opt/local/lib -lfreetype  -L/opt/local/lib -lfontconfig -lfreetype   -ljpeg  -L/opt/local/lib -lXpm -lX11  -L/opt/local/lib -ltiff   -lwebp
       # not in the hash!
       $features = 'GD_GIF GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';

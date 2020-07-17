@@ -1022,12 +1022,19 @@ gdneuQuant(image, colors=gdMaxColors, samplefactor=5)
   OUTPUT:
     RETVAL
 
+# beware of CVE 2019-6977 https://bugs.php.net/bug.php?id=77270
+# refuse to match truecolor with palette
 int
 gdcolorMatch(image, im2)
 	GD::Image	image
 	GD::Image	im2
   PROTOTYPE: $$
   CODE:
+#if GD_VERSION <= 20205
+  if (gdImageTrueColor(image) ^ gdImageTrueColor(im2))
+    XSRETURN_UNDEF;
+  else
+#endif
     RETVAL = gdImageColorMatch(image,im2);
   OUTPUT:
     RETVAL
