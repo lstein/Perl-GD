@@ -47,8 +47,9 @@ install:
 matrix:
   fast_finish: true
   include:
-    - perl: "5.32"
+    - perl: "5.30"
       env: COVERAGE=1 AUTHOR_TESTING=1 RELEASE_TESTING=1 # enables coverage+coveralls reporting
   allow_failures:
     - perl: "dev"
+    - perl: "5.32"
 
