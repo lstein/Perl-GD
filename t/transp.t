@@ -21,42 +21,45 @@ $im->transparent( $im->colorClosest( 24, 53, 62 ) );
 is( $im->transparent, $closest, "transparency preserves RGB before $closest" );
 is( $im->transparent, $im->colorClosest( 24, 53, 62 ), 'transparency preserves RGB after' );
 
-$im = GD::Image->newFromJpeg($jpeg);
-$im->transparent( -1 );
-is($im->transparent, -1, 'image is not transparent');
+SKIP: {
+  skip "No JPEG support", 8 unless defined &GD::Image::newFromJpeg;
 
-$closest = $im->colorClosest( 24, 53, 62 );
-$im->transparent( $closest );
+  $im = GD::Image->newFromJpeg($jpeg);
+  $im->transparent( -1 );
+  is($im->transparent, -1, 'image is not transparent');
 
-is( $im->transparent, $closest, 'transparency preserves RGB before' );
+  $closest = $im->colorClosest( 24, 53, 62 );
+  $im->transparent( $closest );
 
-my ($t, $c) = ($im->transparent, $im->colorClosest( 24, 53, 62 ));
-if ($t == $c) {
- TODO: {
+  is( $im->transparent, $closest, 'transparency preserves RGB before' );
+
+  my ($t, $c) = ($im->transparent, $im->colorClosest( 24, 53, 62 ));
+  if ($t == $c) {
+  TODO: {
     local $TODO = 'colorClosest ignores alpha';
     isnt( $t, $c, "Closest" );
-  }
-} else {
-  isnt( $t, $c, "Closest" );
-}
-is( $im->transparent, $im->colorClosestAlpha( 24, 53, 62, 255 ), "ClosestAlpha" );
-
-$im = GD::Image->newFromJpeg($frog);
-$im->transparent( -1 );
-is($im->transparent, -1, 'image is not transparent');
-
-$closest = $im->colorClosest( 24, 53, 62 );
-$im->transparent( $closest );
-is( $im->transparent, $closest, 'transparency preserves RGB before' );
-
-($t, $c) = ($im->transparent, $im->colorClosest( 24, 53, 62 ));
-if ($t == $c) {
- TODO: {
-    local $TODO = 'colorClosest ignores alpha';
+    }
+  } else {
     isnt( $t, $c, "Closest" );
   }
-} else {
-  isnt( $t, $c, "Closest" );
-}
-is( $im->transparent, $im->colorClosestAlpha( 24, 53, 62, 255 ), "ClosestAlpha" );
+  is( $im->transparent, $im->colorClosestAlpha( 24, 53, 62, 255 ), "ClosestAlpha" );
 
+  $im = GD::Image->newFromJpeg($frog);
+  $im->transparent( -1 );
+  is($im->transparent, -1, 'image is not transparent');
+
+  $closest = $im->colorClosest( 24, 53, 62 );
+  $im->transparent( $closest );
+  is( $im->transparent, $closest, 'transparency preserves RGB before' );
+
+  ($t, $c) = ($im->transparent, $im->colorClosest( 24, 53, 62 ));
+  if ($t == $c) {
+  TODO: {
+    local $TODO = 'colorClosest ignores alpha';
+    isnt( $t, $c, "Closest" );
+    }
+  } else {
+    isnt( $t, $c, "Closest" );
+  }
+  is( $im->transparent, $im->colorClosestAlpha( 24, 53, 62, 255 ), "ClosestAlpha" );
+}

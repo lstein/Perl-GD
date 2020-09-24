@@ -488,14 +488,16 @@ sub try_to_autoconfigure {
       push @LIBPATH,"-L$libdir";
   }
   push @LIBS,"-lgd" unless $libs =~ /-lgd/;
-  $options      = $features;
+  if (!$options) {
+    $options = $features;
 
-  my ($release, $major, $minor) = $version =~ /^(\d+)\.(\d+)\.(\d+)/;
-  $options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE VERSION_33"
-    if defined($minor)
-    && ($release > 2
-        || ($release == 2 && $major > 0)
-        || ($release == 2 && $major == 0 && $minor >= 33));
+    my ($release, $major, $minor) = $version =~ /^(\d+)\.(\d+)\.(\d+)/;
+    $options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE VERSION_33"
+      if defined($minor)
+      && ($release > 2
+          || ($release == 2 && $major > 0)
+          || ($release == 2 && $major == 0 && $minor >= 33));
+  }
 
   if ($config) {
       my @correct_inc = map {s/^-I// && $_} split /\s+/,$cflags;
