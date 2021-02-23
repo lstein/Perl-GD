@@ -1276,7 +1276,7 @@ image is a palette image.
 B<				$srcX,$srcY,$width,$height,$angle)>
 
 Like copyResized() but the $angle argument specifies an arbitrary
-amount to rotate the image clockwise (in degrees).  In addition, $dstX
+amount to rotate the image counter clockwise (in degrees).  In addition, $dstX
 and $dstY species the B<center> of the destination image, and not the
 top left corner.
 
