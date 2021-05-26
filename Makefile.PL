@@ -47,8 +47,6 @@ If you want to try to compile anyway, please rerun this script with the option -
 END
 }
 
-@INC     = qw(-I/usr/include -I/usr/include/gd) unless @INC;
-@LIBPATH = qw(-L/usr/lib/X11 -L/usr/X11R6/lib -L/usr/X11/lib -L/usr/lib) unless @LIBPATH;
 @LIBS    = qw(-lgd) unless @LIBS;
 
 # support for AMD64 libraries
