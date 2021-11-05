@@ -128,7 +128,7 @@ GD.pm - Interface to Gd Graphics Library
     use GD;
 
     # create a new image
-    $im = new GD::Image(100,100);
+    $im = GD::Image->new(100,100);
 
     # allocate some colors
     $white = $im->colorAllocate(255,255,255);
@@ -199,7 +199,7 @@ A Simple Example:
 	use GD;
 
 	# create a new image
-	$im = new GD::Image(100,100);
+	$im = GD::Image->new(100,100);
 
 	# allocate some colors
 	$white = $im->colorAllocate(255,255,255);
@@ -282,7 +282,7 @@ The new() method is the main constructor for the GD::Image class.
 Called with two integer arguments, it creates a new blank image of the
 specified width and height. For example:
 
-	$myImage = new GD::Image(100,100) || die;
+	$myImage = GD::Image->new(100,100) || die;
 
 This will create an image that is 100 x 100 pixels wide.  If you don't
 specify the dimensions, a default of 64 x 64 will be chosen.
@@ -352,11 +352,11 @@ and read the PNG information from it.
   Example1:
 
   open (PNG,"barnswallow.png") || die;
-  $myImage = newFromPng GD::Image(\*PNG) || die;
+  $myImage = GD::Image->newFromPng(\*PNG) || die;
   close PNG;
 
   Example2:
-  $myImage = newFromPng GD::Image('barnswallow.png');
+  $myImage = GD::Image->newFromPng('barnswallow.png');
 
 To get information about the size and color usage of the information,
 you can call the image query methods described below. Images created
@@ -397,7 +397,7 @@ This works in exactly the same way as C<newFromPng>, but reads the
 contents of an X Bitmap (black & white) file:
 
 	open (XBM,"coredump.xbm") || die;
-	$myImage = newFromXbm GD::Image(\*XBM) || die;
+	$myImage = GD::Image->newFromXbm(\*XBM) || die;
 	close XBM;
 
 There is no newFromXbmData() function, because there is no
@@ -409,7 +409,7 @@ This works in exactly the same way as C<newFromPng>, but reads the
 contents of an Windows BMP Bitmap file:
 
 	open (BMP,"coredump.bmp") || die;
-	$myImage = newFromWBMP GD::Image(\*BMP) || die;
+	$myImage = GD::Image->newFromWBMP(\*BMP) || die;
 	close BMP;
 
 There is no newFromWBMPData() function, because there is no
@@ -425,7 +425,7 @@ rare case when you need to read and write the image to disk quickly.
 It's not intended for regular use, because, unlike PNG or JPEG, no
 image compression is performed and these files can become B<BIG>.
 
-	$myImage = newFromGd GD::Image("godzilla.gd") || die;
+	$myImage = GD::Image->newFromGd("godzilla.gd") || die;
 	close GDF;
 
 =item B<$image = GD::Image-E<gt>newFromGd2($file)>
@@ -456,7 +456,7 @@ is unlike the other newFrom() functions because it does not take a
 filehandle.  This difference comes from an inconsistency in the
 underlying gd library.
 
-	$myImage = newFromXpm GD::Image('earth.xpm') || die;
+	$myImage = GD::Image->newFromXpm('earth.xpm') || die;
 
 This function is only available if libgd was compiled with XPM
 support.  
@@ -804,7 +804,7 @@ current index of the transparent color, or -1 if none.
 Example:
 
 	open(PNG,"test.png");
-	$im = newFromPng GD::Image(PNG);
+	$im = GD::Image->newFromPng(PNG);
 	$white = $im->colorClosest(255,255,255); # find white
 	$im->transparent($white);
 	binmode STDOUT;
@@ -837,7 +837,7 @@ non-colored parts don't overwrite other parts of your image.
 Example:
 
 	# Create a brush at an angle
-	$diagonal_brush = new GD::Image(5,5);
+	$diagonal_brush = GD::Image->new(5,5);
 	$white = $diagonal_brush->colorAllocate(255,255,255);
 	$black = $diagonal_brush->colorAllocate(0,0,0);
 	$diagonal_brush->transparent($white);
@@ -1011,7 +1011,7 @@ with a pattern.
 Example:
 
 	# read in a fill pattern and set it
-	$tile = newFromPng GD::Image('happyface.png');
+	$tile = GD::Image->newFromPng('happyface.png');
 	$myImage->setTile($tile); 
 
 	# draw the rectangle, filling it with the pattern
@@ -1027,7 +1027,7 @@ colors gdBrushed, gdStyled and gdStyledBrushed can be specified.
 
 Example:
 
-	$poly = new GD::Polygon;
+	$poly = GD::Polygon->new;
 	$poly->addPt(50,0);
 	$poly->addPt(99,99);
 	$poly->addPt(0,99);
@@ -1045,7 +1045,7 @@ You need libgd 2.0.33 or higher to use this feature.
 
 Example:
 
-	$poly = new GD::Polygon;
+	$poly = GD::Polygon->new;
 	$poly->addPt(50,0);
 	$poly->addPt(99,99);
 	$poly->addPt(0,99);
@@ -1060,7 +1060,7 @@ with a pattern.
 Example:
 
 	# make a polygon
-	$poly = new GD::Polygon;
+	$poly = GD::Polygon->new;
 	$poly->addPt(50,0);
 	$poly->addPt(99,99);
 	$poly->addPt(0,99);
@@ -1180,9 +1180,9 @@ destination regions must not overlap or strange things will happen.
 
 Example:
 
-	$myImage = new GD::Image(100,100);
+	$myImage = GD::Image->new(100,100);
 	... various drawing stuff ...
-	$srcImage = new GD::Image(50,50);
+	$srcImage = GD::Image->new(50,50);
 	... more drawing stuff ...
 	# copy a 25x25 pixel region from $srcImage to
 	# the rectangle starting at (10,10) in $myImage
@@ -1196,7 +1196,7 @@ palette and other nonessential details.
 
 Example:
 
-	$myImage = new GD::Image(100,100);
+	$myImage = GD::Image->new(100,100);
 	... various drawing stuff ...
         $copy = $myImage->clone;
 
@@ -1213,9 +1213,9 @@ solid rectangle.
 
 Example:
 
-	$myImage = new GD::Image(100,100);
+	$myImage = GD::Image->new(100,100);
 	... various drawing stuff ...
-	$redImage = new GD::Image(50,50);
+	$redImage = GD::Image->new(50,50);
 	... more drawing stuff ...
 	# copy a 25x25 pixel region from $srcImage to
 	# the rectangle starting at (10,10) in $myImage, merging 50%
@@ -1241,9 +1241,9 @@ image to accommodate the size requirements.
 
 Example:
 
-	$myImage = new GD::Image(100,100);
+	$myImage = GD::Image->new(100,100);
 	... various drawing stuff ...
-	$srcImage = new GD::Image(50,50);
+	$srcImage = GD::Image->new(50,50);
 	... more drawing stuff ...
 	# copy a 25x25 pixel region from $srcImage to
 	# a larger rectangle starting at (10,10) in $myImage
@@ -1825,7 +1825,7 @@ Quickdraw library).  Also see L<GD::Polyline>.
 
 Create an empty polygon with no vertices.
 
-	$poly = new GD::Polygon;
+	$poly = GD::Polygon->new;
 
 =item B<$poly-E<gt>addPt($x,$y)>
 
