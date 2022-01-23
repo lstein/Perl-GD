@@ -134,7 +134,7 @@ sub offset {
     my($i);
     for ($i=0;$i<$size;$i++) {
 	my($x,$y)=$self->getPt($i);
-	$self->setPt($i,$x+$dh,$y+$dv);
+	$self->setPt($i, $x+$dh, $y+$dv);
     }
 }
 
@@ -167,17 +167,23 @@ sub toPt {
 
 sub transform($$$$$$$) {
     # see PostScript Ref. page 154
-    my($self, $a, $b, $c, $d, $tx, $ty) = @_;
+    # documented as the affine transformation matrix: (xx,yx,xy,yy,x0,y0)
+    # note that even the libgd doc is wrong here for yy.
+    my($self, $sx, $rx, $ry, $sy, $tx, $ty) = @_;
     my $size = $self->length;
     for (my $i=0;$i<$size;$i++) {
-	my($x,$y)=$self->getPt($i);
-	$self->setPt($i, $a*$x+$c*$y+$tx, $b*$x+$d*$y+$ty);
+        my($x,$y)=$self->getPt($i);
+        # gdAffineApplyToPointF:
+	# dst->x = x * affine[0] + y * affine[2] + affine[4];
+	# dst->y = x * affine[1] + y * affine[3] + affine[5];
+	$self->setPt($i, $x*$sx + $y*$ry + $tx, $x*$rx + $y*$sy + $ty);
     }
 }
 
 sub scale {
     my($self, $sx, $sy, $cx, $cy) = @_;
     $self->offset(-$cx,-$cy) if defined $cx or defined $cy;
+    # sx, rx, ry, sy
     $self->transform($sx,0,0,$sy,$cx,$cy);
 }
 

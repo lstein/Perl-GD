@@ -1914,19 +1914,35 @@ box as the source rectangle.
 	# Make the polygon really tall
 	$poly->map($poly->bounds,0,0,50,200);
 
-=item B<$poly-E<gt>scale($sx,$sy)>
+=item B<$poly-E<gt>scale($sx,$sy, [$tx,$ty])>
 
 Scale each vertex of the polygon by the X and Y factors indicated by
 sx and sy.  For example scale(2,2) will make the polygon twice as
 large.  For best results, move the center of the polygon to position
 (0,0) before you scale, then move it back to its previous position.
+Accepts an optional offset vector.
 
-=item B<$poly-E<gt>transform($sx,$rx,$sy,$ry,$tx,$ty)>
+=item B<$poly-E<gt>transform($sx,$rx,$ry,$sy, $tx,$ty)>
 
-Run each vertex of the polygon through a transformation matrix, where
-sx and sy are the X and Y scaling factors, rx and ry are the X and Y
-rotation factors, and tx and ty are X and Y offsets.  See the Adobe
-PostScript Reference, page 154 for a full explanation, or experiment.
+Run each vertex of the polygon through a 2D affine transformation
+matrix, where sx and sy are the X and Y scaling factors, rx and ry are
+the X and Y rotation factors, and tx and ty are X and Y offsets.  See
+the Adobe PostScript Reference, page 154 for a full explanation, or
+experiment.
+
+libgd:
+
+    The transformation matrix is created using 6 numbers:
+    matrix[0] == xx
+    matrix[1] == yx
+    matrix[2] == xy
+    matrix[3] == xy (probably meaning yy here)
+    matrix[4] == x0
+    matrix[5] == y0
+    where the transformation of a given point (x,y) is given by:
+
+    x_new = xx * x + xy * y + x0;
+    y_new = yx * x + yy * y + y0;
 
 =back
 

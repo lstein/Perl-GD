@@ -24,8 +24,8 @@ $poly->scale(1.8,1.0);
 $poly->offset(100,0);
 $im->filledPolygon($poly,$red);
 
-# Rotate it
-$poly->transform(0.55,0.20,0.0,1,-25,50);
+# Rotate it (scale by 0.5,0.2, rotate by 0,1, move by -25,50)
+$poly->transform(0.5,0.2, 0,1, -25,50);
 $im->filledPolygon($poly,$blue);
 
 binmode STDOUT;
