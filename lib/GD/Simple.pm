@@ -737,9 +737,12 @@ contains the following information:
 
   descent      the length of the lower step of the lowercase 'j'
 
-  lineheight   the distance from the bottom to the top of the string 'jd'
+  lineheight   the distance from the bottom of the 'j' to the top of
+               the 'd'
 
-  leading      the height of the empty space between two adjacent lines
+  leading      the distance between two adjacent lines
+
+This description and code was changed with 2.75.
 
 =cut
 
@@ -767,22 +770,27 @@ sub fontMetrics {
   }
   else {
     $self->useFontConfig(1);
-    my @mbounds   = GD::Image->stringFT($self->fgcolor,$font,$self->fontsize,0,0,0,'m');
-    my @jbounds   = GD::Image->stringFT($self->fgcolor,$font,$self->fontsize,0,0,0,'j');
-    my @dbounds   = GD::Image->stringFT($self->fgcolor,$font,$self->fontsize,0,0,0,'d');
-    my @mmbounds  = GD::Image->stringFT($self->fgcolor,$font,$self->fontsize,0,0,0,"m\nm");
+    my @mbounds   = GD::Image->stringFT($self->fgcolor,$font,
+					$self->fontsize,0,
+					0,0,'m');
     my $xheight   = $mbounds[3]-$mbounds[5];
-    my $ascent    = $mbounds[7]-$dbounds[7];
+    my @jbounds   = GD::Image->stringFT($self->fgcolor,$font,
+					$self->fontsize,0,
+					0,0,'j');
+    my $ascent    = $mbounds[7]-$jbounds[7];
     my $descent   = $jbounds[3]-$mbounds[3];
- 
-    my $mm_height  = $mmbounds[3]-$mmbounds[5];
-    my $lineheight  = $xheight+$ascent+$descent;
-    my $leading     = $mm_height - 2*$xheight - $ascent - $descent;
+
+    my @mmbounds  = GD::Image->stringFT($self->fgcolor,$font,
+					$self->fontsize,0,
+					0,0,"m\nm");
+    my $twolines  = $mmbounds[3]-$mmbounds[5];
+    my $lineheight  = $twolines - 2*$xheight;
+    my $leading     = $lineheight - $ascent - $descent;
     $metrics     = {ascent     => $ascent,
-                       descent    => $descent,
-                       lineheight => $lineheight,
-                       xheight    => $xheight,
-                       leading    => $leading};
+		    descent    => $descent,
+		    lineheight => $lineheight,
+		    xheight    => $xheight,
+		    leading    => $leading};
   }
 
   if ((my $string = shift) && wantarray) {
