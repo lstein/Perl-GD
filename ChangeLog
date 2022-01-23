@@ -1,5 +1,6 @@
 2.74    * add experimental support for WEBP, HEIF and AVIF
         * document all supported Image formats in the GD::Image lib
+        * added Github actions (for PR's)
         * fix poly->transform documentation RT #140043
         * fix GD,GD2 detection and tests RT #139399 (since libgd 2.3.3)
           fixed tests by Håkon Hægland.
