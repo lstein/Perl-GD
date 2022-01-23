@@ -1,6 +1,7 @@
 ^\.travis\.yml
 ^\.appveyor\.yml
 ^\.config
+^\.gdbinit
 \bGD-\d+
 \bGD\.c$
 ^MYMETA\.yml$

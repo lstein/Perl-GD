@@ -88,4 +88,6 @@ t/z_kwalitee.t
 t/z_manifest.t
 t/z_pod-spell-mistakes.t
 t/z_pod.t
+testcpan.sh
+testlibs.sh
 typemap

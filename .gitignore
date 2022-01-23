@@ -1,4 +1,5 @@
 .config.cache
+.gdbinit
 GD.bs
 GD.c
 GD.o
