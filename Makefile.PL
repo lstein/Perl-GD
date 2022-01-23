@@ -16,8 +16,10 @@ END
 # =====> PATHS: CHECK AND ADJUST <=====
 my (@INC,@LIBPATH,@LIBS,$LIBGD_VERSION);
 my $AUTOCONFIG = 0;      # global set by try_to_autoconfigure() below
+my $HAVE_GD2 = 1;        # until libgd 2.3.2, unset by try_to_autoconfigure()
 
 my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,
+    $lib_webp_path,$lib_heif_path,$lib_avif_path,
     $lib_zlib_path,$lib_fontconfig_path,$force,$FCGI,$gdlib_config_path);
 
 use Getopt::Long;
@@ -28,6 +30,9 @@ my $result = GetOptions("ignore_missing_gd" => \$force,
 			"lib_png_path=s"  => \$lib_png_path,
 			"lib_jpeg_path=s" => \$lib_jpeg_path,
 			"lib_xpm_path=s"  => \$lib_xpm_path,
+			"lib_webp_path=s"  => \$lib_webp_path,
+			"lib_heif_path=s"  => \$lib_heif_path,
+			"lib_avif_path=s"  => \$lib_avif_path,
 			"lib_zlib_path=s" => \$lib_zlib_path,
                         "lib_fontconfig_path=s" => \$lib_fontconfig_path,
                         "gdlib_config_path=s" => \$gdlib_config_path,
@@ -65,12 +70,15 @@ Usage: perl Makefile.PL [options]
 Configure GD module.
 
  Options:
-     --options       "JPEG,FT,PNG,GIF,XPM,ANIMGIF"   feature options, separated by commas
+     --options       "JPEG,GD2,FT,PNG,WEBP,GIF,XPM,ANIMGIF"   feature options, separated by commas
      --lib_gd_path   path            path to libgd (/usr/lib)
      --lib_ft_path   path            path to Freetype library (/usr)
      --lib_png_path  path            path to libpng (/usr)
      --lib_jpeg_path path            path to libjpeg (/usr)
      --lib_xpm_path  path            path to libxpm (/usr)
+     --lib_webp_path  path           path to libwebp (/usr)
+     --lib_heif_path  path           path to libheif (/usr)
+     --lib_avif_path  path           path to libavif (/usr)
      --lib_zlib_path path            path to libpng (/usr)
      --lib_fontconfig_path path      path to libfontconfig (/usr)
      --gdlib_config_path path        path to gdlib-config (/usr/bin)
@@ -127,6 +135,24 @@ if( defined($lib_fontconfig_path) )
     print "Fontconfig library used from:     $lib_fontconfig_path\n";
     @INC     = ("-I$lib_fontconfig_path/include", @INC);
     @LIBPATH = ("-L$lib_fontconfig_path/lib", @LIBPATH);
+}
+if( defined($lib_webp_path) )
+{
+    print "WEBP library used from:      $lib_webp_path\n";
+    @INC     = ("-I$lib_webp_path/include", @INC);
+    @LIBPATH = ("-L$lib_webp_path/lib", @LIBPATH); 
+}
+if( defined($lib_heif_path) )
+{
+    print "HEIF library used from:      $lib_heif_path\n";
+    @INC     = ("-I$lib_heif_path/include", @INC);
+    @LIBPATH = ("-L$lib_heif_path/lib", @LIBPATH); 
+}
+if( defined($lib_avif_path) )
+{
+    print "AVIF library used from:      $lib_avif_path\n";
+    @INC     = ("-I$lib_avif_path/include", @INC);
+    @LIBPATH = ("-L$lib_avif_path/lib", @LIBPATH); 
 }
 if( defined($gdlib_config_path) )
 {
@@ -188,15 +214,20 @@ unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
 ##################################################################################################################
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
-my ($JPEG, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$FTCIRCLE,$VERSION_33);
+my ($JPEG, $GD2, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$WEBP,$FTCIRCLE,
+    $VERSION_33, $HEIF, $AVIF);
 if( defined($options) )
 {
   # WBMP is builtin since at least 1.8.0
   $JPEG      = $options =~ m/JPEG/i;
+  $GD2       = $options =~ m/GD2/i;
   $FT        = $options =~ m/FT|FREETYPE/i;
   $XPM       = $options =~ m/XPM/i;
   $GIF       = $options =~ m/GIF/i;
   $PNG       = $options =~ m/PNG/i;
+  $WEBP      = $options =~ m/WEBP/i;
+  $HEIF      = $options =~ m/HEIF/i;
+  $AVIF      = $options =~ m/AVIF/i;
   $ANIMGIF   = $GIF && $options =~ m/ANIMGIF/i;
   $VERSION_33= $options =~ m/VERSION_33/i; # i.e. 2.0.33 or higher
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
@@ -208,6 +239,10 @@ else
     warn "\nPlease choose the features that match how libgd was built:\n";
     $JPEG    = lc prompt('Build JPEG support?','y') eq 'y';
     $PNG     = lc prompt('Build PNG support?','y') eq 'y';
+    $GD2     = lc prompt('Build GD2 support?','y') eq 'y';
+    $WEBP    = lc prompt('Build WEBP support?','y') eq 'y';
+    $HEIF    = lc prompt('Build HEIF support?','y') eq 'y';
+    $AVIF    = lc prompt('Build AVIF support?','y') eq 'y';
     $FT      = lc prompt('Build FreeType support?','y') eq 'y';
     if ($FT) {
       $FONTCONFIG = lc prompt('Build fontconfig support?','y') eq 'y';
@@ -228,6 +263,9 @@ if (!$AUTOCONFIG) {
   push @LIBS,'-lfreetype'      if $FT;
   push @LIBS,'-ljpeg'          if $JPEG;
   push @LIBS,'-lpng','-lz'     if $PNG;
+  push @LIBS,'-lwebp'          if $WEBP;
+  push @LIBS,'-lheif'          if $HEIF;
+  push @LIBS,'-lavif'          if $AVIF;
   push @LIBS,'-lm'             unless $^O eq 'MSWin32';
   push @INC, '-I/lib_root/libjpeg' if ($JPEG && $^O eq 'VMS');
   push @INC, '-I/lib_root/ft2/include/freetype' if ($FT && $^O eq 'VMS');
@@ -245,6 +283,7 @@ $DEFINES    .= ' -DHAVE_JPEG'    if $JPEG;
 $DEFINES    .= ' -DHAVE_FT'      if $FT;
 $DEFINES    .= ' -DHAVE_XPM'     if $XPM;
 $DEFINES    .= ' -DHAVE_GIF'     if $GIF;
+$DEFINES    .= ' -DHAVE_GD2'     if $HAVE_GD2;
 $DEFINES    .= ' -DHAVE_PNG'     if $PNG;
 $DEFINES    .= ' -DFCGI'         if $FCGI;
 $DEFINES    .= ' -DHAVE_ANIMGIF' if $ANIMGIF;
@@ -252,6 +291,9 @@ $DEFINES    .= ' -DVERSION_33'   if $VERSION_33;
 $DEFINES    .= ' -DHAVE_UNCLOSEDPOLY' if $UNCLOSEDPOLY;
 $DEFINES    .= ' -DHAVE_FONTCONFIG'   if $FONTCONFIG;
 $DEFINES    .= ' -DHAVE_FTCIRCLE'  if $FTCIRCLE;
+$DEFINES    .= ' -DHAVE_WEBP'    if $WEBP;
+$DEFINES    .= ' -DHAVE_HEIF'    if $HEIF;
+$DEFINES    .= ' -DHAVE_AVIF'    if $AVIF;
 $DEFINES    .= " -DLIBGD_VERSION=\"$LIBGD_VERSION\"" if defined($LIBGD_VERSION);
 open F,">.config.cache";
 print F $DEFINES,"\n";
@@ -456,7 +498,34 @@ sub try_to_autoconfigure {
       # Requires.private:   zlib  libpng  freetype2 >= 9.8.3  fontconfig  libjpeg  xpm  libtiff-4
       # Libs.private:   -L/opt/local/lib -lz  -L/opt/local/lib -lpng16  -L/opt/local/lib -lfreetype  -L/opt/local/lib -lfontconfig -lfreetype   -ljpeg  -L/opt/local/lib -lXpm -lX11  -L/opt/local/lib -ltiff   -lwebp
       # not in the hash!
-      $features = 'GD_GIF GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';
+      # check the .pc file from $config{pkg}
+      if ($config{pkg} and -e $config{pkg}) {
+        my $F;
+        open $F, "<", $config{pkg};
+        my $private;
+        while (<$F>) {
+          next unless /^Requires.private/;
+          $private = $_;
+        }
+        close $F;
+        $features = 'GD_GIF GD_OPENPOLYGON';
+        $features .= ' GD_ZLIB' if $private =~ / zlib /;
+        $features .= ' GD_PNG' if $private =~ / libpng /;
+        $features .= ' GD_FREETYPE' if $private =~ / freetype/;
+        $features .= ' GD_FONTCONFIG' if $private =~ / fontconfig/;
+        $features .= ' GD_RAQM' if $private =~ / raqm/;
+        $features .= ' GD_JPEG' if $private =~ / libjpeg/;
+        $features .= ' GD_XPM' if $private =~ / xpm/;
+        $features .= ' GD_TIFF' if $private =~ / libtiff/;
+        $features .= ' GD_WEBP' if $private =~ / libwebp/;
+        $features .= ' GD_HEIF' if $private =~ / libheif/;
+        $features .= ' GD_AVIF' if $private =~ / libavif/;
+      } else {
+        $features = 'GD_GIF GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';
+        #$features .= 'GD_WEBP' if $version ge '2.3.0';;
+        $features .= ' GD_AVIF' if $version ge '2.3.2';
+        $features .= ' GD_HEIF' if $version ge '2.3.3';
+      }
       $AUTOCONFIG++;
   } else {
       $AUTOCONFIG++;
@@ -495,6 +564,24 @@ sub try_to_autoconfigure {
       && ($release > 2
           || ($release == 2 && $major > 0)
           || ($release == 2 && $major == 0 && $minor >= 33));
+    if (defined($minor)
+        && ($release > 2
+            || ($release == 2 && $major > 3)
+            || ($release == 2 && $major == 3 && $minor >= 2))) {
+      $HAVE_GD2 = 0;
+      $AVIF = 1;
+    } else {
+      $options     .= " GD2";
+      $HAVE_GD2 = 1;
+      $AVIF = 0;
+      $HEIF = 0;
+    }
+    if (defined($minor)
+        && ($release > 2
+            || ($release == 2 && $major > 3)
+            || ($release == 2 && $major == 3 && $minor >= 3))) {
+      $HEIF = 1;
+    }
   }
 
   if ($config) {

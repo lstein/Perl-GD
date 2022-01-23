@@ -16,7 +16,7 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.73';
+$VERSION = '2.74';
 our $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 
@@ -266,6 +266,8 @@ the image to.
 
 =head1 Object Constructors: Creating Images
 
+See L<GD::Image> for the current list of supported Image formats.
+
 The following class methods allow you to create new GD::Image objects.
 
 =over 4
@@ -297,7 +299,7 @@ compatibility with older versions of libgd.
 Alternatively, you may create a GD::Image object based on an existing
 image by providing an open filehandle, a filename, or the image data
 itself.  The image formats automatically recognized and accepted are:
-PNG, JPEG, XPM and GD2.  Other formats, including WBMP, and GD
+GIF, PNG, JPEG, XPM, GD2 and WEBP.  Other formats, including WBMP, and GD
 version 1, cannot be recognized automatically at this time.
 
 If something goes wrong (e.g. insufficient memory), this call will
@@ -419,6 +421,8 @@ corresponding function in the gd library.
 
 =item B<$image = GD::Image-E<gt>newFromGdData($data)>
 
+NOTE: GD and GD2 support was dropped witn libgd 2.3.2.
+
 These methods initialize a GD::Image from a Gd file, filehandle, or
 data.  Gd is Tom Boutell's disk-based storage format, intended for the
 rare case when you need to read and write the image to disk quickly.
@@ -431,6 +435,8 @@ image compression is performed and these files can become B<BIG>.
 =item B<$image = GD::Image-E<gt>newFromGd2($file)>
 
 =item B<$image = GD::Image-E<gt>newFromGd2Data($data)>
+
+NOTE: GD and GD2 support was dropped witn libgd 2.3.2.
 
 This works in exactly the same way as C<newFromGd()> and
 newFromGdData, but use the new compressed GD2 image format.
@@ -483,9 +489,12 @@ following extensions are supported:
     .jpg, .jpeg
     .tiff, .tif
     .webp
+    .heic, .heix
+    .avif
     .xpm
 
 Filenames are parsed case-insensitively.
+.avifs is not yet suppurted upstream in libavif.
 
 =back
 
@@ -625,6 +634,9 @@ use sane defaults:
   C<gdImageGd2>	chunk size = 0, compression is enabled.
   C<gdImageJpeg>	quality = -1 (i.e. the reasonable default)
   C<gdImageWBMP>	foreground is the darkest available color
+  C<gdImageWEBP>	quality default
+  C<gdImageHEIF>	quality default, codes = HEVC, chroma = 444
+  C<gdImageAVIF>	quality default, speed = 6
 
 Everything else is called with the two-argument function and so will
 use the default values.

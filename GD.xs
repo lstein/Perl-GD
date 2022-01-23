@@ -121,6 +121,9 @@ typedef PerlIO          * InputStream;
 #define GDIMAGECREATEFROMGD(x)   gdImageCreateFromGd((FILE*)x)
 #define GDIMAGECREATEFROMGD2(x)  gdImageCreateFromGd2((FILE*)x)
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part((FILE*)x,a,b,c,d)
+#define GDIMAGECREATEFROMWEBP(x)  gdImageCreateFromWebp((FILE*)x)
+#define GDIMAGECREATEFROMHEIF(x)  gdImageCreateFromHeif((FILE*)x)
+#define GDIMAGECREATEFROMAVIF(x)  gdImageCreateFromAvif((FILE*)x)
 #  endif
 #else
 #  ifdef USE_PERLIO
@@ -132,6 +135,9 @@ typedef PerlIO          * InputStream;
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part(PerlIO_findFILE(x),a,b,c,d)
+#define GDIMAGECREATEFROMWEBP(x) gdImageCreateFromWebp(PerlIO_findFILE(x))
+#define GDIMAGECREATEFROMHEIF(x) gdImageCreateFromHeif(PerlIO_findFILE(x))
+#define GDIMAGECREATEFROMAVIF(x) gdImageCreateFromAvif(PerlIO_findFILE(x))
 #  else
 #define GDIMAGECREATEFROMPNG(x) gdImageCreateFromPng(x)
 #define GDIMAGECREATEFROMXBM(x) gdImageCreateFromXbm(x)
@@ -141,6 +147,9 @@ typedef PerlIO          * InputStream;
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd(x)
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(x)
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part(x,a,b,c,d)
+#define GDIMAGECREATEFROMWEBP(x) gdImageCreateFromWebp(x)
+#define GDIMAGECREATEFROMHEIF(x) gdImageCreateFromHeif(x)
+#define GDIMAGECREATEFROMAVIF(x) gdImageCreateFromAvif(x)
 #  endif
 #endif
 
@@ -447,6 +456,7 @@ gdnewFromPngData(packname="GD::Image", imageData, ...)
 
 #endif
 
+#ifdef HAVE_GD2
 GD::Image
 gdnewFromGdData(packname="GD::Image", imageData)
 	char *	packname
@@ -480,6 +490,8 @@ gdnewFromGd2Data(packname="GD::Image", imageData)
           croak("gdImageCreateFromGd2Ptr error");
   OUTPUT:
 	RETVAL
+
+#endif
 
 #ifdef HAVE_JPEG
 GD::Image
@@ -545,6 +557,7 @@ gd_newFromXbm(packname="GD::Image", filehandle)
   OUTPUT:
 	RETVAL
 
+#ifdef HAVE_GD2
 GD::Image
 gd_newFromGd(packname="GD::Image", filehandle)
 	char *	packname
@@ -570,6 +583,25 @@ gd_newFromGd2(packname="GD::Image", filehandle)
           croak("gdImageCreateFromGd2 error");
   OUTPUT:
 	RETVAL
+
+GD::Image
+gd_newFromGd2Part(packname="GD::Image", filehandle,srcX,srcY,width,height)
+	char *	packname
+	InputStream	filehandle
+	int	srcX
+	int	srcY
+	int	width
+	int	height
+  PROTOTYPE: $$$$$$
+  CODE:
+	PERL_UNUSED_ARG(packname);
+	RETVAL = GDIMAGECREATEFROMGD2PART(filehandle,srcX,srcY,width,height);
+        if (!RETVAL)
+            croak("gdImageCreateFromGd2Part error");
+  OUTPUT:
+	RETVAL
+
+#endif
 
 #ifdef HAVE_JPEG
 GD::Image
@@ -608,7 +640,7 @@ gd_newFromWBMP(packname="GD::Image", filehandle)
 	  if (errormsg != NULL)
 	    sv_setpv(errormsg,"libgd was not built with WBMP support\n");
           else
-            croak("gdImageCreateFromWbmp error");
+            croak("gdImageCreateFromWBMP error");
 	  XSRETURN_EMPTY;
         }
         RETVAL = img;
@@ -646,23 +678,6 @@ gdnewFromXpm(packname="GD::Image", filename)
   OUTPUT:
         RETVAL
 
-GD::Image
-gd_newFromGd2Part(packname="GD::Image", filehandle,srcX,srcY,width,height)
-	char *	packname
-	InputStream	filehandle
-	int	srcX
-	int	srcY
-	int	width
-	int	height
-  PROTOTYPE: $$$$$$
-  CODE:
-	PERL_UNUSED_ARG(packname);
-	RETVAL = GDIMAGECREATEFROMGD2PART(filehandle,srcX,srcY,width,height);
-        if (!RETVAL)
-            croak("gdImageCreateFromGd2Part error");
-  OUTPUT:
-	RETVAL
-
 #ifdef HAVE_GIF
 GD::Image
 gd_newFromGif(packname="GD::Image", filehandle)
@@ -681,7 +696,7 @@ GD::Image
 gdnewFromGifData(packname="GD::Image", imageData)
 	char *	packname
 	SV *    imageData
-  PROTOTYPE: $$;$
+  PROTOTYPE: $$
   PREINIT:
 	gdIOCtx* ctx;
         char*    data;
@@ -694,6 +709,114 @@ gdnewFromGifData(packname="GD::Image", imageData)
         (ctx->gd_free)(ctx);
         if (!RETVAL)
            croak("gdImageCreateFromGifCtx error");
+  OUTPUT:
+	RETVAL
+
+#endif
+
+#ifdef HAVE_WEBP
+GD::Image
+gd_newFromWebp(packname="GD::Image", filehandle)
+	char *	packname
+	InputStream	filehandle
+  PROTOTYPE: $$
+  CODE:
+	PERL_UNUSED_ARG(packname);
+	RETVAL = GDIMAGECREATEFROMWEBP(filehandle);
+	if (!RETVAL)
+            croak("gdImageCreateFromWebp error");
+  OUTPUT:
+	RETVAL
+
+GD::Image
+gdnewFromWebpData(packname="GD::Image", imageData)
+	char *	packname
+	SV *    imageData
+  PROTOTYPE: $$
+  PREINIT:
+	gdIOCtx* ctx;
+        char*    data;
+        STRLEN   len;
+  CODE:
+	PERL_UNUSED_ARG(packname);
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+	RETVAL = (GD__Image) gdImageCreateFromWebpCtx(ctx);
+        (ctx->gd_free)(ctx);
+        if (!RETVAL)
+           croak("gdImageCreateFromWebpCtx error");
+  OUTPUT:
+	RETVAL
+
+#endif
+
+#ifdef HAVE_HEIF
+GD::Image
+gd_newFromHeif(packname="GD::Image", filehandle)
+	char *	packname
+	InputStream	filehandle
+  PROTOTYPE: $$
+  CODE:
+	PERL_UNUSED_ARG(packname);
+        RETVAL = GDIMAGECREATEFROMHEIF(filehandle);
+	if (!RETVAL)
+            croak("gdImageCreateFromHeif error");
+  OUTPUT:
+	RETVAL
+
+GD::Image
+gdnewFromHeifData(packname="GD::Image", imageData)
+	char *	packname
+	SV *    imageData
+  PROTOTYPE: $$;$
+  PREINIT:
+	gdIOCtx* ctx;
+        char*    data;
+        STRLEN   len;
+  CODE:
+	PERL_UNUSED_ARG(packname);
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+	RETVAL = (GD__Image) gdImageCreateFromHeifCtx(ctx);
+        (ctx->gd_free)(ctx);
+        if (!RETVAL)
+           croak("gdImageCreateFromHeifCtx error");
+  OUTPUT:
+	RETVAL
+
+#endif
+
+#ifdef HAVE_HEIF
+GD::Image
+gd_newFromAvif(packname="GD::Image", filehandle)
+	char *	packname
+	InputStream	filehandle
+  PROTOTYPE: $$
+  CODE:
+	PERL_UNUSED_ARG(packname);
+	RETVAL = GDIMAGECREATEFROMAVIF(filehandle);
+	if (!RETVAL)
+            croak("gdImageCreateFromAvif error");
+  OUTPUT:
+	RETVAL
+
+GD::Image
+gdnewFromAvifData(packname="GD::Image", imageData)
+	char *	packname
+	SV *    imageData
+  PROTOTYPE: $$
+  PREINIT:
+	gdIOCtx* ctx;
+        char*    data;
+        STRLEN   len;
+  CODE:
+	PERL_UNUSED_ARG(packname);
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+	RETVAL = (GD__Image) gdImageCreateFromAvifCtx(ctx);
+        (ctx->gd_free)(ctx);
+        if (!RETVAL)
+           croak("gdImageCreateFromAvifCtx error");
   OUTPUT:
 	RETVAL
 
@@ -919,6 +1042,7 @@ gdgif(image)
 
 #endif
 
+#ifdef HAVE_GD2
 SV*
 gdgd(image)
   GD::Image	image
@@ -952,6 +1076,107 @@ gdgd2(image)
   }
   OUTPUT:
     RETVAL
+
+#endif
+
+#ifdef HAVE_WEBP
+SV*
+gdwebp(image, ...)
+  GD::Image	image
+  PROTOTYPE: $;$
+  PREINIT:
+	SV* errormsg;
+	void*         data;
+	int           size;
+        int           quality;
+  CODE:
+    if (items > 1) {
+      quality=(int)SvIV(ST(1));
+      data = (void *) gdImageWebpPtrEx(image,&size,quality);
+    }
+    else
+      data = (void *) gdImageWebpPtr(image,&size);
+    if (data == NULL) {
+      errormsg = perl_get_sv("@",0);
+      if (errormsg != NULL)
+        sv_setpv(errormsg,"libgd was not built with webp support\n");
+      else
+        croak("gdImageWebpPtr error");
+      XSRETURN_EMPTY;
+    }
+    RETVAL = newSVpvn((char*) data,size);
+    gdFree(data);
+  OUTPUT:
+    RETVAL
+
+#endif
+
+#ifdef HAVE_HEIF
+SV*
+gdheif(image, ...)
+  GD::Image	image
+  PROTOTYPE: $;$
+  PREINIT:
+	SV* errormsg;
+	void*         data;
+	int           size;
+        int           quality;
+        //enum or char* codec: HEVC or AV1
+  CODE:
+    if (items > 1) {
+      quality=(int)SvIV(ST(1));
+      data = (void *) gdImageHeifPtrEx(image,&size,quality,GD_HEIF_CODEC_HEVC,GD_HEIF_CHROMA_444);
+    }
+    else
+      data = (void *) gdImageHeifPtr(image,&size);
+    if (data == NULL) {
+      errormsg = perl_get_sv("@",0);
+      if (errormsg != NULL)
+        sv_setpv(errormsg,"libgd was not built with heif support\n");
+      else
+        croak("gdImageHeifPtr error");
+      XSRETURN_EMPTY;
+    }
+    RETVAL = newSVpvn((char*) data,size);
+    gdFree(data);
+  OUTPUT:
+    RETVAL
+
+#endif
+
+#ifdef HAVE_AVIF
+SV*
+gdavif(image, ...)
+  GD::Image	image
+         PROTOTYPE: $;$$
+  PREINIT:
+	SV* errormsg;
+	void*         data;
+	int           size;
+        int           quality; // -1 for default
+        int           speed;   // 6 is default
+  CODE:
+    if (items > 1) {
+      quality=(int)SvIV(ST(1));
+      speed=items > 2 ? (int)SvIV(ST(2)) : 6; // AVIF_SPEED_DEFAULT
+      data = (void *) gdImageAvifPtrEx(image,&size,quality,speed);
+    }
+    else
+      data = (void *) gdImageAvifPtr(image,&size);
+    if (data == NULL) {
+      errormsg = perl_get_sv("@",0);
+      if (errormsg != NULL)
+        sv_setpv(errormsg,"libgd was not built with avif support\n");
+      else
+        croak("gdImageAvifPtr error");
+      XSRETURN_EMPTY;
+    }
+    RETVAL = newSVpvn((char*) data,size);
+    gdFree(data);
+  OUTPUT:
+    RETVAL
+
+#endif
 
 int
 gdtransparent(image, ...)
