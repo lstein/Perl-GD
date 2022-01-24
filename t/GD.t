@@ -27,7 +27,8 @@ test_cve2019_6977();
 exit 0;
 
 sub write_regression_tests {
-    my @image_types = qw(png gif jpeg);
+    # TODO get all the supported image formats dynamically
+    my @image_types = qw(png gif jpeg tiff webp heif avif);
     if (GD::LIBGD_VERSION() < 2.0303 ) {
         # GD 2.3.3 disabled the old GD and GD2 formats by default
         unshift @image_types, 'gd2', 'gd';
@@ -247,17 +248,15 @@ sub test7 {
 
 sub run_image_regression_tests {
     my $default_image_type = 'gd2';
-    if (GD::LIBGD_VERSION() >= 2.0303 ) {
-        # GD 2.3.3 disabled the old GD and GD2 formats by default, so we will
-        #  have to use another format
-        $default_image_type = 'png';
+    if (!GD::Image->can("newFromGd2") || GD::LIBGD_VERSION() >= 2.0303) {
+      $default_image_type = 'png';
     }
     my $suffix = $ENV{GDIMAGETYPE} || $default_image_type;
     print STDERR "# Testing gd ".GD::VERSION_STRING()." using $suffix support.\n";
     for my $t (1..IMAGE_TESTS) {
 	my $gd   = eval "test${t}('$suffix')";
 	if (!$gd) {
-	    fail("unable to generate comparison image for test $t: $@");
+	    fail("unable to generate comparison image for test $t with $suffix: $@");
 	} else {
             my $ok = compare($gd,$t,$suffix);
             unless ($ok) {
@@ -282,7 +281,7 @@ sub run_round_trip_test {
     $image->colorAllocate(255,0,0);
     $image->rectangle(0,0,300,300,0);
     $image->filledRectangle(10,10,50,50,2);
-    if (GD::LIBGD_VERSION() < 2.0303) {
+    if (GD::Image->can("newFromGd")) {
         my $gd = $image->gd;
         my $image2 = GD::Image->newFromGdData($gd);
         ok(!$image->compare($image2) & GD_CMP_IMAGE(),'round trip gd');

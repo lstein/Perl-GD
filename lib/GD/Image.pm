@@ -35,10 +35,7 @@ Supported Image formats:
 
 =item Webp
 
-=item Heif
-
 =item Avif
-
 
 =back
 
@@ -121,14 +118,6 @@ sub newPalette {
   return $pack->_new(@_, 0);
 }
 
-sub newFromGd {
-    croak("Usage: newFromGd(class,filehandle)") unless @_==2;
-    my($class,$f) = @_;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromGd($fh);
-}
-
 sub ellipse ($$$$$) {
   my ($self,$cx,$cy,$width,$height,$color) = @_;
   $self->arc($cx,$cy,$width,$height,0,360,$color);
@@ -206,7 +195,7 @@ sub newFromJpeg {
 }
 
 sub newFromGif {
-    croak("Usage: newFromGif(class,filehandle,[truecolor])") unless @_>=2;
+    croak("Usage: newFromGif(class,filehandle)") unless @_==2;
     my($class) = shift;
     my($f)     = shift;
     my $fh = $class->_make_filehandle($f);
@@ -223,14 +212,6 @@ sub newFromWebp {
 }
 
 sub newFromHeif {
-    croak("Usage: newFromHeif(class,filehandle)") unless @_==2;
-    my($class,$f) = @_;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromHeif($fh);
-}
-
-sub newFromHeif {
     croak("Usage: newFromAvif(class,filehandle)") unless @_==2;
     my($class,$f) = @_;
     my $fh = $class->_make_filehandle($f);
@@ -239,7 +220,7 @@ sub newFromHeif {
 }
 
 sub newFromWBMP {
-    croak("Usage: newFromWBMP(class,filehandle,[truecolor])") unless @_>=2;
+    croak("Usage: newFromWBMP(class,filehandle)") unless @_==2;
     my($class) = shift;
     my($f)     = shift;
     my $fh = $class->_make_filehandle($f);

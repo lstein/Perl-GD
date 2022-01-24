@@ -51,6 +51,7 @@ print OUT "=item Png\n\n" if $DEFINES =~ /HAVE_PNG/;
 print OUT "=item Gif\n\n" if $DEFINES =~ /HAVE_GIF/;
 print OUT "=item Gd\n\n=item Gd2\n\n" if $DEFINES =~ /HAVE_GD2/;
 print OUT "=item Jpeg\n\n" if $DEFINES =~ /HAVE_JPEG/;
+print OUT "=item Tiff\n\n" if $DEFINES =~ /HAVE_TIFF/;
 print OUT "=item Xpm\n\n" if $DEFINES =~ /HAVE_XPM/;
 print OUT "=item WBMP\n\n" if 1 or $DEFINES =~ /HAVE_WBMP/;
 print OUT "=item GifAnim\n\n" if $DEFINES =~ /HAVE_ANIMGIF/;
@@ -59,7 +60,6 @@ print OUT "=item Heif\n\n" if $DEFINES =~ /HAVE_HEIF/;
 print OUT "=item Avif\n\n" if $DEFINES =~ /HAVE_AVIF/;
 
 print OUT << '!NO!SUBS!';
-
 =back
 
 See L<GD>
@@ -141,14 +141,6 @@ sub newPalette {
   return $pack->_new(@_, 0);
 }
 
-sub newFromGd {
-    croak("Usage: newFromGd(class,filehandle)") unless @_==2;
-    my($class,$f) = @_;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromGd($fh);
-}
-
 sub ellipse ($$$$$) {
   my ($self,$cx,$cy,$width,$height,$color) = @_;
   $self->arc($cx,$cy,$width,$height,0,360,$color);
@@ -225,6 +217,14 @@ sub newFromPng {
 
 if ($DEFINES =~ /HAVE_GD2/) {
   print OUT <<'!NO!SUBS!'
+sub newFromGd {
+    croak("Usage: newFromGd(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromGd($fh);
+}
+
 sub newFromGd2 {
     croak("Usage: newFromGd2(class,filehandle)") unless @_==2;
     my($class,$f) = @_;
@@ -260,12 +260,25 @@ sub newFromJpeg {
 if ($DEFINES =~ /HAVE_GIF/) {
   print OUT <<'!NO!SUBS!'
 sub newFromGif {
-    croak("Usage: newFromGif(class,filehandle,[truecolor])") unless @_>=2;
+    croak("Usage: newFromGif(class,filehandle)") unless @_==2;
     my($class) = shift;
     my($f)     = shift;
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromGif($fh,@_);
+}
+
+!NO!SUBS!
+}
+
+if ($DEFINES =~ /HAVE_TIFF/) {
+  print OUT <<'!NO!SUBS!'
+sub newFromTiff {
+    croak("Usage: newFromTiff(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromTiff($fh);
 }
 
 !NO!SUBS!
@@ -323,9 +336,10 @@ sub newFromHeif {
 !NO!SUBS!
 }
 
-print OUT <<'!NO!SUBS!';
+if (1 or $DEFINES =~ /HAVE_WBMP/) {
+  print OUT <<'!NO!SUBS!';
 sub newFromWBMP {
-    croak("Usage: newFromWBMP(class,filehandle,[truecolor])") unless @_>=2;
+    croak("Usage: newFromWBMP(class,filehandle)") unless @_==2;
     my($class) = shift;
     my($f)     = shift;
     my $fh = $class->_make_filehandle($f);
@@ -334,6 +348,7 @@ sub newFromWBMP {
 }
 
 !NO!SUBS!
+}
 
 print OUT <<'!NO!SUBS!';
 # Autoload methods go after __END__, and are processed by the autosplit program.

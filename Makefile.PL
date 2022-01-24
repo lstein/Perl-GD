@@ -214,11 +214,14 @@ unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
 ##################################################################################################################
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
-my ($JPEG, $GD2, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$WEBP,$FTCIRCLE,
+my ($JPEG, $GD2, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$WEBP,$WBMP,$FTCIRCLE,
     $VERSION_33, $HEIF, $AVIF);
 if( defined($options) )
 {
-  # WBMP is builtin since at least 1.8.0
+    # WBMP is builtin since at least 1.8.0
+  if (!defined($LIBGD_VERSION) || $LIBGD_VERSION ge '1.8.0') {
+    $WBMP = 1;
+  }
   $JPEG      = $options =~ m/JPEG/i;
   $GD2       = $options =~ m/GD2/i;
   $FT        = $options =~ m/FT|FREETYPE/i;
@@ -237,6 +240,7 @@ if( defined($options) )
 else
 {
     warn "\nPlease choose the features that match how libgd was built:\n";
+    $WBMP = 1;
     $JPEG    = lc prompt('Build JPEG support?','y') eq 'y';
     $PNG     = lc prompt('Build PNG support?','y') eq 'y';
     $GD2     = lc prompt('Build GD2 support?','y') eq 'y';
@@ -279,6 +283,7 @@ if (!$AUTOCONFIG) {
 
 my $CAPI = defined $ExtUtils::MakeMaker::CAPI_support;
 my $DEFINES = '';
+$DEFINES    .= ' -DHAVE_WBMP'    if $WBMP; # since 1.8.0
 $DEFINES    .= ' -DHAVE_JPEG'    if $JPEG;
 $DEFINES    .= ' -DHAVE_FT'      if $FT;
 $DEFINES    .= ' -DHAVE_XPM'     if $XPM;
@@ -337,20 +342,30 @@ my %WriteMakefileArgs = (
     'LICENSE'   => 'perl_5',
 
     'META_MERGE' => {
-         recommends => {
+        recommends => {
+            'ExtUtils::PkgConfig' => 0,
+            'Math::Trig'        => 0,
             'ExtUtils::Constant'=> '0.23',
             'Test::More'        => '0.88',
-            'Test::Kwalitee'    => 0,
-            'Class::XSAccessor' => 0,
-            'Text::CSV_XS'      => 0,
-            'List::MoreUtils'   => 0,
-            'Pod::Spell::CommonMistakes' => 0,
-            'Test::Pod'         => '1.00',
-         },
-         resources => {
-             repository => 'http://github.com/lstein/Perl-GD',
-             license    => 'http://dev.perl.org/licenses/',
-         },
+            'Test::Fork'        => '0.02',
+        },
+        resources => {
+            repository => 'http://github.com/lstein/Perl-GD',
+            license    => 'http://dev.perl.org/licenses/',
+        },
+        prereqs => {
+            develop => {
+                requires => {
+                    'Class::XSAccessor' => 0,
+                    'Text::CSV_XS'      => 0,
+                    'List::MoreUtils'   => 0,
+                    'Test::Kwalitee'    => 0,
+                    'Pod::Spell::CommonMistakes' => 0,
+                    'Test::Pod'         => '1.00',
+                    'Algorithm::Diff'   => 0,
+                },
+            },
+        },
     },
     SIGN => 1,
 );

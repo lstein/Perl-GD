@@ -683,7 +683,7 @@ GD::Image
 gd_newFromGif(packname="GD::Image", filehandle)
 	char *	packname
 	InputStream	filehandle
-  PROTOTYPE: $$;$
+  PROTOTYPE: $$
   CODE:
 	PERL_UNUSED_ARG(packname);
 	RETVAL = GDIMAGECREATEFROMGIF(filehandle);
@@ -768,7 +768,7 @@ GD::Image
 gdnewFromHeifData(packname="GD::Image", imageData)
 	char *	packname
 	SV *    imageData
-  PROTOTYPE: $$;$
+  PROTOTYPE: $$
   PREINIT:
 	gdIOCtx* ctx;
         char*    data;
