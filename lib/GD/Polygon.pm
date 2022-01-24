@@ -169,7 +169,7 @@ sub transform($$$$$$$) {
     # see PostScript Ref. page 154
     # documented as the affine transformation matrix: (xx,yx,xy,yy,x0,y0)
     # note that even the libgd doc is wrong here for yy.
-    my($self, $sx, $rx, $ry, $sy, $tx, $ty) = @_;
+    my($self, $sx, $rx, $sy, $ry, $tx, $ty) = @_;
     my $size = $self->length;
     for (my $i=0;$i<$size;$i++) {
         my($x,$y)=$self->getPt($i);
