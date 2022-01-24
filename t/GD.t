@@ -28,14 +28,15 @@ exit 0;
 
 sub write_regression_tests {
     # TODO get all the supported image formats dynamically
-    my @image_types = qw(png gif jpeg tiff webp heif avif);
-    if (GD::LIBGD_VERSION() < 2.0303 ) {
-        # GD 2.3.3 disabled the old GD and GD2 formats by default
+    my @image_types = qw(png gif jpeg tiff wbmp webp heif avif);
+    if (GD::LIBGD_VERSION() < 2.0302 ) {
+        # GD 2.3.2 disabled the old GD and GD2 formats by default
         unshift @image_types, 'gd2', 'gd';
     }
     warn "Writing regression files...";
     for my $suffix (@image_types) {
 	my $op = ucfirst $suffix;
+        $op = 'WBMP' if $suffix eq 'wbmp';
 	unless (GD::Image->can("newFrom$op")) {
 	    print "# not writing $op regression test: not supported\n";
 	    next;
@@ -248,7 +249,7 @@ sub test7 {
 
 sub run_image_regression_tests {
     my $default_image_type = 'gd2';
-    if (!GD::Image->can("newFromGd2") || GD::LIBGD_VERSION() >= 2.0303) {
+    if (!GD::Image->can("newFromGd2") || GD::LIBGD_VERSION() >= 2.0302) {
       $default_image_type = 'png';
     }
     my $suffix = $ENV{GDIMAGETYPE} || $default_image_type;
@@ -290,7 +291,7 @@ sub run_round_trip_test {
         ok(!$image->compare($image2) & GD_CMP_IMAGE(),'round trip gd2');
     }
     else {
-        # GD 2.3.3 disabled the old GD and GD2 formats by default
+        # GD 2.3.2 disabled the old GD and GD2 formats by default
         my $png = $image->png;
         my $image2 = GD::Image->newFromPngData($png);
         ok(!$image->compare($image2) & GD_CMP_IMAGE(),'round trip png');

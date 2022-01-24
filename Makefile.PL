@@ -16,10 +16,10 @@ END
 # =====> PATHS: CHECK AND ADJUST <=====
 my (@INC,@LIBPATH,@LIBS,$LIBGD_VERSION);
 my $AUTOCONFIG = 0;      # global set by try_to_autoconfigure() below
-my $HAVE_GD2 = 1;        # until libgd 2.3.2, unset by try_to_autoconfigure()
+my $HAVE_GD2 = 1;        # until libgd 2.3.1, unset by try_to_autoconfigure()
 
 my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,
-    $lib_webp_path,$lib_heif_path,$lib_avif_path,
+    $lib_tiff_path,$lib_webp_path,$lib_raqm_path,$lib_heif_path,$lib_avif_path,
     $lib_zlib_path,$lib_fontconfig_path,$force,$FCGI,$gdlib_config_path);
 
 use Getopt::Long;
@@ -29,10 +29,12 @@ my $result = GetOptions("ignore_missing_gd" => \$force,
 			"lib_ft_path=s"   => \$lib_ft_path,
 			"lib_png_path=s"  => \$lib_png_path,
 			"lib_jpeg_path=s" => \$lib_jpeg_path,
+			"lib_tiff_path=s" => \$lib_tiff_path,
 			"lib_xpm_path=s"  => \$lib_xpm_path,
-			"lib_webp_path=s"  => \$lib_webp_path,
-			"lib_heif_path=s"  => \$lib_heif_path,
-			"lib_avif_path=s"  => \$lib_avif_path,
+			"lib_webp_path=s" => \$lib_webp_path,
+			"lib_raqm_path=s" => \$lib_raqm_path,
+			"lib_heif_path=s" => \$lib_heif_path,
+			"lib_avif_path=s" => \$lib_avif_path,
 			"lib_zlib_path=s" => \$lib_zlib_path,
                         "lib_fontconfig_path=s" => \$lib_fontconfig_path,
                         "gdlib_config_path=s" => \$gdlib_config_path,
@@ -76,7 +78,9 @@ Configure GD module.
      --lib_png_path  path            path to libpng (/usr)
      --lib_jpeg_path path            path to libjpeg (/usr)
      --lib_xpm_path  path            path to libxpm (/usr)
+     --lib_tiff_path  path           path to libtiff (/usr)
      --lib_webp_path  path           path to libwebp (/usr)
+     --lib_raqm_path  path           path to libraqm (/usr)
      --lib_heif_path  path           path to libheif (/usr)
      --lib_avif_path  path           path to libavif (/usr)
      --lib_zlib_path path            path to libpng (/usr)
@@ -130,6 +134,12 @@ if( defined($lib_zlib_path) )
     @INC     = ("-I$lib_zlib_path/include", @INC);
     @LIBPATH = ("-L$lib_zlib_path/lib", @LIBPATH); 
 }
+if( defined($lib_tiff_path) )
+{
+    print "TIFF library used from:     $lib_tiff_path\n";
+    @INC     = ("-I$lib_tiff_path/include", @INC);
+    @LIBPATH = ("-L$lib_tiff_path/lib", @LIBPATH);
+}
 if( defined($lib_fontconfig_path) )
 {
     print "Fontconfig library used from:     $lib_fontconfig_path\n";
@@ -141,6 +151,12 @@ if( defined($lib_webp_path) )
     print "WEBP library used from:      $lib_webp_path\n";
     @INC     = ("-I$lib_webp_path/include", @INC);
     @LIBPATH = ("-L$lib_webp_path/lib", @LIBPATH); 
+}
+if( defined($lib_raqm_path) )
+{
+    print "RAQM library used from:      $lib_raqm_path\n";
+    @INC     = ("-I$lib_raqm_path/include", @INC);
+    @LIBPATH = ("-L$lib_raqm_path/lib", @LIBPATH); 
 }
 if( defined($lib_heif_path) )
 {
@@ -214,8 +230,8 @@ unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
 ##################################################################################################################
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
-my ($JPEG, $GD2, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$WEBP,$WBMP,$FTCIRCLE,
-    $VERSION_33, $HEIF, $AVIF);
+my ($JPEG, $GD2, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$TIFF,
+    $WEBP,$RAQM,$WBMP,$FTCIRCLE,$VERSION_33, $HEIF, $AVIF);
 if( defined($options) )
 {
     # WBMP is builtin since at least 1.8.0
@@ -228,7 +244,9 @@ if( defined($options) )
   $XPM       = $options =~ m/XPM/i;
   $GIF       = $options =~ m/GIF/i;
   $PNG       = $options =~ m/PNG/i;
+  $TIFF      = $options =~ m/TIFF/i;
   $WEBP      = $options =~ m/WEBP/i;
+  $RAQM      = $options =~ m/RAQM/i;
   $HEIF      = $options =~ m/HEIF/i;
   $AVIF      = $options =~ m/AVIF/i;
   $ANIMGIF   = $GIF && $options =~ m/ANIMGIF/i;
@@ -244,7 +262,9 @@ else
     $JPEG    = lc prompt('Build JPEG support?','y') eq 'y';
     $PNG     = lc prompt('Build PNG support?','y') eq 'y';
     $GD2     = lc prompt('Build GD2 support?','y') eq 'y';
+    $TIFF    = lc prompt('Build TIFF support?','y') eq 'y';
     $WEBP    = lc prompt('Build WEBP support?','y') eq 'y';
+    $RAQM    = lc prompt('Build RAQM support?','y') eq 'y';
     $HEIF    = lc prompt('Build HEIF support?','y') eq 'y';
     $AVIF    = lc prompt('Build AVIF support?','y') eq 'y';
     $FT      = lc prompt('Build FreeType support?','y') eq 'y';
@@ -267,7 +287,9 @@ if (!$AUTOCONFIG) {
   push @LIBS,'-lfreetype'      if $FT;
   push @LIBS,'-ljpeg'          if $JPEG;
   push @LIBS,'-lpng','-lz'     if $PNG;
+  push @LIBS,'-ltiff'          if $TIFF;
   push @LIBS,'-lwebp'          if $WEBP;
+  push @LIBS,'-lraqm'          if $RAQM;
   push @LIBS,'-lheif'          if $HEIF;
   push @LIBS,'-lavif'          if $AVIF;
   push @LIBS,'-lm'             unless $^O eq 'MSWin32';
@@ -290,6 +312,7 @@ $DEFINES    .= ' -DHAVE_XPM'     if $XPM;
 $DEFINES    .= ' -DHAVE_GIF'     if $GIF;
 $DEFINES    .= ' -DHAVE_GD2'     if $HAVE_GD2;
 $DEFINES    .= ' -DHAVE_PNG'     if $PNG;
+$DEFINES    .= ' -DHAVE_TIFF'    if $TIFF;
 $DEFINES    .= ' -DFCGI'         if $FCGI;
 $DEFINES    .= ' -DHAVE_ANIMGIF' if $ANIMGIF;
 $DEFINES    .= ' -DVERSION_33'   if $VERSION_33;
@@ -297,6 +320,7 @@ $DEFINES    .= ' -DHAVE_UNCLOSEDPOLY' if $UNCLOSEDPOLY;
 $DEFINES    .= ' -DHAVE_FONTCONFIG'   if $FONTCONFIG;
 $DEFINES    .= ' -DHAVE_FTCIRCLE'  if $FTCIRCLE;
 $DEFINES    .= ' -DHAVE_WEBP'    if $WEBP;
+$DEFINES    .= ' -DHAVE_RAQM'    if $RAQM;
 $DEFINES    .= ' -DHAVE_HEIF'    if $HEIF;
 $DEFINES    .= ' -DHAVE_AVIF'    if $AVIF;
 $DEFINES    .= " -DLIBGD_VERSION=\"$LIBGD_VERSION\"" if defined($LIBGD_VERSION);

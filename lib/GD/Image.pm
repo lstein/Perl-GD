@@ -27,6 +27,8 @@ Supported Image formats:
 
 =item Jpeg
 
+=item Tiff
+
 =item Xpm
 
 =item WBMP
@@ -201,6 +203,22 @@ sub newFromGif {
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromGif($fh,@_);
+}
+
+sub newFromTiff {
+    croak("Usage: newFromTiff(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromTiff($fh);
+}
+
+sub newFromXbm {
+    croak("Usage: newFromTiff(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromTiff($fh);
 }
 
 sub newFromWebp {

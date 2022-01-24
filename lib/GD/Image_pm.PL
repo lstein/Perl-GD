@@ -297,6 +297,19 @@ sub newFromXbm {
 !NO!SUBS!
 }
 
+if ($DEFINES =~ /HAVE_TIFF/) {
+  print OUT <<'!NO!SUBS!'
+sub newFromXbm {
+    croak("Usage: newFromTiff(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromTiff($fh);
+}
+
+!NO!SUBS!
+}
+
 if ($DEFINES =~ /HAVE_WEBP/) {
   print OUT <<'!NO!SUBS!'
 sub newFromWebp {

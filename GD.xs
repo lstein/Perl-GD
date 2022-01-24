@@ -118,6 +118,7 @@ typedef PerlIO          * InputStream;
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg((FILE*)x)
 #define GDIMAGECREATEFROMGIF(x)  gdImageCreateFromGif((FILE*)x)
 #define GDIMAGECREATEFROMWBMP(x) gdImageCreateFromWBMP((FILE*)x)
+#define GDIMAGECREATEFROMTIFF(x) gdImageCreateFromTiff((FILE*)x)
 #define GDIMAGECREATEFROMGD(x)   gdImageCreateFromGd((FILE*)x)
 #define GDIMAGECREATEFROMGD2(x)  gdImageCreateFromGd2((FILE*)x)
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part((FILE*)x,a,b,c,d)
@@ -132,6 +133,7 @@ typedef PerlIO          * InputStream;
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGIF(x)  gdImageCreateFromGif(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMWBMP(x) gdImageCreateFromWBMP(PerlIO_findFILE(x))
+#define GDIMAGECREATEFROMTIFF(x) gdImageCreateFromTiff(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part(PerlIO_findFILE(x),a,b,c,d)
@@ -144,6 +146,7 @@ typedef PerlIO          * InputStream;
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(x)
 #define GDIMAGECREATEFROMGIF(x) gdImageCreateFromGif(x)
 #define GDIMAGECREATEFROMWBMP(x) gdImageCreateFromWBMP(x)
+#define GDIMAGECREATEFROMTIFF(x) gdImageCreateFromTiff(x)
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd(x)
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(x)
 #define GDIMAGECREATEFROMGD2PART(x,a,b,c,d) gdImageCreateFromGd2Part(x,a,b,c,d)
@@ -617,6 +620,27 @@ gd_newFromJpeg(packname="GD::Image", filehandle, ...)
 	RETVAL = GDIMAGECREATEFROMJPEG(filehandle);
         if (!RETVAL)
           croak("gdImageCreateFromJpeg error");
+        if (items > 2) truecolor = (int)SvIV(ST(2));
+	gd_chkimagefmt(RETVAL, truecolor);
+  OUTPUT:
+        RETVAL
+
+#endif
+
+#ifdef HAVE_TIFF
+GD::Image
+gd_newFromTiff(packname="GD::Image", filehandle, ...)
+	char *	packname
+	InputStream	filehandle
+  PROTOTYPE: $$;$
+  PREINIT:
+	dMY_CXT;
+        int     truecolor = truecolor_default;
+  CODE:
+	PERL_UNUSED_ARG(packname);
+	RETVAL = GDIMAGECREATEFROMTIFF(filehandle);
+        if (!RETVAL)
+          croak("gdImageCreateFromTiff error");
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
   OUTPUT:
