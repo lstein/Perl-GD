@@ -62,6 +62,26 @@ print OUT "=item Avif\n\n" if $DEFINES =~ /HAVE_AVIF/;
 print OUT << '!NO!SUBS!';
 =back
 
+Unsupported Image formats:
+
+=over 4
+
+!NO!SUBS!
+
+print OUT "=item Png\n\n" if $DEFINES !~ /HAVE_PNG/;
+print OUT "=item Gif\n\n" if $DEFINES !~ /HAVE_GIF/;
+print OUT "=item Gd\n\n=item Gd2\n\n" if $DEFINES !~ /HAVE_GD2/;
+print OUT "=item Jpeg\n\n" if $DEFINES !~ /HAVE_JPEG/;
+print OUT "=item Tiff\n\n" if $DEFINES !~ /HAVE_TIFF/;
+print OUT "=item Xpm\n\n" if $DEFINES !~ /HAVE_XPM/;
+print OUT "=item GifAnim\n\n" if $DEFINES !~ /HAVE_ANIMGIF/;
+print OUT "=item Webp\n\n" if $DEFINES !~ /HAVE_WEBP/;
+print OUT "=item Heif\n\n" if $DEFINES !~ /HAVE_HEIF/;
+print OUT "=item Avif\n\n" if $DEFINES !~ /HAVE_AVIF/;
+
+print OUT << '!NO!SUBS!';
+=back
+
 See L<GD>
 
 =head1 AUTHOR
