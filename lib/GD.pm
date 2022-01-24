@@ -234,7 +234,8 @@ Notes:
 To create a new, empty image, send a new() message to GD::Image, passing
 it the width and height of the image you want to create.  An image
 object will be returned.  Other class methods allow you to initialize
-an image from a preexisting JPG, PNG, GD, GD2 or XBM file.
+an image from a preexisting JPG, PNG, GD, GD2, XBM or other supported
+image files.
 
 =item 2.
 Next you will ordinarily add colors to the image's color table.
@@ -255,12 +256,12 @@ The polygon can then be passed to an image for rendering.
 
 =item 5.
 When you're done drawing, you can convert the image into PNG format by
-sending it a png() message.  It will return a (potentially large)
-scalar value containing the binary data for the image.  Ordinarily you
-will print it out at this point or write it to a file.  To ensure
-portability to platforms that differentiate between text and binary
-files, be sure to call C<binmode()> on the file you are writing
-the image to.
+sending it a png() message (or any other supported image format).  It
+will return a (potentially large) scalar value containing the binary
+data for the image.  Ordinarily you will print it out at this point or
+write it to a file.  To ensure portability to platforms that
+differentiate between text and binary files, be sure to call
+C<binmode()> on the file you are writing the image to.
 
 =back
 
@@ -299,8 +300,9 @@ compatibility with older versions of libgd.
 Alternatively, you may create a GD::Image object based on an existing
 image by providing an open filehandle, a filename, or the image data
 itself.  The image formats automatically recognized and accepted are:
-GIF, PNG, JPEG, XPM, GD2 and WEBP.  Other formats, including WBMP, and GD
-version 1, cannot be recognized automatically at this time.
+GIF, PNG, JPEG, XPM, GD2, TIFF, WEBP, HEIF or AVIF. Other formats,
+including WBMP, and GD version 1, cannot be recognized automatically
+at this time.
 
 If something goes wrong (e.g. insufficient memory), this call will
 return undef.
@@ -619,6 +621,31 @@ format.
 This returns the image data in WBMP format, which is a black-and-white
 image format.  Provide the index of the color to become the foreground
 color.  All other pixels will be considered background.
+
+=item B<$tiffdata = $image-E<gt>tiff()>
+
+This returns the image data in TIFF format.
+
+=item B<$webpdata = $image-E<gt>webp([$quality])>
+
+This returns the image data in WEBP format, with the optional quality argument.
+The default is 80, also chosen by the value -1.
+A quality value of >= 101 is considered Lossless.
+
+=item B<$webpdata = $image-E<gt>heif([$quality])>
+
+This returns the truecolor image data in HEIF format, with the
+optional quality and speed arguments.
+If truecolor is not set, this fails.
+The default quality is 80, also chosen by the value -1.
+A quality value of 200 is considered Lossless.
+
+=item B<$webpdata = $image-E<gt>avif([$quality,$speed])>
+
+This returns the truecolor image data in AVIF format, with the
+AVif encoder and 444 chroma, and the optional quality argument.
+If truecolor is not set, this fails.
+The default compression quality 1-100 is -1, the default speed 0-10 is 6.
 
 =item B<$success = $image-E<gt>_file($filename)>
 

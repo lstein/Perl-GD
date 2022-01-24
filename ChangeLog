@@ -1,3 +1,12 @@
+2.75    * add experimental support for TIFF and RAQM (with freetype)
+        * improve GD2 tests (GH #42)
+        * also list the unsupported image formats in the GD::Image pod
+        * fix copyRotated pod (it rotates CCW) PR #36 by LorenzoTo
+        * fix GD::Simple->fontMetrics docs and implementation GH #37 by Ben Crowell.
+          fix lineheight calculation according to the docs. You might need to
+          fix your code!
+        * add image methods tiff, webp, heif, avif, and its documentation.
+        * fix the fix for the poly->transform documentation RT #140043
 2.74    * add experimental support for WEBP, HEIF and AVIF
         * document all supported Image formats in the GD::Image lib
         * added Github actions (for PR's)

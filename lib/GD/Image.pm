@@ -167,6 +167,9 @@ sub _image_type {
   return 'Gif'  if $magic eq "GIF8";
   return 'Gd2'  if $magic eq "gd2\000";
   return 'Xpm'  if substr($data,0,9) eq "/* XPM */";
+  return 'Tiff' if $magic eq "\x4d\x4d\x00\x2a" or
+    $magic eq "\x49\x49\x2a\x00" or
+    $magic eq "IIN1";
   return 'Webp' if substr($data,0,12) eq "RIFF2\0\0\0WEBP";
   return 'Heif' if $magic eq '\000\000\000\030'
                 and substr($data,4,4) eq "ftyp"

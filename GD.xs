@@ -1103,6 +1103,32 @@ gdgd2(image)
 
 #endif
 
+#ifdef HAVE_TIFF
+SV*
+gdtiff(image)
+  GD::Image	image
+  PROTOTYPE: $
+  PREINIT:
+	SV* errormsg;
+	void*         data;
+	int           size;
+  CODE:
+    data = (void *) gdImageTiffPtr(image,&size);
+    if (data == NULL) {
+      errormsg = perl_get_sv("@",0);
+      if (errormsg != NULL)
+        sv_setpv(errormsg,"libgd was not built with TIFF support\n");
+      else
+        croak("gdImageTiffPtr error");
+      XSRETURN_EMPTY;
+    }
+    RETVAL = newSVpvn((char*) data,size);
+    gdFree(data);
+  OUTPUT:
+    RETVAL
+
+#endif
+
 #ifdef HAVE_WEBP
 SV*
 gdwebp(image, ...)
