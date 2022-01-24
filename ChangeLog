@@ -1,5 +1,5 @@
 2.75    * add experimental support for TIFF and RAQM (with freetype)
-        * improve GD2 tests (GH #42)
+        * improve GD2 tests (GH #42, RT #140856)
         * also list the unsupported image formats in the GD::Image pod
         * fix copyRotated pod (it rotates CCW) PR #36 by LorenzoTo
         * fix GD::Simple->fontMetrics docs and implementation GH #37 by Ben Crowell.
