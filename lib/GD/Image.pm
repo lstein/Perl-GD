@@ -229,11 +229,11 @@ sub newFromTiff {
 }
 
 sub newFromXbm {
-    croak("Usage: newFromTiff(class,filehandle)") unless @_==2;
+    croak("Usage: newFromXbm(class,filehandle)") unless @_==2;
     my($class,$f) = @_;
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
-    $class->_newFromTiff($fh);
+    $class->_newFromXbm($fh);
 }
 
 sub newFromWebp {
@@ -252,7 +252,7 @@ sub newFromHeif {
     $class->_newFromHeif($fh);
 }
 
-sub newFromHeif {
+sub newFromAvif {
     croak("Usage: newFromAvif(class,filehandle)") unless @_==2;
     my($class,$f) = @_;
     my $fh = $class->_make_filehandle($f);
