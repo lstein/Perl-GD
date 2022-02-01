@@ -1,3 +1,6 @@
+2.76    * fix broken TIFF and AVIF support, PR #43 by Paul Howarth
+        * re-enable XBM support (always on)
+        * provide xbm magic support (a hack, for GD::Graph)
 2.75    * add experimental support for TIFF and RAQM (with freetype)
         * improve GD2 tests (GH #42, RT #140856)
         * also list the unsupported image formats in the GD::Image pod

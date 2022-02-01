@@ -16,7 +16,7 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.75';
+$VERSION = '2.76';
 our $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 
@@ -300,7 +300,7 @@ compatibility with older versions of libgd.
 Alternatively, you may create a GD::Image object based on an existing
 image by providing an open filehandle, a filename, or the image data
 itself.  The image formats automatically recognized and accepted are:
-GIF, PNG, JPEG, XPM, GD2, TIFF, WEBP, HEIF or AVIF. Other formats,
+GIF, PNG, JPEG, XBM, XPM, GD2, TIFF, WEBP, HEIF or AVIF. Other formats,
 including WBMP, and GD version 1, cannot be recognized automatically
 at this time.
 
