@@ -366,6 +366,7 @@ my %WriteMakefileArgs = (
     'LICENSE'   => 'perl_5',
 
     'META_MERGE' => {
+        "meta-spec" => { version => 2 },
         recommends => {
             'ExtUtils::PkgConfig' => 0,
             'Math::Trig'        => 0,
@@ -374,8 +375,12 @@ my %WriteMakefileArgs = (
             'Test::Fork'        => '0.02',
         },
         resources => {
-            repository => 'http://github.com/lstein/Perl-GD',
-            license    => 'http://dev.perl.org/licenses/',
+            repository => {
+                web => "https://github.com/lstein/Perl-GD",
+                url => "git://github.com/lstein/Perl-GD.git",
+                type => 'git',
+            },
+            license => "https://dev.perl.org/licenses/",
         },
         prereqs => {
             develop => {
