@@ -150,6 +150,4 @@ jobs:
             Test::Fork
             GD
       - run: perl Makefile.PL
-      #- run: prove -vb t/*.t
-      - run: make test
-        continue-on-error: true
+      - run: make test TEST_VERBOSE=1
