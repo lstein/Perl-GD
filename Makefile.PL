@@ -342,10 +342,17 @@ my $CCFLAGS = $Config{ccflags};
 $CCFLAGS .= " -Wall -Wextra -Wformat=1" if $Config{gccversion} and $] > 5.020;
 # hardened CFLAGS for testing
 #$CCFLAGS .= ' -D_GNU_SOURCE -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches';
+my $LDDLFLAGS = $Config{lddlflags};
+# fixup mingw linker problems with empty weak symbols
+$LDDLFLAGS .= " -Wl,--verbose" if $Config{gccversion} and $^O eq 'MSWin32';
+my $LD = $Config{ld};
+if ($LD eq 'g++' and $^O eq 'MSWin32') {
+  $LD = 'gcc';
+}
 
 my %WriteMakefileArgs = (
     'NAME'	=> 'GD',
-    'ABSTRACT'  => 'Perl interface to the gd2 graphics library',
+    'ABSTRACT'  => 'Perl interface to the libgd graphics library',
     'VERSION_FROM'	=> 'lib/GD.pm',
     'PREREQ_PM' => {
         'Math::Trig' => 0,
@@ -363,7 +370,9 @@ my %WriteMakefileArgs = (
     'LIBS'      => [join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS)],
     'INC'       => join(' ',$ENV{'GD_INC'},@INC),
 
+    'LD'        => $LD,
     'CCFLAGS'   => $CCFLAGS,
+    'LDDLFLAGS'   => $LDDLFLAGS,
     'EXE_FILES' => ['bdf_scripts/bdf2gdfont.pl'],
     'AUTHOR'    => 'Lincoln Stein <lincoln.stein@gmail.com>',
      # Maintained by Reini Urban now
