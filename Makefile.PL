@@ -241,7 +241,7 @@ if( defined($options) )
   $JPEG      = $options =~ m/JPEG/i;
   $GD2       = $options =~ m/GD2/i;
   $FT        = $options =~ m/FT|FREETYPE/i;
-  $XPM       = $options =~ m/XPM/i;
+  $XPM       = $options =~ m/XPM/i && join(' ',@LIBS) =~ m/X11/;
   $GIF       = $options =~ m/GIF/i;
   $PNG       = $options =~ m/PNG/i;
   $TIFF      = $options =~ m/TIFF/i;
@@ -258,25 +258,25 @@ if( defined($options) )
 }
 else
 {
-    warn "\nPlease choose the features that match how libgd was built:\n";
-    $WBMP = 1;
-    $BMP     = lc prompt('Build BMP support?','y') eq 'y';
-    $JPEG    = lc prompt('Build JPEG support?','y') eq 'y';
-    $PNG     = lc prompt('Build PNG support?','y') eq 'y';
-    $GD2     = lc prompt('Build GD2 support?','y') eq 'y';
-    $TIFF    = lc prompt('Build TIFF support?','y') eq 'y';
-    $WEBP    = lc prompt('Build WEBP support?','y') eq 'y';
-    $RAQM    = lc prompt('Build RAQM support?','y') eq 'y';
-    $HEIF    = lc prompt('Build HEIF support?','y') eq 'y';
-    $AVIF    = lc prompt('Build AVIF support?','y') eq 'y';
-    $FT      = lc prompt('Build FreeType support?','y') eq 'y';
-    if ($FT) {
-      $FONTCONFIG = lc prompt('Build fontconfig support?','y') eq 'y';
-      $FTCIRCLE   = lc prompt('Build with FTCircle support?','y') eq 'y';
-    }
-    $GIF     = lc prompt('Build GIF support?','y') eq 'y';
-    $GIFANIM = $GIF && lc prompt('Build support for animated GIFs?','y') eq 'y';
-    $XPM     = $^O !~ /^freebsd|MSWin32$/ && lc prompt('Build XPM support?','y') eq 'y';
+  warn "\nPlease choose the features that match how libgd was built:\n";
+  $WBMP = 1;
+  $JPEG    = lc prompt('Build JPEG support?','y') eq 'y';
+  $PNG     = lc prompt('Build PNG support?','y') eq 'y';
+  $GD2     = lc prompt('Build GD2 support?','y') eq 'y';
+  $TIFF    = lc prompt('Build TIFF support?','y') eq 'y';
+  $WEBP    = lc prompt('Build WEBP support?','y') eq 'y';
+  $RAQM    = lc prompt('Build RAQM support?','y') eq 'y';
+  $HEIF    = lc prompt('Build HEIF support?','y') eq 'y';
+  $AVIF    = lc prompt('Build AVIF support?','y') eq 'y';
+  $FT      = lc prompt('Build FreeType support?','y') eq 'y';
+  if ($FT) {
+    $FONTCONFIG = lc prompt('Build fontconfig support?','y') eq 'y';
+    $FTCIRCLE   = lc prompt('Build with FTCircle support?','y') eq 'y';
+  }
+  $GIF     = lc prompt('Build GIF support?','y') eq 'y';
+  $GIFANIM = $GIF && lc prompt('Build support for animated GIFs?','y') eq 'y';
+  $XPM     = $^O !~ /^freebsd|MSWin32$/ && lc prompt('Build XPM support?','y') eq 'y';
+  $BMP     = lc prompt('Build BMP support?','y') eq 'y';
 }
 ##################################################################################################################
 
@@ -303,6 +303,8 @@ if (!$AUTOCONFIG) {
   if ($^O ne 'freebsd' && $^O ne 'MSWin32') {
     push @LIBS,'-lX11','-lXpm' if $XPM;
   }
+} else {
+  print "External LIBS:              ", join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS),"\n";
 }
 
 my $CAPI = defined $ExtUtils::MakeMaker::CAPI_support;
