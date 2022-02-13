@@ -20,8 +20,7 @@ my $HAVE_GD2 = 1;        # until libgd 2.3.1, unset by try_to_autoconfigure()
 
 my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,
     $lib_tiff_path,$lib_webp_path,$lib_raqm_path,$lib_heif_path,$lib_avif_path,
-    $lib_zlib_path,$lib_fontconfig_path,$force,$FCGI,$gdlib_config_path,
-    $lib_bmp_path);
+    $lib_zlib_path,$lib_fontconfig_path,$force,$FCGI,$gdlib_config_path);
 
 use Getopt::Long;
 my $result = GetOptions("ignore_missing_gd" => \$force,
@@ -37,7 +36,6 @@ my $result = GetOptions("ignore_missing_gd" => \$force,
 			"lib_heif_path=s" => \$lib_heif_path,
 			"lib_avif_path=s" => \$lib_avif_path,
 			"lib_zlib_path=s" => \$lib_zlib_path,
-      "lib_bmp_path=s"  => \$lib_bmp_path,
                         "lib_fontconfig_path=s" => \$lib_fontconfig_path,
                         "gdlib_config_path=s" => \$gdlib_config_path,
                         "fcgi"            => \$FCGI,
@@ -74,7 +72,7 @@ Usage: perl Makefile.PL [options]
 Configure GD module.
 
  Options:
-     --options       "JPEG,GD2,FT,PNG,WEBP,GIF,XPM,ANIMGIF"   feature options, separated by commas
+     --options       "JPEG,GD2,FT,PNG,WEBP,GIF,XPM,GIFANIM,WBMP,BMP" feature options, separated by commas
      --lib_gd_path   path            path to libgd (/usr/lib)
      --lib_ft_path   path            path to Freetype library (/usr)
      --lib_png_path  path            path to libpng (/usr)
@@ -172,12 +170,6 @@ if( defined($lib_avif_path) )
     @INC     = ("-I$lib_avif_path/include", @INC);
     @LIBPATH = ("-L$lib_avif_path/lib", @LIBPATH);
 }
-if( defined($lib_bmp_path) )
-{
-    print "BMP library used from:      $lib_bmp_path\n";
-    @INC     = ("-I$lib_bmp_path/include", @INC);
-    @LIBPATH = ("-L$lib_bmp_path/lib", @LIBPATH);
-}
 if( defined($gdlib_config_path) )
 {
     print "gdlib-config used:          $gdlib_config_path\n";
@@ -238,7 +230,7 @@ unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
 ##################################################################################################################
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
-my ($JPEG, $GD2, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$TIFF,
+my ($JPEG, $GD2, $FT, $XPM, $GIF,$GIFANIM,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$TIFF,
     $WEBP,$RAQM,$WBMP,$BMP,$FTCIRCLE,$VERSION_33, $HEIF, $AVIF);
 if( defined($options) )
 {
@@ -258,7 +250,7 @@ if( defined($options) )
   $HEIF      = $options =~ m/HEIF/i;
   $AVIF      = $options =~ m/AVIF/i;
   $BMP       = $options =~ m/WINDOWS_BMP/i;
-  $ANIMGIF   = $GIF && $options =~ m/ANIMGIF/i;
+  $GIFANIM   = $GIF && $options =~ m/GIFANIM/i;
   $VERSION_33= $options =~ m/VERSION_33/i; # i.e. 2.0.33 or higher
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
   $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
@@ -283,7 +275,7 @@ else
       $FTCIRCLE   = lc prompt('Build with FTCircle support?','y') eq 'y';
     }
     $GIF     = lc prompt('Build GIF support?','y') eq 'y';
-    $ANIMGIF = $GIF && lc prompt('Build support for animated GIFs?','y') eq 'y';
+    $GIFANIM = $GIF && lc prompt('Build support for animated GIFs?','y') eq 'y';
     $XPM     = $^O !~ /^freebsd|MSWin32$/ && lc prompt('Build XPM support?','y') eq 'y';
 }
 ##################################################################################################################
@@ -324,7 +316,7 @@ $DEFINES    .= ' -DHAVE_GD2'     if $HAVE_GD2;
 $DEFINES    .= ' -DHAVE_PNG'     if $PNG;
 $DEFINES    .= ' -DHAVE_TIFF'    if $TIFF;
 $DEFINES    .= ' -DFCGI'         if $FCGI;
-$DEFINES    .= ' -DHAVE_ANIMGIF' if $ANIMGIF;
+$DEFINES    .= ' -DHAVE_GIFANIM' if $GIFANIM;
 $DEFINES    .= ' -DVERSION_33'   if $VERSION_33;
 $DEFINES    .= ' -DHAVE_UNCLOSEDPOLY' if $UNCLOSEDPOLY;
 $DEFINES    .= ' -DHAVE_FONTCONFIG'   if $FONTCONFIG;
@@ -614,7 +606,7 @@ sub try_to_autoconfigure {
     $options = $features;
 
     my ($release, $major, $minor) = $version =~ /^(\d+)\.(\d+)\.(\d+)/;
-    $options     .= " GD_UNCLOSEDPOLY GD_ANIMGIF GD_FTCIRCLE VERSION_33"
+    $options     .= " GD_UNCLOSEDPOLY GD_FTCIRCLE VERSION_33"
       if defined($minor)
       && ($release > 2
           || ($release == 2 && $major > 0)

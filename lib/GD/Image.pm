@@ -29,11 +29,7 @@ Supported Image formats:
 
 =item Tiff
 
-=item Xpm
-
 =item WBMP
-
-=item GifAnim
 
 =item Webp
 
@@ -52,6 +48,10 @@ Unsupported Image formats:
 =item Gd
 
 =item Gd2
+
+=item Xpm
+
+=item GifAnim
 
 =back
 

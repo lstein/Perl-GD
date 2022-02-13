@@ -1013,13 +1013,15 @@ gdgifanimbegin(image,globalcm=-1,loops=-1)
 	void*         data;
 	int           size;
   CODE:
-#ifdef HAVE_ANIMGIF
+#ifdef HAVE_GIFANIM
     data = (void *) gdImageGifAnimBeginPtr(image,&size,globalcm,loops);
     if (!data)
       croak("gdImageGifAnimBeginPtr error");
     RETVAL = newSVpvn((char*) data,size);
     gdFree(data);
 #else
+    PERL_UNUSED_ARG(data);
+    PERL_UNUSED_ARG(size);
     PERL_UNUSED_ARG(image);
     PERL_UNUSED_ARG(globalcm);
     PERL_UNUSED_ARG(loops);
@@ -1042,7 +1044,7 @@ gdgifanimadd(image,localcm=-1,leftofs=-1,topofs=-1,delay=-1,disposal=-1,previm=0
 	void*         data;
 	int           size;
   CODE:
-#ifdef HAVE_ANIMGIF
+#ifdef HAVE_GIFANIM
     data = (void *) gdImageGifAnimAddPtr(image,&size,localcm,leftofs,topofs,
                                              delay,disposal,previm);
     if (!data)
@@ -1050,6 +1052,8 @@ gdgifanimadd(image,localcm=-1,leftofs=-1,topofs=-1,delay=-1,disposal=-1,previm=0
     RETVAL = newSVpvn((char*) data,size);
     gdFree(data);
 #else
+    PERL_UNUSED_ARG(data);
+    PERL_UNUSED_ARG(size);
     PERL_UNUSED_ARG(image);
     PERL_UNUSED_ARG(localcm);
     PERL_UNUSED_ARG(leftofs);
@@ -1071,13 +1075,15 @@ gdgifanimend(image)
 	int           size;
   CODE:
     PERL_UNUSED_ARG(image);
-#ifdef HAVE_ANIMGIF
+#ifdef HAVE_GIFANIM
     data = (void *) gdImageGifAnimEndPtr(&size);
     if (!data)
       croak("gdImageGifAnimEndPtr error");
     RETVAL = newSVpvn((char*) data,size);
     gdFree(data);
 #else
+    PERL_UNUSED_ARG(data);
+    PERL_UNUSED_ARG(size);
     die("libgd 2.0.33 or higher required for animated GIF support");
 #endif
   OUTPUT:
