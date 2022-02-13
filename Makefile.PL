@@ -242,6 +242,11 @@ if( defined($options) )
   $GD2       = $options =~ m/GD2/i;
   $FT        = $options =~ m/FT|FREETYPE/i;
   $XPM       = $options =~ m/XPM/i && join(' ',@LIBS) =~ m/X11/;
+  # strawberry has -lXpm without -lX11
+  if (!$XPM && join(' ',@LIBS) =~ m/-lXpm/) {
+    print "Remove -lXpm and XPM feature without -lX11\n" if $options =~ m/XPM/i;
+    @LIBS = grep { $_ ne '-lXpm' } @LIBS; 
+  }
   $GIF       = $options =~ m/GIF/i;
   $PNG       = $options =~ m/PNG/i;
   $TIFF      = $options =~ m/TIFF/i;
