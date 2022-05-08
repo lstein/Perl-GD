@@ -695,6 +695,7 @@ gdnewFromXpm(packname="GD::Image", filename)
         }
         RETVAL = img;
 #else
+	PERL_UNUSED_ARG(filename);
         errormsg = perl_get_sv("@",0);
         sv_setpv(errormsg,"libgd was not built with xpm support\n");
         XSRETURN_EMPTY;
@@ -963,6 +964,9 @@ gdgifanimbegin(image,globalcm=-1,loops=-1)
     RETVAL = newSVpvn((char*) data,size);
     gdFree(data);
 #else
+    PERL_UNUSED_ARG(image);
+    PERL_UNUSED_ARG(globalcm);
+    PERL_UNUSED_ARG(loops);
     die("libgd 2.0.33 or higher required for animated GIF support");
 #endif
   OUTPUT:
@@ -990,6 +994,13 @@ gdgifanimadd(image,localcm=-1,leftofs=-1,topofs=-1,delay=-1,disposal=-1,previm=0
     RETVAL = newSVpvn((char*) data,size);
     gdFree(data);
 #else
+    PERL_UNUSED_ARG(image);
+    PERL_UNUSED_ARG(localcm);
+    PERL_UNUSED_ARG(leftofs);
+    PERL_UNUSED_ARG(topofs);
+    PERL_UNUSED_ARG(delay);
+    PERL_UNUSED_ARG(disposal);
+    PERL_UNUSED_ARG(previm);
     die("libgd 2.0.33 or higher required for animated GIF support");
 #endif
   OUTPUT:
@@ -1535,6 +1546,15 @@ gdcopyRotated(dst,src,dstX,dstY,srcX,srcY,srcW,srcH,angle)
 #ifdef VERSION_33
         gdImageCopyRotated(dst,src,dstX,dstY,srcX,srcY,srcW,srcH,angle);
 #else
+        PERL_UNUSED_ARG(dst);
+        PERL_UNUSED_ARG(src);
+        PERL_UNUSED_ARG(dstX);
+        PERL_UNUSED_ARG(dstY);
+        PERL_UNUSED_ARG(srcX);
+        PERL_UNUSED_ARG(srcY);
+        PERL_UNUSED_ARG(srcW);
+        PERL_UNUSED_ARG(srcH);
+        PERL_UNUSED_ARG(angle);
         die("libgd 2.0.33 or higher required for copyRotated support");
 #endif
     }
@@ -2316,11 +2336,35 @@ gdstringFTCircle(image,cx,cy,radius,textRadius,fillPortion,fontname,points,top,b
             RETVAL = 1;
 	  }
 #else
+        /* if we have FT but not FTCIRCLE, this is all that's compiled */
+        PERL_UNUSED_ARG(image);
+        PERL_UNUSED_ARG(cx);
+        PERL_UNUSED_ARG(cy);
+        PERL_UNUSED_ARG(radius);
+        PERL_UNUSED_ARG(textRadius);
+        PERL_UNUSED_ARG(fillPortion);
+        PERL_UNUSED_ARG(fontname);
+        PERL_UNUSED_ARG(points);
+        PERL_UNUSED_ARG(top);
+        PERL_UNUSED_ARG(bottom);
+        PERL_UNUSED_ARG(fgcolor);
   	errormsg = perl_get_sv("@",0);
 	sv_setpv(errormsg,"libgd must be version 2.0.33 or higher to use this function\n");
 	XSRETURN_EMPTY;
 #endif
 #else
+        /* if we don't have FT, this is all that's compiled */
+        PERL_UNUSED_ARG(image);
+        PERL_UNUSED_ARG(cx);
+        PERL_UNUSED_ARG(cy);
+        PERL_UNUSED_ARG(radius);
+        PERL_UNUSED_ARG(textRadius);
+        PERL_UNUSED_ARG(fillPortion);
+        PERL_UNUSED_ARG(fontname);
+        PERL_UNUSED_ARG(points);
+        PERL_UNUSED_ARG(top);
+        PERL_UNUSED_ARG(bottom);
+        PERL_UNUSED_ARG(fgcolor);
   	errormsg = perl_get_sv("@",0);
 	sv_setpv(errormsg,"libgd was not built with FreeType support\n");
 	XSRETURN_EMPTY;
@@ -2336,12 +2380,12 @@ gduseFontConfig(image,flag)
   PROTOTYPE: $$
   CODE:
   {
-#ifdef HAVE_FONTCONFIG
     PERL_UNUSED_ARG(image);
+#ifdef HAVE_FONTCONFIG
     RETVAL = gdFTUseFontConfig(flag);
 #else
     SV* errormsg;
-    PERL_UNUSED_ARG(image);
+    PERL_UNUSED_ARG(flag);
     errormsg = perl_get_sv("@",0);
     sv_setpv(errormsg,"libgd was not built with fontconfig support\n");
     XSRETURN_EMPTY;
