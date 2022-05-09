@@ -1,3 +1,4 @@
+2.77    * fix RT 141125 unused variable failure in GH CI, by PhilterPaper
 2.76    * fix broken TIFF and AVIF support, PR #43 by Paul Howarth
         * re-enable XBM support (always on)
         * provide xbm magic support (a hack, for GD::Graph)
@@ -15,7 +16,7 @@
         * added Github actions (for PR's)
         * fix poly->transform documentation RT #140043
         * fix GD,GD2 detection and tests RT #139399 (since libgd 2.3.3)
-          fixed tests by HÂkon HÊgland.
+          fixed tests by H√•kon H√¶gland.
         * POD: Remove indirect object constructors from example code snippet (PR #39)
         * patch from Ben Crowell that fixes incorrect behaviour of GD::Simple->fontMetrics
         * fix cross-compilation if gdlib.pc has no cflags by Fabrice Fontaine
@@ -157,7 +158,7 @@
 2.18	This version needs libgd 2.0.28 or higher.
 	Fixed documentation bug in synopsis of GD::Simple.
 	Updated Polyline to version 0.20
-2.17	Added animated GIF patches from Jaakko Hyv‰tti.
+2.17	Added animated GIF patches from Jaakko Hyv√§tti.
 	Added dynamic bitmapped font loading support.
 	Added fontconfig support.
 	Added a simplified API called GD::Simple.
