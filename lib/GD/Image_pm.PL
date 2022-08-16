@@ -29,7 +29,7 @@ use strict;
 use GD;
 use Symbol 'gensym','qualify_to_ref';
 use vars '$VERSION';
-$VERSION = '2.75';
+$VERSION = '2.77';
 
 =head1 NAME
 
