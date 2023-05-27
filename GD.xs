@@ -118,6 +118,7 @@ typedef PerlIO          * InputStream;
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg((FILE*)x)
 #define GDIMAGECREATEFROMGIF(x)  gdImageCreateFromGif((FILE*)x)
 #define GDIMAGECREATEFROMWBMP(x) gdImageCreateFromWBMP((FILE*)x)
+#define GDIMAGECREATEFROMBMP(x)  gdImageCreateFromBmp((FILE*)x)
 #define GDIMAGECREATEFROMTIFF(x) gdImageCreateFromTiff((FILE*)x)
 #define GDIMAGECREATEFROMGD(x)   gdImageCreateFromGd((FILE*)x)
 #define GDIMAGECREATEFROMGD2(x)  gdImageCreateFromGd2((FILE*)x)
@@ -133,6 +134,7 @@ typedef PerlIO          * InputStream;
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGIF(x)  gdImageCreateFromGif(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMWBMP(x) gdImageCreateFromWBMP(PerlIO_findFILE(x))
+#define GDIMAGECREATEFROMBMP(x)  gdImageCreateFromBmp(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMTIFF(x) gdImageCreateFromTiff(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd(PerlIO_findFILE(x))
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(PerlIO_findFILE(x))
@@ -146,6 +148,7 @@ typedef PerlIO          * InputStream;
 #define GDIMAGECREATEFROMJPEG(x) gdImageCreateFromJpeg(x)
 #define GDIMAGECREATEFROMGIF(x) gdImageCreateFromGif(x)
 #define GDIMAGECREATEFROMWBMP(x) gdImageCreateFromWBMP(x)
+#define GDIMAGECREATEFROMBMP(x)  gdImageCreateFromBmp(x)
 #define GDIMAGECREATEFROMTIFF(x) gdImageCreateFromTiff(x)
 #define GDIMAGECREATEFROMGD(x) gdImageCreateFromGd(x)
 #define GDIMAGECREATEFROMGD2(x) gdImageCreateFromGd2(x)
@@ -523,6 +526,33 @@ gdnewFromJpegData(packname="GD::Image", imageData, ...)
 
 #endif
 
+#ifdef HAVE_BMP
+GD::Image
+gdnewFromBmpData(packname="GD::Image", imageData, ...)
+	char *	packname
+	SV *    imageData
+  PROTOTYPE: $$;$
+  PREINIT:
+	gdIOCtx* ctx;
+        char*    data;
+        STRLEN   len;
+	dMY_CXT;
+	int      truecolor = truecolor_default;
+  CODE:
+	PERL_UNUSED_ARG(packname);
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+	RETVAL = (GD__Image) gdImageCreateFromBmpCtx(ctx);
+        (ctx->gd_free)(ctx);
+        if (!RETVAL)
+          croak("gdImageCreateFromBmpCtx error");
+        if (items > 2) truecolor = (int)SvIV(ST(2));
+	gd_chkimagefmt(RETVAL, truecolor);
+  OUTPUT:
+	RETVAL
+
+#endif
+
 GD::Image
 gdnewFromWBMPData(packname="GD::Image", imageData, ...)
 	char *	packname
@@ -643,6 +673,32 @@ gd_newFromTiff(packname="GD::Image", filehandle, ...)
           croak("gdImageCreateFromTiff error");
         if (items > 2) truecolor = (int)SvIV(ST(2));
 	gd_chkimagefmt(RETVAL, truecolor);
+  OUTPUT:
+        RETVAL
+
+#endif
+
+#ifdef HAVE_BMP
+GD::Image
+gd_newFromBmp(packname="GD::Image", filehandle)
+	char *	packname
+	InputStream	filehandle
+  PROTOTYPE: $$
+  PREINIT:
+	gdImagePtr img;
+	SV* errormsg;
+  CODE:
+	PERL_UNUSED_ARG(packname);
+	img = GDIMAGECREATEFROMBMP(filehandle);
+        if (img == NULL) {
+          errormsg = perl_get_sv("@",0);
+	  if (errormsg != NULL)
+	    sv_setpv(errormsg,"libgd was not built with BMP support\n");
+          else
+            croak("gdImageCreateFromBmp error");
+	  XSRETURN_EMPTY;
+        }
+        RETVAL = img;
   OUTPUT:
         RETVAL
 
@@ -1026,6 +1082,33 @@ gdgifanimend(image)
 #endif
   OUTPUT:
     RETVAL
+
+#ifdef HAVE_BMP
+SV*
+gdbmp(image,compression=0)
+  GD::Image	image
+  int           compression
+  PROTOTYPE: $
+  PREINIT:
+	SV* errormsg;
+	void*         data;
+	int           size;
+  CODE:
+    data = (void *) gdImageBmpPtr(image,&size,compression);
+    if (data == NULL) {
+      errormsg = perl_get_sv("@",0);
+      if (errormsg != NULL)
+        sv_setpv(errormsg,"libgd was not built with WBMP support\n");
+      else
+        croak("gdImageBmpPtr error");
+      XSRETURN_EMPTY;
+    }
+    RETVAL = newSVpvn((char*) data,size);
+    gdFree(data);
+  OUTPUT:
+    RETVAL
+
+#endif
 
 SV*
 gdwbmp(image,fg)

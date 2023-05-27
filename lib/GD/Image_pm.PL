@@ -58,6 +58,7 @@ print OUT "=item GifAnim\n\n" if $DEFINES =~ /HAVE_ANIMGIF/;
 print OUT "=item Webp\n\n" if $DEFINES =~ /HAVE_WEBP/;
 print OUT "=item Heif\n\n" if $DEFINES =~ /HAVE_HEIF/;
 print OUT "=item Avif\n\n" if $DEFINES =~ /HAVE_AVIF/;
+print OUT "=item BMP\n\n" if $DEFINES =~ /HAVE_BMP/;
 
 print OUT << '!NO!SUBS!';
 =back
@@ -78,6 +79,7 @@ print OUT "=item GifAnim\n\n" if $DEFINES !~ /HAVE_ANIMGIF/;
 print OUT "=item Webp\n\n" if $DEFINES !~ /HAVE_WEBP/;
 print OUT "=item Heif\n\n" if $DEFINES !~ /HAVE_HEIF/;
 print OUT "=item Avif\n\n" if $DEFINES !~ /HAVE_AVIF/;
+print OUT "=item BMP\n\n" if $DEFINES !~ /HAVE_BMP/;
 
 print OUT << '!NO!SUBS!';
 =back
@@ -367,6 +369,20 @@ sub newFromWBMP {
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromWBMP($fh,@_);
+}
+
+!NO!SUBS!
+}
+
+if ($DEFINES =~ /HAVE_BMP/) {
+  print OUT <<'!NO!SUBS!';
+sub newFromBmp {
+    croak("Usage: newFromBmp(class,filehandle)") unless @_==2;
+    my($class) = shift;
+    my($f)     = shift;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromBmp($fh,@_);
 }
 
 !NO!SUBS!

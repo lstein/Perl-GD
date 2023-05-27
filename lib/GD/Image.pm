@@ -41,6 +41,8 @@ Supported Image formats:
 
 =item Avif
 
+=item BMP
+
 =back
 
 Unsupported Image formats:
@@ -268,6 +270,15 @@ sub newFromWBMP {
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromWBMP($fh,@_);
+}
+
+sub newFromBmp {
+    croak("Usage: newFromBmp(class,filehandle)") unless @_==2;
+    my($class) = shift;
+    my($f)     = shift;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromBmp($fh,@_);
 }
 
 # Autoload methods go after __END__, and are processed by the autosplit program.
