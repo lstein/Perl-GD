@@ -1085,15 +1085,16 @@ gdgifanimend(image)
 
 #ifdef HAVE_BMP
 SV*
-gdbmp(image)
+gdbmp(image,compression)
   GD::Image	image
+  int           compression
   PROTOTYPE: $
   PREINIT:
 	SV* errormsg;
 	void*         data;
 	int           size;
   CODE:
-    data = (void *) gdImageBmpPtr(image,&size);
+    data = (void *) gdImageBmpPtr(image,&size,compression);
     if (data == NULL) {
       errormsg = perl_get_sv("@",0);
       if (errormsg != NULL)
