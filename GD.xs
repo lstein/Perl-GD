@@ -1093,7 +1093,7 @@ gdbmp(image)
 	void*         data;
 	int           size;
   CODE:
-    data = (void *) gdImageBmpPtr(image,&size,fg);
+    data = (void *) gdImageBmpPtr(image,&size);
     if (data == NULL) {
       errormsg = perl_get_sv("@",0);
       if (errormsg != NULL)
