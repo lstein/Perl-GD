@@ -112,29 +112,29 @@ if( defined($lib_ft_path) )
     @INC     = ("-I$lib_ft_path/include", @INC);
     @LIBPATH = ("-L$lib_ft_path/lib", @LIBPATH);
 }
-if( defined($lib_png_path) )  
+if( defined($lib_png_path) )
 {
     print "PNG library used from:      $lib_png_path\n";
     @INC     = ("-I$lib_png_path/include", @INC);
-    @LIBPATH = ("-L$lib_png_path/lib", @LIBPATH); 
+    @LIBPATH = ("-L$lib_png_path/lib", @LIBPATH);
 }
-if( defined($lib_jpeg_path) )  
+if( defined($lib_jpeg_path) )
 {
     print "JPEG library used from:      $lib_jpeg_path\n";
     @INC     = ("-I$lib_jpeg_path/include", @INC);
-    @LIBPATH = ("-L$lib_jpeg_path/lib", @LIBPATH); 
+    @LIBPATH = ("-L$lib_jpeg_path/lib", @LIBPATH);
 }
-if( defined($lib_xpm_path) )  
+if( defined($lib_xpm_path) )
 {
     print "XPM library used from:      $lib_xpm_path\n";
     @INC     = ("-I$lib_xpm_path/include", @INC);
-    @LIBPATH = ("-L$lib_xpm_path/lib", @LIBPATH); 
+    @LIBPATH = ("-L$lib_xpm_path/lib", @LIBPATH);
 }
-if( defined($lib_zlib_path) ) 
+if( defined($lib_zlib_path) )
 {
     print "Zlib library used from:     $lib_zlib_path\n";
     @INC     = ("-I$lib_zlib_path/include", @INC);
-    @LIBPATH = ("-L$lib_zlib_path/lib", @LIBPATH); 
+    @LIBPATH = ("-L$lib_zlib_path/lib", @LIBPATH);
 }
 if( defined($lib_tiff_path) )
 {
@@ -152,31 +152,31 @@ if( defined($lib_webp_path) )
 {
     print "WEBP library used from:      $lib_webp_path\n";
     @INC     = ("-I$lib_webp_path/include", @INC);
-    @LIBPATH = ("-L$lib_webp_path/lib", @LIBPATH); 
+    @LIBPATH = ("-L$lib_webp_path/lib", @LIBPATH);
 }
 if( defined($lib_raqm_path) )
 {
     print "RAQM library used from:      $lib_raqm_path\n";
     @INC     = ("-I$lib_raqm_path/include", @INC);
-    @LIBPATH = ("-L$lib_raqm_path/lib", @LIBPATH); 
+    @LIBPATH = ("-L$lib_raqm_path/lib", @LIBPATH);
 }
 if( defined($lib_heif_path) )
 {
     print "HEIF library used from:      $lib_heif_path\n";
     @INC     = ("-I$lib_heif_path/include", @INC);
-    @LIBPATH = ("-L$lib_heif_path/lib", @LIBPATH); 
+    @LIBPATH = ("-L$lib_heif_path/lib", @LIBPATH);
 }
 if( defined($lib_avif_path) )
 {
     print "AVIF library used from:      $lib_avif_path\n";
     @INC     = ("-I$lib_avif_path/include", @INC);
-    @LIBPATH = ("-L$lib_avif_path/lib", @LIBPATH); 
+    @LIBPATH = ("-L$lib_avif_path/lib", @LIBPATH);
 }
 if( defined($lib_bmp_path) )
 {
     print "BMP library used from:      $lib_bmp_path\n";
     @INC     = ("-I$lib_bmp_path/include", @INC);
-    @LIBPATH = ("-L$lib_bmp_path/lib", @LIBPATH); 
+    @LIBPATH = ("-L$lib_bmp_path/lib", @LIBPATH);
 }
 if( defined($gdlib_config_path) )
 {
@@ -257,7 +257,7 @@ if( defined($options) )
   $RAQM      = $options =~ m/RAQM/i;
   $HEIF      = $options =~ m/HEIF/i;
   $AVIF      = $options =~ m/AVIF/i;
-  $BMP       = $options =~ m/\bBMP/i;
+  $BMP       = $options =~ m/WINDOWS_BMP/i;
   $ANIMGIF   = $GIF && $options =~ m/ANIMGIF/i;
   $VERSION_33= $options =~ m/VERSION_33/i; # i.e. 2.0.33 or higher
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
@@ -307,9 +307,9 @@ if (!$AUTOCONFIG) {
   push @INC, '-I/lib_root/ft2/include/freetype' if ($FT && $^O eq 'VMS');
   push @INC, '-I/X11' if ($XPM && $^O eq 'VMS');
 
-  # FreeBSD 3.3 with libgd built from ports croaks if -lXpm is specified 
-  if ($^O ne 'freebsd' && $^O ne 'MSWin32') { 
-    push @LIBS,'-lX11','-lXpm' if $XPM; 
+  # FreeBSD 3.3 with libgd built from ports croaks if -lXpm is specified
+  if ($^O ne 'freebsd' && $^O ne 'MSWin32') {
+    push @LIBS,'-lX11','-lXpm' if $XPM;
   }
 }
 
@@ -370,7 +370,7 @@ my %WriteMakefileArgs = (
      # Maintained by Reini Urban now
      $CAPI ? ('CAPI'      => 'TRUE') : (),
     'DEFINE'	=> $DEFINES,
-    'clean'     => { 
+    'clean'     => {
         FILES => '.config.cache cover_db MANIFEST.git *.gcov GD.gcda GD.gcno'
                 .' META.yml META.json'
      },
@@ -619,7 +619,7 @@ sub try_to_autoconfigure {
       && ($release > 2
           || ($release == 2 && $major > 0)
           || ($release == 2 && $major == 0 && $minor >= 33));
-    $options     .= " BMP"
+    $options     .= " WINDOWS_BMP"
       if defined($minor)
       && ($release > 2
           || ($release == 2 && $major > 0));
