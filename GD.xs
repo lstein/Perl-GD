@@ -1106,6 +1106,7 @@ gdbmp(image)
     gdFree(data);
   OUTPUT:
     RETVAL
+
 #endif
 
 SV*
