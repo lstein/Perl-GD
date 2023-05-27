@@ -7,8 +7,6 @@ on:
     tags-ignore:
       - "*"
   pull_request:
-  # to delete
-  workflow_dispatch:
 
 jobs:
   ubuntu:
