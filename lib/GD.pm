@@ -628,6 +628,13 @@ pipe it to a display program, or write it to a file.  Example:
 Same as gd(), except that it returns the data in compressed GD2
 format.
 
+=item B<$bmpdata = $image-E<gt>bmp([$compression])>
+
+This returns the image data in BMP format, which is a Windows Bitmap.
+If compression is set to 1, it will use RLE compression on the pixel
+data; otherwise, setting it to 0 (the default) will leave the BMP 
+pixel data uncompressed.
+
 =item B<$wbmpdata = $image-E<gt>wbmp([$foreground])>
 
 This returns the image data in WBMP format, which is a black-and-white

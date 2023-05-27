@@ -1085,7 +1085,7 @@ gdgifanimend(image)
 
 #ifdef HAVE_BMP
 SV*
-gdbmp(image,compression)
+gdbmp(image,compression=0)
   GD::Image	image
   int           compression
   PROTOTYPE: $
