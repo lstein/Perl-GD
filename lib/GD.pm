@@ -407,16 +407,28 @@ contents of an X Bitmap (black & white) file:
 There is no newFromXbmData() function, because there is no
 corresponding function in the gd library.
 
-=item B<$image = GD::Image-E<gt>newFromWBMP($file, [$truecolor])>
+=item B<$image = GD::Image-E<gt>newFromWBMP($file)>
 
 This works in exactly the same way as C<newFromPng>, but reads the
-contents of an Windows BMP Bitmap file:
+contents of a Wireless Application Protocol Bitmap (WBMP) file:
+
+	open (WBMP,"coredump.wbmp") || die;
+	$myImage = GD::Image->newFromWBMP(\*WBMP) || die;
+	close WBMP;
+
+There is no newFromWBMPData() function, because there is no
+corresponding function in the gd library.
+
+=item B<$image = GD::Image-E<gt>newFromBmp($file)>
+
+This works in exactly the same way as C<newFromPng>, but reads the
+contents of a Windows Bitmap (BMP) file:
 
 	open (BMP,"coredump.bmp") || die;
 	$myImage = GD::Image->newFromWBMP(\*BMP) || die;
 	close BMP;
 
-There is no newFromWBMPData() function, because there is no
+There is no newFromBmpData() function, because there is no
 corresponding function in the gd library.
 
 =item B<$image = GD::Image-E<gt>newFromGd($file)>

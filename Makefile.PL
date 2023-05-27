@@ -20,7 +20,8 @@ my $HAVE_GD2 = 1;        # until libgd 2.3.1, unset by try_to_autoconfigure()
 
 my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,
     $lib_tiff_path,$lib_webp_path,$lib_raqm_path,$lib_heif_path,$lib_avif_path,
-    $lib_zlib_path,$lib_fontconfig_path,$force,$FCGI,$gdlib_config_path);
+    $lib_zlib_path,$lib_fontconfig_path,$force,$FCGI,$gdlib_config_path,
+    $lib_bmp_path);
 
 use Getopt::Long;
 my $result = GetOptions("ignore_missing_gd" => \$force,
@@ -36,6 +37,7 @@ my $result = GetOptions("ignore_missing_gd" => \$force,
 			"lib_heif_path=s" => \$lib_heif_path,
 			"lib_avif_path=s" => \$lib_avif_path,
 			"lib_zlib_path=s" => \$lib_zlib_path,
+      "lib_bmp_path=s"  => \$lib_bmp_path,
                         "lib_fontconfig_path=s" => \$lib_fontconfig_path,
                         "gdlib_config_path=s" => \$gdlib_config_path,
                         "fcgi"            => \$FCGI,
@@ -170,6 +172,12 @@ if( defined($lib_avif_path) )
     @INC     = ("-I$lib_avif_path/include", @INC);
     @LIBPATH = ("-L$lib_avif_path/lib", @LIBPATH); 
 }
+if( defined($lib_bmp_path) )
+{
+    print "BMP library used from:      $lib_bmp_path\n";
+    @INC     = ("-I$lib_bmp_path/include", @INC);
+    @LIBPATH = ("-L$lib_bmp_path/lib", @LIBPATH); 
+}
 if( defined($gdlib_config_path) )
 {
     print "gdlib-config used:          $gdlib_config_path\n";
@@ -231,7 +239,7 @@ unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
 my ($JPEG, $GD2, $FT, $XPM, $GIF,$ANIMGIF,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$TIFF,
-    $WEBP,$RAQM,$WBMP,$FTCIRCLE,$VERSION_33, $HEIF, $AVIF);
+    $WEBP,$RAQM,$WBMP,$BMP,$FTCIRCLE,$VERSION_33, $HEIF, $AVIF);
 if( defined($options) )
 {
     # WBMP is builtin since at least 1.8.0
@@ -249,6 +257,7 @@ if( defined($options) )
   $RAQM      = $options =~ m/RAQM/i;
   $HEIF      = $options =~ m/HEIF/i;
   $AVIF      = $options =~ m/AVIF/i;
+  $BMP       = $options =~ m/\bBMP/i;
   $ANIMGIF   = $GIF && $options =~ m/ANIMGIF/i;
   $VERSION_33= $options =~ m/VERSION_33/i; # i.e. 2.0.33 or higher
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
@@ -259,6 +268,7 @@ else
 {
     warn "\nPlease choose the features that match how libgd was built:\n";
     $WBMP = 1;
+    $BMP     = lc prompt('Build BMP support?','y') eq 'y';
     $JPEG    = lc prompt('Build JPEG support?','y') eq 'y';
     $PNG     = lc prompt('Build PNG support?','y') eq 'y';
     $GD2     = lc prompt('Build GD2 support?','y') eq 'y';
@@ -323,6 +333,7 @@ $DEFINES    .= ' -DHAVE_WEBP'    if $WEBP;
 $DEFINES    .= ' -DHAVE_RAQM'    if $RAQM;
 $DEFINES    .= ' -DHAVE_HEIF'    if $HEIF;
 $DEFINES    .= ' -DHAVE_AVIF'    if $AVIF;
+$DEFINES    .= ' -DHAVE_BMP'     if $BMP; # since 2.1.0
 $DEFINES    .= " -DLIBGD_VERSION=\"$LIBGD_VERSION\"" if defined($LIBGD_VERSION);
 open F,">.config.cache";
 print F $DEFINES,"\n";
@@ -608,6 +619,10 @@ sub try_to_autoconfigure {
       && ($release > 2
           || ($release == 2 && $major > 0)
           || ($release == 2 && $major == 0 && $minor >= 33));
+    $options     .= " BMP"
+      if defined($minor)
+      && ($release > 2
+          || ($release == 2 && $major > 0));
     if (defined($minor)
         && ($release > 2
             || ($release == 2 && $major > 3)
