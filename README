@@ -17,7 +17,7 @@ g.  support for TrueType font rendering, via libfreetype.
 h.  support for spline curves, via GD::Polyline
 i.  support for symbolic font names, such as "helvetica:italic"
 j.  support for symbolic color names, such as "green", via GD::Simple
-k.  produces output in png, gif, jpeg and xbm format
+k.  produces output in png, gif, jpeg, xbm and other formats supported by libgd
 l.  produces output in svg format via GD::SVG.
 
 For full information on usage, see the accompanying man and html
@@ -178,7 +178,7 @@ The GD::SVG LIBRARY
 
 GD::SVG, which is available separately on CPAN, provides a subset of
 GD method calls. For this subset, you can create images in SVG
-(scaleable vector graphics) format.
+(scalable vector graphics) format.
 
 THE QUICKDRAW LIBRARY
 
@@ -264,7 +264,7 @@ FREQUENTLY ASKED QUESTIONS
    The latest ActiveState binaries for Win32 systems come with GD
    already compiled in and ready to go. I don't own any Win32 systems,
    and cannot provide you with help in compiling GD from scratch on such 
-   systems.
+   systems. Github actions and appveyor are used to test the windows builds.
 
 9. GD won't compile on system XX.
 

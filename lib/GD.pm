@@ -300,7 +300,7 @@ compatibility with older versions of libgd.
 Alternatively, you may create a GD::Image object based on an existing
 image by providing an open filehandle, a filename, or the image data
 itself.  The image formats automatically recognized and accepted are:
-GIF, PNG, JPEG, XBM, XPM, GD2, TIFF, WEBP, HEIF or AVIF. Other formats,
+GIF, PNG, JPEG, XBM, XPM, BMP, GD2, TIFF, WEBP, HEIF or AVIF. Other formats,
 including WBMP, and GD version 1, cannot be recognized automatically
 at this time.
 
@@ -425,7 +425,7 @@ This works in exactly the same way as C<newFromPng>, but reads the
 contents of a Windows Bitmap (BMP) file:
 
 	open (BMP,"coredump.bmp") || die;
-	$myImage = GD::Image->newFromWBMP(\*BMP) || die;
+	$myImage = GD::Image->newFromBmp(\*BMP) || die;
 	close BMP;
 
 There is no newFromBmpData() function, because there is no

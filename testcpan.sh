@@ -7,4 +7,5 @@ ppan -f GD::Graph GD::Text Barcode::Code128  GD::Thumbnail GD::SVG GD::Text::Arc
 	GD::Tiler GD::Wbmp GD::Window GD::Image::AnimatedGif GD::Image::Orientation \
 	GD::Image::Scale2x GD::Image::Thumbnail GD::Map GD::Map::Mercator \
 	GD::Chart GD::Barcode GD::Arrow GD::3DBarGrapher GD::Dashboard
+# wrong tests, assuming stable png
 ppan GD::OrgChart
