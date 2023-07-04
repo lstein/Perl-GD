@@ -121,7 +121,8 @@ sub _make_filehandle {
   my $fh;
   {   
     local $^W = 0;  # to avoid uninitialized variable warning from Symbol.pm
-    $fh = qualify_to_ref($thing,caller(2));
+    my $pkg = caller(2) ? caller(2) : "main";
+    $fh = qualify_to_ref($thing,$pkg);
   }
   return $fh if defined(fileno $fh);
 

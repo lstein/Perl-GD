@@ -364,6 +364,7 @@ my %WriteMakefileArgs = (
     'TEST_REQUIRES' => {
         'Test::More' => 0.88,
         'Test::Fork' => 0.02,
+        'Test::NoWarnings'  => '1.00',
     },
     'PL_FILES'  => {'bdf_scripts/bdf2gdfont_pl.PL' => 'bdf_scripts/bdf2gdfont.pl',
                     'lib/GD/Image_pm.PL' => 'lib/GD/Image.pm'},
@@ -392,6 +393,7 @@ my %WriteMakefileArgs = (
             'ExtUtils::Constant'=> '0.23',
             'Test::More'        => '0.88',
             'Test::Fork'        => '0.02',
+            'Test::NoWarnings'  => '1.00',
         },
         resources => {
             repository => {
@@ -411,6 +413,7 @@ my %WriteMakefileArgs = (
                     'Pod::Spell::CommonMistakes' => 0,
                     'Test::Pod'         => '1.00',
                     'Algorithm::Diff'   => 0,
+                    'Test::NoWarnings'  => '1.00',
                 },
             },
         },
