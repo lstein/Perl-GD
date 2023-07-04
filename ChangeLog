@@ -1,3 +1,6 @@
+2.78    * Fix Use of uninitialized value $pkg in concatenation warning
+          (RT #148899 and GH #47). Thanks to ppisar for the analysis.
+          Adds a new hard Test::NoWarnings test requirement.
 2.77    * add BMP support with libgd 2.1.0, PR #49 by PeterCJ
         * don't link to -lXPM without XPM nor X11, GH #45
         * rename ANIMGIF feature to GIFANIM
