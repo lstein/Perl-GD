@@ -190,6 +190,7 @@ sub _image_type {
   return 'Tiff' if $magic eq "\x4d\x4d\x00\x2a" or
     $magic eq "\x49\x49\x2a\x00" or
     $magic eq "IIN1";
+  return 'Bmp' if $magic eq "BMF\000";
   return 'Webp' if $magic eq "RIFF" and substr($data,8,4) eq "WEBP";
   return 'Heif' if $magic eq "\000\000\000\030"
                 and substr($data,4,4) eq "ftyp"
