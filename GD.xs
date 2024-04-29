@@ -867,7 +867,7 @@ gdnewFromHeifData(packname="GD::Image", imageData)
 
 #endif
 
-#ifdef HAVE_HEIF
+#ifdef HAVE_AVIF
 GD::Image
 gd_newFromAvif(packname="GD::Image", filehandle)
 	char *	packname
