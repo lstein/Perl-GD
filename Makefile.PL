@@ -565,15 +565,31 @@ sub try_to_autoconfigure {
       # Libs.private:   -L/opt/local/lib -lz  -L/opt/local/lib -lpng16  -L/opt/local/lib -lfreetype  -L/opt/local/lib -lfontconfig -lfreetype   -ljpeg  -L/opt/local/lib -lXpm -lX11  -L/opt/local/lib -ltiff   -lwebp
       # not in the hash!
       # check the .pc file from $config{pkg}
-      if ($config{pkg} and -e $config{pkg}) {
+      my $pc = "$prefix/lib/pkgconfig/gdlib.pc";
+      if ($config{pkg}) {
+          $pc = "$prefix/lib/pkgconfig/" . $config{pkg} . ".pc";
+      }
+      if (!-e $pc) {
+          for my $p ("$prefix/lib/pkgconfig/gdlib.pc",
+                     "$prefix/lib64/pkgconfig/gdlib.pc",
+                     "/usr/lib64/pkgconfig/gdlib.pc",
+                     "/usr/local/lib/pkgconfig/gdlib.pc")
+          {
+              if (-e $p) {
+                  $pc = $p; last;
+              }
+          }
+      }
+      if (-e $pc) {
         my $F;
-        open $F, "<", $config{pkg};
+        open $F, "<", $pc;
         my $private;
         while (<$F>) {
           next unless /^Requires.private/;
           $private = $_;
         }
         close $F;
+        print STDERR "$pc: $private\n";
         $features = 'GD_GIF GD_OPENPOLYGON';
         $features .= ' GD_ZLIB' if $private =~ / zlib /;
         $features .= ' GD_PNG' if $private =~ / libpng /;
@@ -590,7 +606,7 @@ sub try_to_autoconfigure {
         $features = 'GD_GIF GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';
         #$features .= 'GD_WEBP' if $version ge '2.3.0';;
         $features .= ' GD_AVIF' if $version ge '2.3.2';
-        $features .= ' GD_HEIF' if $version ge '2.3.3';
+        $features .= ' GD_HEIF' if $version ge '2.3.3' and $^O ne 'darwin';
       }
       $AUTOCONFIG++;
   } else {
