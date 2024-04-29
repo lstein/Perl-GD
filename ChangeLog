@@ -1,3 +1,6 @@
+2.79    * Improve image type autodetection (RT #153212), add a test
+        * Fix Avif without Heif config
+        * Improve gdlib.pc reader for supported library features
 2.78    * Fix Use of uninitialized value $pkg in concatenation warning
           (RT #148899 and GH #47). Thanks to ppisar for the analysis.
           Adds a new hard Test::NoWarnings test requirement.
