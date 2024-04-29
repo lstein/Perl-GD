@@ -29,7 +29,7 @@ use strict;
 use GD;
 use Symbol 'gensym','qualify_to_ref';
 use vars '$VERSION';
-$VERSION = '2.77';
+$VERSION = '2.78';
 
 =head1 NAME
 
@@ -146,7 +146,7 @@ sub new {
     }
     return unless my $fh = $pack->_make_filehandle($_[0]);
     my $magic;
-    return unless read($fh,$magic,4);
+    return unless read($fh,$magic,12);
     return unless my $type = _image_type($magic);
     seek($fh,0,0);
     my $method = "newFrom${type}";
@@ -202,7 +202,7 @@ sub _image_type {
   return 'Tiff' if $magic eq "\x4d\x4d\x00\x2a" or
     $magic eq "\x49\x49\x2a\x00" or
     $magic eq "IIN1";
-  return 'Webp' if substr($data,0,12) eq "RIFF2\0\0\0WEBP";
+  return 'Webp' if $magic eq "RIFF" and substr($data,8,4) eq "WEBP";
   return 'Heif' if $magic eq '\000\000\000\030'
                 and substr($data,4,4) eq "ftyp"
                 and (substr($data,8,4) eq "heic"
