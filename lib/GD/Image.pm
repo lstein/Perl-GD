@@ -5,7 +5,7 @@ use strict;
 use GD;
 use Symbol 'gensym','qualify_to_ref';
 use vars '$VERSION';
-$VERSION = '2.77';
+$VERSION = '2.78';
 
 =head1 NAME
 
@@ -29,15 +29,15 @@ Supported Image formats:
 
 =item Tiff
 
+=item Xbm
+
 =item WBMP
+
+=item BMP
 
 =item Webp
 
-=item Heif
-
 =item Avif
-
-=item BMP
 
 =back
 
@@ -52,6 +52,8 @@ Unsupported Image formats:
 =item Xpm
 
 =item GifAnim
+
+=item Heif
 
 =back
 
@@ -114,10 +116,25 @@ sub new {
       my $method = "newFrom${type}Data";
       return unless $pack->can($method);
       return $pack->$method($_[0]);
+    } elsif (-f $_[0] and $_[0] =~ /\.gd$/) {
+      my $type = 'Gd';
+      my $method = "newFrom${type}Data";
+      return unless $pack->can($method);
+      return $pack->$method($_[0]);
+    } elsif (-f $_[0] and $_[0] =~ /\.gd2$/) {
+      my $type = 'Gd2';
+      my $method = "newFrom${type}Data";
+      return unless $pack->can($method);
+      return $pack->$method($_[0]);
+    } elsif (-f $_[0] and $_[0] =~ /\.wbmp$/) {
+      my $type = 'Wbmp';
+      my $method = "newFrom${type}Data";
+      return unless $pack->can($method);
+      return $pack->$method($_[0]);
     }
     return unless my $fh = $pack->_make_filehandle($_[0]);
     my $magic;
-    return unless read($fh,$magic,4);
+    return unless read($fh,$magic,12);
     return unless my $type = _image_type($magic);
     seek($fh,0,0);
     my $method = "newFrom${type}";
@@ -173,17 +190,18 @@ sub _image_type {
   return 'Tiff' if $magic eq "\x4d\x4d\x00\x2a" or
     $magic eq "\x49\x49\x2a\x00" or
     $magic eq "IIN1";
-  return 'Webp' if substr($data,0,12) eq "RIFF2\0\0\0WEBP";
-  return 'Heif' if $magic eq '\000\000\000\030'
+  return 'Webp' if $magic eq "RIFF" and substr($data,8,4) eq "WEBP";
+  return 'Heif' if $magic eq "\000\000\000\030"
                 and substr($data,4,4) eq "ftyp"
                 and (substr($data,8,4) eq "heic"
                   or substr($data,8,4) eq "heix");
-  return 'Avif' if $magic eq '\000\000\000\030'
+  return 'Avif' if ($magic eq "\000\000\000\030"
+                    or $magic eq "\000\000\000\034")
                 and substr($data,4,4) eq "ftyp"
                 and (substr($data,8,4) eq "avif"
                   or substr($data,8,4) eq "mif1");
-  return 'Xpm'  if substr($data,0,9) eq "/* XPM */" or $magic eq '/* X';
-  return 'Xbm'  if substr($data,0,8) eq "#define " or $magic eq "#def";
+  return 'Xpm'  if substr($data,0,9) eq "/* XPM */";
+  return 'Xbm'  if substr($data,0,8) eq "#define ";
   return;
 }
 
@@ -247,14 +265,6 @@ sub newFromWebp {
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromWebp($fh);
-}
-
-sub newFromHeif {
-    croak("Usage: newFromHeif(class,filehandle)") unless @_==2;
-    my($class,$f) = @_;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromHeif($fh);
 }
 
 sub newFromAvif {

@@ -53,12 +53,13 @@ print OUT "=item Gd\n\n=item Gd2\n\n" if $DEFINES =~ /HAVE_GD2/;
 print OUT "=item Jpeg\n\n" if $DEFINES =~ /HAVE_JPEG/;
 print OUT "=item Tiff\n\n" if $DEFINES =~ /HAVE_TIFF/;
 print OUT "=item Xpm\n\n" if $DEFINES =~ /HAVE_XPM/;
+print OUT "=item Xbm\n\n" if 1 or $DEFINES =~ /HAVE_XBM/;
 print OUT "=item WBMP\n\n" if 1 or $DEFINES =~ /HAVE_WBMP/;
+print OUT "=item BMP\n\n" if $DEFINES =~ /HAVE_BMP/;
 print OUT "=item GifAnim\n\n" if $DEFINES =~ /HAVE_GIFANIM/;
 print OUT "=item Webp\n\n" if $DEFINES =~ /HAVE_WEBP/;
 print OUT "=item Heif\n\n" if $DEFINES =~ /HAVE_HEIF/;
 print OUT "=item Avif\n\n" if $DEFINES =~ /HAVE_AVIF/;
-print OUT "=item BMP\n\n" if $DEFINES =~ /HAVE_BMP/;
 
 print OUT << '!NO!SUBS!';
 =back
@@ -143,6 +144,21 @@ sub new {
       my $method = "newFrom${type}Data";
       return unless $pack->can($method);
       return $pack->$method($_[0]);
+    } elsif (-f $_[0] and $_[0] =~ /\.gd$/) {
+      my $type = 'Gd';
+      my $method = "newFrom${type}Data";
+      return unless $pack->can($method);
+      return $pack->$method($_[0]);
+    } elsif (-f $_[0] and $_[0] =~ /\.gd2$/) {
+      my $type = 'Gd2';
+      my $method = "newFrom${type}Data";
+      return unless $pack->can($method);
+      return $pack->$method($_[0]);
+    } elsif (-f $_[0] and $_[0] =~ /\.wbmp$/) {
+      my $type = 'Wbmp';
+      my $method = "newFrom${type}Data";
+      return unless $pack->can($method);
+      return $pack->$method($_[0]);
     }
     return unless my $fh = $pack->_make_filehandle($_[0]);
     my $magic;
@@ -203,16 +219,17 @@ sub _image_type {
     $magic eq "\x49\x49\x2a\x00" or
     $magic eq "IIN1";
   return 'Webp' if $magic eq "RIFF" and substr($data,8,4) eq "WEBP";
-  return 'Heif' if $magic eq '\000\000\000\030'
+  return 'Heif' if $magic eq "\000\000\000\030"
                 and substr($data,4,4) eq "ftyp"
                 and (substr($data,8,4) eq "heic"
                   or substr($data,8,4) eq "heix");
-  return 'Avif' if $magic eq '\000\000\000\030'
+  return 'Avif' if ($magic eq "\000\000\000\030"
+                    or $magic eq "\000\000\000\034")
                 and substr($data,4,4) eq "ftyp"
                 and (substr($data,8,4) eq "avif"
                   or substr($data,8,4) eq "mif1");
-  return 'Xpm'  if substr($data,0,9) eq "/* XPM */" or $magic eq '/* X';
-  return 'Xbm'  if substr($data,0,8) eq "#define " or $magic eq "#def";
+  return 'Xpm'  if substr($data,0,9) eq "/* XPM */";
+  return 'Xbm'  if substr($data,0,8) eq "#define ";
   return;
 }
 
