@@ -727,19 +727,17 @@ gd_newFromWBMP(packname="GD::Image", filehandle)
   OUTPUT:
         RETVAL
 
+#ifdef HAVE_XPM
 GD::Image
 gdnewFromXpm(packname="GD::Image", filename)
 	char *	packname
 	char *	filename
   PROTOTYPE: $$
   PREINIT:
-#ifdef HAVE_XPM
   	gdImagePtr img;
-#endif
 	SV* errormsg;
   CODE:
 	PERL_UNUSED_ARG(packname);
-#ifdef HAVE_XPM
         img = (GD__Image) gdImageCreateFromXpm(filename);
         if (img == NULL) {
             errormsg = perl_get_sv("@",0);
@@ -750,14 +748,10 @@ gdnewFromXpm(packname="GD::Image", filename)
           XSRETURN_EMPTY;
         }
         RETVAL = img;
-#else
-	PERL_UNUSED_ARG(filename);
-        errormsg = perl_get_sv("@",0);
-        sv_setpv(errormsg,"libgd was not built with xpm support\n");
-        XSRETURN_EMPTY;
-#endif
   OUTPUT:
         RETVAL
+
+#endif
 
 #ifdef HAVE_GIF
 GD::Image

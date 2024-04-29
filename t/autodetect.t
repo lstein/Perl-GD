@@ -62,7 +62,10 @@ SKIP: {
   ok defined($bmp), "bmp detected";
 }
 
-my $xpm = GD::Image->new("t/test_data/frog.xpm");
-ok defined($xpm), "xpm detected";
+SKIP: {
+  skip "No XPM support", 1 unless defined &GD::Image::newFromXpm;
+  my $xpm = GD::Image->new("t/test_data/frog.xpm");
+  ok defined($xpm), "xpm detected";
+}
 my $xbm = GD::Image->new("t/test_data/frog.xbm");
 ok defined($xbm), "xbm detected";
