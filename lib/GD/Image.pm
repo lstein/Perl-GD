@@ -5,7 +5,7 @@ use strict;
 use GD;
 use Symbol 'gensym','qualify_to_ref';
 use vars '$VERSION';
-$VERSION = '2.79';
+$VERSION = '2.80';
 
 =head1 NAME
 
@@ -37,8 +37,6 @@ Supported Image formats:
 
 =item Webp
 
-=item Heif
-
 =item Avif
 
 =back
@@ -54,6 +52,8 @@ Unsupported Image formats:
 =item Xpm
 
 =item GifAnim
+
+=item Heif
 
 =back
 
@@ -218,6 +218,7 @@ sub _image_type {
   return;
 }
 
+
 sub clone {
   croak("Usage: clone(\$image)") unless @_ == 1;
   my $self = shift;
@@ -277,14 +278,6 @@ sub newFromWebp {
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromWebp($fh);
-}
-
-sub newFromHeif {
-    croak("Usage: newFromHeif(class,filehandle)") unless @_==2;
-    my($class,$f) = @_;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromHeif($fh);
 }
 
 sub newFromAvif {

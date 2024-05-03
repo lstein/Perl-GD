@@ -1,3 +1,11 @@
+2.80    * Fix broken copyTranspose and copyReverseTranspose (RT #153300)
+          by Yuriy Yevtukhov.
+        * Add transformation tests
+        * Fix wrong WBMP name and detection
+        * Fix wrong filename extension auto-detection for gd,gd2,wbmp
+        * Fix wrong filename extension auto-detection for xpm,
+          newFromXpm needs the filename, not handle.
+        * Fix wrong libgd doc link (PR #52) by Tsuyoshi Watanabe
 2.79    * Improve image type autodetection (RT #153212), add a test
         * Fix Avif without Heif config
         * Improve gdlib.pc reader for supported library features
