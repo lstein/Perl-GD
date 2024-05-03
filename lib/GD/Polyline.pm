@@ -66,7 +66,7 @@ sub centroid {
     $cx *= $scale / $self->length();
     $cy *= $scale / $self->length();
 
-	return ($cx, $cy);
+    return ($cx, $cy);
 }
 
 
@@ -74,64 +74,64 @@ sub segLength {
     my $self = shift;
     my @points = $self->vertices();
 
-	my ($p1, $p2, @segLengths);
+    my ($p1, $p2, @segLengths);
 
-	$p1 = shift @points;
+    $p1 = shift @points;
 
-	# put the first vertex on the end to "close" a polygon, but not a polyline
-	push @points, $p1 unless $self->isa('GD::Polyline');
+    # put the first vertex on the end to "close" a polygon, but not a polyline
+    push @points, $p1 unless $self->isa('GD::Polyline');
 
-	while ($p2 = shift @points) {
-		push @segLengths, _len($p1, $p2);
-		$p1 = $p2;
-	}
+    while ($p2 = shift @points) {
+        push @segLengths, _len($p1, $p2);
+        $p1 = $p2;
+    }
 
-	return @segLengths if wantarray;
-
-	my $sum;
-	map {$sum += $_} @segLengths;
-	return $sum;
+    return @segLengths if wantarray;
+    
+    my $sum;
+    map {$sum += $_} @segLengths;
+    return $sum;
 }
 
 sub segAngle {
     my $self = shift;
     my @points = $self->vertices();
 
-	my ($p1, $p2, @segAngles);
+    my ($p1, $p2, @segAngles);
 
-	$p1 = shift @points;
+    $p1 = shift @points;
 
-	# put the first vertex on the end to "close" a polygon, but not a polyline
-	push @points, $p1 unless $self->isa('GD::Polyline');
+    # put the first vertex on the end to "close" a polygon, but not a polyline
+    push @points, $p1 unless $self->isa('GD::Polyline');
 
-	while ($p2 = shift @points) {
-		push @segAngles, _angle_reduce2(_angle($p1, $p2));
-		$p1 = $p2;
-	}
+    while ($p2 = shift @points) {
+        push @segAngles, _angle_reduce2(_angle($p1, $p2));
+        $p1 = $p2;
+    }
 
-	return @segAngles;
+    return @segAngles;
 }
 
 sub vertexAngle {
     my $self = shift;
     my @points = $self->vertices();
 
-	my ($p1, $p2, $p3, @vertexAngle);
+    my ($p1, $p2, $p3, @vertexAngle);
 
-	$p1 = $points[$#points];	# last vertex
-	$p2 = shift @points;		# current point -- the first vertex
+    $p1 = $points[$#points];	# last vertex
+    $p2 = shift @points;		# current point -- the first vertex
 
-	# put the first vertex on the end to "close" a polygon, but not a polyline
-	push @points, $p2 unless $self->isa('GD::Polyline');
+    # put the first vertex on the end to "close" a polygon, but not a polyline
+    push @points, $p2 unless $self->isa('GD::Polyline');
 
-	while ($p3 = shift @points) {
-		push @vertexAngle, _angle_reduce2(_angle($p1, $p2, $p3));
-		($p1, $p2) = ($p2, $p3);
-	}
+    while ($p3 = shift @points) {
+        push @vertexAngle, _angle_reduce2(_angle($p1, $p2, $p3));
+        ($p1, $p2) = ($p2, $p3);
+    }
 
-	$vertexAngle[0] = undef if defined $vertexAngle[0] and $self->isa("GD::Polyline");
-
-	return @vertexAngle if wantarray;
+    $vertexAngle[0] = undef if defined $vertexAngle[0] and $self->isa("GD::Polyline");
+    
+    return @vertexAngle if wantarray;
 
 }
 
@@ -141,153 +141,153 @@ sub toSpline {
     my $self = shift;
     my @points = $self->vertices();
 
-	# put the first vertex on the end to "close" a polygon, but not a polyline
+    # put the first vertex on the end to "close" a polygon, but not a polyline
     push @points, [$self->getPt(0)] unless $self->isa('GD::Polyline');
 
-	unless (@points > 1 and @points % 3 == 1) {
-	    carp "Attempt to call toSpline() with invalid set of control points";
-		return undef;
-	}
+    unless (@points > 1 and @points % 3 == 1) {
+        carp "Attempt to call toSpline() with invalid set of control points";
+        return undef;
+    }
 
     my ($ap1, $dp1, $dp2, $ap2); # ap = anchor point, dp = director point
     $ap1 = shift @points;
 
-	my $bez = new ref($self);
+    my $bez = new ref($self);
 
     $bez->addPt(@$ap1);
 
     while (@points) {
     	($dp1, $dp2, $ap2) = splice(@points, 0, 3);
 
-		for (1..$bezSegs) {
-			my ($t0, $t1, $c1, $c2, $c3, $c4, $x, $y);
+        for (1..$bezSegs) {
+            my ($t0, $t1, $c1, $c2, $c3, $c4, $x, $y);
 
-			$t1 = $_/$bezSegs;
-			$t0 = (1 - $t1);
+            $t1 = $_/$bezSegs;
+            $t0 = (1 - $t1);
 
-			# possible optimization:
-			# these coefficient could be calculated just once and
-			# cached in an array for a given value of $bezSegs
+            # possible optimization:
+            # these coefficient could be calculated just once and
+            # cached in an array for a given value of $bezSegs
 
-			$c1 =     $t0 * $t0 * $t0;
-			$c2 = 3 * $t0 * $t0 * $t1;
-			$c3 = 3 * $t0 * $t1 * $t1;
-			$c4 =     $t1 * $t1 * $t1;
+            $c1 =     $t0 * $t0 * $t0;
+            $c2 = 3 * $t0 * $t0 * $t1;
+            $c3 = 3 * $t0 * $t1 * $t1;
+            $c4 =     $t1 * $t1 * $t1;
 
-			$x = $c1 * $ap1->[0] + $c2 * $dp1->[0] + $c3 * $dp2->[0] + $c4 * $ap2->[0];
-			$y = $c1 * $ap1->[1] + $c2 * $dp1->[1] + $c3 * $dp2->[1] + $c4 * $ap2->[1];
+            $x = $c1 * $ap1->[0] + $c2 * $dp1->[0] + $c3 * $dp2->[0] + $c4 * $ap2->[0];
+            $y = $c1 * $ap1->[1] + $c2 * $dp1->[1] + $c3 * $dp2->[1] + $c4 * $ap2->[1];
 
-			$bez->addPt($x, $y);
-		}
+            $bez->addPt($x, $y);
+        }
 
     	$ap1 = $ap2;
     }
 
     # remove the last anchor point if this is a polygon -- since it will autoclose without it
-	$bez->deletePt($bez->length()-1) unless $self->isa('GD::Polyline');
+    $bez->deletePt($bez->length()-1) unless $self->isa('GD::Polyline');
 
-	return $bez;
+    return $bez;
 }
 
 sub addControlPoints {
     my $self = shift;
     my @points = $self->vertices();
 
-	unless (@points > 1) {
-	    carp "Attempt to call addControlPoints() with too few vertices in polyline";
-		return undef;
-	}
+    unless (@points > 1) {
+        carp "Attempt to call addControlPoints() with too few vertices in polyline";
+        return undef;
+    }
 
-	my $points = scalar(@points);
-	my @segAngles  = $self->segAngle();
-	my @segLengths = $self->segLength();
+    my $points = scalar(@points);
+    my @segAngles  = $self->segAngle();
+    my @segLengths = $self->segLength();
 
-	my ($prevLen, $nextLen, $prevAngle, $thisAngle, $nextAngle);
-	my ($controlSeg, $pt, $ptX, $ptY, @controlSegs);
+    my ($prevLen, $nextLen, $prevAngle, $thisAngle, $nextAngle);
+    my ($controlSeg, $pt, $ptX, $ptY, @controlSegs);
 
-	# this loop goes about creating polylines -- here called control segments --
-	# that hold the control points for the final set of control points
+    # this loop goes about creating polylines -- here called control segments --
+    # that hold the control points for the final set of control points
 
-	# each control segment has three points, and these are colinear
+    # each control segment has three points, and these are colinear
 
-	# the first and last will ultimately be "director points", and
-	# the middle point will ultimately be an "anchor point"
+    # the first and last will ultimately be "director points", and
+    # the middle point will ultimately be an "anchor point"
 
-	for my $i (0..$#points) {
+    for my $i (0..$#points) {
 
-		$controlSeg = new GD::Polyline;
+        $controlSeg = new GD::Polyline;
 
-		$pt = $points[$i];
-		($ptX, $ptY) = @$pt;
+        $pt = $points[$i];
+        ($ptX, $ptY) = @$pt;
 
-		if ($self->isa('GD::Polyline') and ($i == 0 or $i == $#points)) {
-			$controlSeg->addPt($ptX, $ptY);	# director point
-			$controlSeg->addPt($ptX, $ptY);	# anchor point
-			$controlSeg->addPt($ptX, $ptY);	# director point
-			next;
-		}
+        if ($self->isa('GD::Polyline') and ($i == 0 or $i == $#points)) {
+            $controlSeg->addPt($ptX, $ptY);	# director point
+            $controlSeg->addPt($ptX, $ptY);	# anchor point
+            $controlSeg->addPt($ptX, $ptY);	# director point
+            next;
+        }
 
-		$prevLen = $segLengths[$i-1];
-		$nextLen = $segLengths[$i];
-		$prevAngle = $segAngles[$i-1];
-		$nextAngle = $segAngles[$i];
+        $prevLen = $segLengths[$i-1];
+        $nextLen = $segLengths[$i];
+        $prevAngle = $segAngles[$i-1];
+        $nextAngle = $segAngles[$i];
 
-		# make a control segment with control points (director points)
-		# before and after the point from the polyline (anchor point)
+        # make a control segment with control points (director points)
+        # before and after the point from the polyline (anchor point)
 
-		$controlSeg->addPt($ptX - $csr * $prevLen, $ptY);	# director point
-		$controlSeg->addPt($ptX                  , $ptY);	# anchor point
-		$controlSeg->addPt($ptX + $csr * $nextLen, $ptY);	# director point
+        $controlSeg->addPt($ptX - $csr * $prevLen, $ptY);	# director point
+        $controlSeg->addPt($ptX                  , $ptY);	# anchor point
+        $controlSeg->addPt($ptX + $csr * $nextLen, $ptY);	# director point
 
-		# note that:
-		# - the line is parallel to the x-axis, as the points have a common $ptY
-		# - the points are thus clearly colinear
-		# - the director point is a distance away from the anchor point in proportion to the length of the segment it faces
+        # note that:
+        # - the line is parallel to the x-axis, as the points have a common $ptY
+        # - the points are thus clearly colinear
+        # - the director point is a distance away from the anchor point in proportion to the length of the segment it faces
 
-		# now, we must come up with a reasonable angle for the control seg
-		#  first, "unwrap" $nextAngle w.r.t. $prevAngle
-		$nextAngle -= 2*pi() until $nextAngle < $prevAngle + pi();
-		$nextAngle += 2*pi() until $nextAngle > $prevAngle - pi();
-		#  next, use seg lengths as an inverse weighted average
-		#  to "tip" the control segment toward the *shorter* segment
-		$thisAngle = ($nextAngle * $prevLen + $prevAngle * $nextLen) / ($prevLen + $nextLen);
+        # now, we must come up with a reasonable angle for the control seg
+        #  first, "unwrap" $nextAngle w.r.t. $prevAngle
+        $nextAngle -= 2*pi() until $nextAngle < $prevAngle + pi();
+        $nextAngle += 2*pi() until $nextAngle > $prevAngle - pi();
+        #  next, use seg lengths as an inverse weighted average
+        #  to "tip" the control segment toward the *shorter* segment
+        $thisAngle = ($nextAngle * $prevLen + $prevAngle * $nextLen) / ($prevLen + $nextLen);
 
-		# rotate the control segment to $thisAngle about it's anchor point
-		$controlSeg->rotate($thisAngle, $ptX, $ptY);
+        # rotate the control segment to $thisAngle about it's anchor point
+        $controlSeg->rotate($thisAngle, $ptX, $ptY);
 
-	} continue {
-		# save the control segment for later
-		push @controlSegs, $controlSeg;
+    } continue {
+        # save the control segment for later
+        push @controlSegs, $controlSeg;
 
-	}
+    }
 
-	# post process
+    # post process
 
-	my $controlPoly = new ref($self);
+    my $controlPoly = new ref($self);
 
-	# collect all the control segments' points in to a single control poly
+    # collect all the control segments' points in to a single control poly
 
-	foreach my $cs (@controlSegs) {
-		foreach my $pt ($cs->vertices()) {
-			$controlPoly->addPt(@$pt);
-		}
-	}
+    foreach my $cs (@controlSegs) {
+        foreach my $pt ($cs->vertices()) {
+            $controlPoly->addPt(@$pt);
+        }
+    }
 
-	# final clean up based on poly type
+    # final clean up based on poly type
 
-	if ($controlPoly->isa('GD::Polyline')) {
-		# remove the first and last control point
-		# since they are director points ...
-		$controlPoly->deletePt(0);
-		$controlPoly->deletePt($controlPoly->length()-1);
-	} else {
-		# move the first control point to the last control point
-		# since it is supposed to end with two director points ...
-		$controlPoly->addPt($controlPoly->getPt(0));
-		$controlPoly->deletePt(0);
-	}
+    if ($controlPoly->isa('GD::Polyline')) {
+        # remove the first and last control point
+        # since they are director points ...
+        $controlPoly->deletePt(0);
+        $controlPoly->deletePt($controlPoly->length()-1);
+    } else {
+        # move the first control point to the last control point
+        # since it is supposed to end with two director points ...
+        $controlPoly->addPt($controlPoly->getPt(0));
+        $controlPoly->deletePt(0);
+    }
 
-	return $controlPoly;
+    return $controlPoly;
 }
 
 
@@ -303,8 +303,8 @@ sub addControlPoints {
 sub _len {
 #	my ($p1, $p2) = @_;
 #	return sqrt(($p2->[0]-$p1->[0])**2 + ($p2->[1]-$p1->[1])**2);
-	my $pt = _subtract(@_);
-	return sqrt($pt->[0] ** 2 + $pt->[1] **2);
+    my $pt = _subtract(@_);
+    return sqrt($pt->[0] ** 2 + $pt->[1] **2);
 }
 
 use Math::Trig;
@@ -317,17 +317,17 @@ use Math::Trig;
 # Internal function; NOT a class or object method.
 #
 sub _angle {
-	my ($p1, $p2, $p3) = @_;
-	my $angle = undef;
-	if (@_ == 1) {
-		return atan2($p1->[1], $p1->[0]);
-	}
-	if (@_ == 2) {
-		return _angle(_subtract($p1, $p2));
-	}
-	if (@_ == 3) {
-		return _angle(_subtract($p2, $p3)) - _angle(_subtract($p2, $p1));
-	}
+    my ($p1, $p2, $p3) = @_;
+    my $angle = undef;
+    if (@_ == 1) {
+        return atan2($p1->[1], $p1->[0]);
+    }
+    if (@_ == 2) {
+        return _angle(_subtract($p1, $p2));
+    }
+    if (@_ == 3) {
+        return _angle(_subtract($p2, $p3)) - _angle(_subtract($p2, $p1));
+    }
 }
 
 # _subtract()
@@ -335,9 +335,9 @@ sub _angle {
 # Internal function; NOT a class or object method.
 #
 sub _subtract {
-	my ($p1, $p2) = @_;
-#	print(_print_point($p2), "-", _print_point($p1), "\n");
-	return [$p2->[0]-$p1->[0], $p2->[1]-$p1->[1]];
+    my ($p1, $p2) = @_;
+    #	print(_print_point($p2), "-", _print_point($p1), "\n");
+    return [$p2->[0]-$p1->[0], $p2->[1]-$p1->[1]];
 }
 
 # _print_point()
@@ -345,8 +345,8 @@ sub _subtract {
 # Internal function; NOT a class or object method.
 #
 sub _print_point {
-	my ($p1) = @_;
-	return "[" . join(", ", @$p1) . "]";
+    my ($p1) = @_;
+    return "[" . join(", ", @$p1) . "]";
 }
 
 # _angle_reduce1()
@@ -354,10 +354,10 @@ sub _print_point {
 # Internal function; NOT a class or object method.
 #
 sub _angle_reduce1 {
-	my ($angle) = @_;
-	$angle += 2 * pi() while $angle <= -pi();
-	$angle -= 2 * pi() while $angle >   pi();
-	return $angle;
+    my ($angle) = @_;
+    $angle += 2 * pi() while $angle <= -pi();
+    $angle -= 2 * pi() while $angle >   pi();
+    return $angle;
 }
 
 # _angle_reduce2()
@@ -365,10 +365,10 @@ sub _angle_reduce1 {
 # Internal function; NOT a class or object method.
 #
 sub _angle_reduce2 {
-	my ($angle) = @_;
-	$angle += 2 * pi() while $angle <  0;
-	$angle -= 2 * pi() while $angle >= 2 * pi();
-	return $angle;
+    my ($angle) = @_;
+    $angle += 2 * pi() while $angle <  0;
+    $angle -= 2 * pi() while $angle >= 2 * pi();
+    return $angle;
 }
 
 ############################################################################
@@ -386,7 +386,7 @@ sub GD::Image::polyline {
     my $p1 = shift @points;
     my $p2;
     while ($p2 = shift @points) {
-	    $self->line(@$p1, @$p2, $c);
+        $self->line(@$p1, @$p2, $c);
     	$p1 = $p2;
     }
 }
@@ -396,8 +396,8 @@ sub GD::Image::polydraw {
     my $p    = shift;	# the GD::Polyline or GD::Polygon
     my $c    = shift;	# the color
 
-   	return $self->polyline($p, $c) if $p->isa('GD::Polyline');
-   	return $self->polygon($p, $c);
+    return $self->polyline($p, $c) if $p->isa('GD::Polyline');
+    return $self->polygon($p, $c);
 }
 
 

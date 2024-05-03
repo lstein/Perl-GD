@@ -1,3 +1,7 @@
+2.81    * Change GD::Polygon::transform to match old demos (RT #140043),
+          and GD::Polyline.
+          Add GD::Polygon::rotate(cw-radian) helper.
+          Allow GD::Polygon::scale(2.0).
 2.80    * Fix broken copyTranspose and copyReverseTranspose (RT #153300)
           by Yuriy Yevtukhov.
         * Add transformation tests
