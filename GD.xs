@@ -1560,7 +1560,7 @@ gdcopyTranspose(src)
 	int x, y, x1, y1, x2, y2, i, j;
   CODE:
 	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
-	RETVAL = gd_cloneDim(src, x, y);
+	RETVAL = gd_cloneDim(src, y, x);
 
 	for (j=0;j<y;j++) {
           for (i=0;i<x;i++) {
@@ -1578,7 +1578,7 @@ gdcopyReverseTranspose(src)
 	int x, y, x1, y1, x2, y2, i, j;
   CODE:
 	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
-	RETVAL = gd_cloneDim(src, x, y);
+	RETVAL = gd_cloneDim(src, y, x);
 
 	for (j=0;j<y;j++) {
           for (i=0;i<x;i++) {
