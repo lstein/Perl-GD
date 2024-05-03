@@ -1472,9 +1472,9 @@ gdcopyRotate90(src)
 	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
 	RETVAL = gd_cloneDim(src, y, x);
 
-	for (j=0;j<y;j++) {
-	   for (i=0;i<x;i++) {
-	      GDCopyImagePixel(RETVAL,y1-j,i,src,i,j);
+	for (j=0; j<y; j++) {
+	   for (i=0; i<x; i++) {
+	      GDCopyImagePixel(RETVAL, y1-j, i, src, i, j);
 	   }
 	}
   OUTPUT:
@@ -1490,9 +1490,9 @@ gdcopyRotate180(src)
 	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
 	RETVAL = gd_cloneDim(src, x, y);
 
-	for (j=0;j<y;j++) {
-          for (i=0;i<x;i++) {
-            GDCopyImagePixel(RETVAL,x1-i,y1-j,src,i,j);
+	for (j=0; j<y; j++) {
+          for (i=0; i<x; i++) {
+            GDCopyImagePixel(RETVAL, x1-i, y1-j, src, i, j);
           }
         }
   OUTPUT:
@@ -1508,9 +1508,9 @@ gdcopyRotate270(src)
 	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
 	RETVAL = gd_cloneDim(src, y, x);
 		
-	for (i=0;i<x;i++) {
-	   for (j=0;j<y;j++) {
-	      GDCopyImagePixel(RETVAL,j,x1-i,src,i,j);
+	for (i=0; i<x; i++) {
+	   for (j=0; j<y; j++) {
+	      GDCopyImagePixel(RETVAL, j, x1-i, src, i, j);
 	   }
 	}
   OUTPUT:
@@ -1526,9 +1526,9 @@ gdcopyFlipHorizontal(src)
 	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
 	RETVAL = gd_cloneDim(src, x, y);
 
-	for (j=0;j<y;j++) {
-	   for (i=0;i<x;i++) {
-	      GDCopyImagePixel(RETVAL,x1-i,j,src,i,j);
+	for (j=0; j<y; j++) {
+	   for (i=0; i<x; i++) {
+	      GDCopyImagePixel(RETVAL, x1-i, j, src, i, j);
 	   }
 	}
   OUTPUT:
@@ -1544,9 +1544,9 @@ gdcopyFlipVertical(src)
 	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
 	RETVAL = gd_cloneDim(src, x, y);
 
-	for (j=0;j<y;j++) {
-          for (i=0;i<x;i++) {
-            GDCopyImagePixel(RETVAL,i,y1-j,src,i,j);
+	for (j=0; j<y; j++) {
+          for (i=0; i<x; i++) {
+            GDCopyImagePixel(RETVAL, i, y1-j, src, i, j);
           }
         }
   OUTPUT:
@@ -1562,8 +1562,8 @@ gdcopyTranspose(src)
 	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
 	RETVAL = gd_cloneDim(src, y, x);
 
-	for (j=0;j<y;j++) {
-          for (i=0;i<x;i++) {
+	for (j=0; j<y; j++) {
+          for (i=0; i<x; i++) {
             GDCopyImagePixel(RETVAL,j,i,src,i,j);
           }
         }
@@ -1580,9 +1580,9 @@ gdcopyReverseTranspose(src)
 	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
 	RETVAL = gd_cloneDim(src, y, x);
 
-	for (j=0;j<y;j++) {
-          for (i=0;i<x;i++) {
-            GDCopyImagePixel(RETVAL,y1-j,x1-i,src,i,j);
+	for (j=0; j<y; j++) {
+          for (i=0; i<x; i++) {
+            GDCopyImagePixel(RETVAL, y1-j, x1-i, src, i, j);
           }
         }
   OUTPUT:
@@ -1599,9 +1599,9 @@ gdrotate180(src)
 
 	for (j=0; j<y2; j++) {
           for (i=0; i<x; i++) {
-            int tmp = GDGetImagePixel(src,x1-i,y1-j);
-            GDCopyImagePixel(src,x1-i,y1-j,src,i,j);
-            GDSetImagePixel(src,i,j,tmp);
+            int tmp = GDGetImagePixel(src, x1-i, y1-j);
+            GDCopyImagePixel(src, x1-i, y1-j, src, i, j);
+            GDSetImagePixel(src, i, j, tmp);
           }
         }
         if (y % 2 == 1) {
@@ -1651,11 +1651,11 @@ gdflipHorizontal(src)
   CODE:
 	get_xformbounds(src, &x, &y, &x1, &y1, &x2, &y2);
 
-	for (j=0;j<y;j++) {
-          for (i=0;i<x2;i++) {
-            int tmp = GDGetImagePixel(src,x1-i,j);
-            GDCopyImagePixel(src,x1-i,j,src,i,j);
-            GDSetImagePixel(src,i,j,tmp);
+	for (j=0; j<y; j++) {
+          for (i=0; i<x2; i++) {
+            int tmp = GDGetImagePixel(src, x1-i, j);
+            GDCopyImagePixel(src, x1-i, j, src, i, j);
+            GDSetImagePixel(src, i, j, tmp);
           }
         }
 
@@ -1670,9 +1670,9 @@ gdflipVertical(src)
 
 	for (j=0; j<y2; j++) {
           for (i=0; i<x; i++) {
-            int tmp = GDGetImagePixel(src,i,y1-j);
-            GDCopyImagePixel(src,i,y1-j,src,i,j);
-            GDSetImagePixel(src,i,j,tmp);
+            int tmp = GDGetImagePixel(src, i, y1-j);
+            GDCopyImagePixel(src, i, y1-j, src, i, j);
+            GDSetImagePixel(src, i, j, tmp);
           }
         }
 
@@ -1686,7 +1686,7 @@ gdline(image,x1,y1,x2,y2,color)
 	int		color
   PROTOTYPE: $$$$$$
   CODE:
-    gdImageLine(image,x1,y1,x2,y2,color);
+    gdImageLine(image, x1, y1, x2, y2, color);
 
 void
 gddashedLine(image,x1,y1,x2,y2,color)
@@ -1698,7 +1698,7 @@ gddashedLine(image,x1,y1,x2,y2,color)
 	int		color
   PROTOTYPE: $$$$$$
   CODE:
-    gdImageDashedLine(image,x1,y1,x2,y2,color);
+    gdImageDashedLine(image, x1, y1, x2, y2, color);
 
 void
 gdopenPolygon(image,poly,color)
@@ -1731,7 +1731,7 @@ gdopenPolygon(image,poly,color)
 		if (polyptr == NULL)
                   croak("safemalloc() returned NULL in GD::Image::poly().\n");
 		
-		for (i=0;i<length;i++) {
+		for (i=0; i<length; i++) {
                   ENTER ;
                   SAVETMPS ;
                   PUSHMARK(sp) ;
@@ -1787,7 +1787,7 @@ gdunclosedPolygon(image,poly,color)
 		if (polyptr == NULL)
                   croak("safemalloc() returned NULL in GD::Image::poly().\n");
 		
-		for (i=0;i<length;i++) {
+		for (i=0; i<length; i++) {
                   ENTER ;
                   SAVETMPS ;
                   PUSHMARK(sp) ;
@@ -1846,7 +1846,7 @@ gdfilledPolygon(image,poly,color)
 		if (polyptr == NULL)
                   croak("safemalloc() returned NULL in GD::Image::poly().\n");
 		
-		for (i=0;i<length;i++) {
+		for (i=0; i<length; i++) {
                   ENTER ;
                   SAVETMPS ;
                   PUSHMARK(sp) ;
@@ -1995,9 +1995,9 @@ setStyle(image, ...)
 	if (style == NULL)
           croak("malloc returned NULL at setStyle().\n");
 	for(i=1; i<items; i++) {
-          style[i-1]=(int)SvIV(ST(i));
+          style[i-1] = (int)SvIV(ST(i));
         }
-	gdImageSetStyle(image,style,items-1);
+	gdImageSetStyle(image, style, items-1);
 	safefree((char*) style);
 
 int
@@ -2378,7 +2378,7 @@ gdstringFT(image,fgcolor,fontname,ptsize,angle,x,y,string,...)
           XSRETURN_EMPTY;
         } else {
           EXTEND(sp,8);
-          for (i=0;i<8;i++) {
+          for (i=0; i<8; i++) {
             mPUSHi(brect[i]);
           }
         }
@@ -2502,7 +2502,7 @@ gdclip(image,...)
         int             i;
   PPCODE:
     if (items == 5) {
-      for (i=0;i<4;i++)
+      for (i=0; i<4; i++)
         coords[i] = (int)SvIV(ST(i+1));
       gdImageSetClip(image,coords[0],coords[1],coords[2],coords[3]);
     }
@@ -2511,7 +2511,7 @@ gdclip(image,...)
     
     gdImageGetClip(image,&coords[0],&coords[1],&coords[2],&coords[3]);
     EXTEND(sp,4);
-    for (i=0;i<4;i++)
+    for (i=0; i<4; i++)
       mPUSHi(coords[i]);
 
 void
@@ -2731,7 +2731,7 @@ gdscatterColor(image, sub, plus, colorav)
   CODE:
     numcolors = AvFILL(colorav);
     colors = safemalloc(numcolors * sizeof(int));
-    for (i=0;i<numcolors;i++) {
+    for (i=0; i<numcolors; i++) {
       SV** svp = av_fetch(colorav, i, 0);
       if (svp && SvIOK(*svp))
         colors[i] = SvIV(*svp);
