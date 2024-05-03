@@ -1636,7 +1636,7 @@ operations prior to drawing.
 
 Using a negative color index will disable antialiasing, as described
 in the libgd manual page at
-L<http://www.boutell.com/gd/manual2.0.9.html#gdImageStringFT>.
+L<https://libgd.github.io/manuals/2.0.35/#gdImageStringFT>.
 
 An optional 8th argument allows you to pass a hashref of options to
 stringFT().  Several hashkeys are recognized: B<linespacing>,
