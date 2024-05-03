@@ -162,6 +162,11 @@ sub new {
       my $method = "newFrom${type}";
       return unless $pack->can($method);
       return $pack->$method($fh);
+    } elsif (-f $_[0] and $_[0] =~ /\.xpm$/) {
+      my $type = 'Xpm';
+      my $method = "newFrom${type}";
+      return unless $pack->can($method);
+      return $pack->$method($_[0]);
     }
     return unless my $fh = $pack->_make_filehandle($_[0]);
     my $magic;
@@ -169,7 +174,11 @@ sub new {
     return unless my $type = _image_type($magic);
     seek($fh,0,0);
     my $method = "newFrom${type}";
-    return $pack->$method($fh);
+    if ($type eq 'Xpm') {
+      return $pack->$method($_[0]);
+    } else {
+      return $pack->$method($fh);
+    }
   }
   return $pack->_new(@_);
 }
