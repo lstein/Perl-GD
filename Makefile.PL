@@ -254,7 +254,7 @@ if( defined($options) )
   $RAQM      = $options =~ m/RAQM/i;
   $HEIF      = $options =~ m/HEIF/i;
   $AVIF      = $options =~ m/AVIF/i;
-  $BMP       = $options =~ m/WINDOWS_BMP/i;
+  $BMP       = $options =~ m/WINDOWS_BMP/i || $options =~ m/\WBMP\W/;
   $GIFANIM   = $GIF && $options =~ m/GIFANIM/i;
   $VERSION_33= $options =~ m/VERSION_33/i; # i.e. 2.0.33 or higher
   $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
