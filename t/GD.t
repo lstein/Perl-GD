@@ -7,8 +7,8 @@ use FileHandle;
 use FindBin qw($Bin);
 use lib "$Bin/../blib/lib","$Bin/../blib/arch","$Bin/../lib";
 use constant FONT=>"$Bin/test_data/Generic.ttf";
-use constant IMAGE_TESTS => 7;
-use Test::More tests => 14;
+use constant IMAGE_TESTS => 8;
+use Test::More tests => IMAGE_TESTS + 7;
 use IO::Dir;
 
 use_ok('GD',':DEFAULT',':cmp');
@@ -245,6 +245,18 @@ sub test7 {
   $im->stringFT($red,FONT,14.0,0.0,20,80,"Hello world!") || warn $@;
   $im->stringFT($blue,FONT,30.0,-0.5,60,100,"Goodbye cruel world!") || warn $@;
   return $im;
+}
+
+sub test8 {
+    my $im = test4();
+    $im = $im->copyRotate90();
+    $im = $im->copyFlipHorizontal();
+    $im = $im->copyTranspose();
+    $im->rotate180();
+    $im->flipVertical();
+    $im = $im->copyReverseTranspose();
+    $im = $im->copyFlipVertical();
+    return $im;
 }
 
 sub run_image_regression_tests {
