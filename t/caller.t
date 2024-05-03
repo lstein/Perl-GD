@@ -4,11 +4,15 @@ use GD;
 use Test::More 'no_plan';
 use Test::NoWarnings;
 
-# Use of uninitialized value $pkg
-my $image = GD::Image->newFromPng('t/test_data/tile.png');
+SKIP: {
+  skip "No PNG support", 1 unless defined &GD::Image::newFromPng;
 
-f();
+  # Use of uninitialized value $pkg
+  my $image = GD::Image->newFromPng('t/test_data/tile.png');
+  f();
+}
+
 sub f
 {
-  my $image = GD::Image->newFromPng('t/test_data/tile.png');
+    my $image = GD::Image->newFromPng('t/test_data/tile.png');
 }

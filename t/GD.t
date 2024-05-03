@@ -314,10 +314,13 @@ sub run_round_trip_test {
 }
 
 sub catch_libgd_error {
-    diag("ignore corrupt png error messages...");
+  diag("ignore corrupt png error messages...");
+  SKIP: {
+    skip "No PNG support", 2 unless defined &GD::Image::newFromPng;
     my $image = eval { GD::Image->newFromPng("test_data/images/corrupt.png") };
     is($image, undef);
     ok($@, 'caught corrupt png');
+  }
 }
 
 sub test_cve2019_6977 {
