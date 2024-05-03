@@ -118,19 +118,22 @@ sub new {
       return $pack->$method($_[0]);
     } elsif (-f $_[0] and $_[0] =~ /\.gd$/) {
       my $type = 'Gd';
-      my $method = "newFrom${type}Data";
+      return unless my $fh = $pack->_make_filehandle($_[0]);
+      my $method = "newFrom${type}";
       return unless $pack->can($method);
-      return $pack->$method($_[0]);
+      return $pack->$method($fh);
     } elsif (-f $_[0] and $_[0] =~ /\.gd2$/) {
       my $type = 'Gd2';
-      my $method = "newFrom${type}Data";
+      return unless my $fh = $pack->_make_filehandle($_[0]);
+      my $method = "newFrom${type}";
       return unless $pack->can($method);
-      return $pack->$method($_[0]);
+      return $pack->$method($fh);
     } elsif (-f $_[0] and $_[0] =~ /\.wbmp$/) {
       my $type = 'WBMP';
-      my $method = "newFrom${type}Data";
+      return unless my $fh = $pack->_make_filehandle($_[0]);
+      my $method = "newFrom${type}";
       return unless $pack->can($method);
-      return $pack->$method($_[0]);
+      return $pack->$method($fh);
     }
     return unless my $fh = $pack->_make_filehandle($_[0]);
     my $magic;
