@@ -37,6 +37,8 @@ Supported Image formats:
 
 =item Webp
 
+=item Heif
+
 =item Avif
 
 =back
@@ -52,8 +54,6 @@ Unsupported Image formats:
 =item Xpm
 
 =item GifAnim
-
-=item Heif
 
 =back
 
@@ -127,7 +127,7 @@ sub new {
       return unless $pack->can($method);
       return $pack->$method($_[0]);
     } elsif (-f $_[0] and $_[0] =~ /\.wbmp$/) {
-      my $type = 'Wbmp';
+      my $type = 'WBMP';
       my $method = "newFrom${type}Data";
       return unless $pack->can($method);
       return $pack->$method($_[0]);
@@ -206,7 +206,6 @@ sub _image_type {
   return;
 }
 
-
 sub clone {
   croak("Usage: clone(\$image)") unless @_ == 1;
   my $self = shift;
@@ -266,6 +265,14 @@ sub newFromWebp {
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromWebp($fh);
+}
+
+sub newFromHeif {
+    croak("Usage: newFromHeif(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromHeif($fh);
 }
 
 sub newFromAvif {

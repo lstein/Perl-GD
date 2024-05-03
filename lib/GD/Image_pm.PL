@@ -155,7 +155,7 @@ sub new {
       return unless $pack->can($method);
       return $pack->$method($_[0]);
     } elsif (-f $_[0] and $_[0] =~ /\.wbmp$/) {
-      my $type = 'Wbmp';
+      my $type = 'WBMP';
       my $method = "newFrom${type}Data";
       return unless $pack->can($method);
       return $pack->$method($_[0]);

@@ -52,7 +52,7 @@ SKIP: {
   ok defined($webp), "webp detected";
   }
 SKIP: {
-  skip "No WBMP support", 1 unless defined &GD::Image::newFromWbmp;
+  skip "No WBMP support", 1 unless defined &GD::Image::newFromWBMP;
   my $wbmp = GD::Image->new("t/test_data/tile.wbmp");
   ok defined($wbmp), "wbmp detected";
 }
