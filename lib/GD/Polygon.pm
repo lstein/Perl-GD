@@ -4,7 +4,7 @@ use strict;
 use Carp 'carp';
 use GD;
 use vars '$VERSION';
-$VERSION = '2.77';
+$VERSION = '2.80';
 
 # old documentation error
 *GD::Polygon::delete = \&deletePt;
@@ -169,10 +169,10 @@ sub transform($$$$$$$) {
     # see PostScript Ref. page 154
     # documented as the affine transformation matrix: (xx,yx,xy,yy,x0,y0)
     # note that even the libgd doc is wrong here for yy.
-    my($self, $sx, $rx, $sy, $ry, $tx, $ty) = @_;
+    my($self, $sx, $sy, $rx, $ry, $tx, $ty) = @_;
     my $size = $self->length;
-    for (my $i=0;$i<$size;$i++) {
-        my($x,$y)=$self->getPt($i);
+    for (my $i=0; $i<$size; $i++) {
+        my($x,$y) = $self->getPt($i);
         # gdAffineApplyToPointF:
 	# dst->x = x * affine[0] + y * affine[2] + affine[4];
 	# dst->y = x * affine[1] + y * affine[3] + affine[5];
@@ -181,10 +181,17 @@ sub transform($$$$$$$) {
 }
 
 sub scale {
-    my($self, $sx, $sy, $cx, $cy) = @_;
-    $self->offset(-$cx,-$cy) if defined $cx or defined $cy;
-    # sx, rx, ry, sy
-    $self->transform($sx,0,0,$sy,$cx,$cy);
+    my($self, $sx, $sy, $tx, $ty) = @_;
+    $sy = $sx unless defined $sy;
+    $self->offset(-$tx,-$ty) if defined $tx or defined $ty;
+    $self->transform($sx,$sy,0,0,$tx,$ty);
+}
+
+# clockwise in radians
+sub rotate {
+    my($self, $r) = @_;
+    my ($s, $c) = (sin($r), cos($r));
+    $self->transform($c,$c,-$s,$s, 0,0);
 }
 
 1;

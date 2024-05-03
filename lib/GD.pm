@@ -1960,6 +1960,13 @@ down and to the right.
 
 	$poly->offset(10,30);
 
+=item B<$poly-E<gt>rotate($rad)>
+
+Rotate all the vertices of the polygon by the specified clockwise radian angle.
+
+        use Math::Trig;
+	$poly->rotate(deg2rad(180));
+
 =item B<$poly-E<gt>map($srcL,$srcT,$srcR,$srcB,$destL,$dstT,$dstR,$dstB)>
 
 Map the polygon from a source rectangle to an equivalent position in a
@@ -1972,7 +1979,7 @@ box as the source rectangle.
 	# Make the polygon really tall
 	$poly->map($poly->bounds,0,0,50,200);
 
-=item B<$poly-E<gt>scale($sx,$sy, [$tx,$ty])>
+=item B<$poly-E<gt>scale($sx,[$sy, [$tx,$ty]])>
 
 Scale each vertex of the polygon by the X and Y factors indicated by
 sx and sy.  For example scale(2,2) will make the polygon twice as
@@ -1980,7 +1987,9 @@ large.  For best results, move the center of the polygon to position
 (0,0) before you scale, then move it back to its previous position.
 Accepts an optional offset vector.
 
-=item B<$poly-E<gt>transform($sx,$rx,$ry,$sy, $tx,$ty)>
+Undefined $sy defaults to $sx, ie. scale(2.0) scales the polyon by 2.
+
+=item B<$poly-E<gt>transform($sx,$sy, $rx,$ry, $tx,$ty)>
 
 Run each vertex of the polygon through a 2D affine transformation
 matrix, where sx and sy are the X and Y scaling factors, rx and ry are
@@ -2001,6 +2010,13 @@ libgd:
 
     x_new = xx * x + xy * y + x0;
     y_new = yx * x + yy * y + y0;
+
+Thus offset by ($tx,$ty) is C<transform(1,1,0,0,$tx,$ty)>,
+scale by ($sx,$sy) is C<transform($sx,$sy,0,0,0,0)>,
+and rotation by clockwise radians ($r) is
+
+    ($s,$c) = (sin($r),cos($r));
+    $poly->transform($c,$s,-$s,$c,0,0);
 
 =back
 
