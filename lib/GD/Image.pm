@@ -25,6 +25,10 @@ Supported Image formats:
 
 =item Gif
 
+=item Gd
+
+=item Gd2
+
 =item Jpeg
 
 =item Tiff
@@ -35,7 +39,11 @@ Supported Image formats:
 
 =item BMP
 
+=item GifAnim
+
 =item Webp
+
+=item Heif
 
 =item Avif
 
@@ -45,15 +53,7 @@ Unsupported Image formats:
 
 =over 4
 
-=item Gd
-
-=item Gd2
-
 =item Xpm
-
-=item GifAnim
-
-=item Heif
 
 =back
 
@@ -238,6 +238,29 @@ sub newFromPng {
     $class->_newFromPng($fh,@_);
 }
 
+sub newFromGd {
+    croak("Usage: newFromGd(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromGd($fh);
+}
+
+sub newFromGd2 {
+    croak("Usage: newFromGd2(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromGd2($fh);
+}
+
+sub newFromGd2Part {
+    croak("Usage: newFromGd2(class,filehandle,srcX,srcY,width,height)") unless @_==6;
+    my($class,$f) = splice(@_,0,2);
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromGd2Part($fh,@_);
+}
 sub newFromJpeg {
     croak("Usage: newFromJpeg(class,filehandle,[truecolor])") unless @_>=2;
     my($class) = shift;
@@ -278,6 +301,14 @@ sub newFromWebp {
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromWebp($fh);
+}
+
+sub newFromHeif {
+    croak("Usage: newFromHeif(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromHeif($fh);
 }
 
 sub newFromAvif {

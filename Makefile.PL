@@ -669,6 +669,13 @@ sub try_to_autoconfigure {
             || ($release == 2 && $major == 3 && $minor >= 3))) {
       $HEIF = 1;
     }
+  } else {
+    my ($release, $major, $minor) = $version =~ /^(\d+)\.(\d+)\.(\d+)/;
+    $options     .= " GD_UNCLOSEDPOLY GD_FTCIRCLE VERSION_33"
+      if defined($minor)
+      && ($release > 2
+          || ($release == 2 && $major > 0)
+          || ($release == 2 && $major == 0 && $minor >= 33));
   }
 
   if ($config) {
