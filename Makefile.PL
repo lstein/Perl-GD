@@ -603,8 +603,9 @@ sub try_to_autoconfigure {
         $features .= ' GD_HEIF' if $private =~ / libheif/;
         $features .= ' GD_AVIF' if $private =~ / libavif/;
       } else {
+        warn "gdlib.pc not found, guessing the features.\n";
         $features = 'GD_GIF GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';
-        #$features .= 'GD_WEBP' if $version ge '2.3.0';;
+        #$features .= 'GD_WEBP' if $version ge '2.3.0';
         $features .= ' GD_AVIF' if $version ge '2.3.2';
         $features .= ' GD_HEIF' if $version ge '2.3.3' and $^O ne 'darwin';
       }
