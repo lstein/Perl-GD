@@ -592,7 +592,7 @@ sub try_to_autoconfigure {
         print STDERR "$pc: $private\n";
         $features = 'GD_GIF GD_OPENPOLYGON';
         $features .= ' GD_ZLIB' if $private =~ / zlib /;
-        $features .= ' GD_PNG' if $private =~ / libpng /;
+        $features .= ' GD_PNG' if $private =~ /png/;
         $features .= ' GD_FREETYPE' if $private =~ / freetype/;
         $features .= ' GD_FONTCONFIG' if $private =~ / fontconfig/;
         $features .= ' GD_RAQM' if $private =~ / raqm/;
