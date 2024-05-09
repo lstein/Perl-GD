@@ -551,11 +551,15 @@ sub try_to_autoconfigure {
     $config = `$gdlib_config_path --all`;
   }
   unless ($config) {
+      undef $gdlib_config_path;
       my %config;
       require ExtUtils::PkgConfig;
       %config = ExtUtils::PkgConfig->find ("$prefix/lib/pkgconfig/gdlib.pc") if $prefix;
       %config = ExtUtils::PkgConfig->find ("gdlib") unless %config;
-      return unless %config;
+      unless (%config) {
+          undef $lib_gd_path;
+          return;
+      }
       $version  = $config{modversion};
       warn "Configuring for libgd version $version.\n";
       $cflags   = $config{cflags};
@@ -604,6 +608,16 @@ sub try_to_autoconfigure {
         $features .= ' GD_AVIF' if $private =~ / libavif/;
       } else {
         warn "gdlib.pc not found, guessing the features.\n";
+
+        eval 'use Devel::CheckLib;' and
+          check_lib(
+              lib => 'gd',
+              header => ['gd.h','gdfontg.h'],
+              $prefix ? (
+                  incpath => "$prefix/include",
+                  libpath => "$prefix/lib"
+              ) : ());
+
         $features = 'GD_GIF GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';
         #$features .= 'GD_WEBP' if $version ge '2.3.0';
         $features .= ' GD_AVIF' if $version ge '2.3.2';
