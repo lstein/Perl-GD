@@ -1,4 +1,6 @@
 2.82    * Improve HEIF/AVIF autodetection (RT #153305) by Yuriy Yevtukhov.
+	* Fix strawberryperl default libgd path (shawnlaffan PR #54)
+	* Fix AVIF and Webp autodetection in tests (shawnlaffan PR #54)
 2.81    * Change GD::Polygon::transform to match old demos (RT #140043),
           and GD::Polyline.
           Add GD::Polygon::rotate(cw-radian) helper.
