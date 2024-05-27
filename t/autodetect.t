@@ -38,8 +38,13 @@ SKIP: {
 }
 SKIP: {
   skip "No AVIF support", 1 unless defined &GD::Image::newFromAvif;
-  my $avif = GD::Image->new("t/test_data/tile.avif");
-  ok defined($avif), "avif detected";
+  my $avif;
+  eval {$avif = GD::Image->new("t/test_data/tile.avif")};
+  if (!$avif and $@ =~ /gdImageCreateFromAvif error/) {
+    ok 1, "Warning: avif support disabled in libgd";
+  } else {
+    ok defined($avif), "avif detected";
+  }
 }
 SKIP: {
   skip "No HEIF support", 1 unless defined &GD::Image::newFromHeif;
@@ -53,8 +58,13 @@ SKIP: {
 }
 SKIP: {
   skip "No WEBP support", 1 unless defined &GD::Image::newFromWebp;
-  my $webp = GD::Image->new("t/test_data/tile.webp");
-  ok defined($webp), "webp detected";
+  my $webp;
+  eval {$webp = GD::Image->new("t/test_data/tile.webp")};
+  if (!$webp and $@ =~ /gdImageCreateFromWebp error/) {
+    ok 1, "Warning: webp support disabled in libgd";
+  } else {
+    ok defined($webp), "webp detected";
+  }
 }
 SKIP: {
   skip "No WBMP support", 1 unless defined &GD::Image::newFromWBMP;
