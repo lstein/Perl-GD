@@ -22,6 +22,16 @@ my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_pat
     $lib_tiff_path,$lib_webp_path,$lib_raqm_path,$lib_heif_path,$lib_avif_path,
     $lib_zlib_path,$lib_fontconfig_path,$force,$FCGI,$gdlib_config_path);
 
+use File::Basename qw/dirname/;
+use File::Spec;
+#  Detect Strawberry Perl based on path components
+#  as $Config{uname} is just "uname" for portable versions.
+my $_perl_lib_dir = File::Spec->catpath (dirname($^X), '/../../c/lib');
+my $default_lib_gd_path 
+  = $^O eq 'MSWin32' && -e $_perl_lib_dir
+  ? $_perl_lib_dir 
+  : '/usr/lib';
+
 use Getopt::Long;
 my $result = GetOptions("ignore_missing_gd" => \$force,
                         "options=s"       => \$options,
@@ -216,10 +226,10 @@ my $PREFIX = $lib_gd_path;
 if( ! defined($lib_gd_path) )
 {
   warn "\n";
-  $PREFIX = prompt('Where is libgd installed?','/usr/lib');
+  $PREFIX = prompt('Where is libgd installed?',$default_lib_gd_path);
 }
 
-unless ($AUTOCONFIG || $PREFIX eq '/usr/lib') {
+unless ($AUTOCONFIG || $PREFIX eq $default_lib_gd_path) {
   $PREFIX =~ s!/lib$!!;
   unshift @INC,"-I$PREFIX/include";
   unshift @LIBPATH,"-L$PREFIX/lib";
@@ -543,7 +553,8 @@ sub try_to_autoconfigure {
   my ($prefix) = $lib_gd_path ? ($lib_gd_path =~ m|(^.*)/lib|) : "";
   my $bindir = $prefix ? "$prefix/bin/" : $lib_gd_path ? "$lib_gd_path/bin/" : "";
   my $config = `${bindir}gdlib-config --all` if -e "${bindir}gdlib-config";
-  if (!$config
+  if (!$^O eq 'MSWin32'
+      and !$config
       and !-e "$prefix/lib/pkgconfig/gdlib.pc"
       and !-e "/usr/lib/pkgconfig/gdlib.pc")
   {
@@ -553,7 +564,7 @@ sub try_to_autoconfigure {
   unless ($config) {
       my %config;
       require ExtUtils::PkgConfig;
-      %config = ExtUtils::PkgConfig->find ("$prefix/lib/pkgconfig/gdlib.pc") if $prefix;
+      %config = ExtUtils::PkgConfig->find ("$prefix/lib/pkgconfig/gdlib") if $prefix;
       %config = ExtUtils::PkgConfig->find ("gdlib") unless %config;
       return unless %config;
       $version  = $config{modversion};
