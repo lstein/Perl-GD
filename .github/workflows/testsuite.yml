@@ -142,9 +142,23 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - run: perl -V
+      #- run: choco install -y libgd
+      #- name: choco install -libgd
+      #  uses: crazy-max/ghaction-chocolatey@v3
+      #  with:
+      #    args: install -y libgd
       #- run: vcpkg install libgd
       # too slow: echo.set(VCPKG_BUILD_TYPE release) >> d:\vcpkg\triplets\x64-windows.cmake
       #  or install the msys2 perl-gd library
+      # vcpkg needs 7m, but is cached
+      - name: vcpkg install libgd
+        uses: johnwason/vcpkg-action@v6
+        id: vcpkg
+        with:
+          pkgs: libgd
+          triplet: x64-windows-release
+          token: ${{ github.token }}
+          github-binarycache: true
       - name: install cpan deps
         uses: perl-actions/install-with-cpm@v1.3
         with:
@@ -154,8 +168,7 @@ jobs:
             Math::Trig
             Test::Fork
             Test::NoWarnings
-            GD
-      - run: perl Makefile.PL
+      - run: perl Makefile.PL --lib_gd_path vcpkg/packages/tiff_x64-windows-release/lib
       - run: perl -pi -e's/-Wl,--enable-auto-image-base/ /' Makefile
       - run: make test TEST_VERBOSE=1 2>&1 | tee make.log
         continue-on-error: true
