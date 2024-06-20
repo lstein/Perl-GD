@@ -370,6 +370,7 @@ my %WriteMakefileArgs = (
     'CONFIGURE_REQUIRES' => {
         'ExtUtils::Constant' => 0.22,
         'ExtUtils::PkgConfig' => 0,
+        'File::Which' => 0,
     },
     'TEST_REQUIRES' => {
         'Test::More' => 0.88,
@@ -398,9 +399,10 @@ my %WriteMakefileArgs = (
     'META_MERGE' => {
         "meta-spec" => { version => 2 },
         recommends => {
-            'ExtUtils::PkgConfig' => 0,
             'Math::Trig'        => 0,
+            'ExtUtils::PkgConfig' => 0,
             'ExtUtils::Constant'=> '0.23',
+            'File::Which'       => 0,
             'Test::More'        => '0.88',
             'Test::Fork'        => '0.02',
             'Test::NoWarnings'  => '1.00',
@@ -552,7 +554,15 @@ sub try_to_autoconfigure {
   # perl Makefile.PL --lib_gd_path /opt/libgd/2.1.1/lib
   my ($prefix) = $lib_gd_path ? ($lib_gd_path =~ m|(^.*)/lib|) : "";
   my $bindir = $prefix ? "$prefix/bin/" : $lib_gd_path ? "$lib_gd_path/bin/" : "";
-  my $config = `${bindir}gdlib-config --all` if -e "${bindir}gdlib-config";
+  if (defined($gdlib_config_path)) {
+    ;
+  } elsif (!$bindir or !-x "${bindir}gdlib-config") {
+    require File::Which;
+    $gdlib_config_path = File::Which::which('gdlib-config');
+  } else {
+    $gdlib_config_path = "${bindir}gdlib-config"
+  }
+  my $config = `$gdlib_config_path --all`;
   if (!$^O eq 'MSWin32'
       and !$config
       and !-e "$prefix/lib/pkgconfig/gdlib.pc"

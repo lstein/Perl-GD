@@ -1,3 +1,6 @@
+2.83    * Fix missing PNG regression (RT #153923) on old
+          systems without the .pc, but gdlib-config. The check was too strict.
+          Requires now File::Which.
 2.82    * Improve HEIF/AVIF autodetection (RT #153305) by Yuriy Yevtukhov.
 	* Fix strawberryperl default libgd path (shawnlaffan PR #54)
 	* Fix AVIF and Webp autodetection in tests (shawnlaffan PR #54)
