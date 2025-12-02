@@ -19,11 +19,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
       - run: perl -V
       - run: sudo apt install libgd-dev
       - name: install cpan deps
-        uses: perl-actions/install-with-cpm@v1.3
+        uses: perl-actions/install-with-cpm@8b1a9840b26cc3885ae2889749a48629be2501b0 # v1.9
         with:
           install: |
             ExtUtils::PkgConfig
@@ -76,14 +76,14 @@ jobs:
           ]
 
     steps:
-      - uses: actions/checkout@v1
-      - uses: shogo82148/actions-setup-perl@v1
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      - uses: shogo82148/actions-setup-perl@f9f0bf89e0d19ddbabb2f40d43db2e944bce7d2f # v1.36.0
         with:
           perl-version: ${{ matrix.perl-version }}
       - run: perl -V
       - run: sudo apt install libgd-dev
       - name: install cpan deps
-        uses: perl-actions/install-with-cpm@v1.3
+        uses: perl-actions/install-with-cpm@8b1a9840b26cc3885ae2889749a48629be2501b0 # v1.9
         with:
           sudo: false
           install: |
@@ -110,12 +110,12 @@ jobs:
         perl-version: [latest]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
       - run: perl -V
         # already installed
       - run: brew install gd
       - name: install cpan deps
-        uses: perl-actions/install-with-cpm@v1.3
+        uses: perl-actions/install-with-cpm@8b1a9840b26cc3885ae2889749a48629be2501b0 # v1.9
         with:
           install: |
             ExtUtils::PkgConfig
@@ -143,7 +143,7 @@ jobs:
         perl-version: [latest]
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
       - run: perl -V
       #- run: choco install -y libgd
       #- name: choco install -libgd
@@ -155,7 +155,7 @@ jobs:
       #  or install the msys2 perl-gd library
       # vcpkg needs 7m, but is cached
       - name: vcpkg install libgd
-        uses: johnwason/vcpkg-action@v6
+        uses: johnwason/vcpkg-action@caa1c94fbb94d8b023a0cc93edf10cd3791349a7 # v7.0.1
         id: vcpkg
         with:
           pkgs: libgd
@@ -163,7 +163,7 @@ jobs:
           token: ${{ github.token }}
           github-binarycache: true
       - name: install cpan deps
-        uses: perl-actions/install-with-cpm@v1.3
+        uses: perl-actions/install-with-cpm@8b1a9840b26cc3885ae2889749a48629be2501b0 # v1.9
         with:
           sudo: false
           install: |
@@ -177,7 +177,7 @@ jobs:
       - run: make test TEST_VERBOSE=1 2>&1 | tee make.log
         continue-on-error: true
       - name: Upload Failure
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         if: failure()
         with:
           name: artifacts
