@@ -663,7 +663,7 @@ sub try_to_autoconfigure {
     $options = $features;
 
     my ($release, $major, $minor) = $version =~ /^(\d+)\.(\d+)\.(\d+)/;
-    $options     .= " GD_UNCLOSEDPOLY GD_FTCIRCLE VERSION_33"
+    $options     .= " GD_UNCLOSEDPOLY GD_FTCIRCLE VERSION_33 GD_GIFANIM"
       if defined($minor)
       && ($release > 2
           || ($release == 2 && $major > 0)
