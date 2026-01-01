@@ -21,7 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
       - run: perl -V
-      - run: sudo apt install libgd-dev
+      - run: |
+          sudo apt update
+          sudo apt install libgd-dev
       - name: install cpan deps
         uses: perl-actions/install-with-cpm@8b1a9840b26cc3885ae2889749a48629be2501b0 # v1.9
         with:
