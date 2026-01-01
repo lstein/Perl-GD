@@ -27,9 +27,9 @@ use File::Spec;
 #  Detect Strawberry Perl based on path components
 #  as $Config{uname} is just "uname" for portable versions.
 my $_perl_lib_dir = File::Spec->catpath (dirname($^X), '/../../c/lib');
-my $default_lib_gd_path 
+my $default_lib_gd_path
   = $^O eq 'MSWin32' && -e $_perl_lib_dir
-  ? $_perl_lib_dir 
+  ? $_perl_lib_dir
   : '/usr/lib';
 
 use Getopt::Long;
@@ -255,7 +255,7 @@ if( defined($options) )
   # strawberry has -lXpm without -lX11
   if (!$XPM && join(' ',@LIBS) =~ m/-lXpm/) {
     print "Remove -lXpm and XPM feature without -lX11\n" if $options =~ m/XPM/i;
-    @LIBS = grep { $_ ne '-lXpm' } @LIBS; 
+    @LIBS = grep { $_ ne '-lXpm' } @LIBS;
   }
   $GIF       = $options =~ m/GIF/i;
   $PNG       = $options =~ m/PNG/i;
@@ -591,10 +591,16 @@ sub try_to_autoconfigure {
           $pc = "$prefix/lib/pkgconfig/" . $config{pkg} . ".pc";
       }
       if (!-e $pc) {
-          for my $p ("$prefix/lib/pkgconfig/gdlib.pc",
+          my @paths_to_check = ("$prefix/lib/pkgconfig/gdlib.pc",
                      "$prefix/lib64/pkgconfig/gdlib.pc",
                      "/usr/lib64/pkgconfig/gdlib.pc",
-                     "/usr/local/lib/pkgconfig/gdlib.pc")
+                     "/usr/local/lib/pkgconfig/gdlib.pc");
+          if (exists $ENV{PKG_CONFIG_PATH}) {
+              my $splitre = ($^O eq 'MSWin32') ? qr/;/ : qr/:/;
+              my $pathsep = ($^O eq 'MSWin32') ? "\\" : "/";
+              push @paths_to_check, map {"$_${pathsep}gdlib.pc"} split($splitre, $ENV{PKG_CONFIG_PATH});
+          }
+          for my $p (@paths_to_check)
           {
               if (-e $p) {
                   $pc = $p; last;
