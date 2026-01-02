@@ -40,7 +40,8 @@ jobs:
             Pod::Spell::CommonMistakes
             Test::Fork
             Test::NoWarnings
-      - run: perl Makefile.PL
+      # GH #55, libtiff broken on this vm
+      - run: perl Makefile.PL --without tiff
       - run: make test
 
   linux:
@@ -95,7 +96,8 @@ jobs:
             File::Which
             Math::Trig
             Test::NoWarnings
-      - run: perl Makefile.PL
+      # GH #55, libtiff broken on this vm
+      - run: perl Makefile.PL --without tiff
       - run: make test
 
   macOS:
