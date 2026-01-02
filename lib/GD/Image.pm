@@ -39,6 +39,8 @@ Supported Image formats:
 
 =item Webp
 
+=item Heif
+
 =item Avif
 
 =back
@@ -52,8 +54,6 @@ Unsupported Image formats:
 =item Gd2
 
 =item Xpm
-
-=item Heif
 
 =back
 
@@ -295,6 +295,14 @@ sub newFromWebp {
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromWebp($fh);
+}
+
+sub newFromHeif {
+    croak("Usage: newFromHeif(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromHeif($fh);
 }
 
 sub newFromAvif {

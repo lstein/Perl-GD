@@ -63,7 +63,8 @@ libgd2-xpm-dev package. Their libgd3 is the latest 2.2.5 (which has a severe sec
 On Redhat and derivatives or OpenSUSE you need gd-devel.
 On FreeBSD it is installed by the graphics/gd port.
 Mandriva has libgd2-devel, libgd-devel or lib64gd-devel.
-If you want to try to compile anyway, please rerun this script with the option --ignore_missing_gd.
+If you want to try to compile anyway, please rerun this script with the
+option --ignore_missing_gd and set at least --lib_gd_path and --options.
 END
 }
 
@@ -209,7 +210,6 @@ if( defined($gdlib_config_path) )
 else
 {
     $gdlib_config_path = "gdlib-config";
-    print "$gdlib_config_path used from the PATH\n";
 }
 #############################################################################################
 
@@ -289,9 +289,9 @@ if( defined($options) )
   $BMP       = $options =~ m/WINDOWS_BMP/i || $options =~ m/\WBMP\W/;
   $GIFANIM   = $GIF && $options =~ m/GIFANIM/i;
   $VERSION_33= $options =~ m/VERSION_33/i; # i.e. 2.0.33 or higher
-  $UNCLOSEDPOLY  = $options =~ m/UNCLOSEDPOLY/i;
-  $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
   $FTCIRCLE  = $options =~ m/FTCIRCLE/i;
+  $UNCLOSEDPOLY= $options =~ m/UNCLOSEDPOLY/i;
+  $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
 }
 else
 {
@@ -341,6 +341,7 @@ if (!$AUTOCONFIG) {
     push @LIBS,'-lX11','-lXpm' if $XPM;
   }
 } else {
+  print "External INC:               ", join(' ',@INC),"\n" if @INC;
   print "External LIBS:              ", join(' ',$ENV{'GD_LIBS'},@LIBPATH,@LIBS),"\n";
 }
 
@@ -575,17 +576,21 @@ sub try_to_autoconfigure {
   my ($version, $cflags, $ldflags, $libs, $libdir, $features, $includedir);
   # perl Makefile.PL --lib_gd_path /opt/libgd/2.1.1/lib
   my ($prefix) = $lib_gd_path ? ($lib_gd_path =~ m|(^.*)/lib|) : "";
-  my $bindir = $prefix ? "$prefix/bin/" : $lib_gd_path ? "$lib_gd_path/bin/" : "";
+  my $bindir = $prefix ? "$prefix/bin/" : $lib_gd_path ? "$lib_gd_path/../bin/" : "";
+  my $incdir = $prefix ? "$prefix/include" : $lib_gd_path ? "$lib_gd_path/../include/" : "";
+  print "Probing with prefix $prefix\n";
   if (defined($gdlib_config_path)) {
     ;
   } elsif (!$bindir or !-x "${bindir}gdlib-config") {
     require File::Which;
     $gdlib_config_path = File::Which::which('gdlib-config');
+    print "$gdlib_config_path from PATH\n" if $gdlib_config_path;
   } else {
-    $gdlib_config_path = "${bindir}gdlib-config"
+    $gdlib_config_path = "${bindir}gdlib-config";
+    print "$gdlib_config_path from bindir\n";
   }
-  my $config = `$gdlib_config_path --all`;
-  if (!$^O eq 'MSWin32'
+  my $config = `$gdlib_config_path --all` if $gdlib_config_path;
+  if ($^O ne 'MSWin32'
       and !$config
       and !-e "$prefix/lib/pkgconfig/gdlib.pc"
       and !-e "/usr/lib/pkgconfig/gdlib.pc")
@@ -595,33 +600,119 @@ sub try_to_autoconfigure {
   }
   unless ($config) {
       my %config;
+      warn "No gdlib-config found, try gdlib.pc pkgconfig\n";
+      # NOTE: 1.16 ExtUtils::PkgConfig->find is broken, it ignores the given path.
+      # The exists method is also broken. So we use the autoloaded methods directly
       require ExtUtils::PkgConfig;
-      %config = ExtUtils::PkgConfig->find ("$prefix/lib/pkgconfig/gdlib") if $prefix;
-      %config = ExtUtils::PkgConfig->find ("gdlib") unless %config;
-      return unless %config;
+      my $pc = "$prefix/lib/pkgconfig/gdlib.pc";
+      print "Trying $pc\n" if $prefix;
+      if ($prefix and -f "$pc") {
+          $cflags = ExtUtils::PkgConfig->cflags($pc);
+          if (!$cflags) {
+              # Another ExtUtils::PkgConfig bug. works on linux, but not MSWin32
+              if ($ENV{PKG_CONFIG_PATH} and ExtUtils::PkgConfig->exists("gdlib")) {
+                  print "Trying gdlib via PKG_CONFIG_PATH instead\n";
+                  %config = ExtUtils::PkgConfig->find ("gdlib");
+                  $config{path} = $pc;
+                  if (!$config{cflags} and $^O eq 'MSWin32') {
+                      # vcpkg workaround
+                      warn "Adding $incdir to cflags on MSWin32\n";
+                      $config{cflags} = "-I\"$incdir\"";
+                  }
+                  if ($config{libs} eq "-lgd" and $^O eq 'MSWin32') {
+                      # vcpkg workaround
+                      warn "Adding $prefix/lib to libs on MSWin32\n";
+                      $config{libs} = "-L\"$prefix/lib\" -lgd";
+                  }
+              }
+              $cflags = $config{cflags};
+          }
+          %config = (
+              cflags     => $cflags ? $cflags : ExtUtils::PkgConfig->libs($pc),
+              libs       => ExtUtils::PkgConfig->libs($pc),
+              modversion => ExtUtils::PkgConfig->modversion($pc),
+              path       => $pc,
+              pkg        => "gdlib"
+          ) unless %config;
+          print "Detected $pc\n";
+      }
+      elsif ($lib_gd_path and -f "$lib_gd_path/pkgconfig/gdlib.pc") {
+          $pc = "$lib_gd_path/pkgconfig/gdlib.pc";
+          print "Trying $pc\n";
+          %config = (
+              cflags     => ExtUtils::PkgConfig->cflags($pc),
+              libs       => ExtUtils::PkgConfig->libs($pc),
+              modversion => ExtUtils::PkgConfig->modversion($pc),
+              path       => $pc,
+              pkg        => "gdlib"
+              );
+          print "Detected $pc\n";
+      }
+      elsif (ExtUtils::PkgConfig->exists("gdlib")) {
+          print "Found a gdlib.pc\n"; # but dont know where
+          # find croaks if not found
+          %config = ExtUtils::PkgConfig->find("gdlib");
+          $config{path} = ExtUtils::PkgConfig->find("gdlib", "path");
+      }
+      unless (%config) {
+          # MSWin32 may not have a pkg-config and not gdlib-config by default.
+          # Need to provide the options manually (or probe)
+          if ($force && $lib_gd_path && $options) {
+              $libdir = $lib_gd_path;
+              $config{modversion} = '2.3.3';
+              $config{cflags} = "-I\"".$incdir."\" -I\"".$lib_gd_path."\"";
+              $config{libs}   = "-L\"".$libdir."\" -lgd";
+              $config{pkg}    = "gdlib";
+              warn "No gdlib.pc found, set config manually.\n";
+          } else {
+              return;
+          }
+      }
       $version  = $config{modversion};
-      warn "Configuring for libgd version $version.\n";
       $cflags   = $config{cflags};
       $libs     = $config{libs};
+      if ($lib_gd_path and $^O eq 'MSWin32') {
+          # vcpkg workarounds
+          if (!$cflags) {
+              # vcpkg workaround
+              warn "Adding $incdir to cflags on MSWin32\n";
+              $cflags = "-I\"$incdir\"";
+          }
+          if ($libs eq "-lgd") {
+              warn "Adding $prefix/lib to libs on MSWin32\n";
+              $libs = "-L\"$prefix/lib\" -lgd";
+          }
+      }
+      warn "Configuring for libgd version $version (w/o gdlib-config).\n"
+          ."  cflags:  $cflags\n"
+          ."  libs:    $libs\n"
+          ."  version: $version\n";
       ($libdir, $libs) = $libs =~ m/-L(.*) (-lgd.*)/;
       # Requires.private:   zlib  libpng  freetype2 >= 9.8.3  fontconfig  libjpeg  xpm  libtiff-4
       # Libs.private:   -L/opt/local/lib -lz  -L/opt/local/lib -lpng16  -L/opt/local/lib -lfreetype  -L/opt/local/lib -lfontconfig -lfreetype   -ljpeg  -L/opt/local/lib -lXpm -lX11  -L/opt/local/lib -ltiff   -lwebp
       # not in the hash!
       # check the .pc file from $config{pkg}
-      my $pc = "$prefix/lib/pkgconfig/gdlib.pc";
-      if ($config{pkg}) {
+      $pc = "$prefix/lib/pkgconfig/gdlib.pc";
+      if ($config{path}) {
+          $pc = $config{path};
+      }
+      elsif ($config{pkg}) {
           $pc = "$prefix/lib/pkgconfig/" . $config{pkg} . ".pc";
       }
       if (!-e $pc) {
-          my @paths_to_check = ("$prefix/lib/pkgconfig/gdlib.pc",
-                     "$prefix/lib64/pkgconfig/gdlib.pc",
-                     "/usr/lib64/pkgconfig/gdlib.pc",
-                     "/usr/local/lib/pkgconfig/gdlib.pc");
+          my @paths_to_check = ();
           if (exists $ENV{PKG_CONFIG_PATH}) {
               my $splitre = ($^O eq 'MSWin32') ? qr/;/ : qr/:/;
               my $pathsep = ($^O eq 'MSWin32') ? "\\" : "/";
-              push @paths_to_check, map {"$_${pathsep}gdlib.pc"} split($splitre, $ENV{PKG_CONFIG_PATH});
+              push @paths_to_check,
+                  map {"$_${pathsep}gdlib.pc"}
+                  split($splitre, $ENV{PKG_CONFIG_PATH});
           }
+          push @paths_to_check, (
+                     "$prefix/lib/pkgconfig/gdlib.pc",
+                     "$prefix/lib64/pkgconfig/gdlib.pc",
+                     "/usr/lib64/pkgconfig/gdlib.pc",
+                     "/usr/local/lib/pkgconfig/gdlib.pc");
           for my $p (@paths_to_check)
           {
               if (-e $p) {
@@ -638,7 +729,7 @@ sub try_to_autoconfigure {
           $private = $_;
         }
         close $F;
-        print STDERR "$pc: $private\n";
+        warn "Using $pc: $private\n";
         $features = 'GD_GIF GD_OPENPOLYGON';
         $features .= ' GD_ZLIB' if $private =~ / zlib /;
         $features .= ' GD_PNG' if $private =~ / libpng /;
@@ -663,7 +754,7 @@ sub try_to_autoconfigure {
       $AUTOCONFIG++;
 
       ($version) = $config =~ /^GD library\s+(\S+)/m;
-      warn "Configuring for libgd version $version.\n";
+      warn "Configuring for libgd version $version (w/ gdlib-config).\n";
 
       ($includedir) = $config =~ /^includedir:\s*(.+)$/m;
       ($cflags)     = $config =~ /^cflags:\s*(.+)$/m;

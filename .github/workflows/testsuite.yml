@@ -151,9 +151,16 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - run: perl -V
+      #- id: cache-vcpkg
+      #  uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+      #  with:
+      #    path: |
+      #      ${{ github.workspace }}/vcpkg/packages
+      #      D:/a/_temp/vcpkg_cache
+      #    key: vcpkg-${{ runner.image }}-${{ env.RUNNER_IMAGE_VERSION }}
       #- run: choco install -y libgd
-      #- name: choco install -libgd
-      #  uses: crazy-max/ghaction-chocolatey@v3
+      #- name: choco install libgd
+      #  uses: crazy-max/ghaction-chocolatey@2526f467ccbd337d307fe179959cabbeca0bc8c0 # v3.4.0
       #  with:
       #    args: install -y libgd
       #- run: vcpkg install libgd
@@ -167,7 +174,6 @@ jobs:
           pkgs: libgd
           triplet: x64-windows-release
           token: ${{ github.token }}
-          github-binarycache: true
       - name: install cpan deps
         uses: perl-actions/install-with-cpm@8b1a9840b26cc3885ae2889749a48629be2501b0 # v1.9
         with:
@@ -178,10 +184,14 @@ jobs:
             Math::Trig
             Test::Fork
             Test::NoWarnings
-      - run: perl Makefile.PL --lib_gd_path vcpkg/packages/tiff_x64-windows-release/lib
+      - run: dir /s "vcpkg/packages/libgd_x64-windows-release"
+        shell: cmd
+      - run: perl Makefile.PL --lib_gd_path ${{ github.workspace }}/vcpkg/packages/libgd_x64-windows-release/lib --without png
+        env:
+          PKG_CONFIG_PATH: ${{ github.workspace }}/vcpkg/packages/libgd_x64-windows-release/lib
       - run: perl -pi -e's/-Wl,--enable-auto-image-base/ /' Makefile
       - run: make test TEST_VERBOSE=1 2>&1 | tee make.log
-        continue-on-error: true
+        # continue-on-error: true
       - name: Upload Failure
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         if: failure()
