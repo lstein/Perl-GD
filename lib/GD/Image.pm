@@ -35,6 +35,8 @@ Supported Image formats:
 
 =item BMP
 
+=item GifAnim
+
 =item Webp
 
 =item Avif
@@ -50,8 +52,6 @@ Unsupported Image formats:
 =item Gd2
 
 =item Xpm
-
-=item GifAnim
 
 =item Heif
 

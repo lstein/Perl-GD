@@ -18,7 +18,8 @@ my (@INC,@LIBPATH,@LIBS,$LIBGD_VERSION);
 my $AUTOCONFIG = 0;      # global set by try_to_autoconfigure() below
 my $HAVE_GD2 = 1;        # until libgd 2.3.1, unset by try_to_autoconfigure()
 
-my ($options,$lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,
+my ($options,$with,$without,
+    $lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,
     $lib_tiff_path,$lib_webp_path,$lib_raqm_path,$lib_heif_path,$lib_avif_path,
     $lib_zlib_path,$lib_fontconfig_path,$force,$FCGI,$gdlib_config_path);
 
@@ -35,6 +36,8 @@ my $default_lib_gd_path
 use Getopt::Long;
 my $result = GetOptions("ignore_missing_gd" => \$force,
                         "options=s"       => \$options,
+                        "without=s"       => \$without,
+                        "with=s"          => \$with,
 			"lib_gd_path=s"   => \$lib_gd_path,
 			"lib_ft_path=s"   => \$lib_ft_path,
 			"lib_png_path=s"  => \$lib_png_path,
@@ -83,6 +86,8 @@ Configure GD module.
 
  Options:
      --options       "JPEG,GD2,FT,PNG,WEBP,GIF,XPM,GIFANIM,WBMP,BMP" feature options, separated by commas
+     --with <features>               add. e.g. --with png,gif
+     --without <features>            remove. e.g. --without tiff
      --lib_gd_path   path            path to libgd (/usr/lib)
      --lib_ft_path   path            path to Freetype library (/usr)
      --lib_png_path  path            path to libpng (/usr)
@@ -104,6 +109,23 @@ attempt to autoconfigure itself with the gdlib-config program or pkgconfig/gdlib
 (present in GD versions 2.0.27 or later).  Otherwise it will prompt for these
 values interactively.
 END
+}
+
+for my $w (split /,/, $with || '') {
+    my $opt = "GD_" . uc($w);
+    if (!$options || $options !~ /\b\Q$opt\E\b/) {
+        $options .= " $opt";
+        print "with feature: $opt\n"
+    }
+}
+if ($options && $without) {
+    for my $w (split /,/, $without) {
+        my $opt = "GD_" . uc($w);
+        if ($options =~ /\b\Q$opt\E\b/) {
+            $options =~ s/\b\Q$opt\E\b//i;
+            print "without feature: $opt\n"
+        }
+    }
 }
 
 if( defined($options) )
