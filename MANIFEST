@@ -19,6 +19,7 @@ demos/fills.pl
 demos/font_list.png
 demos/fonttest
 demos/gd_example.cgi
+demos/png2jpeg.pl
 demos/polyline.pl
 demos/polys.pl
 demos/shapes.pl
