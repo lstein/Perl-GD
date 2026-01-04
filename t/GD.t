@@ -42,7 +42,7 @@ sub write_regression_tests {
     for my $suffix (@image_types) {
 	my $op = ucfirst $suffix;
         $op = 'WBMP' if $suffix eq 'wbmp';
-	unless (GD::Image->can("newFrom$op")) {
+	if (!GD::Image->can("newFrom$op") or $op eq "Xbm") {
 	    print "# not writing $op regression test: not supported\n";
 	    next;
 	}
@@ -65,7 +65,11 @@ sub write_regression_test {
     }
     open my $fh,'>',$filename or die "$filename: $!";
     binmode($fh);
-    print $fh $data->$suffix;
+    if ($suffix eq "wbmp") {
+        print $fh $data->$suffix(0);
+    } else {
+        print $fh $data->$suffix;
+    }
     close $fh or die "$filename: $!";
 }
 

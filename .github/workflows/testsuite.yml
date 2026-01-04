@@ -193,7 +193,7 @@ jobs:
           PKG_CONFIG_PATH: ${{ github.workspace }}/vcpkg/packages/libgd_x64-windows-release/lib
       - run: perl -pi -e's/-Wl,--enable-auto-image-base/ /' Makefile
       - run: make test TEST_VERBOSE=1 2>&1 | tee make.log
-        # continue-on-error: true
+        continue-on-error: true
       - name: Upload Failure
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         if: failure()

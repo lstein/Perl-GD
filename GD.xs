@@ -12,6 +12,8 @@
 #include <gdfontt.h>
 #include <errno.h>
 
+/* no xbm writer, no gdImageXbmPtr() */
+
 /* 2.0.x: < 2.1.0-alpha */
 #ifndef GD_VERSION_STRING
 # if defined(GD2_VERS) && (GD2_VERS==2)
@@ -675,6 +677,30 @@ gd_newFromTiff(packname="GD::Image", filehandle, ...)
 	gd_chkimagefmt(RETVAL, truecolor);
   OUTPUT:
         RETVAL
+
+GD::Image
+gdnewFromTiffData(packname="GD::Image", imageData, ...)
+	char *	packname
+	SV *	imageData
+  PROTOTYPE: $$;$
+  PREINIT:
+	gdIOCtx* ctx;
+        char*    data;
+        STRLEN   len;
+	dMY_CXT;
+        int truecolor = truecolor_default;
+  CODE:
+	PERL_UNUSED_ARG(packname);
+	data = SvPV(imageData,len);
+        ctx = newDynamicCtx(data,len);
+	RETVAL = (GD__Image) gdImageCreateFromTiffCtx(ctx);
+        (ctx->gd_free)(ctx);
+        if (!RETVAL)
+          croak("gdImageCreateFromTiffCtx error");
+        if (items > 2) truecolor = (int)SvIV(ST(2));
+	gd_chkimagefmt(RETVAL, truecolor);
+  OUTPUT:
+	RETVAL
 
 #endif
 
