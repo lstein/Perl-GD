@@ -17,7 +17,8 @@ See L<GD>
 
 =head1 DESCRIPTION
 
-Supported Image formats:
+Supported Image formats, also returned by C<supported()>,
+as lowercase strings.
 
 =over 4
 
@@ -329,6 +330,23 @@ sub newFromBmp {
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromBmp($fh,@_);
+}
+
+# dynamically generated from your libgd features
+sub supported {
+    return qw(
+	png
+	gif
+	jpeg
+	tiff
+	xbm
+	wbmp
+	bmp
+	gifanim
+	webp
+	heif
+	avif
+      );
 }
 
 # Autoload methods go after __END__, and are processed by the autosplit program.

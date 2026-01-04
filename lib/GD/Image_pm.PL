@@ -41,7 +41,8 @@ See L<GD>
 
 =head1 DESCRIPTION
 
-Supported Image formats:
+Supported Image formats, also returned by C<supported()>,
+as lowercase strings.
 
 =over 4
 
@@ -53,8 +54,8 @@ print OUT "=item Gd\n\n=item Gd2\n\n" if $DEFINES =~ /HAVE_GD2/;
 print OUT "=item Jpeg\n\n" if $DEFINES =~ /HAVE_JPEG/;
 print OUT "=item Tiff\n\n" if $DEFINES =~ /HAVE_TIFF/;
 print OUT "=item Xpm\n\n" if $DEFINES =~ /HAVE_XPM/;
-print OUT "=item Xbm\n\n" if 1 or $DEFINES =~ /HAVE_XBM/;
-print OUT "=item WBMP\n\n" if 1 or $DEFINES =~ /HAVE_WBMP/;
+print OUT "=item Xbm\n\n";
+print OUT "=item WBMP\n\n";
 print OUT "=item BMP\n\n" if $DEFINES =~ /HAVE_BMP/;
 print OUT "=item GifAnim\n\n" if $DEFINES =~ /HAVE_GIFANIM/;
 print OUT "=item Webp\n\n" if $DEFINES =~ /HAVE_WEBP/;
@@ -438,6 +439,27 @@ sub newFromBmp {
 }
 
 print OUT <<'!NO!SUBS!';
+# dynamically generated from your libgd features
+sub supported {
+    return qw(
+!NO!SUBS!
+print OUT "	png\n" if $DEFINES =~ /HAVE_PNG/;
+print OUT "	gif\n" if $DEFINES =~ /HAVE_GIF/;
+print OUT "	gd gd2\n" if $DEFINES =~ /HAVE_GD2/;
+print OUT "	jpeg\n" if $DEFINES =~ /HAVE_JPEG/;
+print OUT "	tiff\n" if $DEFINES =~ /HAVE_TIFF/;
+print OUT "	xpm\n" if $DEFINES =~ /HAVE_XPM/;
+print OUT "	xbm\n";
+print OUT "	wbmp\n";
+print OUT "	bmp\n" if $DEFINES =~ /HAVE_BMP/;
+print OUT "	gifanim\n" if $DEFINES =~ /HAVE_GIFANIM/;
+print OUT "	webp\n" if $DEFINES =~ /HAVE_WEBP/;
+print OUT "	heif\n" if $DEFINES =~ /HAVE_HEIF/;
+print OUT "	avif\n" if $DEFINES =~ /HAVE_AVIF/;
+print OUT <<'!NO!SUBS!';
+      );
+}
+
 # Autoload methods go after __END__, and are processed by the autosplit program.
 1;
 __END__

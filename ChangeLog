@@ -5,6 +5,8 @@
 	  --lib_gd_path.
 	* Workaround broken ExtUtils::PkgConfig->find (GH #61)
 	* Fixed snprintf for newer MSVC (>= VS 2015)
+	* Added GD::Image::supported() image types method.
+	* Fixed t/GD.t for unsupported image types.
 	* Add GIFANIM to the default since 2.0.33 (PeterCJ GH #56)
 	* Honor PKG_CONFIG_PATH for finding gdlib.pc (PeterCJ GH #57)
 	* Add demos/png2jpeg.pl

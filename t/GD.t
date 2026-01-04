@@ -7,28 +7,33 @@ use FileHandle;
 use FindBin qw($Bin);
 use lib "$Bin/../blib/lib","$Bin/../blib/arch","$Bin/../lib";
 use constant FONT=>"$Bin/test_data/Generic.ttf";
-use constant IMAGE_TESTS => 8;
-use Test::More tests => IMAGE_TESTS + 7;
+use GD::Image;
+use Test::More;
 use IO::Dir;
 
-use_ok('GD',':DEFAULT',':cmp');
+use constant REGRESSION_TESTS => 8;
+plan tests => (REGRESSION_TESTS + 7);
+
 use_ok('GD::Simple');
+use_ok('GD',':DEFAULT',':cmp');
 
 chdir $Bin || die "Couldn't change to 't' directory: $!";
 my $images = './test_data/images';
 
+my @image_types = GD::Image::supported();
+my $image_types = scalar(@image_types);
+
 my $arg = shift;
 write_regression_tests() if (defined $arg && $arg eq '--write');
-run_image_regression_tests();
-run_round_trip_test();
-catch_libgd_error();
-test_cve2019_6977();
+run_image_regression_tests(); # 8
+run_round_trip_test(); # 2
+catch_libgd_error(); # 2
+test_cve2019_6977(); # 1
 
 exit 0;
 
 sub write_regression_tests {
-    # TODO get all the supported image formats dynamically
-    my @image_types = qw(png gif jpeg tiff wbmp webp heif avif);
+    # we get now all the supported image formats dynamically
     if (GD::LIBGD_VERSION() < 2.0302 ) {
         # GD 2.3.2 disabled the old GD and GD2 formats by default
         unshift @image_types, 'gd2', 'gd';
@@ -41,7 +46,7 @@ sub write_regression_tests {
 	    print "# not writing $op regression test: not supported\n";
 	    next;
 	}
-	for my $t (1..IMAGE_TESTS) {
+	for my $t (1..REGRESSION_TESTS) {
 	    my $data = eval "test${t}('$suffix')" or die $@;
 	    write_regression_test($data,$t,$suffix);
 	}
@@ -78,6 +83,7 @@ sub compare {
 sub compare_image {
     my ($data1,$file,$suffix) = @_;
     my $op    = ucfirst($suffix);
+    $op = 'WBMP' if $suffix eq 'wbmp';
     my $method = "newFrom${op}";
     my $data2 = eval {GD::Image->$method($file)} or die $@;
     return ! $data1->compare($data2) & GD_CMP_IMAGE();
@@ -93,6 +99,7 @@ sub test1 {
     my($yellow) = $im->colorAllocate(255,250,205);
     my $fn = "./test_data/tile.$suffix";
     my $op    = ucfirst($suffix);
+    $op = 'WBMP' if $suffix eq 'wbmp';
     my $tile = eval "GD::Image->newFrom${op}('$fn')" or die $@;
     return unless $tile;
     $im->setBrush($tile);
@@ -108,12 +115,12 @@ sub test1 {
 sub test2 {
     my($im) = new GD::Image(300,300);
     my($white,$black,$red,$blue,$yellow) = (
-					    $im->colorAllocate(255, 255, 255),
-					    $im->colorAllocate(0, 0, 0),
-					    $im->colorAllocate(255, 0, 0),
-					    $im->colorAllocate(0,0,255),
-					    $im->colorAllocate(255,250,205)
-					    );
+        $im->colorAllocate(255, 255, 255),
+        $im->colorAllocate(0, 0, 0),
+        $im->colorAllocate(255, 0, 0),
+        $im->colorAllocate(0,0,255),
+        $im->colorAllocate(255,250,205)
+    );
     my($brush) = new GD::Image(10,10);
     $brush->colorAllocate(255,255,255); # white
     $brush->colorAllocate(0,0,0);	# black
@@ -260,13 +267,9 @@ sub test8 {
 }
 
 sub run_image_regression_tests {
-    my $default_image_type = 'gd2';
-    if (!GD::Image->can("newFromGd2") || GD::LIBGD_VERSION() >= 2.0302) {
-      $default_image_type = 'png';
-    }
-    my $suffix = $ENV{GDIMAGETYPE} || $default_image_type;
+    my $suffix = $ENV{GDIMAGETYPE} || $image_types[0];
     print STDERR "# Testing gd ".GD::VERSION_STRING()." using $suffix support.\n";
-    for my $t (1..IMAGE_TESTS) {
+    for my $t (1..REGRESSION_TESTS) {
 	my $gd   = eval "test${t}('$suffix')";
 	if (!$gd) {
 	    fail("unable to generate comparison image for test $t with $suffix: $@");
@@ -288,13 +291,13 @@ sub run_image_regression_tests {
 }
 
 sub run_round_trip_test {
-    my $image  = GD::Image->new(300,300);
+    my $image = GD::Image->new(300,300);
     $image->colorAllocate(255,255,255);
     $image->colorAllocate(0,0,0);
     $image->colorAllocate(255,0,0);
     $image->rectangle(0,0,300,300,0);
     $image->filledRectangle(10,10,50,50,2);
-    if (GD::Image->can("newFromGd")) {
+    if (GD::Image->can("newFromGd") and GD::Image->can("newFromGd2")) {
         my $gd = $image->gd;
         my $image2 = GD::Image->newFromGdData($gd);
         ok(!$image->compare($image2) & GD_CMP_IMAGE(),'round trip gd');
@@ -302,14 +305,32 @@ sub run_round_trip_test {
         $image2 = GD::Image->newFromGd2Data($gd2);
         ok(!$image->compare($image2) & GD_CMP_IMAGE(),'round trip gd2');
     }
+    elsif (GD::Image->can("newFromPng")) {
+      SKIP: {
+          skip "No GIF support", 2 unless defined &GD::Image::newFromGif;
+
+          # GD 2.3.2 disabled the old GD and GD2 formats by default
+          my $png = $image->png;
+          my $image2 = GD::Image->newFromPngData($png);
+          ok(!$image->compare($image2) & GD_CMP_IMAGE(),'round trip png');
+          my $gif = $image->gif;
+          $image2 = GD::Image->newFromGifData($gif);
+          ok(!$image->compare($image2) & GD_CMP_IMAGE(),'round trip gif');
+        }
+    }
     else {
-        # GD 2.3.2 disabled the old GD and GD2 formats by default
-        my $png = $image->png;
-        my $image2 = GD::Image->newFromPngData($png);
-        ok(!$image->compare($image2) & GD_CMP_IMAGE(),'round trip png');
-        my $gif = $image->gif;
-        $image2 = GD::Image->newFromGifData($gif);
-        ok(!$image->compare($image2) & GD_CMP_IMAGE(),'round trip gif');
+      SKIP: {
+          skip "No GIF or TIFF support", 2
+              unless defined &GD::Image::newFromGif
+              and defined &GD::Image::newFromTiff;
+
+          my $img = $image->tiff;
+          my $image2 = GD::Image->newFromTiffData($img);
+          ok(!$image->compare($image2) & GD_CMP_IMAGE(),'round trip tiff');
+          my $gif = $image->gif;
+          $image2 = GD::Image->newFromGifData($gif);
+          ok(!$image->compare($image2) & GD_CMP_IMAGE(),'round trip gif');
+        }
     }
 }
 
@@ -318,7 +339,7 @@ sub catch_libgd_error {
   SKIP: {
     skip "No PNG support", 2 unless defined &GD::Image::newFromPng;
     my $image = eval { GD::Image->newFromPng("test_data/images/corrupt.png") };
-    is($image, undef);
+    is($image, undef, "empty corrupt png data");
     ok($@, 'caught corrupt png');
   }
 }

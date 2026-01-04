@@ -20,4 +20,3 @@ GD.gcno
 GD.xs.gcov
 cover_db/
 inline.h.gcov
-test_data/
