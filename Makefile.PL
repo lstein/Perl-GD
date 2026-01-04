@@ -884,6 +884,7 @@ sub processPL {
 sub depend {
   "
 release : dist
+	git tag v\$(VERSION)
 	git tag release_\$(VERSION_SYM)
 	cpan-upload \$(DISTVNAME).tar\$(SUFFIX)
 	git push
