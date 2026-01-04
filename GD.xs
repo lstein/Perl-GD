@@ -97,7 +97,7 @@
 # define hv_fetchs(H, K, L) hv_fetch((H), (K), sizeof(K)-1, (L))
 #endif
 
-#ifdef WIN32
+#if defined(_MSC_VER) && _MSC_VER < 1900
 # define snprintf _snprintf
 #endif
 
