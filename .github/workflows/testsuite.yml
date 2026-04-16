@@ -25,7 +25,7 @@ jobs:
           sudo apt update -y
           sudo apt install -y libgd-dev
       - name: install cpan deps
-        uses: perl-actions/install-with-cpm@8b1a9840b26cc3885ae2889749a48629be2501b0 # v1.9
+        uses: perl-actions/install-with-cpm@6102f2ca16b84903463791694515b5a18d469474 # v2.0
         with:
           install: |
             ExtUtils::PkgConfig
@@ -82,7 +82,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: shogo82148/actions-setup-perl@b6cfc127f1b0a63ac98797800f641494d80f42f8 # v1.37.1
+      - uses: shogo82148/actions-setup-perl@5a2f3b681f2e2fa0db6cc52c7608d9916527aa58 # v1.40.0
         with:
           perl-version: ${{ matrix.perl-version }}
       - run: perl -V
@@ -90,7 +90,7 @@ jobs:
           sudo apt update -y
           sudo apt install -y libgd-dev
       - name: install cpan deps
-        uses: perl-actions/install-with-cpm@8b1a9840b26cc3885ae2889749a48629be2501b0 # v1.9
+        uses: perl-actions/install-with-cpm@6102f2ca16b84903463791694515b5a18d469474 # v2.0
         with:
           sudo: false
           install: |
@@ -123,7 +123,7 @@ jobs:
         # already installed
       - run: brew install gd
       - name: install cpan deps
-        uses: perl-actions/install-with-cpm@8b1a9840b26cc3885ae2889749a48629be2501b0 # v1.9
+        uses: perl-actions/install-with-cpm@6102f2ca16b84903463791694515b5a18d469474 # v2.0
         with:
           install: |
             ExtUtils::PkgConfig
@@ -177,7 +177,7 @@ jobs:
           triplet: x64-windows-release
           token: ${{ github.token }}
       - name: install cpan deps
-        uses: perl-actions/install-with-cpm@8b1a9840b26cc3885ae2889749a48629be2501b0 # v1.9
+        uses: perl-actions/install-with-cpm@6102f2ca16b84903463791694515b5a18d469474 # v2.0
         with:
           sudo: false
           install: |
@@ -195,7 +195,7 @@ jobs:
       - run: make test TEST_VERBOSE=1 2>&1 | tee make.log
         continue-on-error: true
       - name: Upload Failure
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: failure()
         with:
           name: artifacts
