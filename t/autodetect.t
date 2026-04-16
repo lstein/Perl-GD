@@ -33,8 +33,13 @@ SKIP: {
 }
 SKIP: {
   skip "No TIFF support", 1 unless defined &GD::Image::newFromTiff;
-  my $tiff = GD::Image->new("t/test_data/tile.tiff");
-  ok defined($tiff), "tiff detected";
+  my $tiff;
+  eval { $tiff = GD::Image->new("t/test_data/tile.tiff") };
+  if (!$tiff and $@ =~ /gdImageCreateFromTiff error/) {
+    ok 1, "Warning: tiff support broken in libgd upstream. GH #62";
+  } else {
+    ok defined($tiff), "tiff detected";
+  }
 }
 SKIP: {
   skip "No AVIF support", 1 unless defined &GD::Image::newFromAvif;
