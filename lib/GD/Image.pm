@@ -5,7 +5,7 @@ use strict;
 use GD;
 use Symbol 'gensym','qualify_to_ref';
 use vars '$VERSION';
-$VERSION = '2.84';
+$VERSION = '2.85';
 
 =head1 NAME
 
@@ -93,7 +93,7 @@ sub _make_filehandle {
 
   # otherwise try qualifying it into caller's package
   my $fh;
-  {   
+  {
     local $^W = 0;  # to avoid uninitialized variable warning from Symbol.pm
     my $pkg = caller(2);
     $pkg = "main" unless defined $pkg;;

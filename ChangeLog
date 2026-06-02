@@ -1,3 +1,6 @@
+2.85    * Tolerate runtime TIFF decode failures in autodetect (GH #62)
+	* Replace cpm with cpanm in github actions
+	* Fixed a minor precedence bug in t/z_manifest.t
 2.84    * Added Makefile.PL --with and --without options to bypass autodetection
 	  errors or upstream libgd or subsequent library errors, as
 	  libtiff 4.5.1+git230720 wrongly packaged on ubuntu/debian (GH #55).
