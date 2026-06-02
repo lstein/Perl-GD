@@ -89,15 +89,10 @@ jobs:
       - run: |
           sudo apt update -y
           sudo apt install -y libgd-dev
+      - name: install cpanm
+        run: curl -sL https://cpanmin.us | perl - App::cpanminus
       - name: install cpan deps
-        uses: perl-actions/install-with-cpm@6102f2ca16b84903463791694515b5a18d469474 # v2.0
-        with:
-          sudo: false
-          install: |
-            ExtUtils::PkgConfig
-            File::Which
-            Math::Trig
-            Test::NoWarnings
+        run: cpanm --notest ExtUtils::PkgConfig File::Which Math::Trig Test::NoWarnings
       # GH #55, libtiff broken on this vm
       - run: perl Makefile.PL --without tiff
       - run: make test

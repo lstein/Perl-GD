@@ -1,6 +1,6 @@
 # -*- perl -*-
 use Test::More;
-if (!-d ".git" or $^O != /^(linux|.*bsd|darwin|solaris|sunos)$/) {
+if (!-d ".git" or $^O !~ /^(linux|.*bsd|darwin|solaris|sunos)$/) {
   plan skip_all => "requires a git checkout and a unix for git and diff";
 }
 plan tests => 1;
