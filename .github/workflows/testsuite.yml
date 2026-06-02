@@ -25,7 +25,7 @@ jobs:
           sudo apt update -y
           sudo apt install -y libgd-dev
       - name: install cpan deps
-        uses: perl-actions/install-with-cpm@6102f2ca16b84903463791694515b5a18d469474 # v2.0
+        uses: perl-actions/install-with-cpm@b7eeb5ea204d9c9bd434e01162ae97629cf7fa36 # v2.4
         with:
           install: |
             ExtUtils::PkgConfig
@@ -82,7 +82,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: shogo82148/actions-setup-perl@5a2f3b681f2e2fa0db6cc52c7608d9916527aa58 # v1.40.0
+      - uses: shogo82148/actions-setup-perl@a198315ec4e9244f206879ea7b63078003aec8a6 # v1.41.1
         with:
           perl-version: ${{ matrix.perl-version }}
       - run: perl -V
@@ -118,7 +118,7 @@ jobs:
         # already installed
       - run: brew install gd
       - name: install cpan deps
-        uses: perl-actions/install-with-cpm@6102f2ca16b84903463791694515b5a18d469474 # v2.0
+        uses: perl-actions/install-with-cpm@b7eeb5ea204d9c9bd434e01162ae97629cf7fa36 # v2.4
         with:
           install: |
             ExtUtils::PkgConfig
@@ -165,14 +165,14 @@ jobs:
       #  or install the msys2 perl-gd library
       # vcpkg needs 7m, but is cached
       - name: vcpkg install libgd
-        uses: johnwason/vcpkg-action@caa1c94fbb94d8b023a0cc93edf10cd3791349a7 # v7.0.1
+        uses: johnwason/vcpkg-action@04c68c847bf5196ecaa72331ecf51208583916ef # v8.0.0
         id: vcpkg
         with:
           pkgs: libgd
           triplet: x64-windows-release
           token: ${{ github.token }}
       - name: install cpan deps
-        uses: perl-actions/install-with-cpm@6102f2ca16b84903463791694515b5a18d469474 # v2.0
+        uses: perl-actions/install-with-cpm@b7eeb5ea204d9c9bd434e01162ae97629cf7fa36 # v2.4
         with:
           sudo: false
           install: |
