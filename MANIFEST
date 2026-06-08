@@ -40,6 +40,7 @@ t/Polyline.t
 t/autodetect.t
 t/caller.t
 t/fork.t
+t/security_open.t
 t/test_data/Generic.ttf
 t/test_data/frog.jpg
 t/test_data/frog.xbm

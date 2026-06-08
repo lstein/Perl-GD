@@ -129,9 +129,10 @@ sub _make_filehandle {
   }
   return $fh if defined(fileno $fh);
 
-  # otherwise treat it as a file to open
+  # otherwise treat it as a file to open; 3-arg open so the filename is
+  # not interpreted as a command or redirect
   $fh = gensym;
-  if (!open($fh,$thing)) {
+  if (!open($fh,'<',$thing)) {
     die "$thing not found: $!";
     return undef;
   }
