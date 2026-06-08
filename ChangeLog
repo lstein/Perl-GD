@@ -1,3 +1,5 @@
+2.86    * Fix CVE-2026-11526, command injection via 2-arg open() in _make_filehandle.
+	  CWE-78, CWE-73 (Reported and fixed by Paul Johnson)
 2.85    * Tolerate runtime TIFF decode failures in autodetect (GH #62)
 	* Replace cpm with cpanm in github actions
 	* Fixed a minor precedence bug in t/z_manifest.t
