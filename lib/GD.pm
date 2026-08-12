@@ -1805,7 +1805,7 @@ is true color or not.
 =item B<$flag = $image1-E<gt>compare($image2)>
 
 Compare two images and return a bitmap describing the differences
-found, if any.  The return value must be logically AND'ed with one or
+found, if any.  The return value must be bitwise AND'ed with one or
 more constants in order to determine the differences.  The following
 constants are available:
 
