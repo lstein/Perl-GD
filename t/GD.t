@@ -318,7 +318,7 @@ sub run_round_trip_test {
               and defined &GD::Image::newFromTiff;
 
           my $img = $image->tiff;
-          my $image2 = GD::Image->newFromTiffData($img);
+          my $image2 = GD::Image->newFromTiffData($img,1);
           ok(!($image->compare($image2) & GD_CMP_IMAGE()),'round trip tiff');
           my $gif = $image->gif;
           $image2 = GD::Image->newFromGifData($gif);
