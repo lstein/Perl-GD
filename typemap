@@ -3,3 +3,5 @@ GD::Image	T_PTROBJ
 GD::Font	T_PTROBJ
 GD::Polygon	T_PTROBJ
 GD::UHDR	T_PTROBJ
+GD::WebpAnimReader	T_PTROBJ
+GD::WebpAnimWriter	T_PTROBJ

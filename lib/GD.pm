@@ -2415,6 +2415,67 @@ The gain map is not retained; see the caveat above.
 
 =back
 
+=head1 GD::WebpAnimReader / GD::WebpAnimWriter - Animated WebP Support
+
+libgd E<gt>= 2.4.0 can read and write animated WebP files frame by
+frame instead of only through the single-image C<newFromWebp()>/
+C<webp()> methods. As with C<GD::UHDR>, the underlying gd handles
+(C<gdWebpReadPtr>/C<gdWebpWritePtr>) are distinct from C<gdImagePtr>,
+so they get their own classes. Readers always decode full-canvas
+("coalesced") frames.
+
+  my $writer = GD::WebpAnimWriter->new({ loop_count => 0 });
+  $writer->addImage($_, 100) for @frames; # 100ms per frame
+  my $bytes = $writer->finish;             # WebP animation bytes
+
+  my $reader = GD::WebpAnimReader->newFromData($bytes);
+  my %info = $reader->info;                # width, height, frame_count, ...
+  while (my ($delayMs, $image) = $reader->nextImage) {
+      ...
+  }
+
+=over 4
+
+=item B<$writer = GD::WebpAnimWriter-E<gt>new([\%options])>
+
+Creates a new in-memory animation writer. C<%options> may set
+C<canvas_width>, C<canvas_height> (both default to the first added
+image's size), C<loop_count> (0 = infinite), C<background_color>,
+C<quality> (0-100, or -1 for the default), C<lossless>, C<method>,
+C<minimize_size>, C<kmin>, C<kmax>, and C<allow_mixed>.
+
+=item B<$ok = $writer-E<gt>addImage($image, [$durationMs])>
+
+Adds C<$image> as the next frame, shown for C<$durationMs>
+milliseconds (default 100). Dies on error, or if the writer has
+already been finished.
+
+=item B<$data = $writer-E<gt>finish()>
+
+Assembles and returns the encoded WebP animation bytes. A writer can
+only be finished once; using it afterwards (via C<addImage()> or a
+second C<finish()>) dies rather than risking a stale-handle crash.
+
+=item B<$reader = GD::WebpAnimReader-E<gt>newFromData($data)>
+
+Opens a reader over an in-memory WebP file (animated or not). Dies on
+error.
+
+=item B<%info = $reader-E<gt>info()>
+
+Returns the container's C<width>, C<height>, C<frame_count>,
+C<loop_count>, C<background_color>, C<format_flags>, and
+C<is_animation>.
+
+=item B<($durationMs, $image) = $reader-E<gt>nextImage()>
+
+Returns the next full-canvas frame and its display duration in
+milliseconds, or an empty list once every frame has been read. Dies on
+a decode error.
+
+=back
+
+
 =head1 Obtaining the C-language version of gd
 
 libgd, the C-language version of gd, can be obtained at URL
