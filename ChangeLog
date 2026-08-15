@@ -36,6 +36,15 @@
             gdJxlWriteOpenPtr/AddImage/PtrFinish) and GD::JxlAnimReader
             (newFromData/info/nextImage, wrapping gdJxlReadOpenCtx/
             GetInfo/NextImage) classes, mirroring GD::WebpAnimReader/Writer.
+          - Multi-page TIFF support (libgd >= 2.4.0): new
+            GD::TiffMultiWriter (new/addImage/finish, wrapping
+            gdTiffWriteOpenPtr/AddImage/PtrFinish) and GD::TiffMultiReader
+            (newFromData/info/nextImage, wrapping gdTiffReadOpenCtx/
+            GetInfo/NextImage) classes, mirroring GD::WebpAnimReader/Writer
+            (pages have no per-page delay; nextImage() returns a
+            page-info hashref instead). Also adds the GD_TIFF_* writer
+            option constants (colorspace, compression, resolution unit,
+            alpha type).
 2.87    * fix OpenBSD support (Alexander Bluhm, PR #63)
         * fix $image->compare() usages (Alexander Bluhm, PR #65, #64)
         * fix tiff test without libimagequant (Alexander Bluhm, PR #66)

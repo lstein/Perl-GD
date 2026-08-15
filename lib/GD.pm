@@ -2533,6 +2533,79 @@ a decode error.
 
 =back
 
+=head1 GD::TiffMultiReader / GD::TiffMultiWriter - Multi-Page TIFF Support
+
+libgd E<gt>= 2.4.0 can also read and write multi-page TIFF files page
+by page, in addition to the single-image C<newFromTiff()>/
+C<newFromTiffData()>/C<tiff()> methods. Mirrors
+C<GD::WebpAnimReader>/C<GD::WebpAnimWriter>, except TIFF pages have no
+per-page delay, so C<addImage()> and C<nextImage()> don't take/return
+one, and C<nextImage()> returns a page-info I<hashref> (there are more
+per-page facts worth naming than a single duration).
+
+  my $writer = GD::TiffMultiWriter->new({
+      colorspace  => GD::GD_TIFF_RGBA(),
+      compression => GD::GD_TIFF_COMPRESSION_ADOBE_DEFLATE(),
+  });
+  $writer->addImage($_) for @pages;
+  my $bytes = $writer->finish;
+
+  my $reader = GD::TiffMultiReader->newFromData($bytes);
+  my %info = $reader->info;                # width, height, page_count, ...
+  while (my ($pageInfo, $image) = $reader->nextImage) {
+      print "page $pageInfo->{page_index}: $pageInfo->{width}x$pageInfo->{height}\n";
+  }
+
+=over 4
+
+=item B<$writer = GD::TiffMultiWriter-E<gt>new([\%options])>
+
+Creates a new in-memory TIFF writer. C<%options> may set C<bit_depth>
+(1, 8, or 16), C<colorspace> (C<GD_TIFF_RGB>, C<GD_TIFF_RGBA>,
+C<GD_TIFF_GRAY>, or C<GD_TIFF_BILEVEL>), C<compression> (one of the
+C<GD_TIFF_COMPRESSION_*> constants), C<jpeg_quality> (when
+C<compression> is C<GD_TIFF_COMPRESSION_JPEG>), C<min_is_white>,
+C<resolution_unit> (C<GD_TIFF_RESUNIT_NONE>, C<_INCH>, or
+C<_CENTIMETER>), C<x_resolution>, C<y_resolution>, and C<alpha_type>
+(C<GD_TIFF_ALPHA_UNASSOCIATED> or C<GD_TIFF_ALPHA_ASSOCIATED>).
+Defaults: 8-bit RGBA, Adobe Deflate compression, inch resolution
+units, 72x72 resolution, unassociated alpha.
+
+=item B<$ok = $writer-E<gt>addImage($image)>
+
+Adds C<$image> as the next page. Dies on error, or if the writer has
+already been finished.
+
+=item B<$data = $writer-E<gt>finish()>
+
+Assembles and returns the encoded TIFF bytes. A writer can only be
+finished once; using it afterwards dies rather than risking a
+stale-handle crash.
+
+=item B<$reader = GD::TiffMultiReader-E<gt>newFromData($data)>
+
+Opens a reader over an in-memory TIFF file (single- or multi-page).
+Dies on error.
+
+=item B<%info = $reader-E<gt>info()>
+
+Returns facts about the first page and the container: C<width>,
+C<height>, C<page_count>, C<bits_per_sample>, C<samples_per_pixel>,
+C<compression>, C<photometric>, C<x_resolution>, C<y_resolution>, and
+C<resolution_unit>.
+
+=item B<(\%pageInfo, $image) = $reader-E<gt>nextImage()>
+
+Returns the next page's image and a hashref describing it
+(C<page_index>, C<width>, C<height>, C<bits_per_sample>,
+C<samples_per_pixel>, C<compression>, C<photometric>, C<planar>,
+C<has_alpha>, C<is_tiled>, C<x_resolution>, C<y_resolution>,
+C<resolution_unit>), or an empty list once every page has been read.
+Dies on a decode error.
+
+=back
+
+
 
 
 =head1 Obtaining the C-language version of gd

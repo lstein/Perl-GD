@@ -79,6 +79,29 @@ extern int gdImageBoundsSafe(gdImagePtr im, int x, int y);
 # define GD_CROP_SIDES GD_CROP_SIDES
 # define GD_CROP_THRESHOLD GD_CROP_THRESHOLD
 #endif
+/* gdTiffColorSpace/gdTiffCompression/gdTiffResolutionUnit/gdTiffAlphaType
+ * (libgd >= 2.4.0) are plain enums too, used as plain int fields in
+ * gdTiffWriteOptions. */
+#if GD_VERSION >= 20400 && defined(HAVE_TIFF)
+# define GD_TIFF_RGB GD_TIFF_RGB
+# define GD_TIFF_RGBA GD_TIFF_RGBA
+# define GD_TIFF_GRAY GD_TIFF_GRAY
+# define GD_TIFF_BILEVEL GD_TIFF_BILEVEL
+# define GD_TIFF_COMPRESSION_NONE GD_TIFF_COMPRESSION_NONE
+# define GD_TIFF_COMPRESSION_CCITT_RLE GD_TIFF_COMPRESSION_CCITT_RLE
+# define GD_TIFF_COMPRESSION_CCITT_FAX3 GD_TIFF_COMPRESSION_CCITT_FAX3
+# define GD_TIFF_COMPRESSION_CCITT_FAX4 GD_TIFF_COMPRESSION_CCITT_FAX4
+# define GD_TIFF_COMPRESSION_LZW GD_TIFF_COMPRESSION_LZW
+# define GD_TIFF_COMPRESSION_JPEG GD_TIFF_COMPRESSION_JPEG
+# define GD_TIFF_COMPRESSION_ADOBE_DEFLATE GD_TIFF_COMPRESSION_ADOBE_DEFLATE
+# define GD_TIFF_COMPRESSION_DEFLATE GD_TIFF_COMPRESSION_DEFLATE
+# define GD_TIFF_COMPRESSION_PACKBITS GD_TIFF_COMPRESSION_PACKBITS
+# define GD_TIFF_RESUNIT_NONE GD_TIFF_RESUNIT_NONE
+# define GD_TIFF_RESUNIT_INCH GD_TIFF_RESUNIT_INCH
+# define GD_TIFF_RESUNIT_CENTIMETER GD_TIFF_RESUNIT_CENTIMETER
+# define GD_TIFF_ALPHA_UNASSOCIATED GD_TIFF_ALPHA_UNASSOCIATED
+# define GD_TIFF_ALPHA_ASSOCIATED GD_TIFF_ALPHA_ASSOCIATED
+#endif
 
 #ifdef FCGI
  #include <fcgi_stdio.h>
@@ -167,6 +190,10 @@ typedef gdWebpWritePtr	GD__WebpAnimWriter;
 #if GD_VERSION >= 20400 && defined(HAVE_JXL)
 typedef gdJxlReadPtr	GD__JxlAnimReader;
 typedef gdJxlWritePtr	GD__JxlAnimWriter;
+#endif
+#if GD_VERSION >= 20400 && defined(HAVE_TIFF)
+typedef gdTiffReadPtr	GD__TiffMultiReader;
+typedef gdTiffWritePtr	GD__TiffMultiWriter;
 #endif
 typedef PerlIO          * InputStream;
 
@@ -4161,6 +4188,195 @@ gdJxlAnimDESTROY(self)
       void *data;
       gdJxlWritePtr writer = INT2PTR(gdJxlWritePtr, SvIV((SV*)SvRV(self)));
       data = gdJxlWritePtrFinish(writer, &size);
+      if (data) gdFree(data);
+    }
+
+#endif
+#endif
+
+# Multi-page TIFF support (libgd >= 2.4.0), mirroring
+# GD::WebpAnimReader/Writer. TIFF pages have no per-frame delay, so
+# nextImage()/addImage() don't take/return one.
+
+MODULE = GD		PACKAGE = GD::TiffMultiReader	PREFIX=gdTiffMulti
+
+#if GD_VERSION >= 20400
+#ifdef HAVE_TIFF
+
+GD::TiffMultiReader
+gdTiffMultinewFromData(packname="GD::TiffMultiReader", imageData)
+	char *	packname
+	SV *	imageData
+  PROTOTYPE: $$
+  PREINIT:
+	char*    data;
+	STRLEN   len;
+	gdIOCtx* ctx;
+  CODE:
+    PERL_UNUSED_ARG(packname);
+    data = SvPV(imageData,len);
+    ctx = newDynamicCtx(data,len);
+    RETVAL = gdTiffReadOpenCtx(ctx, NULL);
+    (ctx->gd_free)(ctx);
+    if (!RETVAL)
+      croak("gdTiffReadOpenCtx error");
+  OUTPUT:
+    RETVAL
+
+void
+gdTiffMultiDESTROY(reader)
+	GD::TiffMultiReader	reader
+  PROTOTYPE: $
+  CODE:
+    gdTiffReadClose(reader);
+
+void
+gdTiffMultiinfo(reader)
+	GD::TiffMultiReader	reader
+  PROTOTYPE: $
+  PREINIT:
+	gdTiffInfo info;
+  PPCODE:
+    if (!gdTiffReadGetInfo(reader, &info))
+      croak("gdTiffReadGetInfo error");
+    PUSH_KV_I("width", info.width);
+    PUSH_KV_I("height", info.height);
+    PUSH_KV_I("page_count", info.page_count);
+    PUSH_KV_I("bits_per_sample", info.bits_per_sample);
+    PUSH_KV_I("samples_per_pixel", info.samples_per_pixel);
+    PUSH_KV_I("compression", info.compression);
+    PUSH_KV_I("photometric", info.photometric);
+    PUSH_KV_N("x_resolution", info.x_resolution);
+    PUSH_KV_N("y_resolution", info.y_resolution);
+    PUSH_KV_I("resolution_unit", info.resolution_unit);
+
+void
+gdTiffMultinextImage(reader)
+	GD::TiffMultiReader	reader
+  PROTOTYPE: $
+  PREINIT:
+	gdTiffPageInfo pinfo;
+	gdImagePtr image;
+	int result;
+  PPCODE:
+    image = NULL;
+    result = gdTiffReadNextImage(reader, &pinfo, &image);
+    if (result < 0)
+      croak("gdTiffReadNextImage error");
+    if (result == 0)
+      XSRETURN_EMPTY;
+    {
+      HV *hv = newHV();
+      SV *hvsv, *imgsv;
+      hv_stores(hv, "page_index", newSViv(pinfo.page_index));
+      hv_stores(hv, "width", newSViv(pinfo.width));
+      hv_stores(hv, "height", newSViv(pinfo.height));
+      hv_stores(hv, "bits_per_sample", newSViv(pinfo.bits_per_sample));
+      hv_stores(hv, "samples_per_pixel", newSViv(pinfo.samples_per_pixel));
+      hv_stores(hv, "compression", newSViv(pinfo.compression));
+      hv_stores(hv, "photometric", newSViv(pinfo.photometric));
+      hv_stores(hv, "planar", newSViv(pinfo.planar));
+      hv_stores(hv, "has_alpha", newSViv(pinfo.has_alpha));
+      hv_stores(hv, "is_tiled", newSViv(pinfo.is_tiled));
+      hv_stores(hv, "x_resolution", newSVnv(pinfo.x_resolution));
+      hv_stores(hv, "y_resolution", newSVnv(pinfo.y_resolution));
+      hv_stores(hv, "resolution_unit", newSViv(pinfo.resolution_unit));
+      hvsv = sv_2mortal(newRV_noinc((SV*)hv));
+      imgsv = sv_newmortal();
+      sv_setref_pv(imgsv, "GD::Image", (void*)image);
+      XPUSHs(hvsv);
+      XPUSHs(imgsv);
+    }
+
+#endif
+#endif
+
+MODULE = GD		PACKAGE = GD::TiffMultiWriter	PREFIX=gdTiffMulti
+
+#if GD_VERSION >= 20400
+#ifdef HAVE_TIFF
+
+GD::TiffMultiWriter
+gdTiffMultinew(packname="GD::TiffMultiWriter", ...)
+	char *	packname
+  PROTOTYPE: $;$
+  PREINIT:
+	gdTiffWriteOptions opts;
+	HV *h;
+	SV **v;
+  CODE:
+    PERL_UNUSED_ARG(packname);
+    gdTiffWriteOptionsInit(&opts);
+    if (items > 1 && SvOK(ST(1))) {
+      if (!SvROK(ST(1)) || SvTYPE(SvRV(ST(1))) != SVt_PVHV)
+        croak("Usage: GD::TiffMultiWriter->new([\\%%options])");
+      h = (HV*)SvRV(ST(1));
+      if ((v = hv_fetchs(h,"bit_depth",0)))       opts.bitDepth       = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"colorspace",0)))      opts.colorspace     = (gdTiffColorSpace)SvIV(*v);
+      if ((v = hv_fetchs(h,"compression",0)))     opts.compression    = (gdTiffCompression)SvIV(*v);
+      if ((v = hv_fetchs(h,"jpeg_quality",0)))    opts.jpegQuality    = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"min_is_white",0)))    opts.minIsWhite     = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"resolution_unit",0))) opts.resolutionUnit = (gdTiffResolutionUnit)SvIV(*v);
+      if ((v = hv_fetchs(h,"x_resolution",0)))    opts.xResolution    = (float)SvNV(*v);
+      if ((v = hv_fetchs(h,"y_resolution",0)))    opts.yResolution    = (float)SvNV(*v);
+      if ((v = hv_fetchs(h,"alpha_type",0)))      opts.alphaType      = (gdTiffAlphaType)SvIV(*v);
+    }
+    RETVAL = gdTiffWriteOpenPtr(&opts);
+    if (!RETVAL)
+      croak("gdTiffWriteOpenPtr error");
+  OUTPUT:
+    RETVAL
+
+# addImage/finish/DESTROY take the blessed SV directly and null out the
+# referent's IV once finish() consumes the underlying gdTiffWritePtr;
+# see GD::WebpAnimWriter for the rationale.
+
+bool
+gdTiffMultiaddImage(self, image)
+	SV *	self
+	GD::Image	image
+  PROTOTYPE: $$
+  PREINIT:
+	gdTiffWritePtr writer;
+  CODE:
+    if (!SvROK(self) || !SvIV((SV*)SvRV(self)))
+      croak("writer has already been finished");
+    writer = INT2PTR(gdTiffWritePtr, SvIV((SV*)SvRV(self)));
+    RETVAL = (bool)gdTiffWriteAddImage(writer, image);
+    if (!RETVAL)
+      croak("gdTiffWriteAddImage error");
+  OUTPUT:
+    RETVAL
+
+SV*
+gdTiffMultifinish(self)
+	SV *	self
+  PREINIT:
+	gdTiffWritePtr writer;
+	void *data;
+	int size;
+  CODE:
+    if (!SvROK(self) || !SvIV((SV*)SvRV(self)))
+      croak("writer has already been finished");
+    writer = INT2PTR(gdTiffWritePtr, SvIV((SV*)SvRV(self)));
+    data = gdTiffWritePtrFinish(writer, &size);
+    sv_setiv((SV*)SvRV(self), 0);
+    if (!data)
+      croak("gdTiffWritePtrFinish error");
+    RETVAL = newSVpvn((char*)data, size);
+    gdFree(data);
+  OUTPUT:
+    RETVAL
+
+void
+gdTiffMultiDESTROY(self)
+	SV *	self
+  CODE:
+    if (SvROK(self) && SvIV((SV*)SvRV(self))) {
+      int size;
+      void *data;
+      gdTiffWritePtr writer = INT2PTR(gdTiffWritePtr, SvIV((SV*)SvRV(self)));
+      data = gdTiffWritePtrFinish(writer, &size);
       if (data) gdFree(data);
     }
 
