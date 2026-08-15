@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Test::More tests => 12;
+use Test::More tests => 13;
 
 use_ok('GD');
 
@@ -49,6 +49,16 @@ SKIP: {
     ok 1, "Warning: avif support disabled in libgd";
   } else {
     ok defined($avif), "avif detected";
+  }
+}
+SKIP: {
+  skip "No JXL support", 1 unless defined &GD::Image::newFromJxl;
+  my $jxl;
+  eval {$jxl = GD::Image->new("t/test_data/tile.jxl")};
+  if (!$jxl and $@ =~ /gdImageCreateFromJxl error/) {
+    ok 1, "Warning: jxl support disabled in libgd";
+  } else {
+    ok defined($jxl), "jxl detected";
   }
 }
 SKIP: {

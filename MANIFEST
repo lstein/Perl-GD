@@ -40,6 +40,8 @@ t/Polyline.t
 t/autodetect.t
 t/caller.t
 t/fork.t
+t/imagequant.t
+t/jxl.t
 t/security_open.t
 t/test_data/Generic.ttf
 t/test_data/frog.jpg
@@ -682,6 +684,7 @@ t/test_data/images/t7/7-19.gif
 t/test_data/images/t7/7-19.jpeg
 t/test_data/images/t7/7-19.png
 t/test_data/images/t7/7-20.png
+t/test_data/images/t7/7-21.png
 t/test_data/images/t8/8-00.bmp
 t/test_data/images/t8/8-00.gd
 t/test_data/images/t8/8-00.gd2
@@ -774,13 +777,16 @@ t/test_data/tile.gd2
 t/test_data/tile.gif
 t/test_data/tile.heif
 t/test_data/tile.jpeg
+t/test_data/tile.jxl
 t/test_data/tile.png
 t/test_data/tile.tiff
 t/test_data/tile.wbmp
 t/test_data/tile.webp
 t/test_data/tile.xbm
+t/test_data/tile_uhdr.jpg
 t/test_data/windows.bmp
 t/transp.t
+t/uhdr.t
 t/windows_bmp.t
 t/z_kwalitee.t
 t/z_manifest.t
