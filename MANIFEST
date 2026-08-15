@@ -44,6 +44,7 @@ t/fork.t
 t/imagequant.t
 t/imageutils.t
 t/jxl.t
+t/jxlanim.t
 t/security_open.t
 t/test_data/Generic.ttf
 t/test_data/frog.jpg

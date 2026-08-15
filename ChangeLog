@@ -31,6 +31,11 @@
             (new/addImage/finish, wrapping gdWebpWriteOpenPtr/AddImage/
             PtrFinish) and GD::WebpAnimReader (newFromData/info/nextImage,
             wrapping gdWebpReadOpenCtx/GetInfo/NextImage) classes.
+          - Animated/multi-image JXL support (libgd >= 2.4.0): new
+            GD::JxlAnimWriter (new/addImage/finish, wrapping
+            gdJxlWriteOpenPtr/AddImage/PtrFinish) and GD::JxlAnimReader
+            (newFromData/info/nextImage, wrapping gdJxlReadOpenCtx/
+            GetInfo/NextImage) classes, mirroring GD::WebpAnimReader/Writer.
 2.87    * fix OpenBSD support (Alexander Bluhm, PR #63)
         * fix $image->compare() usages (Alexander Bluhm, PR #65, #64)
         * fix tiff test without libimagequant (Alexander Bluhm, PR #66)

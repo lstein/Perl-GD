@@ -2475,6 +2475,65 @@ a decode error.
 
 =back
 
+=head1 GD::JxlAnimReader / GD::JxlAnimWriter - Animated/Multi-Image JPEG XL Support
+
+libgd E<gt>= 2.4.0 can also read and write multi-image/animated JPEG
+XL files frame by frame, in addition to the single-image
+C<newFromJxl()>/C<jxl()> methods. Mirrors C<GD::WebpAnimReader>/
+C<GD::WebpAnimWriter>; see that section for the general shape.
+
+  my $writer = GD::JxlAnimWriter->new({ loop_count => 0, distance => 1.0 });
+  $writer->addImage($_, 100) for @frames; # 100ms per frame
+  my $bytes = $writer->finish;
+
+  my $reader = GD::JxlAnimReader->newFromData($bytes);
+  my %info = $reader->info;                # width, height, animated, loop_count
+  while (my ($delayMs, $image) = $reader->nextImage) {
+      ...
+  }
+
+=over 4
+
+=item B<$writer = GD::JxlAnimWriter-E<gt>new([\%options])>
+
+Creates a new in-memory animation writer. C<%options> may set
+C<canvas_width>, C<canvas_height> (both default to the first added
+image's size), C<lossless>, C<distance> (Butteraugli target distance
+for lossy encoding, default 1.0, ignored when C<lossless> is true),
+C<effort> (1 fastest to 9 slowest/best compression, default 7), and
+C<loop_count> (0 = infinite).
+
+=item B<$ok = $writer-E<gt>addImage($image, [$delayMs])>
+
+Adds C<$image> as the next frame, shown for C<$delayMs> milliseconds
+(default 100). Dies on error, or if the writer has already been
+finished.
+
+=item B<$data = $writer-E<gt>finish()>
+
+Assembles and returns the encoded JPEG XL bytes. A writer can only be
+finished once; using it afterwards dies rather than risking a
+stale-handle crash.
+
+=item B<$reader = GD::JxlAnimReader-E<gt>newFromData($data)>
+
+Opens a reader over an in-memory JPEG XL file (animated or not). Dies
+on error.
+
+=item B<%info = $reader-E<gt>info()>
+
+Returns the stream's C<width>, C<height>, C<animated>, and
+C<loop_count>.
+
+=item B<($delayMs, $image) = $reader-E<gt>nextImage()>
+
+Returns the next full-canvas frame and its display duration in
+milliseconds, or an empty list once every frame has been read. Dies on
+a decode error.
+
+=back
+
+
 
 =head1 Obtaining the C-language version of gd
 

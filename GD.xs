@@ -164,6 +164,10 @@ typedef gdUhdrImagePtr	GD__UHDR;
 typedef gdWebpReadPtr	GD__WebpAnimReader;
 typedef gdWebpWritePtr	GD__WebpAnimWriter;
 #endif
+#if GD_VERSION >= 20400 && defined(HAVE_JXL)
+typedef gdJxlReadPtr	GD__JxlAnimReader;
+typedef gdJxlWritePtr	GD__JxlAnimWriter;
+#endif
 typedef PerlIO          * InputStream;
 
 #ifdef PERL_OBJECT
@@ -3990,6 +3994,173 @@ gdWebpAnimDESTROY(self)
       void *data;
       gdWebpWritePtr writer = INT2PTR(gdWebpWritePtr, SvIV((SV*)SvRV(self)));
       data = gdWebpWritePtrFinish(writer, &size);
+      if (data) gdFree(data);
+    }
+
+#endif
+#endif
+
+# Animated/multi-image JXL support (libgd >= 2.4.0), mirroring
+# GD::WebpAnimReader/Writer. Readers always use gd's coalesced
+# (full-canvas) mode; the raw frame-rectangle mode
+# (gdJxlReadNextFrame) is not exposed.
+
+MODULE = GD		PACKAGE = GD::JxlAnimReader	PREFIX=gdJxlAnim
+
+#if GD_VERSION >= 20400
+#ifdef HAVE_JXL
+
+GD::JxlAnimReader
+gdJxlAnimnewFromData(packname="GD::JxlAnimReader", imageData)
+	char *	packname
+	SV *	imageData
+  PROTOTYPE: $$
+  PREINIT:
+	char*    data;
+	STRLEN   len;
+	gdIOCtx* ctx;
+  CODE:
+    PERL_UNUSED_ARG(packname);
+    data = SvPV(imageData,len);
+    ctx = newDynamicCtx(data,len);
+    RETVAL = gdJxlReadOpenCtx(ctx, NULL);
+    (ctx->gd_free)(ctx);
+    if (!RETVAL)
+      croak("gdJxlReadOpenCtx error");
+  OUTPUT:
+    RETVAL
+
+void
+gdJxlAnimDESTROY(reader)
+	GD::JxlAnimReader	reader
+  PROTOTYPE: $
+  CODE:
+    gdJxlReadClose(reader);
+
+void
+gdJxlAniminfo(reader)
+	GD::JxlAnimReader	reader
+  PROTOTYPE: $
+  PREINIT:
+	gdJxlInfo info;
+  PPCODE:
+    if (!gdJxlReadGetInfo(reader, &info))
+      croak("gdJxlReadGetInfo error");
+    PUSH_KV_I("width", info.width);
+    PUSH_KV_I("height", info.height);
+    PUSH_KV_I("animated", info.animated);
+    PUSH_KV_I("loop_count", info.loop_count);
+
+void
+gdJxlAnimnextImage(reader)
+	GD::JxlAnimReader	reader
+  PROTOTYPE: $
+  PREINIT:
+	int delay_ms;
+	gdImagePtr image;
+	int result;
+  PPCODE:
+    image = NULL;
+    delay_ms = 0;
+    result = gdJxlReadNextImage(reader, &delay_ms, &image);
+    if (result < 0)
+      croak("gdJxlReadNextImage error");
+    if (result == 0)
+      XSRETURN_EMPTY;
+    {
+      SV *imgsv = sv_newmortal();
+      sv_setref_pv(imgsv, "GD::Image", (void*)image);
+      mXPUSHi(delay_ms);
+      XPUSHs(imgsv);
+    }
+
+#endif
+#endif
+
+MODULE = GD		PACKAGE = GD::JxlAnimWriter	PREFIX=gdJxlAnim
+
+#if GD_VERSION >= 20400
+#ifdef HAVE_JXL
+
+GD::JxlAnimWriter
+gdJxlAnimnew(packname="GD::JxlAnimWriter", ...)
+	char *	packname
+  PROTOTYPE: $;$
+  PREINIT:
+	gdJxlAnimWriteOptions opts;
+	HV *h;
+	SV **v;
+  CODE:
+    PERL_UNUSED_ARG(packname);
+    gdJxlAnimWriteOptionsInit(&opts);
+    if (items > 1 && SvOK(ST(1))) {
+      if (!SvROK(ST(1)) || SvTYPE(SvRV(ST(1))) != SVt_PVHV)
+        croak("Usage: GD::JxlAnimWriter->new([\\%%options])");
+      h = (HV*)SvRV(ST(1));
+      if ((v = hv_fetchs(h,"canvas_width",0)))  opts.canvas_width  = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"canvas_height",0))) opts.canvas_height = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"lossless",0)))      opts.lossless      = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"distance",0)))      opts.distance      = (float)SvNV(*v);
+      if ((v = hv_fetchs(h,"effort",0)))        opts.effort        = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"loop_count",0)))    opts.loop_count    = (int)SvIV(*v);
+    }
+    RETVAL = gdJxlWriteOpenPtr(&opts);
+    if (!RETVAL)
+      croak("gdJxlWriteOpenPtr error");
+  OUTPUT:
+    RETVAL
+
+# addImage/finish/DESTROY take the blessed SV directly and null out the
+# referent's IV once finish() consumes the underlying gdJxlWritePtr; see
+# GD::WebpAnimWriter for the rationale.
+
+bool
+gdJxlAnimaddImage(self, image, delayMs=100)
+	SV *	self
+	GD::Image	image
+	int	delayMs
+  PROTOTYPE: $$;$
+  PREINIT:
+	gdJxlWritePtr writer;
+  CODE:
+    if (!SvROK(self) || !SvIV((SV*)SvRV(self)))
+      croak("writer has already been finished");
+    writer = INT2PTR(gdJxlWritePtr, SvIV((SV*)SvRV(self)));
+    RETVAL = (bool)gdJxlWriteAddImage(writer, image, delayMs);
+    if (!RETVAL)
+      croak("gdJxlWriteAddImage error");
+  OUTPUT:
+    RETVAL
+
+SV*
+gdJxlAnimfinish(self)
+	SV *	self
+  PREINIT:
+	gdJxlWritePtr writer;
+	void *data;
+	int size;
+  CODE:
+    if (!SvROK(self) || !SvIV((SV*)SvRV(self)))
+      croak("writer has already been finished");
+    writer = INT2PTR(gdJxlWritePtr, SvIV((SV*)SvRV(self)));
+    data = gdJxlWritePtrFinish(writer, &size);
+    sv_setiv((SV*)SvRV(self), 0);
+    if (!data)
+      croak("gdJxlWritePtrFinish error");
+    RETVAL = newSVpvn((char*)data, size);
+    gdFree(data);
+  OUTPUT:
+    RETVAL
+
+void
+gdJxlAnimDESTROY(self)
+	SV *	self
+  CODE:
+    if (SvROK(self) && SvIV((SV*)SvRV(self))) {
+      int size;
+      void *data;
+      gdJxlWritePtr writer = INT2PTR(gdJxlWritePtr, SvIV((SV*)SvRV(self)));
+      data = gdJxlWritePtrFinish(writer, &size);
       if (data) gdFree(data);
     }
 
