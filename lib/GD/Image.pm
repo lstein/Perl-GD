@@ -44,6 +44,8 @@ as lowercase strings.
 
 =item Avif
 
+=item Jxl
+
 =back
 
 Unsupported Image formats:
@@ -206,6 +208,8 @@ sub _image_type {
     $magic eq "IIN1";
   return 'Bmp' if $magic eq "BMF\000";
   return 'Webp' if $magic eq "RIFF" and substr($data,8,4) eq "WEBP";
+  return 'Jxl'  if substr($data,0,2) eq "\xFF\x0A"; # naked JPEG XL codestream
+  return 'Jxl'  if substr($data,0,12) eq "\x00\x00\x00\x0CJXL \x0D\x0A\x87\x0A"; # ISOBMFF JPEG XL container
   if (substr($data,4,4) eq "ftyp") { #possibly ISOBMFF-compliant container like HEIF which us used for AVIF and HEIC
     #first 4 bytes (they are now in $magic) must contain 32-bit Big Endian size of the 'ftyp' box (including size field and 'ftyp' mark)
     my $boxsize = unpack("N", $magic);
@@ -315,6 +319,14 @@ sub newFromAvif {
     $class->_newFromAvif($fh);
 }
 
+sub newFromJxl {
+    croak("Usage: newFromJxl(class,filehandle)") unless @_==2;
+    my($class,$f) = @_;
+    my $fh = $class->_make_filehandle($f);
+    binmode($fh);
+    $class->_newFromJxl($fh);
+}
+
 sub newFromWBMP {
     croak("Usage: newFromWBMP(class,filehandle)") unless @_==2;
     my($class) = shift;
@@ -347,6 +359,7 @@ sub supported {
 	webp
 	heif
 	avif
+	jxl
       );
 }
 

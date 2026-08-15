@@ -1,3 +1,13 @@
+2.90    * Add JXL, UHDR support for new libgd-2.4.0 (from git)
+          - JXL: newFromJxl/newFromJxlData readers, jxl() writer
+            (lossless/distance/effort), magic-byte autodetection in new().
+          - UHDR: new GD::UHDR class (newFromFile/newFromData, width/height/
+            hasGainMap, resize/crop/rotate/mirror, file/write, getSdr).
+          - IMAGEQUANT: trueColorToPaletteSetMethod/SetQuality and the
+            GD_QUANT_* constants for the libimagequant-backed quantizer.
+          - Fix imagequant feature autodetection in Makefile.PL (libimagequant
+            surfaces in gdlib.pc's Libs.private, not Requires.private).
+          - Work around libgd 2.4.0 gd.h no longer declaring gdImageBoundsSafe().
 2.87    * fix OpenBSD support (Alexander Bluhm, PR #63)
         * fix $image->compare() usages (Alexander Bluhm, PR #65, #64)
         * fix tiff test without libimagequant (Alexander Bluhm, PR #66)

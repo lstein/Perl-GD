@@ -21,7 +21,8 @@ my $HAVE_GD2 = 1;        # until libgd 2.3.1, unset by try_to_autoconfigure()
 my ($options,$with,$without,
     $lib_gd_path,$lib_ft_path,$lib_png_path,$lib_jpeg_path,$lib_xpm_path,
     $lib_tiff_path,$lib_webp_path,$lib_raqm_path,$lib_heif_path,$lib_avif_path,
-    $lib_zlib_path,$lib_fontconfig_path,$force,$FCGI,$gdlib_config_path);
+    $lib_jxl_path,$lib_uhdr_path,
+    $lib_zlib_path,$lib_liq_path,$lib_fontconfig_path,$force,$FCGI,$gdlib_config_path);
 
 use File::Basename qw/dirname/;
 use File::Spec;
@@ -48,7 +49,10 @@ my $result = GetOptions("ignore_missing_gd" => \$force,
 			"lib_raqm_path=s" => \$lib_raqm_path,
 			"lib_heif_path=s" => \$lib_heif_path,
 			"lib_avif_path=s" => \$lib_avif_path,
+			"lib_jxl_path=s" => \$lib_jxl_path,
+			"lib_uhdr_path=s" => \$lib_uhdr_path,
 			"lib_zlib_path=s" => \$lib_zlib_path,
+			"lib_liq_path=s" => \$lib_liq_path,
                         "lib_fontconfig_path=s" => \$lib_fontconfig_path,
                         "gdlib_config_path=s" => \$gdlib_config_path,
                         "fcgi"            => \$FCGI,
@@ -86,7 +90,7 @@ Usage: perl Makefile.PL [options]
 Configure GD module.
 
  Options:
-     --options       "JPEG,GD2,FT,PNG,WEBP,GIF,XPM,GIFANIM,WBMP,BMP" feature options, separated by commas
+     --options       "JPEG,GD2,FT,PNG,WEBP,GIF,XPM,GIFANIM,WBMP,BMP,JXL,UHDR,IMAGEQUANT" feature options, separated by commas
      --with <features>               add. e.g. --with png,gif
      --without <features>            remove. e.g. --without tiff
      --lib_gd_path   path            path to libgd (/usr/lib)
@@ -99,7 +103,10 @@ Configure GD module.
      --lib_raqm_path  path           path to libraqm (/usr)
      --lib_heif_path  path           path to libheif (/usr)
      --lib_avif_path  path           path to libavif (/usr)
+     --lib_jxl_path  path            path to libjxl (/usr)
+     --lib_uhdr_path  path           path to libuhdr (/usr)
      --lib_zlib_path path            path to libpng (/usr)
+     --lib_liq_path path             path to libimagequant (/usr)
      --lib_fontconfig_path path      path to libfontconfig (/usr)
      --gdlib_config_path path        path to gdlib-config (/usr/bin)
      --ignore_missing_gd             Ignore missing or old libgd installations and try to compile anyway
@@ -203,6 +210,24 @@ if( defined($lib_avif_path) )
     @INC     = ("-I$lib_avif_path/include", @INC);
     @LIBPATH = ("-L$lib_avif_path/lib", @LIBPATH);
 }
+if( defined($lib_jxl_path) )
+{
+    print "JPEG-XL library used from:      $lib_jxl_path\n";
+    @INC     = ("-I$lib_jxl_path/include", @INC);
+    @LIBPATH = ("-L$lib_jxl_path/lib", @LIBPATH);
+}
+if( defined($lib_uhdr_path) )
+{
+    print "UltraHDR library used from:      $lib_uhdr_path\n";
+    @INC     = ("-I$lib_uhdr_path/include", @INC);
+    @LIBPATH = ("-L$lib_uhdr_path/lib", @LIBPATH);
+}
+if( defined($lib_liq_path) )
+{
+    print "imagequant library used from:      $lib_liq_path\n";
+    @INC     = ("-I$lib_liq_path/include", @INC);
+    @LIBPATH = ("-L$lib_liq_path/lib", @LIBPATH);
+}
 if( defined($gdlib_config_path) )
 {
     print "gdlib-config used:          $gdlib_config_path\n";
@@ -263,7 +288,7 @@ unless ($AUTOCONFIG || $PREFIX eq $default_lib_gd_path) {
 # If build options have not been passed in then prompt for settings
 ##################################################################################################################
 my ($JPEG, $GD2, $FT, $XPM, $GIF,$GIFANIM,$UNCLOSEDPOLY,$FONTCONFIG,$PNG,$TIFF,
-    $WEBP,$RAQM,$WBMP,$BMP,$FTCIRCLE,$VERSION_33, $HEIF, $AVIF);
+    $WEBP,$RAQM,$WBMP,$BMP,$FTCIRCLE,$VERSION_33,$HEIF,$AVIF,$JXL,$UHDR,$LIQ);
 if( defined($options) )
 {
     # WBMP is builtin since at least 1.8.0
@@ -286,12 +311,17 @@ if( defined($options) )
   $RAQM      = $options =~ m/RAQM/i;
   $HEIF      = $options =~ m/HEIF/i;
   $AVIF      = $options =~ m/AVIF/i;
+  $JXL       = $options =~ m/JXL/i;
+  $UHDR      = $options =~ m/UHDR/i;
   $BMP       = $options =~ m/WINDOWS_BMP/i || $options =~ m/\WBMP\W/;
   $GIFANIM   = $GIF && $options =~ m/GIFANIM/i;
   $VERSION_33= $options =~ m/VERSION_33/i; # i.e. 2.0.33 or higher
   $FTCIRCLE  = $options =~ m/FTCIRCLE/i;
   $UNCLOSEDPOLY= $options =~ m/UNCLOSEDPOLY/i;
   $FONTCONFIG  = $options =~ m/FONTCONFIG/i;
+  # the deprecated gdlib-config script reports this feature as "GD_LIQ",
+  # while our own pkgconfig-based probing (and --options) uses "IMAGEQUANT"
+  $LIQ       = $options =~ m/IMAGEQUANT|LIQ/i;
 }
 else
 {
@@ -305,6 +335,9 @@ else
   $RAQM    = lc prompt('Build RAQM support?','y') eq 'y';
   $HEIF    = lc prompt('Build HEIF support?','y') eq 'y';
   $AVIF    = lc prompt('Build AVIF support?','y') eq 'y';
+  $JXL     = lc prompt('Build JXL support?','y') eq 'y';
+  $UHDR    = lc prompt('Build UltraHDR support?','y') eq 'y';
+  $LIQ     = lc prompt('Build IMAGEQUANT support?','y') eq 'y';
   $FT      = lc prompt('Build FreeType support?','y') eq 'y';
   if ($FT) {
     $FONTCONFIG = lc prompt('Build fontconfig support?','y') eq 'y';
@@ -331,6 +364,9 @@ if (!$AUTOCONFIG) {
   push @LIBS,'-lraqm'          if $RAQM;
   push @LIBS,'-lheif'          if $HEIF;
   push @LIBS,'-lavif'          if $AVIF;
+  push @LIBS,'-ljxl'           if $JXL;
+  push @LIBS,'-luhdr'          if $UHDR;
+  push @LIBS,'-limagequant'    if $LIQ;
   push @LIBS,'-lm'             unless $^O eq 'MSWin32';
   push @INC, '-I/lib_root/libjpeg' if ($JPEG && $^O eq 'VMS');
   push @INC, '-I/lib_root/ft2/include/freetype' if ($FT && $^O eq 'VMS');
@@ -365,6 +401,9 @@ $DEFINES    .= ' -DHAVE_WEBP'    if $WEBP;
 $DEFINES    .= ' -DHAVE_RAQM'    if $RAQM;
 $DEFINES    .= ' -DHAVE_HEIF'    if $HEIF;
 $DEFINES    .= ' -DHAVE_AVIF'    if $AVIF;
+$DEFINES    .= ' -DHAVE_JXL'     if $JXL;
+$DEFINES    .= ' -DHAVE_UHDR'    if $UHDR;
+$DEFINES    .= ' -DHAVE_IMAGEQUANT' if $LIQ;
 $DEFINES    .= ' -DHAVE_BMP'     if $BMP; # since 2.1.0
 $DEFINES    .= " -DLIBGD_VERSION=\"$LIBGD_VERSION\"" if defined($LIBGD_VERSION);
 open F,">.config.cache";
@@ -557,6 +596,23 @@ my @constants_iv = qw(
   GD_AFFINE_ROTATE
   GD_AFFINE_SHEAR_HORIZONTAL
   GD_AFFINE_SHEAR_VERTICAL
+
+  GD_QUANT_DEFAULT
+  GD_QUANT_JQUANT
+  GD_QUANT_NEUQUANT
+  GD_QUANT_LIQ
+
+  GD_UHDR_SUCCESS
+  GD_UHDR_NOT_AVAILABLE
+  GD_UHDR_E_INVALID
+  GD_UHDR_E_UNSUPPORTED
+  GD_UHDR_E_ENCODE
+  GD_UHDR_E_DECODE
+  GD_UHDR_MIRROR_HORIZONTAL
+  GD_UHDR_MIRROR_VERTICAL
+  GD_UHDR_FORMAT_JPEG
+  GD_UHDR_FORMAT_WEBP
+  GD_UHDR_FORMAT_HEIF
   );
 
 # Note that ExtUtils::Constant::ProxySubs creates code incompatible
@@ -723,13 +779,13 @@ sub try_to_autoconfigure {
       if (-e $pc) {
         my $F;
         open $F, "<", $pc;
-        my $private;
+        my ($private, $private_libs);
         while (<$F>) {
-          next unless /^Requires.private/;
-          $private = $_;
+          $private = $_ if /^Requires.private/;
+          $private_libs = $_ if /^Libs.private/;
         }
         close $F;
-        warn "Using $pc: $private\n";
+        warn "Using $pc: $private$private_libs\n";
         # no trailing \b for freetype, also matches freetype2
         $features = 'GD_GIF GD_OPENPOLYGON';
         $features .= ' GD_ZLIB' if $private =~ /\bzlib\b/;
@@ -743,12 +799,20 @@ sub try_to_autoconfigure {
         $features .= ' GD_WEBP' if $private =~ /\blibwebp/;
         $features .= ' GD_HEIF' if $private =~ /\blibheif/;
         $features .= ' GD_AVIF' if $private =~ /\blibavif/;
+        $features .= ' GD_JXL' if $private =~ /\blibjxl/;
+        $features .= ' GD_UHDR' if $private =~ /\blibuhdr/;
+        # libimagequant is usually vendored and only surfaces as a link flag
+        # in Libs.private (-limagequant), not as a Requires.private package.
+        $features .= ' GD_IMAGEQUANT'
+          if $private =~ /\blibimagequant/
+          || ($private_libs && $private_libs =~ /-limagequant\b/);
       } else {
         warn "gdlib.pc not found, guessing the features.\n";
         $features = 'GD_GIF GD_OPENPOLYGON GD_ZLIB GD_PNG GD_FREETYPE GD_FONTCONFIG GD_JPEG GD_XPM GD_TIFF GD_WEBP';
         #$features .= 'GD_WEBP' if $version ge '2.3.0';
         $features .= ' GD_AVIF' if $version ge '2.3.2';
         $features .= ' GD_HEIF' if $version ge '2.3.3' and $^O ne 'darwin';
+        $features .= ' GD_JXL GD_UHDR' if $version ge '2.4.0';
       }
       $AUTOCONFIG++;
   } else {

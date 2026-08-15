@@ -16,7 +16,7 @@ use GD::Polygon;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $AUTOLOAD);
 
-$VERSION = '2.87';
+$VERSION = '2.90';
 our $XS_VERSION = $VERSION;
 $VERSION = eval $VERSION;
 
@@ -484,6 +484,21 @@ support.
 NOTE: The libgd library is unable to read certain XPM files, returning
 an all-black image instead.
 
+=item B<$image = GD::Image-E<gt>newFromWebp($file)>
+
+=item B<$image = GD::Image-E<gt>newFromHeif($file)>
+
+=item B<$image = GD::Image-E<gt>newFromAvif($file)>
+
+=item B<$image = GD::Image-E<gt>newFromJxl($file)>
+
+=item B<$image = GD::Image-E<gt>newFromJxlData($data)>
+
+These work just like C<newFromPng()> and C<newFromPngData()>, reading a
+WEBP, HEIF, AVIF or JPEG XL image respectively. Each is only available
+if libgd and GD.pm were both compiled with the matching support (WEBP,
+HEIF, AVIF, JXL).
+
 =item B<$bool = GD::supportsFileType($filename, $is_writing)>
 
 This returns a TRUE or FALSE value, if libgd supports reading or when
@@ -505,6 +520,7 @@ following extensions are supported:
     .webp
     .heic, .heix
     .avif
+    .jxl
     .xpm
 
 Filenames are parsed case-insensitively.
@@ -665,6 +681,14 @@ This returns the truecolor image data in AVIF format, with the
 AVif encoder and 444 chroma, and the optional quality argument.
 If truecolor is not set, this fails.
 The default compression quality 1-100 is -1, the default speed 0-10 is 6.
+
+=item B<$jxldata = $image-E<gt>jxl([$lossless, $distance, $effort])>
+
+This returns the image data in JPEG XL format. C<$lossless> defaults
+to false (0). C<$distance> is the Butteraugli target distance for
+lossy encoding (0 = visually lossless, default 1.0; ignored when
+C<$lossless> is true). C<$effort> is the encoder speed/compression
+trade-off, 1 (fastest) to 9 (slowest, best compression), default 7.
 
 =item B<$success = $image-E<gt>_file($filename)>
 
@@ -1374,6 +1398,33 @@ Creates a new palette image from a truecolor image.
 This is the same as createPaletteFromTrueColor with the
 quantization method GD_QUANT_NEUQUANT. This does not support dithering.
 This method is only available with libgd >= 2.1.0
+
+=item B<$ok = $image-E<gt>trueColorToPaletteSetMethod($method, [$speed])>
+
+Selects the quantization method used by subsequent calls to
+C<trueColorToPalette()> and C<createPaletteFromTrueColor()>. C<$method>
+is one of:
+
+  GD_QUANT_DEFAULT   - GD_QUANT_LIQ if libimagequant is available, else GD_QUANT_NEUQUANT
+  GD_QUANT_JQUANT    - libjpeg's old median cut (does not retain alpha)
+  GD_QUANT_NEUQUANT  - NeuQuant, a Kohonen neural network approximation
+  GD_QUANT_LIQ       - libimagequant, aiming for the highest quality
+
+C<$speed> ranges from 1 (highest quality) to 10 (fastest); 0 selects
+the method-specific default. Returns FALSE if C<$method> is invalid or
+if C<GD_QUANT_LIQ> was requested but libgd was not built with
+libimagequant support. Requires libgd built with C<--options IMAGEQUANT>
+support and GD.pm configured with C<--options IMAGEQUANT>.
+
+=item B<$image-E<gt>trueColorToPaletteSetQuality($min_quality, $max_quality)>
+
+Sets the quality range, 1 (ugly) to 100 (perfect), that a subsequent
+C<trueColorToPalette()> call will aim for when C<GD_QUANT_LIQ> is the
+active quantization method. If the image cannot be represented with at
+least C<$min_quality>, it remains truecolor; if a lower color count
+would still reach C<$max_quality>, fewer palette colors are used.
+C<$max_quality> must be greater than C<$min_quality>. Has no effect
+unless C<GD_QUANT_LIQ> is selected and the source image is truecolor.
 
 =back
 
@@ -2116,6 +2167,76 @@ Returns a number of the libgd VERSION, like 2.0204, 2.0033 or 2.01.
 Returns the string of the libgd VERSION, like "2.2.4".
 
 =item GD::constant
+
+=back
+
+
+=head1 GD::UHDR - UltraHDR Support
+
+libgd E<gt>= 2.4.0, built with libultrahdr support, can read, transform
+and write UltraHDR JPEG images (a standard JPEG carrying an extra HDR
+gain map). Because a gain map has no equivalent in a plain GD::Image,
+UltraHDR images are represented by a separate opaque C<GD::UHDR>
+handle rather than by C<GD::Image>. Use C<getSdr()> to obtain an
+ordinary SDR C<GD::Image> once gain-map-preserving edits are no longer
+needed; that image can be inspected or saved like any other, but it no
+longer carries the gain map, so it can't be turned back into UltraHDR.
+
+  my $u = GD::UHDR->newFromFile('input.jpg');
+  $u->resize(640, 360);
+  $u->file('output.jpg');
+  my $sdr = $u->getSdr;   # ordinary GD::Image, viewable as SDR
+
+=over 4
+
+=item B<$bool = GD::UHDR-E<gt>isAvailable()>
+
+Returns true if libgd was built with libultrahdr support.
+
+=item B<$uhdr = GD::UHDR-E<gt>newFromFile($filename, [$format])>
+
+=item B<$uhdr = GD::UHDR-E<gt>newFromData($data, [$format])>
+
+Reads an UltraHDR image from a file path or from an in-memory buffer.
+C<$format> defaults to C<GD_UHDR_FORMAT_JPEG>, currently the only
+supported format. Dies with the libultrahdr error message on failure.
+
+=item B<$width = $uhdr-E<gt>width()>
+
+=item B<$height = $uhdr-E<gt>height()>
+
+=item B<$bool = $uhdr-E<gt>hasGainMap()>
+
+Query the image's current committed dimensions and whether it carries
+a gain map.
+
+=item B<$uhdr-E<gt>resize($width, $height)>
+
+=item B<$uhdr-E<gt>crop($left, $top, $width, $height)>
+
+=item B<$uhdr-E<gt>rotate($degrees)>
+
+=item B<$uhdr-E<gt>mirror($axis)>
+
+Queue a gain-map-preserving transform; C<$axis> is
+C<GD_UHDR_MIRROR_HORIZONTAL> or C<GD_UHDR_MIRROR_VERTICAL>. The base
+image and its gain map are transformed together when the image is
+next written, so C<width()>/C<height()> keep reporting the
+pre-transform size until then. Dies with the libultrahdr error message
+on failure.
+
+=item B<$uhdr-E<gt>file($filename, [$format], [$quality])>
+
+=item B<$data = $uhdr-E<gt>write([$format], [$quality])>
+
+Write the (possibly transformed) UltraHDR image to a file path or
+return it as an in-memory buffer. C<$format> defaults to
+C<GD_UHDR_FORMAT_JPEG>, C<$quality> to 90 (1-95).
+
+=item B<$image = $uhdr-E<gt>getSdr()>
+
+Decodes and returns the SDR base image as an ordinary C<GD::Image>.
+The gain map is not retained; see the caveat above.
 
 =back
 
