@@ -59,6 +59,16 @@ extern int gdImageBoundsSafe(gdImagePtr im, int x, int y);
 # define GD_UHDR_FORMAT_WEBP GD_UHDR_FORMAT_WEBP
 # define GD_UHDR_FORMAT_HEIF GD_UHDR_FORMAT_HEIF
 #endif
+/* gdAffineStandardMatrix (libgd >= 2.1.0) is the same story: a plain
+ * enum, never itself passed to any gd function, but documented as the
+ * index into a 6-element affine[] array for each named component. */
+#if GD_VERSION >= 20100
+# define GD_AFFINE_TRANSLATE GD_AFFINE_TRANSLATE
+# define GD_AFFINE_SCALE GD_AFFINE_SCALE
+# define GD_AFFINE_ROTATE GD_AFFINE_ROTATE
+# define GD_AFFINE_SHEAR_HORIZONTAL GD_AFFINE_SHEAR_HORIZONTAL
+# define GD_AFFINE_SHEAR_VERTICAL GD_AFFINE_SHEAR_VERTICAL
+#endif
 
 #ifdef FCGI
  #include <fcgi_stdio.h>
@@ -349,6 +359,50 @@ croak_uhdr(const char *what, gdUhdrErrorPtr err) {
   else
     croak("%s failed",what);
 }
+#endif
+
+#if GD_VERSION >= 20100
+/* Convert a Perl arrayref of 6 numbers into a gd affine matrix (see
+ * gdAffineStandardMatrix / gdTransformAffine* in gd.h). Never returns on
+ * a malformed argument. */
+static void
+sv_to_affine(pTHX_ SV *sv, double m[6]) {
+  AV *av;
+  int i;
+  if (!SvROK(sv) || SvTYPE(SvRV(sv)) != SVt_PVAV)
+    croak("affine matrix must be an array reference of 6 numbers");
+  av = (AV*)SvRV(sv);
+  if (av_len(av) != 5)
+    croak("affine matrix must have exactly 6 elements");
+  for (i = 0; i < 6; i++) {
+    SV **elem = av_fetch(av, i, 0);
+    m[i] = elem ? SvNV(*elem) : 0.0;
+  }
+}
+
+/* Convert a Perl arrayref [x,y,width,height] into a gdRect. Never returns
+ * on a malformed argument. */
+static void
+sv_to_rect(pTHX_ SV *sv, gdRect *rect) {
+  AV *av;
+  SV **elem;
+  if (!SvROK(sv) || SvTYPE(SvRV(sv)) != SVt_PVAV)
+    croak("rectangle must be an array reference of 4 integers ([x,y,width,height])");
+  av = (AV*)SvRV(sv);
+  if (av_len(av) != 3)
+    croak("rectangle must have exactly 4 elements ([x,y,width,height])");
+  elem = av_fetch(av, 0, 0); rect->x      = elem ? (int)SvIV(*elem) : 0;
+  elem = av_fetch(av, 1, 0); rect->y      = elem ? (int)SvIV(*elem) : 0;
+  elem = av_fetch(av, 2, 0); rect->width  = elem ? (int)SvIV(*elem) : 0;
+  elem = av_fetch(av, 3, 0); rect->height = elem ? (int)SvIV(*elem) : 0;
+}
+
+/* Push a 6-element affine matrix onto the Perl return stack. Only valid
+ * inside a PPCODE block. */
+#define PUSH_AFFINE(m) STMT_START { \
+  mXPUSHn((m)[0]); mXPUSHn((m)[1]); mXPUSHn((m)[2]); \
+  mXPUSHn((m)[3]); mXPUSHn((m)[4]); mXPUSHn((m)[5]); \
+} STMT_END
 #endif
 
 /* GLOBAL THREAD-SAFE DATA */
@@ -3074,6 +3128,270 @@ gdcopyRotateInterpolated(image, angle, bgcolor)
     RETVAL
 
 #endif
+
+# Affine transformations (libgd >= 2.1.0). See
+# https://github.com/lstein/Perl-GD/issues/21
+#
+# A matrix is a 6-element Perl array [m0,m1,m2,m3,m4,m5] matching gd's
+# double affine[6]. The affineIdentity/Scale/Rotate/ShearHorizontal/
+# ShearVertical/Translate/Concat/Invert/Flip builders are class methods
+# (they don't need an image); angles are in degrees.
+
+#if GD_VERSION >= 20100
+
+void
+affineIdentity(packname="GD::Image")
+	char *	packname
+  PROTOTYPE: $
+  PREINIT:
+	double m[6];
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    gdAffineIdentity(m);
+    PUSH_AFFINE(m);
+
+void
+affineScale(packname="GD::Image", sx, sy)
+	char *	packname
+	double	sx
+	double	sy
+  PROTOTYPE: $$$
+  PREINIT:
+	double m[6];
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    gdAffineScale(m, sx, sy);
+    PUSH_AFFINE(m);
+
+void
+affineRotate(packname="GD::Image", angle)
+	char *	packname
+	double	angle
+  PROTOTYPE: $$
+  PREINIT:
+	double m[6];
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    gdAffineRotate(m, angle);
+    PUSH_AFFINE(m);
+
+void
+affineShearHorizontal(packname="GD::Image", angle)
+	char *	packname
+	double	angle
+  PROTOTYPE: $$
+  PREINIT:
+	double m[6];
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    gdAffineShearHorizontal(m, angle);
+    PUSH_AFFINE(m);
+
+void
+affineShearVertical(packname="GD::Image", angle)
+	char *	packname
+	double	angle
+  PROTOTYPE: $$
+  PREINIT:
+	double m[6];
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    gdAffineShearVertical(m, angle);
+    PUSH_AFFINE(m);
+
+void
+affineTranslate(packname="GD::Image", dx, dy)
+	char *	packname
+	double	dx
+	double	dy
+  PROTOTYPE: $$$
+  PREINIT:
+	double m[6];
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    gdAffineTranslate(m, dx, dy);
+    PUSH_AFFINE(m);
+
+void
+affineConcat(packname="GD::Image", m1sv, m2sv)
+	char *	packname
+	SV *	m1sv
+	SV *	m2sv
+  PROTOTYPE: $$$
+  PREINIT:
+	double m1[6], m2[6], dst[6];
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    sv_to_affine(aTHX_ m1sv, m1);
+    sv_to_affine(aTHX_ m2sv, m2);
+    if (!gdAffineConcat(dst, m1, m2))
+      croak("gdAffineConcat error");
+    PUSH_AFFINE(dst);
+
+void
+affineInvert(packname="GD::Image", msv)
+	char *	packname
+	SV *	msv
+  PROTOTYPE: $$
+  PREINIT:
+	double m[6], dst[6];
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    sv_to_affine(aTHX_ msv, m);
+    if (!gdAffineInvert(dst, m))
+      XSRETURN_EMPTY; /* singular matrix, not invertible */
+    PUSH_AFFINE(dst);
+
+void
+affineFlip(packname="GD::Image", msv, flipH, flipV)
+	char *	packname
+	SV *	msv
+	int	flipH
+	int	flipV
+  PROTOTYPE: $$$$
+  PREINIT:
+	double m[6], dst[6];
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    sv_to_affine(aTHX_ msv, m);
+    if (!gdAffineFlip(dst, m, flipH, flipV))
+      croak("gdAffineFlip error");
+    PUSH_AFFINE(dst);
+
+double
+affineExpansion(packname="GD::Image", msv)
+	char *	packname
+	SV *	msv
+  PROTOTYPE: $$
+  PREINIT:
+	double m[6];
+  CODE:
+    PERL_UNUSED_ARG(packname);
+    sv_to_affine(aTHX_ msv, m);
+    RETVAL = gdAffineExpansion(m);
+  OUTPUT:
+    RETVAL
+
+bool
+affineRectilinear(packname="GD::Image", msv)
+	char *	packname
+	SV *	msv
+  PROTOTYPE: $$
+  PREINIT:
+	double m[6];
+  CODE:
+    PERL_UNUSED_ARG(packname);
+    sv_to_affine(aTHX_ msv, m);
+    RETVAL = (bool)gdAffineRectilinear(m);
+  OUTPUT:
+    RETVAL
+
+bool
+affineEqual(packname="GD::Image", m1sv, m2sv)
+	char *	packname
+	SV *	m1sv
+	SV *	m2sv
+  PROTOTYPE: $$$
+  PREINIT:
+	double m1[6], m2[6];
+  CODE:
+    PERL_UNUSED_ARG(packname);
+    sv_to_affine(aTHX_ m1sv, m1);
+    sv_to_affine(aTHX_ m2sv, m2);
+    RETVAL = (bool)gdAffineEqual(m1, m2);
+  OUTPUT:
+    RETVAL
+
+void
+affineApplyToPoint(packname="GD::Image", x, y, msv)
+	char *	packname
+	double	x
+	double	y
+	SV *	msv
+  PROTOTYPE: $$$$
+  PREINIT:
+	double m[6];
+	gdPointF src_pt, dst_pt;
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    sv_to_affine(aTHX_ msv, m);
+    src_pt.x = x;
+    src_pt.y = y;
+    if (!gdAffineApplyToPointF(&dst_pt, &src_pt, m))
+      croak("gdAffineApplyToPointF error");
+    mXPUSHn(dst_pt.x);
+    mXPUSHn(dst_pt.y);
+
+GD::Image
+transformAffineGetImage(src, affinesv, ...)
+	GD::Image	src
+	SV *	affinesv
+  PROTOTYPE: $$;$
+  PREINIT:
+	double affine[6];
+	gdRect area;
+	gdRectPtr areaptr = NULL;
+	gdImagePtr dst;
+  CODE:
+    sv_to_affine(aTHX_ affinesv, affine);
+    if (items > 2 && SvOK(ST(2))) {
+      sv_to_rect(aTHX_ ST(2), &area);
+      areaptr = &area;
+    }
+    if (!gdTransformAffineGetImage(&dst, src, areaptr, affine) || dst == NULL)
+      croak("gdTransformAffineGetImage error");
+    RETVAL = dst;
+  OUTPUT:
+    RETVAL
+
+bool
+transformAffineCopy(destination, source, dstX, dstY, affinesv, ...)
+	GD::Image	destination
+	GD::Image	source
+	int	dstX
+	int	dstY
+	SV *	affinesv
+  PROTOTYPE: $$$$$;$
+  PREINIT:
+	double affine[6];
+	gdRect region;
+  CODE:
+    sv_to_affine(aTHX_ affinesv, affine);
+    if (items > 5 && SvOK(ST(5))) {
+      sv_to_rect(aTHX_ ST(5), &region);
+    } else {
+      region.x = 0;
+      region.y = 0;
+      region.width  = gdImageSX(source);
+      region.height = gdImageSY(source);
+    }
+    RETVAL = (bool)gdTransformAffineCopy(destination, dstX, dstY, source, &region, affine);
+    if (!RETVAL)
+      croak("gdTransformAffineCopy error");
+  OUTPUT:
+    RETVAL
+
+void
+transformAffineBoundingBox(packname, rectsv, affinesv)
+	char *	packname
+	SV *	rectsv
+	SV *	affinesv
+  PROTOTYPE: $$$
+  PREINIT:
+	double affine[6];
+	gdRect src, bbox;
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    sv_to_rect(aTHX_ rectsv, &src);
+    sv_to_affine(aTHX_ affinesv, affine);
+    if (!gdTransformAffineBoundingBox(&src, affine, &bbox))
+      croak("gdTransformAffineBoundingBox error");
+    mXPUSHi(bbox.x);
+    mXPUSHi(bbox.y);
+    mXPUSHi(bbox.width);
+    mXPUSHi(bbox.height);
+
+#endif
 #if GD_VERSION >= 20200
 
 int
@@ -3088,10 +3406,6 @@ interpolationMethod(image, interpolationmethod=-1)
     RETVAL = gdImageGetInterpolationMethod(image);
   OUTPUT:
     RETVAL
-
-#gdTransformAffineGetImage
-#gdTransformAffineCopy
-#gdTransformAffineBoundingBox
 
 #endif
 

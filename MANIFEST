@@ -37,6 +37,7 @@ lib/GD/Simple.pm
 t/GD.t
 t/HSV.t
 t/Polyline.t
+t/affine.t
 t/autodetect.t
 t/caller.t
 t/fork.t
