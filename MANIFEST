@@ -42,6 +42,7 @@ t/autodetect.t
 t/caller.t
 t/fork.t
 t/imagequant.t
+t/imageutils.t
 t/jxl.t
 t/security_open.t
 t/test_data/Generic.ttf

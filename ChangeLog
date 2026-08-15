@@ -19,6 +19,14 @@
             transformAffineCopy/transformAffineBoundingBox, wrapping
             gdAffine*/gdTransformAffine* (libgd >= 2.1.0). Fix GD_AFFINE_*
             constant visibility (same enum/#ifdef issue as GD_QUANT_*).
+          - More previously-unbound libgd methods (libgd >= 2.1.0 unless
+            noted): paletteToTrueColor, crop, cropAuto, cropThreshold,
+            colorReplace, colorReplaceArray, colorReplaceThreshold,
+            convolution, resolution; cloneImage, getTrueColorPixel,
+            perceptualDiff (libgd >= 2.4.0). clone() now uses the native
+            gdImageClone() when available, fixing truecolor-ness loss on
+            the old new()+copy() fallback. Fix GD_CROP_* constant
+            visibility (same enum/#ifdef issue as GD_QUANT_*).
 2.87    * fix OpenBSD support (Alexander Bluhm, PR #63)
         * fix $image->compare() usages (Alexander Bluhm, PR #65, #64)
         * fix tiff test without libimagequant (Alexander Bluhm, PR #66)

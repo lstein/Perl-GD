@@ -245,8 +245,12 @@ sub _image_type {
 sub clone {
   croak("Usage: clone(\$image)") unless @_ == 1;
   my $self = shift;
+  # Prefer the native gdImageClone() (libgd >= 2.4.0); the manual
+  # new()+copy() fallback below explicitly preserves the source
+  # image's truecolor-ness too, matching gdImageClone()'s behavior.
+  return $self->cloneImage if $self->can('cloneImage');
   my ($x,$y) = $self->getBounds;
-  my $new = $self->new($x,$y);
+  my $new = $self->new($x,$y,$self->isTrueColor);
   return unless $new;
   $new->copy($self,0,0,0,0,$x,$y);
   return $new;

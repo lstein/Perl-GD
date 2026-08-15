@@ -1282,6 +1282,11 @@ Example:
 	... various drawing stuff ...
         $copy = $myImage->clone;
 
+With libgd E<gt>= 2.4.0, C<clone()> uses the native C<gdImageClone()>
+(see C<cloneImage()> below); on older libgd it falls back to
+allocating a new image and copying into it. Either way the clone
+preserves the source image's truecolor-ness.
+
 =item B<$image-E<gt>copyMerge($sourceImage,$dstX,$dstY,>
 
 B<				$srcX,$srcY,$width,$height,$percent)>
@@ -1425,6 +1430,11 @@ least C<$min_quality>, it remains truecolor; if a lower color count
 would still reach C<$max_quality>, fewer palette colors are used.
 C<$max_quality> must be greater than C<$min_quality>. Has no effect
 unless C<GD_QUANT_LIQ> is selected and the source image is truecolor.
+
+=item B<$ok = $image-E<gt>paletteToTrueColor()>
+
+Converts a palette image to truecolor in place; the reverse of
+C<trueColorToPalette()>. Only available with libgd E<gt>= 2.1.0.
 
 =back
 
@@ -1663,6 +1673,91 @@ represents the "fatness" of the curve (lower == fatter).
 The result is always truecolor.
 
 =back
+
+=head2 Additional Image Utilities
+
+A collection of image utilities added to libgd over the years, most
+since 2.1.0.
+
+=over 4
+
+=item B<$newimage = $image-E<gt>crop(\@rect)>
+
+Returns a new image containing the C<[$x, $y, $width, $height]> region
+C<\@rect> of C<$image>. Only available with libgd E<gt>= 2.1.0.
+
+=item B<$newimage = $image-E<gt>cropAuto([$mode])>
+
+Returns a new image with a uniform border automatically stripped.
+C<$mode> is one of C<GD_CROP_DEFAULT> (same as C<GD_CROP_TRANSPARENT>),
+C<GD_CROP_TRANSPARENT>, C<GD_CROP_BLACK>, C<GD_CROP_WHITE>,
+C<GD_CROP_SIDES> (uses the color of the 4 corners), or
+C<GD_CROP_THRESHOLD>; defaults to C<GD_CROP_DEFAULT>. Only available
+with libgd E<gt>= 2.1.0.
+
+=item B<$newimage = $image-E<gt>cropThreshold($color, $threshold)>
+
+Returns a new image with a border matching C<$color> (within
+C<$threshold>) stripped. Only available with libgd E<gt>= 2.1.0.
+
+=item B<$count = $image-E<gt>colorReplace($fromColor, $toColor)>
+
+Replaces every pixel using C<$fromColor> with C<$toColor> and returns
+the number of pixels changed. Only available with libgd E<gt>= 2.1.0.
+
+=item B<$count = $image-E<gt>colorReplaceThreshold($fromColor, $toColor, $threshold)>
+
+Like C<colorReplace()>, but also replaces colors that are perceptually
+within C<$threshold> of C<$fromColor>. Only available with libgd
+E<gt>= 2.1.0.
+
+=item B<$count = $image-E<gt>colorReplaceArray(\@fromColors, \@toColors)>
+
+Replaces every color in C<\@fromColors> with the corresponding color
+in C<\@toColors> (the two arrays must be the same length) and returns
+the total number of pixels changed. Only available with libgd
+E<gt>= 2.1.0.
+
+=item B<$ok = $image-E<gt>convolution(\@filter, $filterDiv, $offset)>
+
+Applies a 3x3 convolution kernel to the image in place. C<\@filter> is
+a 9-element, row-major array. Each output channel is the weighted sum
+of the kernel divided by C<$filterDiv> plus C<$offset>. Only available
+with libgd E<gt>= 2.1.0.
+
+  # simple box blur
+  $image->convolution([(1/9) x 9], 1, 0);
+
+=item B<($resX, $resY) = $image-E<gt>resolution([$resX, $resY])>
+
+Gets, or with both arguments sets, the image resolution in DPI.
+Defaults to 96x96. Only available with libgd E<gt>= 2.1.0.
+
+=item B<$newimage = $image-E<gt>cloneImage()>
+
+Returns a copy of the image using the native C<gdImageClone()>, which
+correctly preserves truecolor-ness. This is what C<clone()> uses when
+available; see the note under C<clone()> above. Only available with
+libgd E<gt>= 2.4.0.
+
+=item B<$pixel = $image-E<gt>getTrueColorPixel($x, $y)>
+
+Returns the truecolor ARGB value of the pixel at C<($x, $y)>, even on
+a palette image (bypassing the palette-to-RGB lookup that
+C<getPixel()> would otherwise require). Only available with libgd
+E<gt>= 2.4.0.
+
+=item B<($pixelsChanged, $maxDelta) = $image-E<gt>perceptualDiff($otherImage, $threshold)>
+
+Compares C<$image> and C<$otherImage>, which must be the same size,
+using a perceptual (YIQ-based) distance metric rather than
+C<compare()>'s exact bitwise comparison. Returns the number of pixels
+that differ by more than C<$threshold> (0.0 to 1.0) and the largest
+perceptual distance found (0.0 to 1.0). Dies if the images differ in
+size. Only available with libgd E<gt>= 2.4.0.
+
+=back
+
 
 
 =head2 Character and String Drawing
