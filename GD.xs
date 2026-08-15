@@ -69,6 +69,16 @@ extern int gdImageBoundsSafe(gdImagePtr im, int x, int y);
 # define GD_AFFINE_SHEAR_HORIZONTAL GD_AFFINE_SHEAR_HORIZONTAL
 # define GD_AFFINE_SHEAR_VERTICAL GD_AFFINE_SHEAR_VERTICAL
 #endif
+/* gdCropMode (libgd >= 2.1.0) is a plain enum too; gdImageCropAuto()
+ * takes its value as a plain unsigned int parameter. */
+#if GD_VERSION >= 20100
+# define GD_CROP_DEFAULT GD_CROP_DEFAULT
+# define GD_CROP_TRANSPARENT GD_CROP_TRANSPARENT
+# define GD_CROP_BLACK GD_CROP_BLACK
+# define GD_CROP_WHITE GD_CROP_WHITE
+# define GD_CROP_SIDES GD_CROP_SIDES
+# define GD_CROP_THRESHOLD GD_CROP_THRESHOLD
+#endif
 
 #ifdef FCGI
  #include <fcgi_stdio.h>
@@ -3390,6 +3400,193 @@ transformAffineBoundingBox(packname, rectsv, affinesv)
     mXPUSHi(bbox.y);
     mXPUSHi(bbox.width);
     mXPUSHi(bbox.height);
+
+#endif
+
+# Image utilities added upstream since libgd 2.1.0/2.4.0 that had no
+# Perl binding yet.
+
+#if GD_VERSION >= 20100
+
+int
+paletteToTrueColor(image)
+	GD::Image	image
+  PROTOTYPE: $
+  CODE:
+    RETVAL = gdImagePaletteToTrueColor(image);
+  OUTPUT:
+    RETVAL
+
+GD::Image
+crop(image, rectsv)
+	GD::Image	image
+	SV *	rectsv
+  PROTOTYPE: $$
+  PREINIT:
+	gdRect rect;
+  CODE:
+    sv_to_rect(aTHX_ rectsv, &rect);
+    RETVAL = gdImageCrop(image, &rect);
+    if (!RETVAL)
+      croak("gdImageCrop error");
+  OUTPUT:
+    RETVAL
+
+GD::Image
+cropAuto(image, mode=GD_CROP_DEFAULT)
+	GD::Image	image
+	unsigned int	mode
+  PROTOTYPE: $;$
+  CODE:
+    RETVAL = gdImageCropAuto(image, mode);
+    if (!RETVAL)
+      croak("gdImageCropAuto error");
+  OUTPUT:
+    RETVAL
+
+GD::Image
+cropThreshold(image, color, threshold)
+	GD::Image	image
+	unsigned int	color
+	double	threshold
+  PROTOTYPE: $$$
+  CODE:
+    RETVAL = gdImageCropThreshold(image, color, (float)threshold);
+    if (!RETVAL)
+      croak("gdImageCropThreshold error");
+  OUTPUT:
+    RETVAL
+
+int
+colorReplace(image, src, dst)
+	GD::Image	image
+	int	src
+	int	dst
+  PROTOTYPE: $$$
+  CODE:
+    RETVAL = gdImageColorReplace(image, src, dst);
+  OUTPUT:
+    RETVAL
+
+int
+colorReplaceThreshold(image, src, dst, threshold)
+	GD::Image	image
+	int	src
+	int	dst
+	double	threshold
+  PROTOTYPE: $$$$
+  CODE:
+    RETVAL = gdImageColorReplaceThreshold(image, src, dst, (float)threshold);
+  OUTPUT:
+    RETVAL
+
+int
+colorReplaceArray(image, srcav, dstav)
+	GD::Image	image
+	AV *	srcav
+	AV *	dstav
+  PROTOTYPE: $\@\@
+  PREINIT:
+	int i, len, dlen;
+	int *csrc;
+	int *cdst;
+  CODE:
+    len  = av_len(srcav) + 1;
+    dlen = av_len(dstav) + 1;
+    if (len != dlen)
+      croak("colorReplaceArray: source and destination arrays must have the same length");
+    csrc = (int*)safemalloc(len * sizeof(int));
+    cdst = (int*)safemalloc(len * sizeof(int));
+    for (i = 0; i < len; i++) {
+      SV **s = av_fetch(srcav, i, 0);
+      SV **d = av_fetch(dstav, i, 0);
+      csrc[i] = s ? (int)SvIV(*s) : 0;
+      cdst[i] = d ? (int)SvIV(*d) : 0;
+    }
+    RETVAL = gdImageColorReplaceArray(image, len, csrc, cdst);
+    safefree(csrc);
+    safefree(cdst);
+  OUTPUT:
+    RETVAL
+
+bool
+convolution(image, filtersv, filterDiv, offset)
+	GD::Image	image
+	SV *	filtersv
+	double	filterDiv
+	double	offset
+  PROTOTYPE: $$$$
+  PREINIT:
+	AV *av;
+	float filter[3][3];
+	int i;
+  CODE:
+    if (!SvROK(filtersv) || SvTYPE(SvRV(filtersv)) != SVt_PVAV)
+      croak("convolution filter must be an array reference of 9 numbers (row-major 3x3)");
+    av = (AV*)SvRV(filtersv);
+    if (av_len(av) != 8)
+      croak("convolution filter must have exactly 9 elements (row-major 3x3)");
+    for (i = 0; i < 9; i++) {
+      SV **elem = av_fetch(av, i, 0);
+      filter[i/3][i%3] = elem ? (float)SvNV(*elem) : 0.0f;
+    }
+    RETVAL = (bool)gdImageConvolution(image, filter, (float)filterDiv, (float)offset);
+  OUTPUT:
+    RETVAL
+
+void
+resolution(image, ...)
+	GD::Image	image
+  PROTOTYPE: $;$$
+  PPCODE:
+    if (items == 2)
+      croak("Usage: resolution(image) or resolution(image, resX, resY)");
+    if (items > 2) {
+      gdImageSetResolution(image, (unsigned int)SvUV(ST(1)), (unsigned int)SvUV(ST(2)));
+    }
+    mXPUSHi((int)gdImageResolutionX(image));
+    mXPUSHi((int)gdImageResolutionY(image));
+
+#endif
+
+#if GD_VERSION >= 20400
+
+GD::Image
+cloneImage(image)
+	GD::Image	image
+  PROTOTYPE: $
+  CODE:
+    RETVAL = gdImageClone(image);
+    if (!RETVAL)
+      croak("gdImageClone error");
+  OUTPUT:
+    RETVAL
+
+int
+getTrueColorPixel(image, x, y)
+	GD::Image	image
+	int	x
+	int	y
+  PROTOTYPE: $$$
+  CODE:
+    RETVAL = gdImageGetTrueColorPixel(image, x, y);
+  OUTPUT:
+    RETVAL
+
+void
+perceptualDiff(image1, image2, threshold)
+	GD::Image	image1
+	GD::Image	image2
+	double	threshold
+  PROTOTYPE: $$$
+  PREINIT:
+	gdImagePerceptualDiffResult result;
+  PPCODE:
+    memset(&result, 0, sizeof(result));
+    if (!gdImagePerceptualDiff(image1, image2, threshold, NULL, NULL, &result))
+      croak("gdImagePerceptualDiff error");
+    mXPUSHi((int)result.pixels_changed);
+    mXPUSHn(result.maximum_delta);
 
 #endif
 #if GD_VERSION >= 20200

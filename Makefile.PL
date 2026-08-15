@@ -631,6 +631,13 @@ my @constants_iv = qw(
   GD_UHDR_FORMAT_JPEG
   GD_UHDR_FORMAT_WEBP
   GD_UHDR_FORMAT_HEIF
+
+  GD_CROP_DEFAULT
+  GD_CROP_TRANSPARENT
+  GD_CROP_BLACK
+  GD_CROP_WHITE
+  GD_CROP_SIDES
+  GD_CROP_THRESHOLD
   );
 
 # Note that ExtUtils::Constant::ProxySubs creates code incompatible

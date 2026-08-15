@@ -453,10 +453,32 @@ static int
 constant_13 (pTHX_ const char *name, IV *iv_return) {
   /* When generated this function returned values for the list of names given
      here.  However, subsequent manual editing may have added or removed some.
-     GD_CATMULLROM GD_CMP_SIZE_X GD_CMP_SIZE_Y GD_RESOLUTION gdAlphaOpaque
-     gdAntiAliased gdTransparent */
+     GD_CATMULLROM GD_CMP_SIZE_X GD_CMP_SIZE_Y GD_CROP_BLACK GD_CROP_SIDES
+     GD_CROP_WHITE GD_RESOLUTION gdAlphaOpaque gdAntiAliased gdTransparent */
   /* Offset 12 gives the best switch position.  */
   switch (name[12]) {
+  case 'E':
+    if (memEQ(name, "GD_CROP_WHIT", 12)) {
+    /*                           E      */
+#ifdef GD_CROP_WHITE
+      *iv_return = GD_CROP_WHITE;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 'K':
+    if (memEQ(name, "GD_CROP_BLAC", 12)) {
+    /*                           K      */
+#ifdef GD_CROP_BLACK
+      *iv_return = GD_CROP_BLACK;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
   case 'M':
     if (memEQ(name, "GD_CATMULLRO", 12)) {
     /*                           M      */
@@ -473,6 +495,17 @@ constant_13 (pTHX_ const char *name, IV *iv_return) {
     /*                           N      */
 #ifdef GD_RESOLUTION
       *iv_return = GD_RESOLUTION;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 'S':
+    if (memEQ(name, "GD_CROP_SIDE", 12)) {
+    /*                           S      */
+#ifdef GD_CROP_SIDES
+      *iv_return = GD_CROP_SIDES;
       return PERL_constant_ISIV;
 #else
       return PERL_constant_NOTDEF;
@@ -542,24 +575,13 @@ static int
 constant_15 (pTHX_ const char *name, IV *iv_return) {
   /* When generated this function returned values for the list of names given
      here.  However, subsequent manual editing may have added or removed some.
-     GD_AFFINE_SCALE GD_METHOD_COUNT GD_QUANT_JQUANT GD_UHDR_SUCCESS
-     gdEffectOverlay gdEffectReplace gdStyledBrushed */
-  /* Offset 8 gives the best switch position.  */
-  switch (name[8]) {
-  case 'B':
-    if (memEQ(name, "gdStyledBrushed", 15)) {
-    /*                       ^             */
-#ifdef gdStyledBrushed
-      *iv_return = gdStyledBrushed;
-      return PERL_constant_ISIV;
-#else
-      return PERL_constant_NOTDEF;
-#endif
-    }
-    break;
-  case 'D':
+     GD_AFFINE_SCALE GD_CROP_DEFAULT GD_METHOD_COUNT GD_QUANT_JQUANT
+     GD_UHDR_SUCCESS gdEffectOverlay gdEffectReplace gdStyledBrushed */
+  /* Offset 6 gives the best switch position.  */
+  switch (name[6]) {
+  case 'H':
     if (memEQ(name, "GD_METHOD_COUNT", 15)) {
-    /*                       ^             */
+    /*                     ^               */
 #ifdef GD_METHOD_COUNT
       *iv_return = GD_METHOD_COUNT;
       return PERL_constant_ISIV;
@@ -568,9 +590,9 @@ constant_15 (pTHX_ const char *name, IV *iv_return) {
 #endif
     }
     break;
-  case 'E':
+  case 'I':
     if (memEQ(name, "GD_AFFINE_SCALE", 15)) {
-    /*                       ^             */
+    /*                     ^               */
 #ifdef GD_AFFINE_SCALE
       *iv_return = GD_AFFINE_SCALE;
       return PERL_constant_ISIV;
@@ -579,11 +601,22 @@ constant_15 (pTHX_ const char *name, IV *iv_return) {
 #endif
     }
     break;
-  case 'O':
-    if (memEQ(name, "gdEffectOverlay", 15)) {
-    /*                       ^             */
-#ifdef gdEffectOverlay
-      *iv_return = gdEffectOverlay;
+  case 'N':
+    if (memEQ(name, "GD_QUANT_JQUANT", 15)) {
+    /*                     ^               */
+#ifdef GD_QUANT_JQUANT
+      *iv_return = GD_QUANT_JQUANT;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 'P':
+    if (memEQ(name, "GD_CROP_DEFAULT", 15)) {
+    /*                     ^               */
+#ifdef GD_CROP_DEFAULT
+      *iv_return = GD_CROP_DEFAULT;
       return PERL_constant_ISIV;
 #else
       return PERL_constant_NOTDEF;
@@ -591,19 +624,8 @@ constant_15 (pTHX_ const char *name, IV *iv_return) {
     }
     break;
   case 'R':
-    if (memEQ(name, "gdEffectReplace", 15)) {
-    /*                       ^             */
-#ifdef gdEffectReplace
-      *iv_return = gdEffectReplace;
-      return PERL_constant_ISIV;
-#else
-      return PERL_constant_NOTDEF;
-#endif
-    }
-    break;
-  case 'S':
     if (memEQ(name, "GD_UHDR_SUCCESS", 15)) {
-    /*                       ^             */
+    /*                     ^               */
 #ifdef GD_UHDR_SUCCESS
       *iv_return = GD_UHDR_SUCCESS;
       return PERL_constant_ISIV;
@@ -612,11 +634,31 @@ constant_15 (pTHX_ const char *name, IV *iv_return) {
 #endif
     }
     break;
-  case '_':
-    if (memEQ(name, "GD_QUANT_JQUANT", 15)) {
-    /*                       ^             */
-#ifdef GD_QUANT_JQUANT
-      *iv_return = GD_QUANT_JQUANT;
+  case 'c':
+    if (memEQ(name, "gdEffectOverlay", 15)) {
+    /*                     ^               */
+#ifdef gdEffectOverlay
+      *iv_return = gdEffectOverlay;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    if (memEQ(name, "gdEffectReplace", 15)) {
+    /*                     ^               */
+#ifdef gdEffectReplace
+      *iv_return = gdEffectReplace;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 'e':
+    if (memEQ(name, "gdStyledBrushed", 15)) {
+    /*                     ^               */
+#ifdef gdStyledBrushed
+      *iv_return = gdStyledBrushed;
       return PERL_constant_ISIV;
 #else
       return PERL_constant_NOTDEF;
@@ -761,8 +803,8 @@ static int
 constant_17 (pTHX_ const char *name, IV *iv_return) {
   /* When generated this function returned values for the list of names given
      here.  However, subsequent manual editing may have added or removed some.
-     GD_BILINEAR_FIXED GD_CMP_BACKGROUND GD_CMP_NUM_COLORS GD_QUANT_NEUQUANT
-     GD_UHDR_E_INVALID */
+     GD_BILINEAR_FIXED GD_CMP_BACKGROUND GD_CMP_NUM_COLORS GD_CROP_THRESHOLD
+     GD_QUANT_NEUQUANT GD_UHDR_E_INVALID */
   /* Offset 12 gives the best switch position.  */
   switch (name[12]) {
   case 'F':
@@ -803,6 +845,17 @@ constant_17 (pTHX_ const char *name, IV *iv_return) {
     /*                           ^           */
 #ifdef GD_CMP_BACKGROUND
       *iv_return = GD_CMP_BACKGROUND;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 'S':
+    if (memEQ(name, "GD_CROP_THRESHOLD", 17)) {
+    /*                           ^           */
+#ifdef GD_CROP_THRESHOLD
+      *iv_return = GD_CROP_THRESHOLD;
       return PERL_constant_ISIV;
 #else
       return PERL_constant_NOTDEF;
@@ -884,46 +937,14 @@ static int
 constant_19 (pTHX_ const char *name, IV *iv_return) {
   /* When generated this function returned values for the list of names given
      here.  However, subsequent manual editing may have added or removed some.
-     GD_AFFINE_TRANSLATE GD_FLIP_HORINZONTAL GD_PIXELATE_AVERAGE
-     GD_UHDR_FORMAT_HEIF GD_UHDR_FORMAT_JPEG GD_UHDR_FORMAT_WEBP */
-  /* Offset 15 gives the best switch position.  */
-  switch (name[15]) {
-  case 'H':
-    if (memEQ(name, "GD_UHDR_FORMAT_HEIF", 19)) {
-    /*                              ^          */
-#ifdef GD_UHDR_FORMAT_HEIF
-      *iv_return = GD_UHDR_FORMAT_HEIF;
-      return PERL_constant_ISIV;
-#else
-      return PERL_constant_NOTDEF;
-#endif
-    }
-    break;
-  case 'J':
-    if (memEQ(name, "GD_UHDR_FORMAT_JPEG", 19)) {
-    /*                              ^          */
-#ifdef GD_UHDR_FORMAT_JPEG
-      *iv_return = GD_UHDR_FORMAT_JPEG;
-      return PERL_constant_ISIV;
-#else
-      return PERL_constant_NOTDEF;
-#endif
-    }
-    break;
-  case 'L':
-    if (memEQ(name, "GD_AFFINE_TRANSLATE", 19)) {
-    /*                              ^          */
-#ifdef GD_AFFINE_TRANSLATE
-      *iv_return = GD_AFFINE_TRANSLATE;
-      return PERL_constant_ISIV;
-#else
-      return PERL_constant_NOTDEF;
-#endif
-    }
-    break;
-  case 'N':
+     GD_AFFINE_TRANSLATE GD_CROP_TRANSPARENT GD_FLIP_HORINZONTAL
+     GD_PIXELATE_AVERAGE GD_UHDR_FORMAT_HEIF GD_UHDR_FORMAT_JPEG
+     GD_UHDR_FORMAT_WEBP */
+  /* Offset 17 gives the best switch position.  */
+  switch (name[17]) {
+  case 'A':
     if (memEQ(name, "GD_FLIP_HORINZONTAL", 19)) {
-    /*                              ^          */
+    /*                                ^        */
 #ifdef GD_FLIP_HORINZONTAL
       *iv_return = GD_FLIP_HORINZONTAL;
       return PERL_constant_ISIV;
@@ -932,9 +953,31 @@ constant_19 (pTHX_ const char *name, IV *iv_return) {
 #endif
     }
     break;
-  case 'R':
+  case 'B':
+    if (memEQ(name, "GD_UHDR_FORMAT_WEBP", 19)) {
+    /*                                ^        */
+#ifdef GD_UHDR_FORMAT_WEBP
+      *iv_return = GD_UHDR_FORMAT_WEBP;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 'E':
+    if (memEQ(name, "GD_UHDR_FORMAT_JPEG", 19)) {
+    /*                                ^        */
+#ifdef GD_UHDR_FORMAT_JPEG
+      *iv_return = GD_UHDR_FORMAT_JPEG;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 'G':
     if (memEQ(name, "GD_PIXELATE_AVERAGE", 19)) {
-    /*                              ^          */
+    /*                                ^        */
 #ifdef GD_PIXELATE_AVERAGE
       *iv_return = GD_PIXELATE_AVERAGE;
       return PERL_constant_ISIV;
@@ -943,11 +986,33 @@ constant_19 (pTHX_ const char *name, IV *iv_return) {
 #endif
     }
     break;
-  case 'W':
-    if (memEQ(name, "GD_UHDR_FORMAT_WEBP", 19)) {
-    /*                              ^          */
-#ifdef GD_UHDR_FORMAT_WEBP
-      *iv_return = GD_UHDR_FORMAT_WEBP;
+  case 'I':
+    if (memEQ(name, "GD_UHDR_FORMAT_HEIF", 19)) {
+    /*                                ^        */
+#ifdef GD_UHDR_FORMAT_HEIF
+      *iv_return = GD_UHDR_FORMAT_HEIF;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 'N':
+    if (memEQ(name, "GD_CROP_TRANSPARENT", 19)) {
+    /*                                ^        */
+#ifdef GD_CROP_TRANSPARENT
+      *iv_return = GD_CROP_TRANSPARENT;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 'T':
+    if (memEQ(name, "GD_AFFINE_TRANSLATE", 19)) {
+    /*                                ^        */
+#ifdef GD_AFFINE_TRANSLATE
+      *iv_return = GD_AFFINE_TRANSLATE;
       return PERL_constant_ISIV;
 #else
       return PERL_constant_NOTDEF;
@@ -1024,8 +1089,10 @@ my @names = (qw(GD_AFFINE_ROTATE GD_AFFINE_SCALE GD_AFFINE_SHEAR_HORIZONTAL
 	       GD_BICUBIC GD_BICUBIC_FIXED GD_BILINEAR_FIXED GD_BLACKMAN GD_BOX
 	       GD_BSPLINE GD_CATMULLROM GD_CMP_BACKGROUND GD_CMP_COLOR
 	       GD_CMP_IMAGE GD_CMP_INTERLACE GD_CMP_NUM_COLORS GD_CMP_SIZE_X
-	       GD_CMP_SIZE_Y GD_CMP_TRANSPARENT GD_CMP_TRUECOLOR GD_DEFAULT
-	       GD_FLIP_BOTH GD_FLIP_HORINZONTAL GD_FLIP_VERTICAL GD_GAUSSIAN
+	       GD_CMP_SIZE_Y GD_CMP_TRANSPARENT GD_CMP_TRUECOLOR GD_CROP_BLACK
+	       GD_CROP_DEFAULT GD_CROP_SIDES GD_CROP_THRESHOLD
+	       GD_CROP_TRANSPARENT GD_CROP_WHITE GD_DEFAULT GD_FLIP_BOTH
+	       GD_FLIP_HORINZONTAL GD_FLIP_VERTICAL GD_GAUSSIAN
 	       GD_GENERALIZED_CUBIC GD_HAMMING GD_HANNING GD_HERMITE GD_LINEAR
 	       GD_MAJOR_VERSION GD_METHOD_COUNT GD_MINOR_VERSION GD_MITCHELL
 	       GD_NEAREST_NEIGHBOUR GD_PIXELATE_AVERAGE GD_PIXELATE_UPPERLEFT

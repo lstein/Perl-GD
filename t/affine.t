@@ -10,12 +10,12 @@
 use strict;
 use warnings;
 
-use Test::More tests => 26;
+use Test::More tests => 28;
 
 use_ok('GD');
 
 SKIP: {
-    skip "No affine transform support", 25
+    skip "No affine transform support", 27
         unless defined &GD::Image::affineIdentity;
 
     # --- matrix builders ---
@@ -63,8 +63,17 @@ SKIP: {
     is_deeply(\@pt, [20, 60], "affineApplyToPoint through scale(2,3)");
 
     # --- image-level transforms ---
+    #
+    # gdTransformAffineBoundingBox()'s pixel-boundary floor/ceil rounding
+    # has changed more than once across libgd releases (2.1.x/2.3.x round
+    # one way, 2.2.2-2.2.5 another), so the exact width/height it reports
+    # for a given rect+matrix isn't stable across the supported version
+    # range. Tolerate +/-1px on width/height; the offset (x,y) has been
+    # consistently exact across every tested version.
     my @bbox = GD::Image->transformAffineBoundingBox([0, 0, 20, 10], \@translate);
-    is_deeply(\@bbox, [5, -7, 20, 10], "transformAffineBoundingBox under a pure translation");
+    is_deeply([@bbox[0,1]], [5, -7], "transformAffineBoundingBox translation offset");
+    ok(abs($bbox[2] - 20) <= 1, "transformAffineBoundingBox translation width ~20 (+/-1px)");
+    ok(abs($bbox[3] - 10) <= 1, "transformAffineBoundingBox translation height ~10 (+/-1px)");
 
     my $src = GD::Image->new(20, 10, 1);
     my $white = $src->colorAllocate(255, 255, 255);
@@ -74,10 +83,14 @@ SKIP: {
 
     my $scaled = $src->transformAffineGetImage(\@scale);
     ok(defined $scaled, "transformAffineGetImage returns an image");
-    is(join("x", $scaled->getBounds), "40x30", "transformAffineGetImage(scale(2,3)) doubles/triples size");
+    my ($sw, $sh) = $scaled->getBounds;
+    ok(abs($sw - 40) <= 1 && abs($sh - 30) <= 1,
+        "transformAffineGetImage(scale(2,3)) doubles/triples size (+/-1px)");
 
     my $cropped = $src->transformAffineGetImage(\@id, [0, 0, 10, 10]);
-    is(join("x", $cropped->getBounds), "10x10", "transformAffineGetImage honors an explicit src region");
+    my ($cw, $ch) = $cropped->getBounds;
+    ok(abs($cw - 10) <= 1 && abs($ch - 10) <= 1,
+        "transformAffineGetImage honors an explicit src region (+/-1px)");
 
     my $dst = GD::Image->new(100, 100, 1);
     my $black = $dst->colorAllocate(0, 0, 0);
