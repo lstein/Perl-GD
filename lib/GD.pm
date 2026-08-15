@@ -2605,6 +2605,58 @@ Dies on a decode error.
 
 =back
 
+=head1 Format Header Introspection
+
+libgd E<gt>= 2.4.0 exposes read-only header/container introspection for six
+formats, independent of decoding the image itself. Each method takes the raw
+file bytes and returns a flat list a caller assigns to a hash; each dies if
+the data isn't valid for its format.
+
+ my $bytes = do { local $/; open my $fh, '<', 'photo.jpg' or die $!; binmode $fh; <$fh> };
+ my %info = GD::Image->jpegInfoData($bytes);
+ print "$info{width}x$info{height}, $info{components} components\n";
+
+=over 4
+
+=item C<< %info = GD::Image->pngInfoData($bytes) >>
+
+Returns C<width>, C<height>, C<bit_depth>, C<color_type>, C<has_alpha>,
+C<has_transparency>, C<palette_entries>, C<interlace_method>,
+C<x_pixels_per_unit>, C<y_pixels_per_unit>, C<physical_unit>,
+C<decoded_truecolor>, C<resolution_x>, C<resolution_y>.
+
+=item C<< %info = GD::Image->jpegInfoData($bytes) >>
+
+Returns C<width>, C<height>, C<bits_per_sample>, C<components>,
+C<color_space>, C<progressive>, C<density_unit>, C<x_density>, C<y_density>.
+
+=item C<< %info = GD::Image->gifInfoData($bytes) >>
+
+Returns C<version> (the 3-character GIF version, e.g. C<"89a">), C<width>,
+C<height>, C<background_index>, C<global_color_table>, C<color_resolution>,
+C<pixel_aspect_ratio>, C<loop_count>, C<loop_count_present>.
+
+=item C<< %info = GD::Image->bmpInfoData($bytes) >>
+
+Returns C<header_type>, C<width>, C<height>, C<top_down>, C<planes>,
+C<bits_per_pixel>, C<compression>, C<image_size>,
+C<horizontal_resolution>, C<vertical_resolution>, C<colors_used>,
+C<important_colors>, C<palette_type>, C<palette_entries>, C<red_mask>,
+C<green_mask>, C<blue_mask>, C<alpha_mask>.
+
+=item C<< %info = GD::Image->avifInfoData($bytes) >>
+
+Returns C<width>, C<height>, C<is_animation>, C<is_progressive>,
+C<frame_count>, C<duration>, C<has_alpha>, C<bit_depth>, C<yuv_format>.
+
+=item C<< %info = GD::Image->heifInfoData($bytes) >>
+
+Returns C<width>, C<height>, C<top_level_image_count>, C<has_alpha>,
+C<bit_depth>, C<is_animation>.
+
+=back
+
+
 
 
 

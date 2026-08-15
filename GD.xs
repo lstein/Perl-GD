@@ -266,7 +266,7 @@ static int bufGetC (gdIOCtxPtr ctx) {
   bufIOCtxPtr bctx = (bufIOCtxPtr) ctx;
 
   if (bctx->pos >= bctx->length) return EOF;
-  return bctx->data[bctx->pos];
+  return (unsigned char)bctx->data[bctx->pos++];
 }
 
 static int bufGetBuf (gdIOCtxPtr ctx, void* buf, int len) {
@@ -3638,6 +3638,229 @@ perceptualDiff(image1, image2, threshold)
       croak("gdImagePerceptualDiff error");
     mXPUSHi((int)result.pixels_changed);
     mXPUSHn(result.maximum_delta);
+
+#endif
+
+# Format header/metadata introspection (libgd >= 2.4.0): read just the
+# container facts (dimensions, bit depth, and similar) from an
+# in-memory buffer without fully decoding the image. Each returns a
+# flat key/value list a caller assigns to a hash.
+
+#if GD_VERSION >= 20400
+
+#ifdef HAVE_PNG
+void
+pngInfoData(packname, imageData)
+	char *	packname
+	SV *	imageData
+  PROTOTYPE: $$
+  PREINIT:
+	char*    data;
+	STRLEN   len;
+	gdIOCtx* ctx;
+	gdPngInfo info;
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    data = SvPV(imageData,len);
+    ctx = newDynamicCtx(data,len);
+    memset(&info, 0, sizeof(info));
+    gdPngInfoInit(&info);
+    /* gdPngGetInfoCtx follows POSIX-style: 0 = success, nonzero = failure. */
+    if (gdPngGetInfoCtx(ctx, &info) != 0) {
+      (ctx->gd_free)(ctx);
+      croak("gdPngGetInfoCtx error");
+    }
+    (ctx->gd_free)(ctx);
+    PUSH_KV_I("width", info.width);
+    PUSH_KV_I("height", info.height);
+    PUSH_KV_I("bit_depth", info.bit_depth);
+    PUSH_KV_I("color_type", info.color_type);
+    PUSH_KV_I("has_alpha", info.has_alpha);
+    PUSH_KV_I("has_transparency", info.has_transparency);
+    PUSH_KV_I("palette_entries", info.palette_entries);
+    PUSH_KV_I("interlace_method", info.interlace_method);
+    PUSH_KV_I("x_pixels_per_unit", info.x_pixels_per_unit);
+    PUSH_KV_I("y_pixels_per_unit", info.y_pixels_per_unit);
+    PUSH_KV_I("physical_unit", info.physical_unit);
+    PUSH_KV_I("decoded_truecolor", info.decoded_truecolor);
+    PUSH_KV_I("resolution_x", info.resolution_x);
+    PUSH_KV_I("resolution_y", info.resolution_y);
+#endif
+
+#ifdef HAVE_JPEG
+void
+jpegInfoData(packname, imageData)
+	char *	packname
+	SV *	imageData
+  PROTOTYPE: $$
+  PREINIT:
+	char*    data;
+	STRLEN   len;
+	gdIOCtx* ctx;
+	gdJpegInfo info;
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    data = SvPV(imageData,len);
+    ctx = newDynamicCtx(data,len);
+    memset(&info, 0, sizeof(info));
+    gdJpegInfoInit(&info);
+    /* gdJpegGetInfoCtx follows POSIX-style: 0 = success, nonzero = failure
+       (its header comment claims the opposite; the implementation doesn't). */
+    if (gdJpegGetInfoCtx(ctx, &info) != 0) {
+      (ctx->gd_free)(ctx);
+      croak("gdJpegGetInfoCtx error");
+    }
+    (ctx->gd_free)(ctx);
+    PUSH_KV_I("width", info.width);
+    PUSH_KV_I("height", info.height);
+    PUSH_KV_I("bits_per_sample", info.bits_per_sample);
+    PUSH_KV_I("components", info.components);
+    PUSH_KV_I("color_space", info.color_space);
+    PUSH_KV_I("progressive", info.progressive);
+    PUSH_KV_I("density_unit", info.density_unit);
+    PUSH_KV_I("x_density", info.x_density);
+    PUSH_KV_I("y_density", info.y_density);
+#endif
+
+#ifdef HAVE_GIF
+void
+gifInfoData(packname, imageData)
+	char *	packname
+	SV *	imageData
+  PROTOTYPE: $$
+  PREINIT:
+	char*    data;
+	STRLEN   len;
+	gdIOCtx* ctx;
+	gdGifInfo info;
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    data = SvPV(imageData,len);
+    ctx = newDynamicCtx(data,len);
+    memset(&info, 0, sizeof(info));
+    if (!gdGifGetInfoCtx(ctx, &info)) {
+      (ctx->gd_free)(ctx);
+      croak("gdGifGetInfoCtx error");
+    }
+    (ctx->gd_free)(ctx);
+    PUSH_KV_S("version", info.version, strlen(info.version));
+    PUSH_KV_I("width", info.width);
+    PUSH_KV_I("height", info.height);
+    PUSH_KV_I("background_index", info.background_index);
+    PUSH_KV_I("global_color_table", info.global_color_table);
+    PUSH_KV_I("color_resolution", info.color_resolution);
+    PUSH_KV_N("pixel_aspect_ratio", info.pixel_aspect_ratio);
+    PUSH_KV_I("loop_count", info.loop_count);
+    PUSH_KV_I("loop_count_present", info.loop_count_present);
+#endif
+
+#ifdef HAVE_BMP
+void
+bmpInfoData(packname, imageData)
+	char *	packname
+	SV *	imageData
+  PROTOTYPE: $$
+  PREINIT:
+	char*    data;
+	STRLEN   len;
+	gdIOCtx* ctx;
+	gdBmpInfo info;
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    data = SvPV(imageData,len);
+    ctx = newDynamicCtx(data,len);
+    memset(&info, 0, sizeof(info));
+    gdBmpInfoInit(&info);
+    if (!gdBmpGetInfoCtx(ctx, &info)) {
+      (ctx->gd_free)(ctx);
+      croak("gdBmpGetInfoCtx error");
+    }
+    (ctx->gd_free)(ctx);
+    PUSH_KV_I("header_type", info.header_type);
+    PUSH_KV_I("width", info.width);
+    PUSH_KV_I("height", info.height);
+    PUSH_KV_I("top_down", info.top_down);
+    PUSH_KV_I("planes", info.planes);
+    PUSH_KV_I("bits_per_pixel", info.bits_per_pixel);
+    PUSH_KV_I("compression", info.compression);
+    PUSH_KV_I("image_size", info.image_size);
+    PUSH_KV_I("horizontal_resolution", info.horizontal_resolution);
+    PUSH_KV_I("vertical_resolution", info.vertical_resolution);
+    PUSH_KV_I("colors_used", info.colors_used);
+    PUSH_KV_I("important_colors", info.important_colors);
+    PUSH_KV_I("palette_type", info.palette_type);
+    PUSH_KV_I("palette_entries", info.palette_entries);
+    PUSH_KV_I("red_mask", info.red_mask);
+    PUSH_KV_I("green_mask", info.green_mask);
+    PUSH_KV_I("blue_mask", info.blue_mask);
+    PUSH_KV_I("alpha_mask", info.alpha_mask);
+#endif
+
+#ifdef HAVE_AVIF
+void
+avifInfoData(packname, imageData)
+	char *	packname
+	SV *	imageData
+  PROTOTYPE: $$
+  PREINIT:
+	char*    data;
+	STRLEN   len;
+	gdIOCtx* ctx;
+	gdAvifInfo info;
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    data = SvPV(imageData,len);
+    ctx = newDynamicCtx(data,len);
+    memset(&info, 0, sizeof(info));
+    gdAvifInfoInit(&info);
+    /* gdAvifGetInfoCtx returns a GD_META_* code: GD_META_OK (0) = success
+       (its header comment claims "1 on success"; the implementation doesn't). */
+    if (gdAvifGetInfoCtx(ctx, &info) != 0) {
+      (ctx->gd_free)(ctx);
+      croak("gdAvifGetInfoCtx error");
+    }
+    (ctx->gd_free)(ctx);
+    PUSH_KV_I("width", info.width);
+    PUSH_KV_I("height", info.height);
+    PUSH_KV_I("is_animation", info.is_animation);
+    PUSH_KV_I("is_progressive", info.is_progressive);
+    PUSH_KV_I("frame_count", info.frame_count);
+    PUSH_KV_N("duration", info.duration);
+    PUSH_KV_I("has_alpha", info.has_alpha);
+    PUSH_KV_I("bit_depth", info.bit_depth);
+    PUSH_KV_I("yuv_format", info.yuv_format);
+#endif
+
+#ifdef HAVE_HEIF
+void
+heifInfoData(packname, imageData)
+	char *	packname
+	SV *	imageData
+  PROTOTYPE: $$
+  PREINIT:
+	char*    data;
+	STRLEN   len;
+	gdIOCtx* ctx;
+	gdHeifInfo info;
+  PPCODE:
+    PERL_UNUSED_ARG(packname);
+    data = SvPV(imageData,len);
+    ctx = newDynamicCtx(data,len);
+    memset(&info, 0, sizeof(info));
+    gdHeifInfoInit(&info);
+    /* gdHeifGetInfoCtx returns a GD_META_* code: GD_META_OK (0) = success. */
+    if (gdHeifGetInfoCtx(ctx, &info) != 0) {
+      (ctx->gd_free)(ctx);
+      croak("gdHeifGetInfoCtx error");
+    }
+    (ctx->gd_free)(ctx);
+    PUSH_KV_I("width", info.width);
+    PUSH_KV_I("height", info.height);
+    PUSH_KV_I("top_level_image_count", info.top_level_image_count);
+    PUSH_KV_I("has_alpha", info.has_alpha);
+    PUSH_KV_I("bit_depth", info.bit_depth);
+    PUSH_KV_I("is_animation", info.is_animation);
+#endif
 
 #endif
 #if GD_VERSION >= 20200
