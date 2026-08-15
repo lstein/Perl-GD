@@ -417,6 +417,24 @@ $CCFLAGS .= " -Wall -Wextra -Wformat=1" if $Config{gccversion} and $] > 5.020;
 my $LDDLFLAGS = $Config{lddlflags};
 # fixup mingw linker problems with empty weak symbols
 $LDDLFLAGS .= " -Wl,--verbose" if $Config{gccversion} and $^O eq 'MSWin32';
+# Embed an rpath for every -L directory (libgd itself, and any
+# --lib_*_path overrides) so the built .so - both under blib/ for
+# 'make test' and once installed - reliably loads the exact libraries
+# selected at configure time. Without this, -L only affects link-time
+# symbol resolution: at runtime the dynamic linker falls back to
+# whatever same-soname library (e.g. libgd.so.3) is the system default,
+# which silently produces a module built for one libgd but running
+# against another - the underlying cause of "feature X isn't detected"
+# reports when testing multiple co-installed libgd versions (see
+# testlibs.sh).
+if ($^O eq 'linux') {
+  my %seen;
+  for my $l (@LIBPATH) {
+    (my $dir = $l) =~ s/^-L//;
+    next unless length $dir and !$seen{$dir}++;
+    $LDDLFLAGS .= " -Wl,-rpath,$dir";
+  }
+}
 my $LD = $Config{ld};
 if ($LD eq 'g++' and $^O eq 'MSWin32') {
   $LD = 'gcc';
