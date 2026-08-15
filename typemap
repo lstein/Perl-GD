@@ -7,3 +7,5 @@ GD::WebpAnimReader	T_PTROBJ
 GD::WebpAnimWriter	T_PTROBJ
 GD::JxlAnimReader	T_PTROBJ
 GD::JxlAnimWriter	T_PTROBJ
+GD::TiffMultiReader	T_PTROBJ
+GD::TiffMultiWriter	T_PTROBJ

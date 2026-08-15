@@ -788,6 +788,7 @@ t/test_data/tile.webp
 t/test_data/tile.xbm
 t/test_data/tile_uhdr.jpg
 t/test_data/windows.bmp
+t/tiffmulti.t
 t/transp.t
 t/uhdr.t
 t/webpanim.t
