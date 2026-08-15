@@ -41,6 +41,7 @@ t/affine.t
 t/autodetect.t
 t/caller.t
 t/fork.t
+t/formatinfo.t
 t/imagequant.t
 t/imageutils.t
 t/jxl.t

@@ -45,6 +45,26 @@
             page-info hashref instead). Also adds the GD_TIFF_* writer
             option constants (colorspace, compression, resolution unit,
             alpha type).
+        - Per-format header introspection (libgd >= 2.4.0): new
+          GD::Image->pngInfoData/jpegInfoData/gifInfoData/bmpInfoData/
+          avifInfoData/heifInfoData class methods, wrapping
+          gd{Png,Jpeg,Gif,Bmp,Avif,Heif}GetInfoCtx. Each reads just the
+          container facts (dimensions, bit depth, and similar) from an
+          in-memory buffer without fully decoding the image.
+        - Fixed a longstanding bug in the in-memory gdIOCtx used by every
+          newFrom*Data()/*InfoData() method: its getC() callback never
+          advanced the read position, so any decoder reading a buffer
+          byte-by-byte (as the new bmpInfoData()'s BMP header parser
+          does) would spin re-reading the first byte forever. PNG, JPEG,
+          GIF, WebP, TIFF, JXL, AVIF and HEIF decoding were unaffected
+          because they read through the bulk getBuf() callback instead,
+          which was already correct.
+        - Worked around inconsistent success/failure return conventions
+          across libgd's new Get*InfoCtx functions: gdPngGetInfoCtx,
+          gdJpegGetInfoCtx, gdAvifGetInfoCtx and gdHeifGetInfoCtx all
+          return 0 on success despite two of their own header comments
+          claiming the opposite, while gdGifGetInfoCtx and
+          gdBmpGetInfoCtx return 1 on success as documented.
 2.87    * fix OpenBSD support (Alexander Bluhm, PR #63)
         * fix $image->compare() usages (Alexander Bluhm, PR #65, #64)
         * fix tiff test without libimagequant (Alexander Bluhm, PR #66)
