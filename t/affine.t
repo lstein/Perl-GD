@@ -42,7 +42,8 @@ SKIP: {
     my @concat_id = GD::Image->affineConcat(\@scale, \@id);
     is_deeply(\@concat_id, \@scale, "affineConcat(scale, identity) == scale");
 
-    my @inv = GD::Image->affineInvert(\@scale);
+    # perl <= 5.12 stringifies -0.0 as "-0"; normalize sign-of-zero away
+    my @inv = map { $_ == 0 ? 0 : $_ } GD::Image->affineInvert(\@scale);
     is_deeply(\@inv, [0.5, 0, 0, 1/3, 0, 0], "affineInvert(scale(2,3))");
 
     my @singular = (0, 0, 0, 0, 0, 0);
