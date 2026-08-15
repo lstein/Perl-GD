@@ -160,6 +160,10 @@ typedef gdFontPtr	GD__Font;
 #ifdef HAVE_UHDR
 typedef gdUhdrImagePtr	GD__UHDR;
 #endif
+#if GD_VERSION >= 20400 && defined(HAVE_WEBP)
+typedef gdWebpReadPtr	GD__WebpAnimReader;
+typedef gdWebpWritePtr	GD__WebpAnimWriter;
+#endif
 typedef PerlIO          * InputStream;
 
 #ifdef PERL_OBJECT
@@ -412,6 +416,22 @@ sv_to_rect(pTHX_ SV *sv, gdRect *rect) {
 #define PUSH_AFFINE(m) STMT_START { \
   mXPUSHn((m)[0]); mXPUSHn((m)[1]); mXPUSHn((m)[2]); \
   mXPUSHn((m)[3]); mXPUSHn((m)[4]); mXPUSHn((m)[5]); \
+} STMT_END
+
+/* Push a string key/int, key/double, or key/fixed-length-string value pair
+ * onto the Perl return stack, for building a flat list a caller assigns to
+ * a hash (my %info = $obj->method). Only valid inside a PPCODE block. */
+#define PUSH_KV_I(key, val) STMT_START { \
+  mXPUSHp((key), strlen(key)); \
+  mXPUSHi((int)(val)); \
+} STMT_END
+#define PUSH_KV_N(key, val) STMT_START { \
+  mXPUSHp((key), strlen(key)); \
+  mXPUSHn((double)(val)); \
+} STMT_END
+#define PUSH_KV_S(key, ptr, len) STMT_START { \
+  mXPUSHp((key), strlen(key)); \
+  mXPUSHp((ptr), (len)); \
 } STMT_END
 #endif
 
@@ -3797,5 +3817,182 @@ gdUhdrgetSdr(im)
   OUTPUT:
     RETVAL
 
+#endif
+
+# Animated WebP support (libgd >= 2.4.0). gdWebpReadPtr/gdWebpWritePtr
+# are distinct opaque handle types from gdImagePtr, so they get their own
+# GD::WebpAnimReader/GD::WebpAnimWriter classes, mirroring GD::UHDR.
+# Readers always use gd's coalesced (full-canvas) mode; the raw
+# frame-rectangle mode (gdWebpReadNextFrame) is not exposed.
+
+MODULE = GD		PACKAGE = GD::WebpAnimReader	PREFIX=gdWebpAnim
+
+#if GD_VERSION >= 20400
+#ifdef HAVE_WEBP
+
+GD::WebpAnimReader
+gdWebpAnimnewFromData(packname="GD::WebpAnimReader", imageData)
+	char *	packname
+	SV *	imageData
+  PROTOTYPE: $$
+  PREINIT:
+	char*    data;
+	STRLEN   len;
+	gdIOCtx* ctx;
+  CODE:
+    PERL_UNUSED_ARG(packname);
+    data = SvPV(imageData,len);
+    ctx = newDynamicCtx(data,len);
+    RETVAL = gdWebpReadOpenCtx(ctx, NULL);
+    (ctx->gd_free)(ctx);
+    if (!RETVAL)
+      croak("gdWebpReadOpenCtx error");
+  OUTPUT:
+    RETVAL
+
+void
+gdWebpAnimDESTROY(reader)
+	GD::WebpAnimReader	reader
+  PROTOTYPE: $
+  CODE:
+    gdWebpReadClose(reader);
+
+void
+gdWebpAniminfo(reader)
+	GD::WebpAnimReader	reader
+  PROTOTYPE: $
+  PREINIT:
+	gdWebpInfo info;
+  PPCODE:
+    if (!gdWebpReadGetInfo(reader, &info))
+      croak("gdWebpReadGetInfo error");
+    PUSH_KV_I("width", info.width);
+    PUSH_KV_I("height", info.height);
+    PUSH_KV_I("frame_count", info.frame_count);
+    PUSH_KV_I("loop_count", info.loop_count);
+    PUSH_KV_I("background_color", info.background_color);
+    PUSH_KV_I("format_flags", info.format_flags);
+    PUSH_KV_I("is_animation", info.is_animation);
+
+void
+gdWebpAnimnextImage(reader)
+	GD::WebpAnimReader	reader
+  PROTOTYPE: $
+  PREINIT:
+	gdWebpFrameInfo finfo;
+	gdImagePtr image;
+	int result;
+  PPCODE:
+    image = NULL;
+    result = gdWebpReadNextImage(reader, &finfo, &image);
+    if (result < 0)
+      croak("gdWebpReadNextImage error");
+    if (result == 0)
+      XSRETURN_EMPTY;
+    {
+      SV *imgsv = sv_newmortal();
+      sv_setref_pv(imgsv, "GD::Image", (void*)image);
+      mXPUSHi(finfo.duration);
+      XPUSHs(imgsv);
+    }
+
+#endif
+#endif
+
+MODULE = GD		PACKAGE = GD::WebpAnimWriter	PREFIX=gdWebpAnim
+
+#if GD_VERSION >= 20400
+#ifdef HAVE_WEBP
+
+GD::WebpAnimWriter
+gdWebpAnimnew(packname="GD::WebpAnimWriter", ...)
+	char *	packname
+  PROTOTYPE: $;$
+  PREINIT:
+	gdWebpAnimWriteOptions opts;
+	HV *h;
+	SV **v;
+  CODE:
+    PERL_UNUSED_ARG(packname);
+    gdWebpAnimWriteOptionsInit(&opts);
+    if (items > 1 && SvOK(ST(1))) {
+      if (!SvROK(ST(1)) || SvTYPE(SvRV(ST(1))) != SVt_PVHV)
+        croak("Usage: GD::WebpAnimWriter->new([\\%%options])");
+      h = (HV*)SvRV(ST(1));
+      if ((v = hv_fetchs(h,"canvas_width",0)))     opts.canvas_width     = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"canvas_height",0)))    opts.canvas_height    = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"loop_count",0)))       opts.loop_count       = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"background_color",0))) opts.background_color = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"quality",0)))          opts.quality          = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"lossless",0)))         opts.lossless         = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"method",0)))           opts.method           = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"minimize_size",0)))    opts.minimize_size    = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"kmin",0)))              opts.kmin            = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"kmax",0)))              opts.kmax            = (int)SvIV(*v);
+      if ((v = hv_fetchs(h,"allow_mixed",0)))       opts.allow_mixed     = (int)SvIV(*v);
+    }
+    RETVAL = gdWebpWriteOpenPtr(&opts);
+    if (!RETVAL)
+      croak("gdWebpWriteOpenPtr error");
+  OUTPUT:
+    RETVAL
+
+# addImage/finish/DESTROY take the blessed SV directly (not the typed
+# GD::WebpAnimWriter pointer) and null out the referent's IV once
+# finish() consumes the underlying gdWebpWritePtr, so a writer can only
+# be finished once and using it afterwards croaks instead of a
+# use-after-free through a stale pointer.
+
+bool
+gdWebpAnimaddImage(self, image, durationMs=100)
+	SV *	self
+	GD::Image	image
+	int	durationMs
+  PROTOTYPE: $$;$
+  PREINIT:
+	gdWebpWritePtr writer;
+  CODE:
+    if (!SvROK(self) || !SvIV((SV*)SvRV(self)))
+      croak("writer has already been finished");
+    writer = INT2PTR(gdWebpWritePtr, SvIV((SV*)SvRV(self)));
+    RETVAL = (bool)gdWebpWriteAddImage(writer, image, durationMs);
+    if (!RETVAL)
+      croak("gdWebpWriteAddImage error");
+  OUTPUT:
+    RETVAL
+
+SV*
+gdWebpAnimfinish(self)
+	SV *	self
+  PREINIT:
+	gdWebpWritePtr writer;
+	void *data;
+	int size;
+  CODE:
+    if (!SvROK(self) || !SvIV((SV*)SvRV(self)))
+      croak("writer has already been finished");
+    writer = INT2PTR(gdWebpWritePtr, SvIV((SV*)SvRV(self)));
+    data = gdWebpWritePtrFinish(writer, &size);
+    sv_setiv((SV*)SvRV(self), 0);
+    if (!data)
+      croak("gdWebpWritePtrFinish error");
+    RETVAL = newSVpvn((char*)data, size);
+    gdFree(data);
+  OUTPUT:
+    RETVAL
+
+void
+gdWebpAnimDESTROY(self)
+	SV *	self
+  CODE:
+    if (SvROK(self) && SvIV((SV*)SvRV(self))) {
+      int size;
+      void *data;
+      gdWebpWritePtr writer = INT2PTR(gdWebpWritePtr, SvIV((SV*)SvRV(self)));
+      data = gdWebpWritePtrFinish(writer, &size);
+      if (data) gdFree(data);
+    }
+
+#endif
 #endif
 

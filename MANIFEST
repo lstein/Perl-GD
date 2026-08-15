@@ -789,6 +789,7 @@ t/test_data/tile_uhdr.jpg
 t/test_data/windows.bmp
 t/transp.t
 t/uhdr.t
+t/webpanim.t
 t/windows_bmp.t
 t/z_kwalitee.t
 t/z_manifest.t

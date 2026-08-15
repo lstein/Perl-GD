@@ -27,6 +27,10 @@
             gdImageClone() when available, fixing truecolor-ness loss on
             the old new()+copy() fallback. Fix GD_CROP_* constant
             visibility (same enum/#ifdef issue as GD_QUANT_*).
+          - Animated WebP support (libgd >= 2.4.0): new GD::WebpAnimWriter
+            (new/addImage/finish, wrapping gdWebpWriteOpenPtr/AddImage/
+            PtrFinish) and GD::WebpAnimReader (newFromData/info/nextImage,
+            wrapping gdWebpReadOpenCtx/GetInfo/NextImage) classes.
 2.87    * fix OpenBSD support (Alexander Bluhm, PR #63)
         * fix $image->compare() usages (Alexander Bluhm, PR #65, #64)
         * fix tiff test without libimagequant (Alexander Bluhm, PR #66)
