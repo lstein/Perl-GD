@@ -8,6 +8,17 @@
           - Fix imagequant feature autodetection in Makefile.PL (libimagequant
             surfaces in gdlib.pc's Libs.private, not Requires.private).
           - Work around libgd 2.4.0 gd.h no longer declaring gdImageBoundsSafe().
+          - Embed rpath (Linux) and fix stale blib/lib/GD/Image.pm so
+            'make test' reliably exercises the just-configured libgd
+            (GH #21 test infra); fix GD_LIQ detection from the deprecated
+            gdlib-config script.
+          - Affine transformations (GH #21): GD::Image affine matrix
+            builders (affineIdentity/Scale/Rotate/ShearHorizontal/
+            ShearVertical/Translate/Concat/Invert/Flip/Expansion/
+            Rectilinear/Equal/ApplyToPoint) and transformAffineGetImage/
+            transformAffineCopy/transformAffineBoundingBox, wrapping
+            gdAffine*/gdTransformAffine* (libgd >= 2.1.0). Fix GD_AFFINE_*
+            constant visibility (same enum/#ifdef issue as GD_QUANT_*).
 2.87    * fix OpenBSD support (Alexander Bluhm, PR #63)
         * fix $image->compare() usages (Alexander Bluhm, PR #65, #64)
         * fix tiff test without libimagequant (Alexander Bluhm, PR #66)

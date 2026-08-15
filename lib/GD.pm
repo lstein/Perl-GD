@@ -1508,6 +1508,86 @@ Returns a copy, using interpolation.
 
 =back
 
+=head2 Affine Transformations
+
+Since libgd 2.1.0, gd offers affine matrix transformations: arbitrary
+combinations of scaling, rotation, shearing and translation applied in
+one resampling pass, rather than gd's older single-purpose C<rotate>/
+C<copyRotateInterpolated>-style methods.
+L<https://github.com/lstein/Perl-GD/issues/21>
+
+A matrix is a plain 6-element Perl list/array C<($m0,$m1,$m2,$m3,$m4,$m5)>,
+matching gd's C<double affine[6]>: applying it maps a source point
+C<(x,y)> to C<(m0*x + m2*y + m4, m1*x + m3*y + m5)>. The matrix builders
+below are class methods on C<GD::Image> (they don't operate on any
+particular image); angles are in degrees.
+
+=over 4
+
+=item B<@matrix = GD::Image-E<gt>affineIdentity()>
+
+=item B<@matrix = GD::Image-E<gt>affineScale($scaleX, $scaleY)>
+
+=item B<@matrix = GD::Image-E<gt>affineRotate($angle)>
+
+=item B<@matrix = GD::Image-E<gt>affineShearHorizontal($angle)>
+
+=item B<@matrix = GD::Image-E<gt>affineShearVertical($angle)>
+
+=item B<@matrix = GD::Image-E<gt>affineTranslate($offsetX, $offsetY)>
+
+Build a standard 6-element affine matrix.
+
+=item B<@matrix = GD::Image-E<gt>affineConcat(\@matrix1, \@matrix2)>
+
+Concatenates two matrices: the result applies C<@matrix1> first, then
+C<@matrix2>.
+
+=item B<@matrix = GD::Image-E<gt>affineInvert(\@matrix)>
+
+Returns the inverse of C<@matrix>, or an empty list if C<@matrix> is
+singular (not invertible).
+
+=item B<@matrix = GD::Image-E<gt>affineFlip(\@matrix, $flipHorizontal, $flipVertical)>
+
+Builds a horizontal and/or vertical flip from C<@matrix>.
+
+=item B<$factor = GD::Image-E<gt>affineExpansion(\@matrix)>
+
+Returns the linear scaling factor of C<@matrix>.
+
+=item B<$bool = GD::Image-E<gt>affineRectilinear(\@matrix)>
+
+True if C<@matrix> maps axis-aligned rectangles to axis-aligned
+rectangles (i.e. it has no rotation or shear component).
+
+=item B<$bool = GD::Image-E<gt>affineEqual(\@matrix1, \@matrix2)>
+
+=item B<($x2, $y2) = GD::Image-E<gt>affineApplyToPoint($x, $y, \@matrix)>
+
+Applies C<@matrix> to the point C<($x, $y)> and returns the transformed
+coordinates.
+
+=item B<$newimage = $image-E<gt>transformAffineGetImage(\@matrix, [\@srcRect])>
+
+Applies C<@matrix> to C<$image> (or to the C<[$x, $y, $width, $height]>
+region C<\@srcRect>, if given) and returns a newly allocated image sized
+to fit the transformed content. Dies on error.
+
+=item B<$bool = $image-E<gt>transformAffineCopy($srcImage, $dstX, $dstY, \@matrix, [\@srcRect])>
+
+Applies C<@matrix> to C<$srcImage> (or to the C<[$x, $y, $width, $height]>
+region C<\@srcRect>, if given, otherwise the whole image) and pastes the
+result into C<$image> with its origin at C<($dstX, $dstY)>. Dies on
+error.
+
+=item B<($x, $y, $width, $height) = GD::Image-E<gt>transformAffineBoundingBox(\@srcRect, \@matrix)>
+
+Returns the axis-aligned bounding box, as C<[$x, $y, $width, $height]>,
+that contains C<\@srcRect> after C<@matrix> is applied. Dies on error.
+
+=back
+
 =head2 Image Filter Commands
 
 Gd also provides some common image filters, they modify the image in
