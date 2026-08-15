@@ -565,7 +565,6 @@ gd_new(packname="GD::Image", x=64, y=64, ...)
     RETVAL
 
 #if GD_VERSION >= 20101
-
 bool
 gd_file(image, filename)
       GD::Image image
@@ -1659,7 +1658,6 @@ gdtrueColorToPaletteSetQuality(image, min_quality, max_quality)
 #endif
 
 #if GD_VERSION >= 20100
-
 GD::Image
 gdneuQuant(image, colors=gdMaxColors, samplefactor=5)
 	GD::Image	image
@@ -2987,7 +2985,6 @@ gdheight(font)
 MODULE = GD		PACKAGE = GD::Image	PREFIX=gd
   
 #if GD_VERSION >= 20100
-
 bool
 gdscatter(image, sub, plus)
       GD::Image	image
@@ -3141,8 +3138,8 @@ gdsmooth(image, weight)
     RETVAL
 
 #endif
-#if GD_VERSION >= 20200
 
+#if GD_VERSION >= 20200
 GD::Image
 gdcopyGaussianBlurred(image, radius, sigma)
       GD::Image	image
@@ -3161,7 +3158,6 @@ gdcopyGaussianBlurred(image, radius, sigma)
 # gd_interpolation
 
 #if GD_VERSION >= 20100
-
 GD::Image
 gdcopyScaleInterpolated(image, width, height)
       GD::Image	image
@@ -3199,7 +3195,6 @@ gdcopyRotateInterpolated(image, angle, bgcolor)
 # (they don't need an image); angles are in degrees.
 
 #if GD_VERSION >= 20100
-
 void
 affineIdentity(packname="GD::Image")
 	char *	packname
@@ -3458,7 +3453,6 @@ transformAffineBoundingBox(packname, rectsv, affinesv)
 # Perl binding yet.
 
 #if GD_VERSION >= 20100
-
 int
 paletteToTrueColor(image)
 	GD::Image	image
@@ -3601,7 +3595,6 @@ resolution(image, ...)
 #endif
 
 #if GD_VERSION >= 20400
-
 GD::Image
 cloneImage(image)
 	GD::Image	image
@@ -3647,7 +3640,6 @@ perceptualDiff(image1, image2, threshold)
 # flat key/value list a caller assigns to a hash.
 
 #if GD_VERSION >= 20400
-
 #ifdef HAVE_PNG
 void
 pngInfoData(packname, imageData)
@@ -3685,6 +3677,7 @@ pngInfoData(packname, imageData)
     PUSH_KV_I("decoded_truecolor", info.decoded_truecolor);
     PUSH_KV_I("resolution_x", info.resolution_x);
     PUSH_KV_I("resolution_y", info.resolution_y);
+
 #endif
 
 #ifdef HAVE_JPEG
@@ -3720,6 +3713,7 @@ jpegInfoData(packname, imageData)
     PUSH_KV_I("density_unit", info.density_unit);
     PUSH_KV_I("x_density", info.x_density);
     PUSH_KV_I("y_density", info.y_density);
+
 #endif
 
 #ifdef HAVE_GIF
@@ -3752,6 +3746,7 @@ gifInfoData(packname, imageData)
     PUSH_KV_N("pixel_aspect_ratio", info.pixel_aspect_ratio);
     PUSH_KV_I("loop_count", info.loop_count);
     PUSH_KV_I("loop_count_present", info.loop_count_present);
+
 #endif
 
 #ifdef HAVE_BMP
@@ -3794,6 +3789,7 @@ bmpInfoData(packname, imageData)
     PUSH_KV_I("green_mask", info.green_mask);
     PUSH_KV_I("blue_mask", info.blue_mask);
     PUSH_KV_I("alpha_mask", info.alpha_mask);
+
 #endif
 
 #ifdef HAVE_AVIF
@@ -3829,6 +3825,7 @@ avifInfoData(packname, imageData)
     PUSH_KV_I("has_alpha", info.has_alpha);
     PUSH_KV_I("bit_depth", info.bit_depth);
     PUSH_KV_I("yuv_format", info.yuv_format);
+
 #endif
 
 #ifdef HAVE_HEIF
@@ -3860,11 +3857,11 @@ heifInfoData(packname, imageData)
     PUSH_KV_I("has_alpha", info.has_alpha);
     PUSH_KV_I("bit_depth", info.bit_depth);
     PUSH_KV_I("is_animation", info.is_animation);
-#endif
 
 #endif
+#endif
+
 #if GD_VERSION >= 20200
-
 int
 interpolationMethod(image, interpolationmethod=-1)
       GD::Image	image
@@ -4083,7 +4080,6 @@ MODULE = GD		PACKAGE = GD::WebpAnimReader	PREFIX=gdWebpAnim
 
 #if GD_VERSION >= 20400
 #ifdef HAVE_WEBP
-
 GD::WebpAnimReader
 gdWebpAnimnewFromData(packname="GD::WebpAnimReader", imageData)
 	char *	packname
@@ -4157,7 +4153,6 @@ MODULE = GD		PACKAGE = GD::WebpAnimWriter	PREFIX=gdWebpAnim
 
 #if GD_VERSION >= 20400
 #ifdef HAVE_WEBP
-
 GD::WebpAnimWriter
 gdWebpAnimnew(packname="GD::WebpAnimWriter", ...)
 	char *	packname
@@ -4259,7 +4254,6 @@ MODULE = GD		PACKAGE = GD::JxlAnimReader	PREFIX=gdJxlAnim
 
 #if GD_VERSION >= 20400
 #ifdef HAVE_JXL
-
 GD::JxlAnimReader
 gdJxlAnimnewFromData(packname="GD::JxlAnimReader", imageData)
 	char *	packname
@@ -4331,7 +4325,6 @@ MODULE = GD		PACKAGE = GD::JxlAnimWriter	PREFIX=gdJxlAnim
 
 #if GD_VERSION >= 20400
 #ifdef HAVE_JXL
-
 GD::JxlAnimWriter
 gdJxlAnimnew(packname="GD::JxlAnimWriter", ...)
 	char *	packname
@@ -4425,7 +4418,6 @@ MODULE = GD		PACKAGE = GD::TiffMultiReader	PREFIX=gdTiffMulti
 
 #if GD_VERSION >= 20400
 #ifdef HAVE_TIFF
-
 GD::TiffMultiReader
 gdTiffMultinewFromData(packname="GD::TiffMultiReader", imageData)
 	char *	packname
@@ -4518,7 +4510,6 @@ MODULE = GD		PACKAGE = GD::TiffMultiWriter	PREFIX=gdTiffMulti
 
 #if GD_VERSION >= 20400
 #ifdef HAVE_TIFF
-
 GD::TiffMultiWriter
 gdTiffMultinew(packname="GD::TiffMultiWriter", ...)
 	char *	packname
