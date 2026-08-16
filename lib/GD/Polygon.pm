@@ -4,7 +4,7 @@ use strict;
 use Carp 'carp';
 use GD;
 use vars '$VERSION';
-$VERSION = '2.82';
+$VERSION = '2.91';
 
 # old documentation error
 *GD::Polygon::delete = \&deletePt;

@@ -5,7 +5,7 @@ use strict;
 use GD;
 use Symbol 'gensym','qualify_to_ref';
 use vars '$VERSION';
-$VERSION = '2.86';
+$VERSION = '2.91';
 
 =head1 NAME
 
@@ -40,11 +40,7 @@ as lowercase strings.
 
 =item Webp
 
-=item Heif
-
 =item Avif
-
-=item Jxl
 
 =back
 
@@ -57,6 +53,10 @@ Unsupported Image formats:
 =item Gd2
 
 =item Xpm
+
+=item Heif
+
+=item Jxl
 
 =back
 
@@ -307,28 +307,12 @@ sub newFromWebp {
     $class->_newFromWebp($fh);
 }
 
-sub newFromHeif {
-    croak("Usage: newFromHeif(class,filehandle)") unless @_==2;
-    my($class,$f) = @_;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromHeif($fh);
-}
-
 sub newFromAvif {
     croak("Usage: newFromAvif(class,filehandle)") unless @_==2;
     my($class,$f) = @_;
     my $fh = $class->_make_filehandle($f);
     binmode($fh);
     $class->_newFromAvif($fh);
-}
-
-sub newFromJxl {
-    croak("Usage: newFromJxl(class,filehandle)") unless @_==2;
-    my($class,$f) = @_;
-    my $fh = $class->_make_filehandle($f);
-    binmode($fh);
-    $class->_newFromJxl($fh);
 }
 
 sub newFromWBMP {
@@ -361,9 +345,7 @@ sub supported {
 	bmp
 	gifanim
 	webp
-	heif
 	avif
-	jxl
       );
 }
 

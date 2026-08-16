@@ -1,3 +1,9 @@
+2.91    * t/affine.t: compare affineInvert(scale(2,3))'s result with an
+          epsilon (1e-6) instead of exact is_deeply, since -Duselongdouble
+          perls compute the division in extended precision, giving a
+          last-few-ULP-different 1/3 than a plain double (GH #68).
+        * Bumped $VERSION in GD::Image, GD::Image_pm.PL and GD::Polygon to
+          2.91, in sync with GD.pm; these were left un-bumped in 2.90.
 2.90    * Add JXL, UHDR support for new libgd-2.4.0 (from git)
           - JXL: newFromJxl/newFromJxlData readers, jxl() writer
             (lossless/distance/effort), magic-byte autodetection in new().

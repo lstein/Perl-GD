@@ -44,7 +44,15 @@ SKIP: {
 
     # perl <= 5.12 stringifies -0.0 as "-0"; normalize sign-of-zero away
     my @inv = map { $_ == 0 ? 0 : $_ } GD::Image->affineInvert(\@scale);
-    is_deeply(\@inv, [0.5, 0, 0, 1/3, 0, 0], "affineInvert(scale(2,3))");
+    # Compare with an epsilon rather than is_deeply: 1/3 isn't exactly
+    # representable, and -Duselongdouble perls compute affineInvert's
+    # division in extended (80/128-bit) precision, so the last decimal
+    # digits of $inv[3] differ from a plain double's 1/3 (see GH #68).
+    my @expected_inv = (0.5, 0, 0, 1/3, 0, 0);
+    my $inv_close = @inv == @expected_inv;
+    $inv_close &&= abs($inv[$_] - $expected_inv[$_]) < 1e-6 for 0 .. $#expected_inv;
+    ok($inv_close, "affineInvert(scale(2,3))")
+        or diag("got: [@inv]\nexpected: [@expected_inv]");
 
     my @singular = (0, 0, 0, 0, 0, 0);
     my @noinv = GD::Image->affineInvert(\@singular);
