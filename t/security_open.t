@@ -33,9 +33,10 @@ my $dir = tempdir(CLEANUP => 1);
   open my $fh, ">", $victim or die "$victim: $!";
   print $fh "important data\n";
   close $fh;
+  my $expected_size = -s $victim;
   my $made = eval { GD::Image->_make_filehandle("> $victim") };
   close $made if $made;
-  is -s $victim, 15, "redirect payload does not truncate a file";
+  is -s $victim, $expected_size, "redirect payload does not truncate a file";
 }
 
 # A plain filename still opens as a file.
