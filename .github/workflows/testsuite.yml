@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: perl -V
       - run: |
           sudo apt update -y
@@ -60,6 +60,7 @@ jobs:
       matrix:
         perl-version:
           [
+            "5.44",
             "5.42",
             "5.40",
             "5.38",
@@ -81,8 +82,8 @@ jobs:
           ]
 
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-      - uses: shogo82148/actions-setup-perl@a198315ec4e9244f206879ea7b63078003aec8a6 # v1.41.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: shogo82148/actions-setup-perl@53e33bb27be492a926eee378e8a5f7ff6618b061 # v1.43.1
         with:
           perl-version: ${{ matrix.perl-version }}
       - run: perl -V
@@ -113,7 +114,7 @@ jobs:
         perl-version: [latest]
 
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: perl -V
         # already installed
       - run: brew install gd
@@ -146,7 +147,7 @@ jobs:
         perl-version: [latest]
 
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: perl -V
       #- id: cache-vcpkg
       #  uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
